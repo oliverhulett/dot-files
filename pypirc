@@ -1,0 +1,8 @@
+[distutils]
+index-servers=devpi
+
+[devpi]
+; This is the real username and password, it's not a place-holder.
+username=optiver
+password=optiver
+repository=http://devpi.aus.optiver.com/optiver/prod/

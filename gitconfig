@@ -1,0 +1,72 @@
+[user]
+	name = Oliver Hulett
+	email = Oliver.Hulett@Optiver.com.au
+[alias]
+	lgall = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cd)%C(bold blue)<%an>%Creset' --abbrev-commit 
+	lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cd)%C(bold blue)<%an>%Creset' --abbrev-commit --max-count=10
+	alias = config --get-regexp alias
+	which = "!f() { for i in \"$@\"; do echo -n \"$i is \"; git config alias.$i; done; }; cd \"$GIT_PREFIX\" && f"
+
+	upstream = push --set-upstream origin
+	pushtags = push --tags
+	branches = branch -avv
+	remotes = remote -v
+	refs = for-each-ref refs/remotes/origin
+
+	cp = "!f() { cp -v \"$1\" \"$2\"; git add \"$2\"; }; cd \"$GIT_PREFIX\" && f"
+
+	unstage = reset HEAD
+	undo-commit = reset HEAD^
+	discard = reset --hard HEAD
+	cleanignored = clean -f -X -d
+
+	pullb = "!f() { : git pull; git pull --prune; shopt -s nullglob; for h in .git/refs/heads/*; do set -- .git/refs/remotes/*/\"$(basename \"$h\")\"; if [ $# -eq 0 ]; then git branch -d \"$(basename \"$h\")\"; fi; done; }; cd \"$GIT_PREFIX\" && f"
+
+	mkbranch = "!f() { : git branch ; ~/.git_wrappers/mkbranch.sh \"$@\"; }; f"
+	mvbranch = "!f() { : git branch ; git branch -m \"$1\" \"$2\" && git push origin :\"$1\" && git push --set-upstream origin \"$2\"; }; cd \"$GIT_PREFIX\" && f"
+	rmbranch = "!f() { : git branch ; dashd=\"-d\"; if [ \"$1\" == \"-D\" ]; then dashd=\"-D\"; shift; fi; git branch $dashd \"$1\"; git push origin --delete \"$1\"; git pull --prune; }; cd \"$GIT_PREFIX\" && f"
+
+	tags = tag
+	rmtag = tag -d
+
+	mergeflict = "!f() { : git branch ; git pull --all; git fetch origin $1 && git merge FETCH_HEAD; }; cd \"$GIT_PREFIX\" && f"
+	resolve = "!f() { : git add ; ~/.git_wrappers/resolve.sh \"$@\"; read -n1 -p\"Resolved? [y/N]: \"; echo; if [ \"$(echo $REPLY | tr '[A-Z]' '[a-z]')\" == \"y\" ]; then git add \"$@\"; fi; }; cd \"$GIT_PREFIX\" && f"
+	resolve-mine = "!f() { : git add ; git checkout --ours \"$@\" && git add \"$@\"; }; cd \"$GIT_PREFIX\" && f"
+	resolve-ours = !git resolve-mine
+	resolve-theirs = "!f() { : git add ; git checkout --theirs \"$@\" && git add \"$@\"; }; cd \"$GIT_PREFIX\" && f"
+[add]
+	ignoreErrors = true
+[color]
+	branch = auto
+	diff = auto
+	grep = auto
+	interactive = auto
+	pager = false
+	status = auto
+	ui = true
+[column]
+	ui = never
+[grep]
+	lineNumber = true
+	patternType = extended
+[push]
+	default = upstream
+[merge]
+	conflictstyle = diff3
+[core]
+	pager = less -RFi
+	editor = ~/.git_wrappers/commit.sh
+	excludesfile = /home/olihul/.gitignore
+	safecrlf = true
+	abbrev = 11
+[log]
+	date = local
+[branch]
+	autosetuprebase = always
+[pull]
+	rebase = true
+[help]
+	autocorrect = 5
+[remote "origin"]
+	fetch = refs/heads/*:refs/remotes/origin/*
+	fetch = refs/tags/*:refs/tags/*
