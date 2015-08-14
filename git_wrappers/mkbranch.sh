@@ -38,3 +38,6 @@ if [ -f .project ]; then
 	sed -re 's!@master</name>!@'"${NEW_BRANCH}"'</name>!' .project -i 2>/dev/null
 fi
 
+## Stay in new branch directory
+trap EXIT
+

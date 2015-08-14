@@ -88,21 +88,19 @@ alias reboot='sudo shutdown -r'
 # Functions
 # #########
 
-unalias new 2>/dev/null
-function new
-{
-	for f in "$@"; do
-		mkdir --parents "$(dirname "$f")" >/dev/null 2>/dev/null || true
-	done
-	touch "$@"
-	boilerplate="$(cat -)"
-	for f in "$@"; do
-		if [ -f "$f" -a ! -s "$f" ]; then
-			echo "$boilerplate" >>"$f"
-		fi
-	done
-	git add -Nvf "$@" || rm -v "$@"
-}
+unalias table 2>/dev/null
+#function table
+#{
+#	filename="-"
+#	for f in "$@"; do
+#		if [ -f "$f" ]; then
+#			filename="$f"
+#			break
+#		fi
+#	done
+#	head -1 "$filename"
+#	"$@"
+#}
 
 unalias cat 2>/dev/null
 function cat

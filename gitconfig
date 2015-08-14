@@ -14,6 +14,7 @@
 	refs = for-each-ref refs/remotes/origin
 
 	cp = "!f() { cp -v \"$1\" \"$2\"; git add \"$2\"; }; cd \"$GIT_PREFIX\" && f"
+	new = "!f() { ~/.git_wrappers/new.sh \"$@\"; }; cd \"$GIT_PREFIX\" && f"
 
 	unstage = reset HEAD
 	undo-commit = reset HEAD^
@@ -30,10 +31,13 @@
 	rmtag = tag -d
 
 	mergeflict = "!f() { : git branch ; git pull --all; git fetch origin $1 && git merge FETCH_HEAD; }; cd \"$GIT_PREFIX\" && f"
-	resolve = "!f() { : git add ; ~/.git_wrappers/resolve.sh \"$@\"; read -n1 -p\"Resolved? [y/N]: \"; echo; if [ \"$(echo $REPLY | tr '[A-Z]' '[a-z]')\" == \"y\" ]; then git add \"$@\"; fi; }; cd \"$GIT_PREFIX\" && f"
-	resolve-mine = "!f() { : git add ; git checkout --ours \"$@\" && git add \"$@\"; }; cd \"$GIT_PREFIX\" && f"
+	gresolve = mergetool --tool=kdiff3 -y
+	resolved = "!f() { : git add ; if [ $# -eq 0 ]; then set -- $(git diff --name-only --diff-filter=U); fi; git add \"$@\"; }; cd \"$GIT_PREFIX\" && f"
+
+	resolve = "!f() { : git add ; if [ $# -eq 0 ]; then set -- $(git diff --name-only --diff-filter=U); fi; ~/.git_wrappers/resolve.sh \"$@\"; read -n1 -p\"Resolved? [y/N]: \"; echo; if [ \"$(echo $REPLY | tr '[A-Z]' '[a-z]')\" == \"y\" ]; then git add \"$@\"; fi; }; cd \"$GIT_PREFIX\" && f"
+	resolve-mine = "!f() { : git add ; if [ $# -eq 0 ]; then set -- $(git diff --name-only --diff-filter=U); fi; git checkout --ours \"$@\" && git add \"$@\"; }; cd \"$GIT_PREFIX\" && f"
 	resolve-ours = !git resolve-mine
-	resolve-theirs = "!f() { : git add ; git checkout --theirs \"$@\" && git add \"$@\"; }; cd \"$GIT_PREFIX\" && f"
+	resolve-theirs = "!f() { : git add ; if [ $# -eq 0 ]; then set -- $(git diff --name-only --diff-filter=U); fi; git checkout --theirs \"$@\" && git add \"$@\"; }; cd \"$GIT_PREFIX\" && f"
 [add]
 	ignoreErrors = true
 [color]
