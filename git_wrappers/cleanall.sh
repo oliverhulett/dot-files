@@ -2,29 +2,31 @@
 
 function cleanempty()
 {
-	find -L ./ -xdev -not -wholename '*.git*' -type l -delete
-	find ./ -xdev -not -wholename '*.git*' -not -wholename '*.svn*' -type d | while read; do
+	echo "Removing broken symlinks and empty directories."
+	find -L ./ -xdev -not \( -name '.git' -prune -or -name '.svn' -prune \) -type l -delete -print
+	find ./ -xdev -not \( -name '.git' -prune -or -name '.svn' -prune \) -type d | while read; do
 		if [ -z "$(/bin/ls "$REPLY")" ]; then
 			rmdir -pv "$REPLY" 2>/dev/null
 		fi
 	done
 }
 
-rm -rf .git/externals x_*
-cleanempty
+if [ -x ./build.py ]; then
+	echo "Cleaning build."
+	./build.py -c
+fi
 
-tmp="$(mktemp -d)"
-find ./ -xdev -not -wholename '*.git*' \( -name .project -or -name .pydevproject -or -name .cproject -or -name .settings \) -print0 | xargs -0 cp --parents -xPr --target-directory="${tmp}/" 2>/dev/null
+echo "Removing '.git/externals/' and likely external directories 'x_*'."
+rm -rf .git/externals x_*
+
+cleanempty
 
 git cleanignored
 
-rsync -zvpPAXrogthlm "${tmp}/" ./ && rm -rf "${tmp}"
-
 cleanempty
 
-git stash
-git pull
-git stash pop
+echo "Updating repo and externals from upstream."
+git stash && git pull && git stash pop
 
 if [ -x ./git_setup.py ]; then
 	./git_setup.py -kq

@@ -42,6 +42,6 @@ function ff
 	fi
 
 	echo "Looking for ${PATS[@]} in ${DIRS[@]} (-iname 'Makefile' -or -iname 'Jamfile' ${EXTS[@]})"
-	find "${DIRS[@]}" -type f -not -wholename '*.svn*' -not -name '*~' \( -iname 'Makefile' -or -iname Jamfile "${EXTS[@]}" \) -print0 | xargs -0 grep -n --color=always -E "${PATS[@]}"
+	find "${DIRS[@]}" -not \( -name '.git' -prune -or -name '.svn' -prune \) -type f -not -name '*~' \( -iname 'Makefile' -or -iname Jamfile "${EXTS[@]}" \) -print0 | xargs -0 grep -n --color=always -E "${PATS[@]}"
 }
 
