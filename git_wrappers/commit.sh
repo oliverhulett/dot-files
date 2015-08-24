@@ -5,24 +5,30 @@ git status
 branch="$(git branch --no-color | sed -nre 's/^\* //p' | cut -d'_' -f1)"
 if [ "$branch" == "master" ]; then
 	branch=
-	read -p "Prepend a ticket to commit message? [Y/n] " -n1 -r
+	read -p "Prepend a ticket to commit message? [Y/n/q] " -n1 -r
 	echo
-	if [ -z "$REPLY" -o "`echo $REPLY | tr [A-Z] [a-z]`" == "y" ]; then
+	if [ "`echo $REPLY | tr [A-Z] [a-z]`" == "n" ]; then
+		branch=
+	elif [ "`echo $REPLY | tr [A-Z] [a-z]`" == "q" ]; then
+		exit
+	else
 		echo -n "$(tput bold)Ticket:$(tput sgr0)  "
 		read
 		branch="$REPLY:  "
 	fi
 else
-	read -p "Prepend ticket ($branch) to commit message? [Y/n/o] " -n1 -r
+	read -p "Prepend ticket ($branch) to commit message? [Y/n/o/q] " -n1 -r
 	echo
-	if [ -z "$REPLY" -o "`echo $REPLY | tr [A-Z] [a-z]`" == "y" ]; then
-		branch="$branch:  "
+	if [ "`echo $REPLY | tr [A-Z] [a-z]`" == "n" ]; then
+		branch=
 	elif [ "`echo $REPLY | tr [A-Z] [a-z]`" == "o" ]; then
 		echo -n "$(tput bold)Ticket:$(tput sgr0)  "
 		read
 		branch="$REPLY:  "
+	elif [ "`echo $REPLY | tr [A-Z] [a-z]`" == "q" ]; then
+		exit
 	else
-		branch=
+		branch="$branch:  "
 	fi
 fi
 

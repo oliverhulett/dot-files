@@ -1,6 +1,41 @@
+unalias safefind 2>/dev/null
+function safefind
+{
+	## From the find(1) man page...
+	# The ‘-H’, ‘-L’ and ‘-P’ options control the treatment of symbolic links.  Command-line arguments following these are taken to be names of files or directo-
+	# ries to be examined, up to the first argument that begins with ‘-’, ‘(’, ‘)’, ‘,’, or ‘!’.
+	dashh=
+	if [ "$1" == "-H" ]; then
+		dashh="-H"
+		shift
+	fi
+	dashl=
+	if [ "$1" == "-L" ]; then
+		dashl="-L"
+		shift
+	fi
+	dashp=
+	if [ "$1" == "-P" ]; then
+		dashp="-P"
+		shift
+	fi
+	declare -a DIRS
+	while [ $# -gt 0 ]; do
+		if [ -z "`echo ${1:0:1} | tr -d '[^()!,-]'`" ]; then
+			break
+		else
+			DIRS[${#DIRS[@]}]="$1"
+			shift
+		fi
+	done
+	if [ ${#DIRS[@]} -eq 0 ]; then
+		DIRS[0]="./"
+	fi
+	find $dashh $dashl $dashp "${DIRS[@]}" -nowarn -not \( -name '.git' -prune -or -name '.svn' -prune \) \( "$@" \)
+}
 
-unalias ff 2>/dev/null
-function ff
+unalias findin 2>/dev/null
+function findin
 {
 	declare -a DIRS
 	declare -a EXTS
@@ -42,6 +77,6 @@ function ff
 	fi
 
 	echo "Looking for ${PATS[@]} in ${DIRS[@]} (-iname 'Makefile' -or -iname 'Jamfile' ${EXTS[@]})"
-	find "${DIRS[@]}" -not \( -name '.git' -prune -or -name '.svn' -prune \) -type f -not -name '*~' \( -iname 'Makefile' -or -iname Jamfile "${EXTS[@]}" \) -print0 | xargs -0 grep -n --color=always -E "${PATS[@]}"
+	safefind "${DIRS[@]}" -type f -not -name '*~' \( -iname 'Makefile' -or -iname Jamfile "${EXTS[@]}" \) -print0 | xargs -0 grep -n --color=always -E "${PATS[@]}"
 }
 
