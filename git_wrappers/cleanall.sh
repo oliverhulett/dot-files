@@ -28,12 +28,7 @@ cleanempty
 echo "Updating repo and externals from upstream."
 git stash && git pull && git stash pop
 
-if [ -x ./git_setup.py ]; then
-	./git_setup.py -kq
-fi
-if [ -f ./deps.json ]; then
-	courier
-fi
+git update
 
 git status
 

@@ -20,12 +20,7 @@ pushd "../${NEW_DIR}" >/dev/null
 
 git checkout -b "${NEW_BRANCH}" || git checkout "${NEW_BRANCH}"
 git push --set-upstream origin "${NEW_BRANCH}"
-if [ -x ./git_setup.py ]; then
-	./git_setup.py -kq
-fi
-if [ -f ./deps.json ]; then
-	courier
-fi
+git update
 
 shopt -s nullglob
 set -- ../.[a-z]*
