@@ -7,10 +7,19 @@ function ssh()
 		REAL_SSH="/usr/bin/ssh"
 	fi
 	if [ $# -eq 1 ]; then
-		if ! echo $1 | grep -qw ${HOME}/.ssh/known_hosts; then
-			if ! $REAL_SSH $1 -o PasswordAuthentication=no echo "Testing SSH connection to $1"; then
-				ssh-copy-id -i ${HOME}/.ssh/id_rsa.pub $1
-			fi
+		user="${1%%@*}"
+		target="${1#*@}"
+		if [ "${user}" == "${target}" ]; then
+			user="$(whoami)"
+		fi
+		echo "Testing SSH key on ${target}"
+		if ! $REAL_SSH ${user}@${target} -o ConnectTimeout=2 -o PasswordAuthentication=no echo "SSH key already installed on ${target}"; then
+			ssh-copy-id -i ${HOME}/.ssh/id_rsa.pub ${user}@${target}
+		fi
+		echo "Testing SSH connection to ${target}"
+		host="$($REAL_SSH -o ConnectTimeout=2 -o PasswordAuthentication=no ${user}@${target} hostname)"
+		if [ -n "${host}" ]; then
+			$REAL_SSH -o ConnectTimeout=2 -o PasswordAuthentication=no ${user}@${host} echo "Successfully SSH-ed to ${target} \(which is really ${host}\) as ${user} without a password"
 		fi
 	fi
 	$REAL_SSH -Y "$@"

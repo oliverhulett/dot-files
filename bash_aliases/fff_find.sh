@@ -21,7 +21,7 @@ function safefind
 	fi
 	declare -a DIRS
 	while [ $# -gt 0 ]; do
-		if [ -z "`echo ${1:0:1} | tr -d '[^()!,-]'`" ]; then
+		if [ -z "`echo ${1:0:1} | tr -d '()!,-'`" ]; then
 			break
 		else
 			DIRS[${#DIRS[@]}]="$1"
