@@ -1,5 +1,8 @@
 #!/bin/bash
 
+existing_msg="$(cat .git/COMMIT_EDITMSG | sed -re '/^#/d')"
+
+echo $existing_msg
 git status
 
 branch="$(git branch --no-color | sed -nre 's/^\* //p' | cut -d'_' -f1)"
@@ -31,6 +34,8 @@ else
 		branch="$branch:  "
 	fi
 fi
+
+sed -re '/^#/! s/^('"${branch}"')?(.+)/'"${branch}"'\2/' .git/COMMIT_EDITMSG -i
 
 vim -c "autocmd InsertLeave <buffer> let [c, l] = [getpos('.'), strlen(getline('.'))]" -c "autocmd InsertLeave <buffer> 1,!sed -re 's/^(${branch})?(.+)/${branch}\2/'" -c "autocmd InsertLeave <buffer> call setpos('.', c) | if l < strlen(getline('.')) | call setpos('.', [c[0], c[1], c[2] + ${#branch}, c[3]])" "$@"
 

@@ -7,7 +7,7 @@
 	alias = config --get-regexp alias
 	which = "!f() { for i in \"$@\"; do echo -n \"$i is: \"; git config alias.$i; done; }; f"
 
-	upstream = push --set-upstream origin
+	upstream = push --set-upstream
 	branches = branch -avv
 	remotes = remote -v
 	refs = for-each-ref refs/remotes/origin

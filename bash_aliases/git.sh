@@ -27,12 +27,14 @@ export GIT_PS1_SHOWUPSTREAM="auto"
 
 function __custom_git_ps1()
 {
-	if ( pwd | grep -qw "master" 2>&1 >/dev/null ) || [ "$(hostname -s 2>/dev/null)" != "rh5_64-bit_1064-1" ]; then
+	d="$(git branch --no-color 2>/dev/null | sed -nre 's/^\* //p' | cut -d_ -f1)"
+	if ( pwd | grep -qw "master" 2>&1 >/dev/null ) || ! ( pwd | grep -qw "$d" 2>&1 >/dev/null ) || [ "$(hostname -s 2>/dev/null)" != "rh5_64-bit_1064-1" ]; then
 		__git_ps1 "$@"
 	else
 		__git_ps1 "$@" "%s" | sed -re 's/(\w+:)?[0-9a-zA-Z_-]+( ?.*)?/\1\2/'
 	fi
 }
+
 if type -t __git_ps1 >/dev/null 2>&1; then
 	# $(__git_ps1) will prepend a space.
 	if [ "$TERM" == "cygwin" ]; then
