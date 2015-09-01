@@ -3,6 +3,7 @@
 existing_msg="$(cat .git/COMMIT_EDITMSG | sed -re '/^#/d')"
 
 echo "$existing_msg"
+echo
 git status
 
 branch="$(git branch --no-color | sed -nre 's/^\* //p' | cut -d'_' -f1)"
