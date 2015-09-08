@@ -7,7 +7,10 @@
 	alias = config --get-regexp alias
 	which = "!f() { for i in \"$@\"; do echo -n \"$i is: \"; git config alias.$i; done; }; f"
 
-	upstream = push --set-upstream
+	ticket = "!f() { git branch --no-color | sed -nre 's/^\\* //p' | cut -d'_' -f1; }; f"
+	this = "!f() { git branch --no-color | sed -nre 's/^\\* //p'; }; f"
+
+	upstream = "!f() { git push --set-upstream origin $(git this); }; f"
 	branches = branch -avv
 	remotes = remote -v
 	refs = for-each-ref refs/remotes/origin
