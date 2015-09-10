@@ -4,11 +4,27 @@ CURR_BRANCH="$(git branch --no-color | sed -nre 's/^\* //p')"
 CURR_DIR="$(basename "$(pwd)")"
 NEW_BRANCH="$1"
 NEW_DIR="$(echo ${NEW_BRANCH} | cut -d_ -f1)"
+## MASTER_DIR should be a sibling of each branch's directory, and called master.
+MASTER_DIR="$(dirname "$(pwd)")/master"
+if [ ! -d "$MASTER_DIR" ]; then
+	## Or MASTER_DIR should be a sibling of each branch's directory, and with the same name as the repository.
+	parent="$(dirname "$(pwd)")"
+	MASTER_DIR="$(dirname "${parent}")/$(git remote show origin | grep 'Fetch URL:' | sed 's#^.*/\(.*\).git#\1#')"
+fi
+if [ ! -d "$MASTER_DIR" ]; then
+	## Or MASTER_DIR should be a sibling of each branch's directory, and with the same name as the parent directory.
+	parent="$(dirname "$(pwd)")"
+	MASTER_DIR="$(dirname "${parent}")/$(basename "${parent}")"
+fi
+if [ ! -d "$MASTER_DIR" ]; then
+	## Or MASTER_DIR falls back to being CURR_DIR.
+	MASTER_DIR="${CURR_DIR}"
+fi
 
 ## This script is designed to be called as a bash alias, so there we should be in the root of the checkout from which we want to branch.
 git pull
 
-( cd .. && git new-workdir "${CURR_DIR}" "${NEW_DIR}" )
+( cd .. && git new-workdir "${MASTER_DIR}" "${NEW_DIR}" "${CURR_BRANCH}" )
 
 function cleanup()
 {
