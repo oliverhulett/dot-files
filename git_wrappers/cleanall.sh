@@ -26,7 +26,14 @@ git cleanignored
 cleanempty
 
 echo "Updating repo and externals from upstream."
-git stash && git pull && git stash pop
+set -x
+stashes=$(git stash list | wc -l)
+git stash --include-untracked
+git pull
+if [ $stashes -ne $(git stash list | wc -l) ]; then
+	git stash pop stash@{$stashes}
+fi
+set +x
 
 git update
 
