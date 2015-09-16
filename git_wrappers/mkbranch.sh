@@ -28,7 +28,7 @@ git pull
 
 function cleanup()
 {
-	popd >/dev/null
+	popd
 }
 trap cleanup EXIT
 
@@ -48,7 +48,4 @@ cp ../.project ./ 2>/dev/null || cp ../master/.project ./ 2>/dev/null
 if [ -f .project ]; then
 	sed -re 's!@master</name>!@'"${NEW_BRANCH}"'</name>!' .project -i 2>/dev/null
 fi
-
-## Stay in new branch directory
-trap EXIT
 
