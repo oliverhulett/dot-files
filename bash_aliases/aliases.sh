@@ -44,6 +44,7 @@ alias eject='eject -T'
 alias file='file -krz'
 alias top='top -c'
 alias less='less -RFiMx4'
+export LESS='-RFiMx4'
 
 if uname -s | real_grep -q 'MINGW' >/dev/null 2>&1 ; then
 	alias ifconfig='ipconfig'

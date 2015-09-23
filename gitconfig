@@ -63,7 +63,7 @@
 [merge]
 	conflictstyle = diff3
 [core]
-	pager = less -RFi
+	pager = less -RFiMx4 -+S
 	editor = ~/.git_wrappers/commit.sh
 	excludesfile = /home/olihul/.gitignore
 	safecrlf = true

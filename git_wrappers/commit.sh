@@ -1,5 +1,11 @@
 #!/bin/bash
 
+## Early exist to a generic editor for things that aren't commits.
+if [ -e .git/rebase-merge ]; then
+	$VISUAL "$@" || vim "$@"
+	exit
+fi
+
 existing_msg="$(cat .git/COMMIT_EDITMSG | sed -re '/^#/d')"
 
 echo "$existing_msg"
