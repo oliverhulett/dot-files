@@ -35,7 +35,7 @@
 	mvbranch = "!f() { : git branch ; git branch -m \"$1\" \"$2\" && git push origin :\"$1\" && git push --set-upstream origin \"$2\"; }; f"
 	rmbranch = "!f() { : git branch ; dashd=\"-d\"; if [ \"$1\" == \"-D\" ]; then dashd=\"-D\"; shift; fi; git branch $dashd \"$1\"; git push origin --delete \"$1\"; git pull --prune; }; f"
 
-	mergeflict = "!f() { : git branch ; git pull --all; git fetch origin $1 && git merge FETCH_HEAD; }; f"
+	mergeflict = "!f() { : git branch ; git push && git pull --all && git fetch origin $1 && git merge FETCH_HEAD; }; f"
 	gresolve = "!f() { : git mergetool ; git mergetool --tool=kdiff3 -y \"$@\" && echo \"Removing kdiff3 original files.\" && find ./ -name '*.orig' -delete -print; } && f" ## Want to execute from top level, not GIT_PREFIX
 	resolved = "!f() { : git add ; if [ $# -eq 0 ]; then set -- $(git diff --name-only --diff-filter=U); fi; git add \"$@\"; }; cd \"$GIT_PREFIX\" && f"
 
