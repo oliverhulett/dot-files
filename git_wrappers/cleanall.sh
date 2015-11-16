@@ -3,7 +3,7 @@
 function cleanempty()
 {
 	echo "Removing broken symlinks and empty directories."
-	find -L ./ -xdev -not \( -name '.git' -prune -or -name '.svn' -prune \) -type l -delete -print
+	find -L ./ -xdev -not \( -name '.git' -prune -or -name '.svn' -prune \) -type l -not -name 'build.py' -delete -print
 	find ./ -xdev -not \( -name '.git' -prune -or -name '.svn' -prune \) -type d | while read; do
 		if [ -z "$(/bin/ls "$REPLY")" ]; then
 			rmdir -pv "$REPLY" 2>/dev/null
