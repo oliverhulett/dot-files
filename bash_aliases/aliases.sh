@@ -73,7 +73,10 @@ alias rsync-a='rsync -zvpPAXrogthlm'
 alias sursync-a='sudo rsync -zvpPAXrogthlm'
 alias rsync-ca='rsync -zvpPAXrogthlcm'
 alias sursync-ca='sudo rsync -zvpPAXrogthlcm'
+
 alias syslog='tail -f /var/log/syslog'
+
+alias iotop='sudo iotop'
 
 alias nfsmnt='sudo mount -t nfs4 -o soft,retry=2,retrans=5,timeo=180'
 alias smbmnt='sudo mount -t cifs -o users,rw,noexec,async,guest'
