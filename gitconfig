@@ -21,13 +21,13 @@
 
 	cp = "!f() { cp -v \"$1\" \"$2\"; git add \"$2\"; }; cd \"$GIT_PREFIX\" && f"
 	new = "!f() { ~/.git_wrappers/new.sh \"$@\"; }; cd \"$GIT_PREFIX\" && f"
-	update = "!f() { ~/.git_wrappers/update.sh; }; f" ## Want to execute from top level, not GIT_PREFIX
+	update = "!f() { ~/.git_wrappers/update.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 
 	unstage = reset HEAD
 	undo-commit = reset HEAD^
 	discard = reset --hard HEAD
-	cleanignored  = "!f() { ~/.git_wrappers/cleanignored.sh; }; f" ## Want to execute from top level, not GIT_PREFIX
-	cleanall = "!f() { ~/.git_wrappers/cleanall.sh; }; f" ## Want to execute from top level, not GIT_PREFIX
+	cleanignored  = "!f() { ~/.git_wrappers/cleanignored.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
+	cleanall = "!f() { ~/.git_wrappers/cleanall.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 
 	pullb = "!f() { git pull --prune; shopt -s nullglob; for h in .git/refs/heads/*; do set -- .git/refs/remotes/*/\"$(basename \"$h\")\"; if [ $# -eq 0 ]; then git branch -d \"$(basename \"$h\")\"; fi; done; }; f" ## Want to execute from top level, not GIT_PREFIX
 

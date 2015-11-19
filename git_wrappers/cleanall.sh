@@ -16,7 +16,6 @@ if [ -x ./build.py ]; then
 	./build.py -c
 fi
 
-echo "Removing '.git/externals/' and likely external directories 'x_*'."
 git update --clean
 
 cleanempty
