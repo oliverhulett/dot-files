@@ -14,6 +14,7 @@
 	branches = branch -avv
 	remotes = remote -v
 	refs = for-each-ref refs/remotes/origin
+	who = for-each-ref --sort=-authorname --format='%(authorname) %(refname)' refs/remotes/origin/
 
 	tags = tag
 	rmtag = tag -d
