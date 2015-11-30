@@ -14,7 +14,7 @@
 	branches = branch -avv
 	remotes = remote -v
 	refs = for-each-ref refs/remotes/origin
-	who = for-each-ref --sort=-authorname --format='%(authorname) %(refname)' refs/remotes/origin/
+	who = for-each-ref --sort=-authorname --format='%(authorname)\t%(committerdate)\t%(refname)' refs/remotes/origin/
 
 	tags = tag
 	rmtag = tag -d
@@ -30,7 +30,7 @@
 	cleanignored  = "!f() { ~/.git_wrappers/cleanignored.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 	cleanall = "!f() { ~/.git_wrappers/cleanall.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 
-	pullb = "!f() { git pull --prune; shopt -s nullglob; for h in .git/refs/heads/*; do set -- .git/refs/remotes/*/\"$(basename \"$h\")\"; if [ $# -eq 0 ]; then git branch -d \"$(basename \"$h\")\"; fi; done; }; f" ## Want to execute from top level, not GIT_PREFIX
+	pullb = "!f() { git pull --prune; shopt -s nullglob; for h in .git/refs/heads/*; do set -- .git/refs/remotes/*/\"$(basename \"$h\")\"; if [ $# -eq 0 -a \"$(basename \"$h\")\" != \"master\" ]; then git branch -d \"$(basename \"$h\")\"; fi; done; }; f" ## Want to execute from top level, not GIT_PREFIX
 
 	mkbranch = "!f() { ~/.git_wrappers/mkbranch.sh \"$*\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 	mvbranch = "!f() { : git branch ; git branch -m \"$1\" \"$2\" && git push origin :\"$1\" && git push --set-upstream origin \"$2\"; }; f"

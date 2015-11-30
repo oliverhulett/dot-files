@@ -2,7 +2,7 @@
 
 export PYVENV_HOME="$HOME/pyvenv"
 
-virtualenv-2.6 --no-site-packages "$PYVENV_HOME" >/dev/null 2>/dev/null
+${HOME}/bin/virtualenv --no-site-packages "$PYVENV_HOME" >/dev/null 2>/dev/null
 VIRTUAL_ENV_DISABLE_PROMPT=1 source "$PYVENV_HOME/bin/activate"
 
 if [ ! -f "$HOME/.pip/pip.conf" ]; then
