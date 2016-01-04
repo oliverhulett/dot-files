@@ -6,14 +6,14 @@ if [ "$1" == "-c" -o "$1" == "--clean" ]; then
 	if [ -f ./pins.json ]; then
 		sed -nre 's/^[ \t]+"(.+)": \{/\1/p' ./pins.json | tee >(xargs rm -rf)
 	fi
-else
-	if [ -x ./git_setup.py ]; then
-		./git_setup.py -kq
-	elif [ -f ./.gitsvnextmodules -o -f ./externals.json ]; then
-		getdep
-	fi
-	if [ -f ./deps.json ]; then
-		courier
-	fi
+fi
+
+if [ -x ./git_setup.py ]; then
+	./git_setup.py -kq
+elif [ -f ./.gitsvnextmodules -o -f ./externals.json ]; then
+	getdep
+fi
+if [ -f ./deps.json ]; then
+	courier
 fi
 
