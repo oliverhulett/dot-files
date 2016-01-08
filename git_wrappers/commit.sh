@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ## Early exist to a generic editor for things that aren't commits.
-if [ -e .git/rebase-merge ]; then
+if ! [ $# -eq 1 -a "$1" -ef .git/COMMIT_EDITMSG ]; then
 	$VISUAL "$@" || vim "$@"
 	exit
 fi
