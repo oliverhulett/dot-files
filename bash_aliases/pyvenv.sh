@@ -17,6 +17,8 @@ if [ ! -f "$HOME/.pydistutils.cfg" ]; then
 	echo "repository=devpi" >>"$HOME/.pydistutils.cfg"
 	echo "[register]" >>"$HOME/.pydistutils.cfg"
 	echo "repository=devpi" >>"$HOME/.pydistutils.cfg"
+	echo "[easy_install]" >>"$HOME/.pydistutils.cfg"
+	echo "index-url=http://devpi.aus.optiver.com/optiver/prod/+simple/" >>"$HOME/.pip/pip.conf"
 fi
 
 if [ ! -f "$HOME/.pypirc" ]; then

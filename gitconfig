@@ -15,6 +15,7 @@
 	remotes = remote -v
 	refs = for-each-ref refs/remotes/origin
 	who = for-each-ref --sort=-authorname --format='%(authorname)\t%(committerdate)\t%(refname)' refs/remotes/origin/
+	when = for-each-ref --sort=-committerdate --format='%(authorname)\t%(committerdate)\t%(refname)' refs/remotes/origin/
 
 	tags = tag
 	rmtag = tag -d
