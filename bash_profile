@@ -28,17 +28,6 @@ if [ -e "${HOME}/.bashrc" ] ; then
 	source "${HOME}/.bashrc"
 fi
 
-# Set PATHs so they include user's private directories if they exist
-if [ -d "${HOME}/bin" ] ; then
-	PATH="$HOME/bin:$(echo $PATH | sed -re 's!(^|:)'"$HOME"'/bin/?(:|$)!\1!g')"
-fi
-# set PATH so it includes user's private bin if it exists
-if [ -d "$HOME/sbin" ]; then
-	PATH="$HOME/sbin:$(echo $PATH | sed -re 's!(^|:)'"$HOME"'/sbin/?(:|$)!\1!g')"
-fi
-# set PATH so it includes sbin if it exists
-PATH="$(echo $PATH | sed -re 's!(^|:)/usr/local/sbin/?(:|$)!\1!g' | sed -re 's!(^|:)/usr/sbin/?(:|$)!\1!g' | sed -re 's!(^|:)/sbin/?(:|$)!\1!g'):/usr/local/sbin:/usr/sbin:/sbin"
-
 # Set MANPATH so it includes users' private man if it exists
 if [ -d "${HOME}/man" ]; then
 	MANPATH=${HOME}/man:${MANPATH}
