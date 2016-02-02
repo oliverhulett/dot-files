@@ -9,6 +9,8 @@ expand_optitest_job ()
 		return	## Fall back to default
 	elif [ "${last:0:1}" == "-" -a "${last: -1}" == "c" ]; then
 		return ## Fall back to default
+	elif [ "${prefix:0:1}" == "-" ]; then
+		COMPREPLY=($(compgen -W "-h --help --junit --junitdir -l --list -v --verbose -c --config -j --jobs --version" -- "$prefix"))
 	else
 		tests="$($cmd --list 2>/dev/null | grep -v "Will run" | sort)"
 		COMPREPLY=($(compgen -W "$tests" -- "$prefix"))
