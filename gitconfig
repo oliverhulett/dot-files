@@ -16,8 +16,8 @@
 	refs = for-each-ref refs/remotes/origin
 	who = for-each-ref --sort=-authorname --format='%(authorname)\t%(committerdate)\t%(refname)' refs/remotes/origin/
 	when = for-each-ref --sort=-committerdate --format='%(authorname)\t%(committerdate)\t%(refname)' refs/remotes/origin/
+	tags = for-each-ref --sort=-taggerdate --format='%(taggerdate)\t%(refname)\t%(authorname)' refs/tags
 
-	tags = tag
 	rmtag = tag -d
 	pushtags = push --tags
 
