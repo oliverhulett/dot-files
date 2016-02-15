@@ -12,7 +12,7 @@ def update_cache_file():
     import urllib2
  
     f = open(CACHE_FILE, 'w')
-    data = '\n'.join( [i['app_name']['title'] for i in requests.get(URL).json['_items']] )
+    data = '\n'.join( [i['app_name']['title'] for i in requests.get(URL).json()['_items']] )
     f.write(data)
     f.close()
     return data
