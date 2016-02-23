@@ -135,11 +135,13 @@ function which()
 		case `type -t "$arg" 2>/dev/null` in
 			alias)
 				alias "$arg"
+				real_grep -lr -E "alias[ \\t]+${arg}=" ~/.bashrc ~/.bash_profile ~/.bash_aliases
 				cmd="$cmd $(alias "$arg" | sed -re "s/^[^=]+='(.+)'$/\1/;s/sudo //g;s/ +-[^ ]+//g")"
 				;;
 			keyword)
 				;;
 			function)
+				real_grep -lr -E "(function)?[ \\t]+${arg}[ \\t]*\\(\\)" ~/.bashrc ~/.bash_profile ~/.bash_aliases
 				;;
 			builtin)
 				;;
