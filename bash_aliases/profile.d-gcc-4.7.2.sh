@@ -3,6 +3,7 @@
 
 CCACHE_PATH=/usr/lib64/ccache
 GCC_PATH=/opt/optiver/gcc/4.7.2/bin
+GCC_LD_PATH=/opt/optiver/gcc/4.7.2/lib64:/opt/optiver/gcc/4.7.2/lib
 GCC_LINX="/home/olihul/bin/gcc"
 mkdir --parents "$GCC_LINX" 2>/dev/null
 pushd "$GCC_LINX" >/dev/null 2>/dev/null
@@ -15,6 +16,8 @@ popd >/dev/null 2>/dev/null
 
 # We want a slightly more subtle equivalent of PATH=$CCACHE_PATH:$GCC_PATH:$PATH
 PATH="$CCACHE_PATH:$GCC_LINX:$GCC_PATH:$(echo "$PATH" | sed -re "s!(^|:)$CCACHE_PATH/?(:|$)!\1!;s!(^|:)$GCC_LINX/?(:|$)!\1!;s!(^|:)$GCC_PATH/?(:|$)!\1!")"
+LD_LIBRARY_PATH="$GCC_LD_PATH:$(echo "$LD_LIBRARY_PATH" | sed -re "s!(^|:)$GCC_LD_PATH/?(:|$)!\1!")"
 
 export PATH
+export LD_LIBRARY_PATH 
 
