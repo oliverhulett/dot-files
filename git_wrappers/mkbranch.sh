@@ -22,7 +22,8 @@ if [ ! -d "$MASTER_DIR" ]; then
 fi
 
 ## This script is designed to be called as a bash alias, so there we should be in the root of the checkout from which we want to branch.
-git pull
+git pull --all
+git fetch origin ${CURR_BRANCH}
 
 ( cd .. && git new-workdir "${MASTER_DIR}" "${NEW_DIR}" "${CURR_BRANCH}" )
 

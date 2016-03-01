@@ -14,8 +14,7 @@ sed -re "1,1{/^${NOTICE}\$/d}" "$TMPFILE" -i
 for f in "$@"; do
 	if [ -f "$f" -a ! -s "$f" ]; then
 		cp "$TMPFILE" "$f"
+		git add -Nvf "$f" || rm -v "$f"
 	fi
 done
-
-git add -Nvf "$@" || rm -v "$@"
 
