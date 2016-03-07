@@ -50,16 +50,18 @@ function python_setup()
 		proxy_setup
 	fi
 
+	sudo -v
+
 	pip install --upgrade pip setuptools
 	pip install protobuf==2.5.0
 	pip install twisted
 	pip install sqlalchemy
 	pip install argparse
-	sudo yum install unixODBC-devel
+	sudo -n yum install unixODBC-devel
 	pip install pyodbc
-	sudo yum install postgresql-devel
+	sudo -n yum install postgresql-devel
 	pip install psycopg2==2.5.4
-	sudo yum install libxml2-devel libxslt-devel
+	sudo -n yum install libxml2-devel libxslt-devel
 	pip install lxml
 }
 

@@ -21,6 +21,10 @@ function ssh()
 		if [ -n "${host}" ]; then
 			$REAL_SSH -o ConnectTimeout=2 -o PasswordAuthentication=no ${user}@${host} echo "Successfully SSH-ed to ${target} \(which is really ${host}\) as ${user} without a password"
 		fi
+		echo "Checking environment set-up on ${target}"
+		if ! $REAL_SSH ${user}@${target} -o ConnectTimeout=2 -o PasswordAuthentication=no test -d etc/dot-files; then
+			install-dot-files.sh ${target}
+		fi
 	fi
 	$REAL_SSH -Y "$@"
 }

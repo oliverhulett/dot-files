@@ -1,6 +1,7 @@
 #!/bin/bash
 
-if [ "$1" == "-c" -o "$1" == "--clean" ]; then
+## `git updat e-c` is a common typo when fingers outpace brains.  Git will correctly guess that you meant `git update` but not that you meant `git update -c`.
+if [ "$1" == "-c" -o "$1" == "--clean" -o "$1" == "e-c" ]; then
 	if [ -f ./pins.json ]; then
 		sed -nre 's/^[ \t]+"(.+)": \{/\1/p' ./pins.json | tee >(xargs rm -rf)
 	fi
