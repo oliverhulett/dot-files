@@ -13,7 +13,7 @@ function cleanempty()
 
 if [ -x ./build.py ]; then
 	echo "Cleaning build."
-	./build.py -c
+	./build.py -t all -c
 fi
 
 git update --clean
