@@ -45,6 +45,22 @@ export HISTIGNORE="[   ]*:&:bg:fg:sh:exit"
 unset HISTFILESIZE
 export HISTSIZE=10000
 
+function set_local_paths()
+{
+	# Set PATHs so they include user's private directories if they exist
+	if [ -d "${HOME}/bin" ] ; then
+		PATH="$HOME/bin:$(echo $PATH | sed -re 's!(^|:)'"$HOME"'/bin/?(:|$)!\1!g')"
+	fi
+	# set PATH so it includes user's private bin if it exists
+	if [ -d "$HOME/sbin" ]; then
+		PATH="$HOME/sbin:$(echo $PATH | sed -re 's!(^|:)'"$HOME"'/sbin/?(:|$)!\1!g')"
+	fi
+	# set PATH so it includes sbin if it exists
+	PATH="$(echo $PATH | sed -re 's!(^|:)/usr/local/sbin/?(:|$)!\1!g' | sed -re 's!(^|:)/usr/sbin/?(:|$)!\1!g' | sed -re 's!(^|:)/sbin/?(:|$)!\1!g'):/usr/local/sbin:/usr/sbin:/sbin"
+}
+
+set_local_paths
+
 # Test for an interactive shell.  There is no need to set anything
 # past this point for scp and rcp, and it's important to refrain from
 # outputting anything in those cases.
@@ -122,17 +138,7 @@ elif [ -r "$HOME/.bash_aliases" ]; then
 	source "$HOME/.bash_aliases"
 fi
 
-# Set PATHs so they include user's private directories if they exist
-if [ -d "${HOME}/bin" ] ; then
-	PATH="$HOME/bin:$(echo $PATH | sed -re 's!(^|:)'"$HOME"'/bin/?(:|$)!\1!g')"
-fi
-# set PATH so it includes user's private bin if it exists
-if [ -d "$HOME/sbin" ]; then
-	PATH="$HOME/sbin:$(echo $PATH | sed -re 's!(^|:)'"$HOME"'/sbin/?(:|$)!\1!g')"
-fi
-# set PATH so it includes sbin if it exists
-PATH="$(echo $PATH | sed -re 's!(^|:)/usr/local/sbin/?(:|$)!\1!g' | sed -re 's!(^|:)/usr/sbin/?(:|$)!\1!g' | sed -re 's!(^|:)/sbin/?(:|$)!\1!g'):/usr/local/sbin:/usr/sbin:/sbin
-"
+set_local_paths
 
 # Two stage command to remember $OLDPWD.
 OLDPWD_FILE="$HOME/.oldpwd"
