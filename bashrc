@@ -57,6 +57,12 @@ function set_local_paths()
 	fi
 	# set PATH so it includes sbin if it exists
 	PATH="$(echo $PATH | sed -re 's!(^|:)/usr/local/sbin/?(:|$)!\1!g' | sed -re 's!(^|:)/usr/sbin/?(:|$)!\1!g' | sed -re 's!(^|:)/sbin/?(:|$)!\1!g'):/usr/local/sbin:/usr/sbin:/sbin"
+
+	# Do any profile setup
+	shopt -s nullglob
+	for p in ${HOME}/.bash_aliases/profile.d-*.sh; do
+		source "$p"
+	done
 }
 
 set_local_paths
