@@ -4,6 +4,9 @@ CURR_BRANCH="$(git branch --no-color | sed -nre 's/^\* //p')"
 CURR_DIR="$(basename "$(pwd)")"
 NEW_BRANCH="$1"
 NEW_DIR="$(echo ${NEW_BRANCH} | cut -d_ -f1)"
+if [ $# -eq 2 ]; then
+	NEW_DIR="$2"
+fi
 ## MASTER_DIR should be a sibling of each branch's directory, and called master.
 MASTER_DIR="$(dirname "$(pwd)")/master"
 if [ ! -d "$MASTER_DIR" ]; then

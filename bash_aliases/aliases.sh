@@ -63,11 +63,14 @@ else
 	GREP_ARGS="--exclude='.svn' --exclude='.git' --color=always"
 	GREP_ARGS_NC="--exclude='.svn' --exclude='.git' --color=never"
 fi
-alias ngrep="$REAL_GREP $GREP_ARGS_NC"
 alias grep="$REAL_GREP ${GREP_ARGS} -n"
+alias ngrep="$REAL_GREP ${GREP_ARGS_NC}"
 alias pgrep="$REAL_GREP ${GREP_ARGS} -nP"
+alias npgrep="$REAL_GREP ${GREP_ARGS_NC} -nP"
 alias egrep="$REAL_GREP ${GREP_ARGS} -nE"
+alias negrep="$REAL_GREP ${GREP_ARGS_NC} -nE"
 alias fgrep="$REAL_GREP ${GREP_ARGS} -nF"
+alias nfgrep="$REAL_GREP ${GREP_ARGS_NC} -nF"
 
 alias rsync-a='rsync -zvpPAXrogthlm'
 alias sursync-a='sudo rsync -zvpPAXrogthlm'
