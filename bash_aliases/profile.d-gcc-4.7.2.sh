@@ -12,6 +12,7 @@ for b in $GCC_PATH/*47; do
 	n=${n%47}
 	ln -s "$b" ./$n >/dev/null 2>/dev/null
 done
+unset b
 popd >/dev/null 2>/dev/null
 
 # We want a slightly more subtle equivalent of PATH=$CCACHE_PATH:$GCC_PATH:$PATH

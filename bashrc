@@ -63,6 +63,7 @@ function set_local_paths()
 	for p in ${HOME}/.bash_aliases/profile.d-*.sh; do
 		source "$p"
 	done
+	unset p
 }
 
 set_local_paths
@@ -130,6 +131,7 @@ REAL_LS=/bin/ls
 for exe in ls cat which; do
 	get_real_exe $exe >/dev/null
 done
+unset exe
 export REAL_CAT REAL_WHICH REAL_LS
 
 # We can clear some variables here that will be set/updated by the bash_aliases includes and used later.
@@ -140,6 +142,7 @@ if [ -d "$HOME/.bash_aliases" ]; then
 	for f in $HOME/.bash_aliases/*; do
 		source "$f"
 	done
+	unset f
 elif [ -r "$HOME/.bash_aliases" ]; then
 	source "$HOME/.bash_aliases"
 fi
