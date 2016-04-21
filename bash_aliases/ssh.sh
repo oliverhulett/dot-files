@@ -24,6 +24,7 @@ function ssh()
 		echo "Checking environment set-up on ${target}"
 		if ! $REAL_SSH ${user}@${target} -o ConnectTimeout=2 -o PasswordAuthentication=no test -d etc/dot-files; then
 			install-dot-files.sh ${target}
+			$REAL_SSH ${target} 'cd .bash_aliases && ln -s ../etc/dot-files/bash_aliases/* ./'
 		fi
 	fi
 	$REAL_SSH -Y "$@"
