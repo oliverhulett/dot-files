@@ -1,3 +1,17 @@
+## Validate JSON
+function jsoncheck()
+{
+	for f in "$@"; do
+		echo -n "Validating '$f': "
+		python -m json.tool "$f" >/dev/null
+		if [ 0 -eq $? ]; then
+			echo "Good"
+		else
+			echo "Failed"
+		fi
+	done
+}
+
 ## Pretty print JSON
 function jsonpretty()
 {
