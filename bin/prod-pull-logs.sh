@@ -94,7 +94,7 @@ for log in "$@"; do
 		else
 			echo "Copying '${HOST}:${log}' to '$out' using cmd: ${BZCMD[@]}"
 		fi
-		( trap "kill 0" EXIT; "${ssh_cmd[@]}" "$(echo export GREP="${GREP}" '&&' "${BZCMD[@]}" "$log")" >>"$out"; echo "Finished copying '${HOST}:${log}' to '$out'" ) &
+		( trap "kill 0" EXIT; "${ssh_cmd[@]}" "$(echo export GREP="${GREP}" '&&' "${BZCMD[@]}" "$log")" >>"$out"; trap - EXIT; echo "Finished copying '${HOST}:${log}' to '$out'" ) &
 		proclst="${proclst} $!"
 		cnt=$((cnt + 1))
 	else
