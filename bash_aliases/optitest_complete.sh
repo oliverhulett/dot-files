@@ -4,6 +4,9 @@ expand_optitest_job ()
 	unalias grep 2>/dev/null >/dev/null
 	cmd="${COMP_WORDS[@]:0:$COMP_CWORD}"
 	last="${COMP_WORDS[$(($COMP_CWORD - 1))]}"
+	if [ "${last}" == "--" ]; then
+		cmd="${COMP_WORDS[@]:0:$COMP_CWORD - 1}"
+	fi
 	prefix="${COMP_WORDS[$COMP_CWORD]}"
 	if [ "${last}" == "--junitdir" -o "${last}" == "--config" ]; then
 		return	## Fall back to default

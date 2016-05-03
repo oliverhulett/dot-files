@@ -1,8 +1,12 @@
 #!/bin/bash
 
 LOG_ARCHIVE_DIR="/media/log-archive/"
-if [ ! -d "${LOG_ARCHIVE_DIR}" -o -z "$(/bin/ls "${LOG_ARCHIVE_DIR}")" ]; then
-	LOG_ARCHIVE_DIR="central-archive:/u01/archive_sync/"
+if [ ! -d "${LOG_ARCHIVE_DIR}" ] || [ -z "$(/bin/ls "${LOG_ARCHIVE_DIR}")" ]; then
+	## In case we're on central-archive...
+	LOG_ARCHIVE_DIR="/u01/archive_sync/"
+	if [ ! -d "${LOG_ARCHIVE_DIR}" ] || [ -z "$(/bin/ls "${LOG_ARCHIVE_DIR}")" ]; then
+		LOG_ARCHIVE_DIR="central-archive:/u01/archive_sync/"
+	fi
 fi
 
 function usage()
@@ -11,17 +15,12 @@ function usage()
 	echo -e "\tARCHIVE_DIR: The directory to search for log files.  Can be a local directory or a host:/path/ pattern."
 	echo -e "\tDATE_PATTERN: Narrow the date range searched with this pattern."
 	echo -e "\t            : Dates are specified as YYYYmmdd.  You can use any valid glob pattern."
-	echo -e "\tAPP_PATTERN: Look for applications who's name match this pattern."
-	echo -e "\t           : Application names tend to be underscore seperated sections of alphabet characters, ending with an underscore and (usually 3) numbers."
+	echo -e "\tAPP_PATTERN: Look for applications who's name matches this pattern."
+	echo -e "\t           : Application names tend to be underscore separated sections of alphabet characters, ending with an underscore and (usually 3) numbers."
 	echo
 	echo -e "The type of each argument (DATE_PATTERN or APP_PATTERN) will be inferred if possible, but you can override the inference logic with the -d or -a flags."
 	echo -e "By default, log files are looked for in: '${LOG_ARCHIVE_DIR}'"
 }
-
-if [ "$1" == "-?" -o "$1" == "-h" -o "$1" == "--help" ]; then
-	usage
-	exit 1
-fi
 
 function is_ssh()
 {
@@ -29,7 +28,22 @@ function is_ssh()
 }
 
 cnt=0
+explicit_date_or_app="n"
 for arg in "$@"; do
+	if [ "$explicit_date_or_app" == "y" ]; then
+		explicit_date_or_app="n"
+		cnt=$((cnt + 1))
+		continue
+	fi
+	if [ "$arg" == "-d" -o "$arg" == "-a" ]; then
+		explicit_date_or_app="y"
+		cnt=$((cnt + 1))
+		continue
+	fi
+	if [ "$arg" == "-?" -o "$arg" == "-h" -o "$arg" == "--help" ]; then
+		usage
+		exit 0
+	fi
 	if [ -d "$arg" ] || is_ssh "$arg"; then
 		LOG_ARCHIVE_DIR="$arg"
 		set -- "${@:1:$cnt}" "${@:$cnt + 2}"
@@ -66,10 +80,10 @@ while [ $# -gt 0 ]; do
 		arg="$1"
 		shift
 	else
-		if echo $arg | grep -qwE '[a-zA-Z_]+[0-9]*' 2>/dev/null; then
-			type="app"
-		else
+		if echo $arg | grep -qwE '^[^a-zA-Z_]+$' 2>/dev/null; then
 			type="date"
+		else
+			type="app"
 		fi
 	fi
 
