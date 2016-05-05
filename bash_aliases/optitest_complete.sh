@@ -15,7 +15,7 @@ expand_optitest_job ()
 	elif [ "${prefix:0:1}" == "-" ]; then
 		COMPREPLY=($(compgen -W "-h --help --junit --junitdir -l --list -v --verbose -c --config -j --jobs --version" -- "$prefix"))
 	else
-		tests="$($cmd --list 2>/dev/null | grep -v "Will run" | sort)"
+		tests="$($cmd --list 2>/dev/null | sed -nre '/^Will run .+ tests.$/,$p' | sed '1d' | sort)"
 		COMPREPLY=($(compgen -W "$tests" -- "$prefix"))
 		if [ ${#COMPREPLY[@]} -eq 0 ]; then
 			COMPREPLY=($(compgen -W "$(echo "$tests" | grep "$prefix")"))
