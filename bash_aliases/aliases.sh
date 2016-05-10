@@ -3,8 +3,6 @@
 get_real_exe ls >/dev/null
 get_real_exe grep >/dev/null
 
-alias sudo='sudo -E'
-
 alias lssc='lss --color=none'
 alias lsc='lss --color=none'
 alias lslc='lsl --color=none'

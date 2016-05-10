@@ -49,7 +49,7 @@ function python_setup()
 
 	pip install --upgrade pip setuptools
 	pip install protobuf==2.5.0
-	pip install twisted
+	pip install "Twisted<15.4.0"
 	pip install sqlalchemy
 	pip install argparse
 	sudo -n yum install unixODBC-devel
