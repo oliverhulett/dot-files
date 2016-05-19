@@ -63,12 +63,6 @@ else
 fi
 alias grep="$REAL_GREP ${GREP_ARGS} -n"
 alias ngrep="$REAL_GREP ${GREP_ARGS_NC}"
-alias pgrep="$REAL_GREP ${GREP_ARGS} -nP"
-alias npgrep="$REAL_GREP ${GREP_ARGS_NC} -P"
-alias egrep="$REAL_GREP ${GREP_ARGS} -nE"
-alias negrep="$REAL_GREP ${GREP_ARGS_NC} -E"
-alias fgrep="$REAL_GREP ${GREP_ARGS} -nF"
-alias nfgrep="$REAL_GREP ${GREP_ARGS_NC} -F"
 
 alias rsync-a='rsync -zvpPAXrogthlm'
 alias sursync-a='sudo rsync -zvpPAXrogthlm'
