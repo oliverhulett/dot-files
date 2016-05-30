@@ -1,0 +1,34 @@
+#HOME=/home/olihul
+MAILTO=olihul@optiver.com.au
+
+## Disc tweaks can cause a lot of dirty pages to accumulate in memory, force an hourly sync to keep on top of it.
+## Only force sync if CPU % Idle time is more than 75% over the last 10 seconds.
+@hourly [ $(mpstat 1 10 | tail -n1 | awk '{print $10}') -gt 75 ] && sync >/dev/null 2>/dev/null
+
+## This section, for backups, should run @daily, but the local backups need to happen before the off box backups so that
+## we're saving the latest stuff off box, hence the 5 minute delay for the off box lines at the end.
+## Crontabs live in /var/spool/, so take a backup of this crontab on a separate partition.
+00 0 * * *  crontab -l >${HOME}/etc/crontab
+## Save list of installed software
+00 0 * * *  rpm -qa >${HOME}/etc/installed-software.txt
+## Commit dot-files to git for extra backups
+00 0 * * *  cd ${HOME}/etc/dot-files && git commit --allow-empty -aqm "Autocommit: $(date -R)" && git push -q >/dev/null
+## Backup a small number of key system-wide configuration files.
+00 0 * * *  rsync -PAXrogthlm --files-from=${HOME}/etc/backups.txt / ${HOME}/etc/
+## Push local configuration and backups to another box.
+05 0 * * *  rsync -PAXrogthlm ${HOME}/etc/ /media/sf_H_DRIVE/etc/
+05 0 * * *  rsync -PAXrogthlm ${HOME}/opt/ /media/sf_H_DRIVE/opt/
+## Install dot-files to development machines
+05 0 * * *  PATH="${HOME}/bin:${PATH}" ${HOME}/bin/install-dot-files.sh
+
+## Keep /usr/local/bin up-to-date
+@daily  rsync -zPAXrogthlm --delete opsynxsr0335:/usr/local/bin/ /usr/local/bin/
+## Keep /opt/optiver up-to-date
+@daily  rsync -zPAXrogthlm --delete opsynxsr0335:/opt/optiver/ /opt/optiver/
+## Keep ~/repo up-to-date
+@daily find ${HOME}/repo/ -name .git -prune | while read; do ( cd "$(dirname "$REPLY")" && git pullb -q || echo -e "\n${REPLY} Update Failed\n\n" ); done
+
+## Clean builds every now and then
+@weekly rm -rf ${HOME}/tmp/builds/* >/dev/null 2>/dev/null
+@weekly find ${HOME}/repo/ -name .git -prune | while read; do ( cd "$(dirname "$REPLY")" && [ -e build.py ] && ./build.py -c || echo -e "\n${REPLY} Clean Failed\n\n" ); done
+@weekly find ${HOME}/repo/ -name .prof -exec rm -rf "{}" \;
