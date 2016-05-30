@@ -1,0 +1,11 @@
+/home/olihul/.kde/share
+/etc/distcc/hosts
+/etc/fstab
+/etc/hosts
+/etc/localtime
+/etc/postgres
+/etc/rc.d/rc.local
+/etc/samba/smb.conf
+/etc/sysconfig/clock
+/etc/sysconfig/network
+/etc/sysconfig/pgsql
