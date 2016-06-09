@@ -25,6 +25,8 @@
 	new = "!f() { ~/.git_wrappers/new.sh \"$@\"; }; cd \"$GIT_PREFIX\" && f"
 	update = "!f() { ~/.git_wrappers/update.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 	ignore = "!f() { for i in \"$@\"; do echo \"$i\" >>.gitignore; done; echo \"$(sort -u .gitignore)\" >.gitignore; }; f"
+	pin = "!f() { ~/.git_wrappers/pin_externals.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
+	upgrade = "!f() { ~/.git_wrappers/update_externals.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 
 	unstage = reset HEAD
 	undo-commit = reset HEAD^
