@@ -1,32 +1,32 @@
-#HOME=/home/olihul
+HOME=/home/olihul
 MAILTO=olihul@optiver.com.au
 
 ## Disc tweaks can cause a lot of dirty pages to accumulate in memory, force an hourly sync to keep on top of it.
 ## Only force sync if CPU % Idle time is more than 75% over the last 10 seconds.
-@hourly [ $(mpstat 1 10 | tail -n1 | awk '{print $10}') -gt 75 ] && sync >/dev/null 2>/dev/null
+@hourly [ $(mpstat 1 10 | tail -n1 | awk '{print int($10)}') -gt 75 ] && sync >/dev/null 2>/dev/null
 
 ## This section, for backups, should run @daily, but the local backups need to happen before the off box backups so that
 ## we're saving the latest stuff off box, hence the 5 minute delay for the off box lines at the end.
 ## Crontabs live in /var/spool/, so take a backup of this crontab on a separate partition.
-00 0 * * *  crontab -l >${HOME}/etc/crontab
+00 0 * * *  crontab -l >${HOME}/etc/dot-files/crontab
 ## Save list of installed software
-00 0 * * *  rpm -qa >${HOME}/etc/installed-software.txt
-## Commit dot-files to git for extra backups
-00 0 * * *  cd ${HOME}/etc/dot-files && git commit --allow-empty -aqm "Autocommit: $(date -R)" && git push -q >/dev/null
+00 0 * * *  rpm -qa >${HOME}/etc/dot-files/installed-software.txt
 ## Backup a small number of key system-wide configuration files.
-00 0 * * *  rsync -PAXrogthlm --files-from=${HOME}/etc/backups.txt / ${HOME}/etc/
+00 0 * * *  rsync -PAXrogthlm --files-from=${HOME}/etc/dot-files/backups.txt / ${HOME}/etc/
+## Commit dot-files to git for extra backups
+05 0 * * *  cd ${HOME}/etc/dot-files/dot-files && git commit --allow-empty -aqm "Autocommit: $(date -R)" && git push -q >/dev/null
 ## Push local configuration and backups to another box.
-05 0 * * *  rsync -PAXrogthlm ${HOME}/etc/ /media/sf_H_DRIVE/etc/
-05 0 * * *  rsync -PAXrogthlm ${HOME}/opt/ /media/sf_H_DRIVE/opt/
+10 0 * * *  rsync -PAXrogthlm ${HOME}/etc/ /media/sf_H_DRIVE/etc/
+10 0 * * *  rsync -PAXrogthlm ${HOME}/opt/ /media/sf_H_DRIVE/opt/
 ## Install dot-files to development machines
-05 0 * * *  PATH="${HOME}/bin:${PATH}" ${HOME}/bin/install-dot-files.sh
+10 0 * * *  PATH="${HOME}/bin:${PATH}" ${HOME}/bin/install-dot-files.sh
 
 ## Keep /usr/local/bin up-to-date
 @daily  rsync -zPAXrogthlm --delete opsynxsr0335:/usr/local/bin/ /usr/local/bin/
 ## Keep /opt/optiver up-to-date
 @daily  rsync -zPAXrogthlm --delete opsynxsr0335:/opt/optiver/ /opt/optiver/
 ## Keep ~/repo up-to-date
-@daily find ${HOME}/repo/ -name .git -prune | while read; do ( cd "$(dirname "$REPLY")" && git pullb -q || echo -e "\n${REPLY} Update Failed\n\n" ); done
+@daily find ${HOME}/repo/ -name .git -prune | while read; do ( cd "$(dirname "$REPLY")" && git pullb -q && git update || echo -e "\n${REPLY} Update Failed\n\n" ); done
 
 ## Clean builds every now and then
 @weekly rm -rf ${HOME}/tmp/builds/* >/dev/null 2>/dev/null

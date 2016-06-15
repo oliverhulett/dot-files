@@ -184,9 +184,9 @@ export PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
 if [ "$TERM" == "cygwin" ]; then
 	PS1='\[\e[31m\]\u@\h \[\e[33m\]\w\[\e[0m\]'"${PROMPT_FOO}"'\n\$ '
 elif [ -z "${HOSTNAME/op??nxsr[0-9][0-9][0-9][0-9]*}" ]; then
-	PS1='\[\e[31m\]\u@\h \[\e[33m\]\w\[\e[0m\]'"${PROMPT_FOO}"' \$ '
+	PS1='\[\e[31m\]\u@\h \[\e[33m\]\w\[\e[0m\] $(es=$?; if [ $es -eq 0 ]; then echo :\); else echo :\(; fi)'"${PROMPT_FOO}"' \$ '
 else
-	PS1='\[\e[32m\]\u@\h \[\e[33m\]\w\[\e[0m\]'"${PROMPT_FOO}"' \$ '
+	PS1='\[\e[32m\]\u@\h \[\e[33m\]\w\[\e[0m\] $(es=$?; if [ $es -eq 0 ]; then echo :\); else echo :\(; fi)'"${PROMPT_FOO}"' \$ '
 fi
 export PS1
 
