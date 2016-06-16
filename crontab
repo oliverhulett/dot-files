@@ -14,7 +14,7 @@ MAILTO=olihul@optiver.com.au
 ## Backup a small number of key system-wide configuration files.
 00 0 * * *  rsync -PAXrogthlm --files-from=${HOME}/etc/dot-files/backups.txt / ${HOME}/etc/
 ## Commit dot-files to git for extra backups
-05 0 * * *  cd ${HOME}/etc/dot-files/dot-files && git commit --allow-empty -aqm "Autocommit: $(date -R)" && git push -q >/dev/null
+05 0 * * *  cd ${HOME}/etc/dot-files && git commit --allow-empty -aqm "Autocommit: $(date -R)" && git push -q >/dev/null
 ## Push local configuration and backups to another box.
 10 0 * * *  rsync -PAXrogthlm ${HOME}/etc/ /media/sf_H_DRIVE/etc/
 10 0 * * *  rsync -PAXrogthlm ${HOME}/opt/ /media/sf_H_DRIVE/opt/
@@ -30,5 +30,5 @@ MAILTO=olihul@optiver.com.au
 
 ## Clean builds every now and then
 @weekly rm -rf ${HOME}/tmp/builds/* >/dev/null 2>/dev/null
-@weekly find ${HOME}/repo/ -name .git -prune | while read; do ( cd "$(dirname "$REPLY")" && [ -e build.py ] && ./build.py -c || echo -e "\n${REPLY} Clean Failed\n\n" ); done
+@weekly find ${HOME}/repo/ -name .git -prune | while read; do ( cd "$(dirname "$REPLY")" && [ -e build.py ] && ( ./build.py -c -t all || echo -e "\n${REPLY} Clean Failed\n\n" ) ); done
 @weekly find ${HOME}/repo/ -name .prof -exec rm -rf "{}" \;
