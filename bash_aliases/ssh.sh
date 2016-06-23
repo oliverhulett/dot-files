@@ -1,4 +1,5 @@
 ## Wrap SSH to install ID keys.
+source "${HOME}/etc/dot-files/bash_common.sh"
 unalias ssh 2>/dev/null
 function ssh()
 {

@@ -1,4 +1,5 @@
 # Aliases
+source "${HOME}/etc/dot-files/bash_common.sh"
 
 get_real_exe ls >/dev/null
 get_real_exe grep >/dev/null
@@ -136,7 +137,7 @@ function which()
 			keyword)
 				;;
 			function)
-				real_grep -lr -E "(function)?[ \\t]+${arg}[ \\t]*\\(\\)" ~/.bashrc ~/.bash_profile ~/.bash_aliases
+				real_grep -lr -E "(function)?[ \\t]+${arg}[ \\t]*(\\(\\))?" ~/.bashrc ~/.bash_profile ~/.bash_aliases
 				;;
 			builtin)
 				;;

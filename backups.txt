@@ -2,6 +2,7 @@
 /etc/distcc/hosts
 /etc/fstab
 /etc/hosts
+/etc/hostname
 /etc/localtime
 /etc/postgres
 /etc/rc.d/rc.local

@@ -5,20 +5,24 @@
 # that can't tolerate any output.
 
 # Guard against re-entrance!
-if [ "${BASHRC_GUARD}" != "__ENTERED_BASHRC__$(cat ${HOME}/.bashrc ${HOME}/.bash_aliases/* 2>/dev/null | md5sum)" ]; then
-	BASHRC_GUARD="__ENTERED_BASHRC__$(cat ${HOME}/.bashrc ${HOME}/.bash_aliases/* 2>/dev/null | md5sum)"
+if [ "${BASHRC_GUARD}" != "__ENTERED_BASHRC__$(cat ${HOME}/.bashrc ${HOME}/etc/dot-files/bash_common.sh ${HOME}/.bash_aliases/* 2>/dev/null | md5sum)" ]; then
+	BASHRC_GUARD="__ENTERED_BASHRC__$(cat ${HOME}/.bashrc ${HOME}/etc/dot-files/bash_common.sh ${HOME}/.bash_aliases/* 2>/dev/null | md5sum)"
 else
 	return
 fi
 
+if [ -e "${HOME}/etc/dot-files/bash_common.sh" ]; then
+	. "${HOME}/etc/dot-files/bash_common.sh"
+fi
+
 # source the users profile if it exists
 if [ -e "${HOME}/.profile" ] ; then
-	source "${HOME}/.profile"
+	. "${HOME}/.profile"
 fi
 
 # source the users bash_profile if it exists
 if [ -e "${HOME}/.bash_profile" ] ; then
-	source "${HOME}/.bash_profile"
+	. "${HOME}/.bash_profile"
 fi
 
 if [ -z "$REAL_WHICH" ]; then
@@ -47,21 +51,16 @@ export HISTSIZE=10000
 
 function set_local_paths()
 {
-	# Set PATHs so they include user's private directories if they exist
-	if [ -d "${HOME}/bin" ] ; then
-		PATH="$HOME/bin:$(echo $PATH | sed -re 's!(^|:)'"$HOME"'/bin/?(:|$)!\1!g')"
+	if [ -d "${HOME}/bin" ]; then
+		export PATH="$(prepend_path "${HOME}/bin")"
 	fi
-	# set PATH so it includes user's private bin if it exists
 	if [ -d "$HOME/sbin" ]; then
-		PATH="$HOME/sbin:$(echo $PATH | sed -re 's!(^|:)'"$HOME"'/sbin/?(:|$)!\1!g')"
+		export PATH="$(prepend_path "${HOME}/sbin")"
 	fi
-	# set PATH so it includes sbin if it exists
-	PATH="$(echo $PATH | sed -re 's!(^|:)/usr/local/sbin/?(:|$)!\1!g' | sed -re 's!(^|:)/usr/sbin/?(:|$)!\1!g' | sed -re 's!(^|:)/sbin/?(:|$)!\1!g'):/usr/local/sbin:/usr/sbin:/sbin"
-
-	# Do any profile setup
+	export PATH="$(append_path /usr/local/sbin /usr/sbin /sbin)"
 	shopt -s nullglob
 	for p in ${HOME}/.bash_aliases/profile.d-*.sh; do
-		source "$p"
+		. "$p"
 	done
 	unset p
 }
@@ -83,9 +82,9 @@ fi
 # colors for ls, etc.  Prefer "$HOME/.dir_colors" #64489
 if type -f dircolors >/dev/null 2>&1; then
 	if [ -f "$HOME/.dir_colors" ]; then
-		eval `dircolors -b "$HOME/.dir_colors"`
+		eval `dircolors -b "$HOME/.dir_colors" 2>/dev/null` 2>/dev/null
 	elif [ -f "/etc/DIR_COLORS" ]; then
-		eval `dircolors -b /etc/DIR_COLORS`
+		eval `dircolors -b /etc/DIR_COLORS 2>/dev/null` 2>/dev/null
 	fi
 fi
 
@@ -111,20 +110,6 @@ shopt -s cdspell
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
-##	Get real (pathed) versions of commands we will later replace with aliases or functions.
-##	TODO:  Handle executable paths with spaces and executable names with spaces.
-function get_real_exe()
-{
-	exe="$1"
-	for f in $(type -fa $exe 2>/dev/null | sed -re 's/[^ ]+ is (.+)$/\1/'); do
-		if [ -x "$f" ]; then
-			eval export REAL_$(echo $exe | tr '[a-z]' '[A-Z]')="$f"
-			alias real_${exe}="$f"
-			echo "$f"
-			break
-		fi
-	done
-}
 REAL_CAT=/bin/cat
 REAL_WHICH=/bin/which
 REAL_LS=/bin/ls
@@ -140,11 +125,11 @@ export PROMPT_COMMAND=
 
 if [ -d "$HOME/.bash_aliases" ]; then
 	for f in $HOME/.bash_aliases/*; do
-		source "$f"
+		. "$f"
 	done
 	unset f
 elif [ -r "$HOME/.bash_aliases" ]; then
-	source "$HOME/.bash_aliases"
+	. "$HOME/.bash_aliases"
 fi
 
 set_local_paths
@@ -161,7 +146,7 @@ fi
 # uncomment the following to activate bash-completion:
 COMP_CONFIGURE_HINTS=1
 COMP_TAR_INTERNAL_PATHS=1
-[ -f /etc/profile.d/bash-completion ] && source /etc/profile.d/bash-completion
+[ -f /etc/profile.d/bash-completion ] && . /etc/profile.d/bash-completion
 
 # enable programmable completion features (you don't need to enable this if it's already enabled
 # in /etc/bash.bashrc and /etc/profile sources /etc/bash.bashrc
@@ -182,7 +167,7 @@ esac
 export PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
 
 if [ "$TERM" == "cygwin" ]; then
-	PS1='\[\e[31m\]\u@\h \[\e[33m\]\w\[\e[0m\]'"${PROMPT_FOO}"'\n\$ '
+	PS1='\[\e[31m\]\u@\h \[\e[33m\]\w\[\e[0m\] $(es=$?; if [ $es -eq 0 ]; then echo :\); else echo :\(; fi)'"${PROMPT_FOO}"'\n\$ '
 elif [ -z "${HOSTNAME/op??nxsr[0-9][0-9][0-9][0-9]*}" ]; then
 	PS1='\[\e[31m\]\u@\h \[\e[33m\]\w\[\e[0m\] $(es=$?; if [ $es -eq 0 ]; then echo :\); else echo :\(; fi)'"${PROMPT_FOO}"' \$ '
 else

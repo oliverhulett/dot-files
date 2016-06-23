@@ -1,4 +1,5 @@
 ## Set up python virtual env and supporting jazz
+source "${HOME}/etc/dot-files/bash_common.sh"
 
 if [ ! -f "$HOME/.pip/pip.conf" ]; then
 	mkdir "$HOME/.pip" 2>/dev/null >/dev/null
@@ -47,7 +48,7 @@ function python_setup()
 
 	sudo -v
 
-	pip install --upgrade pip setuptools
+	pip install --upgrade pip wheel setuptools
 	pip install protobuf==2.5.0
 	pip install "Twisted<15.4.0"
 	pip install sqlalchemy

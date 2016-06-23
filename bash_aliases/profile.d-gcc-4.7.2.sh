@@ -1,5 +1,6 @@
 # Use GCC 4.7.2 from /opt/optiver/gcc and try to manipulate the PATH variable so that it is the
 # default but also so that ccache also works if it is available.
+source "/home/olihul/etc/dot-files/bash_common.sh"
 
 CCACHE_PATH=/usr/lib64/ccache
 GCC_PATH=/opt/optiver/gcc/4.7.2/bin
@@ -16,9 +17,8 @@ unset b
 popd >/dev/null 2>/dev/null
 
 # We want a slightly more subtle equivalent of PATH=$CCACHE_PATH:$GCC_PATH:$PATH
-PATH="$CCACHE_PATH:$GCC_LINX:$GCC_PATH:$(echo "$PATH" | sed -re "s!(^|:)$CCACHE_PATH/?(:|$)!\1!;s!(^|:)$GCC_LINX/?(:|$)!\1!;s!(^|:)$GCC_PATH/?(:|$)!\1!")"
+# prepend_path() will prepend in reverse order
+export PATH="$(prepend_path "$GCC_PATH" "$GCC_LINX" "$CCACHE_PATH")"
 LD_LIBRARY_PATH="$GCC_LD_PATH:$(echo "$LD_LIBRARY_PATH" | sed -re "s!(^|:)$GCC_LD_PATH/?(:|$)!\1!")"
-
-export PATH
 export LD_LIBRARY_PATH 
 

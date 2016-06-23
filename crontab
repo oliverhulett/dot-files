@@ -29,6 +29,5 @@ MAILTO=olihul@optiver.com.au
 @daily find ${HOME}/repo/ -name .git -prune | while read; do ( cd "$(dirname "$REPLY")" && git pullb -q && git update || echo -e "\n${REPLY} Update Failed\n\n" ); done
 
 ## Clean builds every now and then
-@weekly rm -rf ${HOME}/tmp/builds/* >/dev/null 2>/dev/null
 @weekly find ${HOME}/repo/ -name .git -prune | while read; do ( cd "$(dirname "$REPLY")" && [ -e build.py ] && ( ./build.py -c -t all || echo -e "\n${REPLY} Clean Failed\n\n" ) ); done
 @weekly find ${HOME}/repo/ -name .prof -exec rm -rf "{}" \;

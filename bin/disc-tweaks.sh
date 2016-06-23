@@ -15,10 +15,8 @@ function proc_set()
 	if [ $# -eq 2 ]; then
 		echo "Setting $1: $2  (was $(cat "$1"))"
 	fi
-	sudo bash -xc "echo $2 >'$1'"
+	bash -xc "echo $2 >'$1'"
 }
-
-sudo -v
 
 ## Factory settings
 # proc_set /proc/sys/vm/dirty_writeback_centisecs 500
