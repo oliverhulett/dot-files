@@ -31,3 +31,6 @@ MAILTO=olihul@optiver.com.au
 ## Clean builds every now and then
 @weekly find ${HOME}/repo/ -name .git -prune | while read; do ( cd "$(dirname "$REPLY")" && [ -e build.py ] && ( ./build.py -c -t all || echo -e "\n${REPLY} Clean Failed\n\n" ) ); done
 @weekly find ${HOME}/repo/ -name .prof -exec rm -rf "{}" \;
+## Clean /tmp every now and then
+@weekly find /tmp /var/tmp -xdev -not -exec /sbin/fuser -s "{}" \; -delete 2>/dev/null
+

@@ -118,6 +118,16 @@ function cat
 	done
 }
 
+unalias find_alias_or_fn 2>/dev/null
+function find_alias_or_fn()
+{
+	(
+		real_grep -lR -E "\balias[[:space:]]+${arg}=" ~/.bashrc ~/.bash_profile ~/.bash_aliases
+		real_grep -lR -E "\bfunction[[:space:]]+${arg}[[:space:]]*(\\(\\))?" ~/.bashrc ~/.bash_profile ~/.bash_aliases
+		real_grep -lR -E "(\bfunction)?[[:space:]]+${arg}[[:space:]]*\\(\\)" ~/.bashrc ~/.bash_profile ~/.bash_aliases
+	) | sort -u
+}
+
 unalias which 2>/dev/null
 function which()
 {
@@ -131,13 +141,13 @@ function which()
 		case `type -t "$arg" 2>/dev/null` in
 			alias)
 				alias "$arg"
-				real_grep -lr -E "alias[ \\t]+${arg}=" ~/.bashrc ~/.bash_profile ~/.bash_aliases
+				find_alias_or_fn "$arg"
 				cmd="$cmd $(alias "$arg" | sed -re "s/^[^=]+='(.+)'$/\1/;s/sudo //g;s/ +-[^ ]+//g")"
 				;;
 			keyword)
 				;;
 			function)
-				real_grep -lr -E "(function)?[ \\t]+${arg}[ \\t]*(\\(\\))?" ~/.bashrc ~/.bash_profile ~/.bash_aliases
+				find_alias_or_fn "$arg"
 				;;
 			builtin)
 				;;

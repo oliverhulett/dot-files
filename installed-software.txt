@@ -584,6 +584,7 @@ cscope-15.8-7.el7.x86_64
 kdenetwork-krfb-libs-4.10.5-8.el7_0.x86_64
 freetype-devel-2.4.11-11.el7.x86_64
 kscreen-1.0.1-9.el7.x86_64
+cifs-utils-6.2-7.el7.x86_64
 kdf-4.10.5-3.el7.x86_64
 gdm-3.14.2-12.el7.x86_64
 ksaneplugin-4.10.5-3.el7.x86_64

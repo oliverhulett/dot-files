@@ -1,8 +1,9 @@
-/home/olihul/.kde/share
 /etc/distcc/hosts
 /etc/fstab
-/etc/hosts
 /etc/hostname
+/etc/hosts
+/etc/ld.so.conf.d/interpol.conf
+/etc/ld.so.conf.d/xercesc.2.8.0.conf
 /etc/localtime
 /etc/postgres
 /etc/rc.d/rc.local
@@ -10,3 +11,4 @@
 /etc/sysconfig/clock
 /etc/sysconfig/network
 /etc/sysconfig/pgsql
+/home/olihul/.kde/share
