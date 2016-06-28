@@ -6,6 +6,8 @@
 /etc/ld.so.conf.d/xercesc.2.8.0.conf
 /etc/localtime
 /etc/postgres
+/etc/profile
+/etc/profile.d
 /etc/rc.d/rc.local
 /etc/samba/smb.conf
 /etc/sysconfig/clock

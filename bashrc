@@ -173,5 +173,8 @@ elif [ -z "${HOSTNAME/op??nxsr[0-9][0-9][0-9][0-9]*}" ]; then
 else
 	PS1='\[\e[32m\]\u@\h \[\e[33m\]\w\[\e[0m\] $(es=$?; if [ $es -eq 0 ]; then echo :\); else echo :\(; fi)'"${PROMPT_FOO}"' \$ '
 fi
+if [ -f /.dockerenv ]; then
+	PS1="(docker) $PS1"
+fi
 export PS1
 

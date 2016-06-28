@@ -16,33 +16,41 @@ function get_real_exe()
 	done
 }
 
+function echo_clean_path()
+{
+	echo "$(echo $PATH | sed -re 's/^://;s/::+/:/g;s/:$//')"
+}
+
 function rm_path()
 {
 	for d in "$@"; do
 		d="$(readlink -f "$d")"
-		PATH="$(echo "${PATH}" | sed -re 's!(^|:)'"$d"'/?(:|$)!\1!g')"
+		if [ -n "$d" ]; then
+			PATH="$(echo "${PATH}" | sed -re 's!(^|:)'"$d"'/?(:|$)!\1!g')"
+		fi
 	done
-#	export PATH="$PATH"
-	echo "$PATH"
+	echo_clean_path
 }
 
 function prepend_path()
 {
 	for d in "$@"; do
 		d="$(readlink -f "$d")"
-		PATH="$d:$(echo "${PATH}" | sed -re 's!(^|:)'"$d"'/?(:|$)!\1!g')"
+		if [ -n "$d" ]; then
+			PATH="$d:$(echo "${PATH}" | sed -re 's!(^|:)'"$d"'/?(:|$)!\1!g')"
+		fi
 	done
-#	export PATH="$PATH"
-	echo "$PATH"
+	echo_clean_path
 }
 
 function append_path()
 {
 	for d in "$@"; do
 		d="$(readlink -f "$d")"
-		PATH="$(echo "${PATH}" | sed -re 's!(^|:)'"$d"'/?(:|$)!\2!g'):$d"
+		if [ -n "$d" ]; then
+			PATH="$(echo "${PATH}" | sed -re 's!(^|:)'"$d"'/?(:|$)!\2!g'):$d"
+		fi
 	done
-#	export PATH="$PATH"
-	echo "$PATH"
+	echo_clean_path
 }
 
