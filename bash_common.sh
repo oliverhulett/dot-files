@@ -16,6 +16,8 @@ function reentrance_hash()
 {
 	for i in "$@"; do
 		if [ "$(dirname "$i")" == "/dev/fd" ]; then
+			## I don't know what's going on here, but temporary files (of the form
+			## <(echo this)) tend not to work without this cat-in-a-loop.  :(
 			/bin/cat "$i" 2>/dev/null 1>&2 2>/dev/null
 		fi
 	done
@@ -28,8 +30,10 @@ function reentrance_check()
 	FILE="$(basename "$1" .sh | tr '[a-z]' '[A-Z]' | tr -cd '[_a-zA-Z0-9]')"
 	shift
 	var="_${FILE}_GUARD"
-	if [ "${REENTRANCE_GUARDS[$var]}" != "__ENTERED_${FILE}_$(reentrance_hash "$@")" ]; then
-		REENTRANCE_GUARDS[$var]="__ENTERED_${FILE}_$(reentrance_hash "$@")"
+	## Hash can only be a single 'token' otherwise the `eval` below doesn't work.
+	hash="__ENTERED_${FILE}_$(reentrance_hash "$@" | cut -d' ' -f1)"
+	if [ "${!var}" != "${hash}" ]; then
+		eval ${var}="${hash}"
 		return 1
 	else
 		if [ -n "${DEBUG_BASHRC:+x}" ]; then
@@ -42,10 +46,6 @@ function reentered()
 {
 	reentrance_check "$(basename "$(readlink -f "$(caller 0 | cut -d' ' -f3-)")")" "$@"
 }
-alias reentered='reentrance_check "$(basename "$(readlink -f "${BASH_SOURCE}")")"'
-if ! declare -p REENTRANCE_GUARDS >/dev/null 2>/dev/null; then
-	declare -xA REENTRANCE_GUARDS
-fi
 
 ##  Get real (pathed) versions of commands we will later replace with aliases or functions.
 ##  TODO:  Handle executable paths with spaces and executable names with spaces.
