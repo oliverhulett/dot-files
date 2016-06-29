@@ -7,6 +7,9 @@ function c5()
 			#!/bin/bash
 			## LESSOPEN does not work on c5 :(
 			LESSOPEN=
+			## el5-development wants a python26 virtualenv
+			export PYVENV_HOME="${HOME}/py6venv"
+			export PROMPT_PREFIX="(docker) "
 			source ~/.bashrc
 			"$@"
 		EOF

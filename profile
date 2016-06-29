@@ -8,21 +8,19 @@
 # for ssh logins, install and configure the libpam-umask package.
 #umask 022
 
-# Guard against re-entrance!
-if [ "${PROFILE_GUARD}" != "__ENTERED_PROFILE__$(md5sum ${HOME}/.profile)" ]; then
-	PROFILE_GUARD="__ENTERED_PROFILE__$(md5sum ${HOME}/.profile)"
-else
-	return
+source "${HOME}/etc/dot-files/bash_common.sh"
+if reentered "${HOME}/.profile"; then
+	return 0
 fi
 
 # if running bash
 if [ -n "$BASH_VERSION" ]; then
 	if [ -e "$HOME/.bash_profile" ]; then
 		# include .bash_profile if it exists
-		. "$HOME/.bash_profile"
+		source "$HOME/.bash_profile"
 	elif [ -e "$HOME/.bashrc" ]; then
 		# include .bashrc if it exists
-		. "$HOME/.bashrc"
+		source "$HOME/.bashrc"
 	fi
 fi
 

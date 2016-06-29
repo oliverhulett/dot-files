@@ -4,11 +4,9 @@
 # Modifying /etc/skel/.bash_profile directly will prevent
 # setup from updating it.
 
-# Guard against re-entrance!
-if [ "${BASH_PROFILE_GUARD}" != "__ENTERED_BASH_PROFILE__$(md5sum ${HOME}/.bash_profile)" ]; then
-	BASH_PROFILE_GUARD="__ENTERED_BASH_PROFILE__$(md5sum ${HOME}/.bash_profile)"
-else
-	return
+source "${HOME}/etc/dot-files/bash_common.sh"
+if reentered "${HOME}/.bash_profile"; then
+	return 0
 fi
 
 # ~/.bash_profile: executed by bash for login shells.

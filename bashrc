@@ -4,25 +4,19 @@
 # including some apparently interactive shells such as scp and rcp
 # that can't tolerate any output.
 
-# Guard against re-entrance!
-if [ "${BASHRC_GUARD}" != "__ENTERED_BASHRC__$(cat ${HOME}/.bashrc ${HOME}/etc/dot-files/bash_common.sh ${HOME}/.bash_aliases/* 2>/dev/null | md5sum)" ]; then
-	BASHRC_GUARD="__ENTERED_BASHRC__$(cat ${HOME}/.bashrc ${HOME}/etc/dot-files/bash_common.sh ${HOME}/.bash_aliases/* 2>/dev/null | md5sum)"
-else
-	return
-fi
-
-if [ -e "${HOME}/etc/dot-files/bash_common.sh" ]; then
-	. "${HOME}/etc/dot-files/bash_common.sh"
+source "${HOME}/etc/dot-files/bash_common.sh"
+if reentered "${HOME}/.bashrc" "${HOME}/.bash_aliases"/*; then
+	return 0
 fi
 
 # source the users profile if it exists
 if [ -e "${HOME}/.profile" ] ; then
-	. "${HOME}/.profile"
+	source "${HOME}/.profile"
 fi
 
 # source the users bash_profile if it exists
 if [ -e "${HOME}/.bash_profile" ] ; then
-	. "${HOME}/.bash_profile"
+	source "${HOME}/.bash_profile"
 fi
 
 if [ -z "$REAL_WHICH" ]; then
@@ -167,14 +161,11 @@ esac
 export PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
 
 if [ "$TERM" == "cygwin" ]; then
-	PS1='\[\e[31m\]\u@\h \[\e[33m\]\w\[\e[0m\] $(es=$?; if [ $es -eq 0 ]; then echo :\); else echo :\(; fi)'"${PROMPT_FOO}"'\n\$ '
+	PS1="${PROMPT_PREFIX}"'\[\e[31m\]\u@\h \[\e[33m\]\w\[\e[0m\] $(es=$?; if [ $es -eq 0 ]; then echo :\); else echo :\(; fi)'"${PROMPT_FOO}"'\n\$ '
 elif [ -z "${HOSTNAME/op??nxsr[0-9][0-9][0-9][0-9]*}" ]; then
-	PS1='\[\e[31m\]\u@\h \[\e[33m\]\w\[\e[0m\] $(es=$?; if [ $es -eq 0 ]; then echo :\); else echo :\(; fi)'"${PROMPT_FOO}"' \$ '
+	PS1="${PROMPT_PREFIX}"'\[\e[31m\]\u@\h \[\e[33m\]\w\[\e[0m\] $(es=$?; if [ $es -eq 0 ]; then echo :\); else echo :\(; fi)'"${PROMPT_FOO}"' \$ '
 else
-	PS1='\[\e[32m\]\u@\h \[\e[33m\]\w\[\e[0m\] $(es=$?; if [ $es -eq 0 ]; then echo :\); else echo :\(; fi)'"${PROMPT_FOO}"' \$ '
-fi
-if [ -f /.dockerenv ]; then
-	PS1="(docker) $PS1"
+	PS1="${PROMPT_PREFIX}"'\[\e[32m\]\u@\h \[\e[33m\]\w\[\e[0m\] $(es=$?; if [ $es -eq 0 ]; then echo :\); else echo :\(; fi)'"${PROMPT_FOO}"' \$ '
 fi
 export PS1
 
