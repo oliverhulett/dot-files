@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ## Until v2.5 git would pre-pend /usr/bin to path, which means the wrong python is found.
-source "$(dirname "$(readlink -f "$0")")/../bash_aliases/profile.d-pyvenv.sh"
+source "$(dirname "$(readlink -f "$0")")/../bash_aliases/09-profile.d-pyvenv.sh"
 if [ ! -x .git/git_utils/git_utils/pin_externals.py ]; then
 	echo "Cannot pin externals.  git_utils is not installed."
 	exit 1

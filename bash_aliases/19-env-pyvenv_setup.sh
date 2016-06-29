@@ -30,7 +30,7 @@ fi
 function pip()
 {
 	if ! echo "${HTTP_PROXY}" | grep -q "`whoami`" 2>/dev/null; then
-		source "${HOME}/.bash_aliases/http_proxy.sh" 2>/dev/null
+		source "${HOME}/.bash_aliases/19-env-proxy.sh" 2>/dev/null
 		proxy_setup
 	fi
 	if [ -z "$REAL_PIP" ]; then
@@ -38,14 +38,16 @@ function pip()
 	fi
 	## We need to use the same GCC version that was used by our system python.
 	## `prepend_path` will prepend given paths in reverse order.
-	export PATH="$(prepend_path /usr/bin /usr/lib64/ccache)"
-	"$REAL_PIP" "$@"
+	(
+		export PATH="$(prepend_path /usr/bin /usr/lib64/ccache)"
+		"$REAL_PIP" "$@"
+	)
 }
 
 function python_setup()
 {
 	if ! echo "${HTTP_PROXY}" | grep -q "`whoami`" 2>/dev/null; then
-		source "${HOME}/.bash_aliases/http_proxy.sh" 2>/dev/null
+		source "${HOME}/.bash_aliases/19-env-proxy.sh" 2>/dev/null
 		proxy_setup
 	fi
 

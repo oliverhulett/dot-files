@@ -6,9 +6,12 @@ alias central-archive='ssh central-archive'
 
 alias sshrelay='ssh sshrelay'
 
-alias instln='ln -svf --backup=numbered'
-
 alias bt='echo bt | gdb -q -x - '
 
 alias operat='/usr/bin/sudo -iu operat'
+
+## OMG, so dodgy...
+alias taskset='/usr/bin/sudo -Eu operat /usr/bin/sudo taskset -c 1'
+alias asroot='/usr/bin/sudo -Eu operat /usr/bin/sudo'
+alias asoperat='/usr/bin/sudo -Eu operat'
 

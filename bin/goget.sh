@@ -6,7 +6,7 @@
 export GOPATH="${HOME}/3rd_party_tools/gotools"
 
 if ! echo "${HTTP_PROXY}" | grep -q "`whoami`" 2>/dev/null; then
-	source "${HOME}/.bash_aliases/http_proxy.sh" 2>/dev/null
+	source "${HOME}/.bash_aliases/19-env-proxy.sh" 2>/dev/null
 	proxy_setup
 fi
 

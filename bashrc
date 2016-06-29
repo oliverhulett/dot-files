@@ -51,6 +51,11 @@ export HISTSIZE=10000
 
 function set_local_paths()
 {
+	shopt -s nullglob
+	for p in $(echo ${HOME}/.bash_aliases/*-profile.d-* | sort -n); do
+		source "$p"
+	done
+	unset p
 	if [ -d "${HOME}/bin" ]; then
 		export PATH="$(prepend_path "${HOME}/bin")"
 	fi
@@ -58,11 +63,6 @@ function set_local_paths()
 		export PATH="$(prepend_path "${HOME}/sbin")"
 	fi
 	export PATH="$(append_path /usr/local/sbin /usr/sbin /sbin)"
-	shopt -s nullglob
-	for p in ${HOME}/.bash_aliases/profile.d-*.sh; do
-		. "$p"
-	done
-	unset p
 }
 
 set_local_paths
@@ -124,12 +124,12 @@ export PROMPT_FOO=
 export PROMPT_COMMAND=
 
 if [ -d "$HOME/.bash_aliases" ]; then
-	for f in $HOME/.bash_aliases/*; do
-		. "$f"
+	for f in $(echo $HOME/.bash_aliases/* | sort -n); do
+		source "$f"
 	done
 	unset f
 elif [ -r "$HOME/.bash_aliases" ]; then
-	. "$HOME/.bash_aliases"
+	source "$HOME/.bash_aliases"
 fi
 
 set_local_paths
