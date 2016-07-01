@@ -31,14 +31,16 @@ function reentrance_check()
 	shift
 	var="_${FILE}_GUARD"
 	## Hash can only be a single 'token' otherwise the `eval` below doesn't work.
-	hash="__ENTERED_${FILE}_$(reentrance_hash "$@" | cut -d' ' -f1)"
-	if [ "${!var}" != "${hash}" ]; then
-		eval ${var}="${hash}"
+	guard="__ENTERED_${FILE}_$(reentrance_hash "$@" | cut -d' ' -f1)"
+	if [ "${!var}" != "${guard}" ]; then
+		eval ${var}="${guard}"
+		unset var guard name FILE
 		return 1
 	else
 		if [ -n "${DEBUG_BASHRC:+x}" ]; then
 			echo "${DEBUG_BASHRC} - re-entered ${name}"
 		fi
+		unset var guard name FILE
 		return 0
 	fi
 }
@@ -60,6 +62,7 @@ function get_real_exe()
 			break
 		fi
 	done
+	unset exe
 }
 
 function echo_clean_path()
@@ -75,6 +78,7 @@ function rm_path()
 			PATH="$(echo "${PATH}" | sed -re 's!(^|:)'"$d"'/?(:|$)!\1!g')"
 		fi
 	done
+	unset d
 	echo_clean_path
 }
 
@@ -86,6 +90,7 @@ function prepend_path()
 			PATH="$d:$(echo "${PATH}" | sed -re 's!(^|:)'"$d"'/?(:|$)!\1!g')"
 		fi
 	done
+	unset d
 	echo_clean_path
 }
 
@@ -97,6 +102,7 @@ function append_path()
 			PATH="$(echo "${PATH}" | sed -re 's!(^|:)'"$d"'/?(:|$)!\2!g'):$d"
 		fi
 	done
+	unset d
 	echo_clean_path
 }
 

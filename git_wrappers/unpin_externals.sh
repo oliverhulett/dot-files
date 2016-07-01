@@ -20,7 +20,7 @@ def do_file(name):
         print xternals['@import']
         files += [os.path.join(n, 'externals.json') for n in xternals['@import']]
     for key in xternals.iterkeys():
-        if 'ref' in xternals[key]:
+        if 'ref' in xternals[key] and 'rev' in xternals[key]:
             p = subprocess.Popen(['git', 'rev-parse', '-q', '--verify', 'refs/tags/{0}'.format(xternals[key]['ref'])], stdout=subprocess.PIPE, cwd=key)
             p.communicate()
             if p.returncode != 0:

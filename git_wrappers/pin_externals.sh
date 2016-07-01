@@ -19,7 +19,7 @@ fi
 
 echo
 echo "Pinning externals"
-./.git/git_utils/git_utils/pin_externals.py
+python ./.git/git_utils/git_utils/pin_externals.py
 python -m json.tool "externals.json" > /dev/null && echo "$(python -m json.tool "externals.json")" > "externals.json"
 echo
 
