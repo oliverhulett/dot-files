@@ -1,3 +1,14 @@
+unalias rmemptyfiles 2>/dev/null
+function rmemptyfiles()
+{
+	find "$@" -xdev -not \( -name '.git' -prune -or -name '.svn' -prune \) -type f -empty -delete -print
+}
+
+unalias findemptyfiles 2>/dev/null
+function findemptyfiles()
+{
+	find "$@" -xdev -not \( -name '.git' -prune -or -name '.svn' -prune \) -type f -empty
+}
 
 unalias rmemptydir 2>/dev/null
 function rmemptydir()

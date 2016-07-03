@@ -8,7 +8,7 @@ function brokenlinks
 unalias rmbrokenlinks 2>/dev/null
 function rmbrokenlinks
 {
-	find -L "$@" -not \( -name '.git' -prune -or -name '.svn' -prune \) -type l -exec ls -hdl --color=always "{}" \; -delete -print
+	find -L "$@" -not \( -name '.git' -prune -or -name '.svn' -prune \) -type l -exec ls -hdl --color=always "{}" \; -exec rm -v "{}" \;
 }
 
 unalias replacelink 2>/dev/null
