@@ -7,7 +7,7 @@ function source()
 	if [ -z "${DEBUG_BASHRC:+x}" ]; then
 		builtin source "$@"
 	else
-		echo "${DEBUG_BASHRC} source $@"
+		echo "$(date '+%T.%N') ${DEBUG_BASHRC} source $@"
 		DEBUG_BASHRC="${DEBUG_BASHRC}"'*' builtin source "$@"
 	fi
 }
@@ -18,7 +18,7 @@ function reentrance_hash()
 		if [ "$(dirname "$i")" == "/dev/fd" ]; then
 			## I don't know what's going on here, but temporary files (of the form
 			## <(echo this)) tend not to work without this cat-in-a-loop.  :(
-			/bin/cat "$i" 2>/dev/null 1>&2 2>/dev/null
+			/bin/cat "$i" 2>/dev/null 1>&2
 		fi
 	done
 	/bin/cat "${HOME}/etc/dot-files/bash_common.sh" "$@" 2>/dev/null | md5sum
@@ -38,7 +38,7 @@ function reentrance_check()
 		return 1
 	else
 		if [ -n "${DEBUG_BASHRC:+x}" ]; then
-			echo "${DEBUG_BASHRC} - re-entered ${name}"
+			echo "$(date '+%T.%N') ${DEBUG_BASHRC} - re-entered ${name}"
 		fi
 		unset var guard name FILE
 		return 0
