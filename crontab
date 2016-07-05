@@ -22,7 +22,7 @@ MAILTO=olihul@optiver.com.au
 10 0 * * *  PATH="${HOME}/bin:${PATH}" ${HOME}/bin/install-dot-files.sh
 
 ## Keep /usr/local/bin up-to-date
-@daily  rsync -zPAXrogthlm --delete opsynxsr0335:/usr/local/bin/ /usr/local/bin/
+@daily  rsync -zPAXrogthlm opsynxsr0335:/usr/local/bin/ /usr/local/bin/
 ## Keep /opt/optiver up-to-date
 @daily  rsync -zPAXrogthlm --delete opsynxsr0335:/opt/optiver/ /opt/optiver/
 ## Keep ~/repo up-to-date
