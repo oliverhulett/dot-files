@@ -122,9 +122,9 @@ unalias find_alias_or_fn 2>/dev/null
 function find_alias_or_fn()
 {
 	(
-		real_grep -lR -E "\balias[[:space:]]+${arg}=" ~/.bashrc ~/.bash_profile ~/.bash_aliases
-		real_grep -lR -E "\bfunction[[:space:]]+${arg}[[:space:]]*(\\(\\))?" ~/.bashrc ~/.bash_profile ~/.bash_aliases
-		real_grep -lR -E "(\bfunction)?[[:space:]]+${arg}[[:space:]]*\\(\\)" ~/.bashrc ~/.bash_profile ~/.bash_aliases
+		real_grep -lR -E "^[^#]*\balias[[:space:]]+${arg}=" ~/.bashrc ~/.bash_profile ~/.bash_aliases ~/etc/dot-files/bash_common.sh
+		real_grep -lR -E "^[^#]*\bfunction[[:space:]]+${arg}[[:space:]]*(\\(\\))?" ~/.bashrc ~/.bash_profile ~/.bash_aliases ~/etc/dot-files/bash_common.sh
+		real_grep -lR -E "^[^#]*(\bfunction)?[[:space:]]+${arg}[[:space:]]*\\(\\)" ~/.bashrc ~/.bash_profile ~/.bash_aliases ~/etc/dot-files/bash_common.sh
 	) | sort -u
 }
 

@@ -25,5 +25,5 @@ function c5()
 	)
 }
 
-alias c5build.py='c5 ./build.py --output-dir=build_c5'
+alias c5build.py='c5 ./build.py --output-dir=build/c5'
 
