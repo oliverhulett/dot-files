@@ -107,10 +107,7 @@ shopt -s cdspell
 REAL_CAT=/bin/cat
 REAL_WHICH=/bin/which
 REAL_LS=/bin/ls
-for exe in ls cat which; do
-	get_real_exe $exe >/dev/null
-done
-unset exe
+get_real_exe ls cat which >/dev/null 2>/dev/null
 export REAL_CAT REAL_WHICH REAL_LS
 
 # We can clear some variables here that will be set/updated by the bash_aliases includes and used later.

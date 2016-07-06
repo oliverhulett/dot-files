@@ -1,8 +1,7 @@
 # Aliases
 source "${HOME}/etc/dot-files/bash_common.sh"
 
-get_real_exe ls >/dev/null
-get_real_exe grep >/dev/null
+get_real_exe ls grep >/dev/null
 
 alias lssc='lss --color=none'
 alias lsc='lss --color=none'

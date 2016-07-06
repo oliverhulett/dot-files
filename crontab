@@ -10,7 +10,7 @@ MAILTO=olihul@optiver.com.au
 ## Crontabs live in /var/spool/, so take a backup of this crontab on a separate partition.
 00 0 * * *  crontab -l >${HOME}/etc/dot-files/crontab
 ## Save list of installed software
-00 0 * * *  rpm -qa >${HOME}/etc/dot-files/installed-software.txt
+00 0 * * *  rpm -qa | sort >${HOME}/etc/dot-files/installed-software.txt
 ## Backup a small number of key system-wide configuration files.
 00 0 * * *  rsync -PAXrogthlm --files-from=${HOME}/etc/dot-files/backups.txt / ${HOME}/etc/
 ## Commit dot-files to git for extra backups
