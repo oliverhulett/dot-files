@@ -28,7 +28,7 @@ export GIT_PS1_SHOWUPSTREAM="auto"
 function __custom_git_ps1()
 {
 	d="$(git branch --no-color 2>/dev/null | sed -nre 's/^\* //p' | cut -d_ -f1)"
-	if ( pwd | grep -qw "master" 2>&1 >/dev/null ) || ! ( pwd | grep -qw "$d" 2>&1 >/dev/null ) || [ "$(hostname -s 2>/dev/null)" != "centos5_64-bit_1064-1" ]; then
+	if grep -qw "master" <(pwd) 2>&1 >/dev/null || ! grep -qw "$d" <(pwd) 2>&1 >/dev/null; then
 		__git_ps1 "$@"
 	else
 		__git_ps1 "$@" "%s" | sed -re 's/(\w+:)?[0-9a-zA-Z_-]+( ?.*)?/\1\2/'

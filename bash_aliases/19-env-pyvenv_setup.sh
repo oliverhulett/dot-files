@@ -54,16 +54,19 @@ function python_setup()
 	sudo -v
 
 	pip install --upgrade pip wheel setuptools
-	pip install protobuf==2.5.0
-	#pip install "Twisted<15.4.0"
-	pip install twisted
-	pip install sqlalchemy
-	pip install argparse
+	pip install --upgrade protobuf==2.5.0
+	if grep -qE '2.6.*' <(python --version 2>&1) >/dev/null 2>/dev/null; then
+		pip install --upgrade 'Twisted<15.4.0'
+	else
+		pip install --upgrade twisted
+	fi
+	pip install --upgrade sqlalchemy
+	pip install --upgrade argparse
 	sudo -n yum -y install unixODBC-devel
-	pip install pyodbc
+	pip install --upgrade pyodbc
 	sudo -n yum -y install postgresql-devel
-	pip install psycopg2==2.5.4
+	pip install --upgrade psycopg2==2.5.4
 	sudo -n yum -y install libxml2-devel libxslt-devel
-	pip install lxml
+	pip install --upgrade 'lxml<3.4'
 }
 
