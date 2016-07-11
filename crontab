@@ -14,12 +14,12 @@ MAILTO=olihul@optiver.com.au
 ## Backup a small number of key system-wide configuration files.
 00 0 * * *  rsync -PAXrogthlm --files-from=${HOME}/etc/dot-files/backups.txt / ${HOME}/etc/
 ## Commit dot-files to git for extra backups
-05 0 * * *  cd ${HOME}/etc/dot-files && git commit --allow-empty -aqm "Autocommit: $(date -R)" && git push -q >/dev/null
+10 0 * * *  cd ${HOME}/etc/dot-files && git commit --allow-empty -aqm "Autocommit: $(date -R)" && git push -q >/dev/null
 ## Push local configuration and backups to another box.
-10 0 * * *  rsync -PAXrogthlm ${HOME}/etc/ /media/sf_H_DRIVE/etc/
-10 0 * * *  rsync -PAXrogthlm ${HOME}/opt/ /media/sf_H_DRIVE/opt/
+15 0 * * *  rsync -PAXrogthlm ${HOME}/etc/ /media/sf_H_DRIVE/etc/
+15 0 * * *  rsync -PAXrogthlm ${HOME}/opt/ /media/sf_H_DRIVE/opt/
 ## Install dot-files to development machines
-10 0 * * *  PATH="${HOME}/bin:${PATH}" ${HOME}/bin/install-dot-files.sh
+15 0 * * *  PATH="${HOME}/bin:${PATH}" ${HOME}/bin/install-dot-files.sh
 
 ## Keep /usr/local/bin up-to-date
 @daily  rsync -zPAXrogthlm opsynxsr0335:/usr/local/bin/ /usr/local/bin/
