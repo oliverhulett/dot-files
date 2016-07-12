@@ -3,6 +3,8 @@ syntax enable
 set nofsync
 set swapsync=
 
+let g:netrw_home=$HOME.'.cache/vim'
+
 " Use space as command leader.
 let mapleader = " "
 let g:mapleader = " "

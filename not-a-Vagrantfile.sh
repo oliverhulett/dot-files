@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 source "${HOME}/.bashrc"
 source "${HOME}/.bash_aliases/19-env-proxy.sh"
@@ -7,7 +7,10 @@ source "${HOME}/.bash_aliases/19-env-pyvenv_setup.sh"
 proxy_setup
 
 sudo yum groupinstall -y "Development Tools"
-sudo yum install -y wget curl telnet postgresql freetype-devel libpng-devel python-devel cmake vagrand ccache distcc cifs-utils samba samba-client protobuf protobuf-c protobuf-python protobuf-vim protobuf-compiler openssl-libs openssl-static valgrind golang-vim wireshark yakuake iotop nethogs sysstat java-1.8.0-openjdk-devel java-1.8.0-openjdk unixODBC-devel postgresql-devel libxml2-devel libxslt-devel aspell aspell-en
+sudo yum install -y wget curl telnet postgresql freetype-devel libpng-devel python-devel unixODBC-devel postgresql-devel libxml2-devel libxslt-devel
+sudo yum install -y cmake ccache distcc protobuf protobuf-c protobuf-python protobuf-compiler valgrind protobuf-vim golang-vim
+sudo yum install -y vagrant yakuake iotop nethogs sysstat aspell aspell-en cifs-utils samba samba-client openssl-libs openssl-static wireshark java-1.8.0-openjdk-devel java-1.8.0-openjdk
+
 sudo pip install trdb
 sudo yum install -y http://artifactory.aus.optiver.com/artifactory/dev/trd/courier-1.1.0-1.x86_64.rpm
 
