@@ -17,11 +17,11 @@ def do_file(name):
     with open(name) as f:
         xternals = json.load(f)
     if '@import' in xternals:
-        print xternals['@import']
         files += [os.path.join(n, 'externals.json') for n in xternals['@import']]
     for key in xternals.iterkeys():
+        d = os.path.join(os.path.dirname(name), key)
         if 'ref' in xternals[key] and 'rev' in xternals[key]:
-            p = subprocess.Popen(['git', 'rev-parse', '-q', '--verify', 'refs/tags/{0}'.format(xternals[key]['ref'])], stdout=subprocess.PIPE, cwd=key)
+            p = subprocess.Popen(['git', 'rev-parse', '-q', '--verify', 'refs/tags/{0}'.format(xternals[key]['ref'])], stdout=subprocess.PIPE, cwd=d)
             p.communicate()
             if p.returncode != 0:
                 print "Un-pinning non-tag: {0} @ {1}".format(key, xternals[key]['ref'])
@@ -31,7 +31,6 @@ def do_file(name):
 
 files = ['externals.json']
 while len(files) > 0:
-    print files
     do_file(files.pop(0))
 EOF
 python -m json.tool "externals.json" > /dev/null && echo "$(python -m json.tool "externals.json")" > "externals.json"

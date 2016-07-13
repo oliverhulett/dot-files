@@ -16,7 +16,7 @@
 	refs = for-each-ref refs/remotes/origin
 	who = for-each-ref --sort=-authorname --format='%(authorname)\t%(committerdate)\t%(refname)\t%(subject)' refs/remotes/origin/
 	when = for-each-ref --sort=-committerdate --format='%(authorname)\t%(committerdate)\t%(refname)\t%(subject)' refs/remotes/origin/
-	tags = for-each-ref --sort=-taggerdate --format='%(taggerdate)\t%(refname)\t%(authorname)\t%(subject)' refs/tags
+	tags = "!f() { if [ $# -eq 0 ]; then set -- 5; fi; git for-each-ref --count=$1 --sort=-taggerdate --format='%(taggerdate)\t%(refname)\t%(authorname)\t%(subject)' refs/tags; }; f"
 
 	rmtag = tag -d
 	pushtags = push --tags
@@ -28,6 +28,7 @@
 	pin = "!f() { ~/.git_wrappers/pin_externals.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 	unpin = "!f() { ~/.git_wrappers/unpin_externals.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 	upgrade = "!f() { ~/.git_wrappers/update_externals.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
+	tagexternals = "!f() { ~/.git_wrappers/tag_externals.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 
 	unstage = reset HEAD
 	undo-commit = reset HEAD^
