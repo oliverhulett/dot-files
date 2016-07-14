@@ -134,7 +134,7 @@ function which()
 		if [ "${arg:0:1}" = "-" ]; then
 			continue
 		fi
-		"$REAL_WHICH" "$arg"
+		"$REAL_WHICH" "$arg" 2>/dev/null
 		type "$arg" 2>/dev/null
 		cmd="$arg"
 		case `type -t "$arg" 2>/dev/null` in
