@@ -24,7 +24,7 @@ MAILTO=olihul@optiver.com.au
 ## Keep /usr/local/bin up-to-date
 @daily  rsync -zPAXrogthlm opsynxsr0335:/usr/local/bin/ /usr/local/bin/
 ## Keep /opt/optiver up-to-date
-@daily  rsync -zPAXrogthlm --delete opsynxsr0335:/opt/optiver/ /opt/optiver/
+@daily  rsync -zPAXrogthlm --delete --exclude='gcc/4.7.2' --delete-excluded opsynxsr0335:/opt/optiver/ /opt/optiver/
 ## Keep ~/repo up-to-date
 @daily find ${HOME}/repo/ -name .git -prune | while read; do ( cd "$(dirname "$REPLY")" && git pullb -q && git update || echo -e "\n${REPLY} Update Failed\n\n" ); done
 
