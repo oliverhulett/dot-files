@@ -6,7 +6,7 @@ if ! [ $# -eq 1 -a "$1" -ef .git/COMMIT_EDITMSG ]; then
 	exit
 fi
 
-existing_msg="$(cat .git/COMMIT_EDITMSG | sed -re '/^#/d')"
+existing_msg="$(cat .git/COMMIT_EDITMSG | sed -re '/^#/d;/^$/d')"
 
 echo "$existing_msg"
 echo
@@ -20,7 +20,6 @@ if [ "$branch" == "master" ]; then
 	echo
 	if [ "`echo $REPLY | tr [A-Z] [a-z]`" == "n" ]; then
 		branch=
-		startmode=
 	elif [ "`echo $REPLY | tr [A-Z] [a-z]`" == "q" ]; then
 		exit
 	else
@@ -33,7 +32,6 @@ else
 	echo
 	if [ "`echo $REPLY | tr [A-Z] [a-z]`" == "n" ]; then
 		branch=
-		startmode=
 	elif [ "`echo $REPLY | tr [A-Z] [a-z]`" == "o" ]; then
 		echo -n "$(tput bold)Ticket:$(tput sgr0)  "
 		read
@@ -45,14 +43,35 @@ else
 	fi
 fi
 
+## If .git/COMMIT_EDITMSG is not empty, don't start vim in insert mode.
 if grep -qE '^[^#].*$' .git/COMMIT_EDITMSG 2>/dev/null >/dev/null; then
 	startmode=
 fi
 
+## If .git/COMMIT_EDITMSG contains a non-branch prefixed message, don't auto-prefix lines.
 if ! sed -re '/^#/! s/^('"${branch}"')?(.+)/'"${branch}"'\2/' .git/COMMIT_EDITMSG -i; then
 	$VISUAL "$@" || vim "$@"
 	exit
 fi
 
-vim -c "autocmd InsertLeave <buffer> let [c, l] = [getpos('.'), strlen(getline('.'))]" -c "autocmd InsertLeave <buffer> 1,!sed -re 's/^(${branch})?(.+)/${branch}\2/'" -c "autocmd InsertLeave <buffer> call setpos('.', c) | if l < strlen(getline('.')) | call setpos('.', [c[0], c[1], c[2] + ${#branch}, c[3]])" $startmode "$@"
+function special_vim()
+{
+	vim -c "autocmd InsertLeave <buffer> let [c, l] = [getpos('.'), strlen(getline('.'))]" -c "autocmd InsertLeave <buffer> 1,!sed -re 's/^(${branch})?(.+)/${branch}\2/'" -c "autocmd InsertLeave <buffer> call setpos('.', c) | if l < strlen(getline('.')) | call setpos('.', [c[0], c[1], c[2] + ${#branch}, c[3]])" $startmode "$@"
+}
+
+echo "Type a simple, single line, commit message that will be prefixed with the ticket name; or press 'e' or type 'edit' to launch ${VISUAL:-vim}"
+read -n1 -r -s
+if [ "${REPLY}" == "e" ]; then
+	special_vim "$@"
+elif [ -n "${REPLY}" ]; then
+	read -ei "${REPLY}"
+	if [ "${REPLY}" == "edit" -o "${REPLY}" == "e" ]; then
+		special_vim "$@"
+	else
+		if [ -n "${REPLY}" ]; then
+			echo "${branch}${REPLY}" >.git/COMMIT_EDITMSG
+		fi
+	fi
+fi
+echo
 
