@@ -2,8 +2,7 @@
 	name = Oliver Hulett
 	email = Oliver.Hulett@Optiver.com.au
 [alias]
-	lgall = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cd)%C(bold blue)<%an>%Creset' --abbrev-commit 
-	lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cd)%C(bold blue)<%an>%Creset' --abbrev-commit --max-count=10
+	lg = "!f() { if [ $# -eq 0 ]; then set -- 10; fi; count=\"--max-count=$1\"; if [ \"$1\" == \"-a\" -o \"$1\" == \"--all\" ]; then count=; fi; git log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cd)%C(bold blue)<%an>%Creset' --abbrev-commit $count; }; f"
 	alias = config --get-regexp alias
 	which = "!f() { for i in \"$@\"; do echo -n \"$i is: \"; git config alias.$i; done; }; f"
 
@@ -16,7 +15,7 @@
 	refs = for-each-ref refs/remotes/origin
 	who = for-each-ref --sort=-authorname --format='%(authorname)\t%(committerdate)\t%(refname)\t%(subject)' refs/remotes/origin/
 	when = for-each-ref --sort=-committerdate --format='%(authorname)\t%(committerdate)\t%(refname)\t%(subject)' refs/remotes/origin/
-	tags = "!f() { if [ $# -eq 0 ]; then set -- 5; fi; git for-each-ref --count=$1 --sort=-taggerdate --format='%(taggerdate)\t%(refname)\t%(authorname)\t%(subject)' refs/tags; }; f"
+	tags = "!f() { if [ $# -eq 0 ]; then set -- 5; fi; count=\"--count=$1\"; if [ \"$1\" == \"-a\" -o \"$1\" == \"--all\" ]; then count=; fi; git for-each-ref $count --sort=-taggerdate --format='%(taggerdate)\t%(refname)\t%(authorname)\t%(subject)' refs/tags; }; f"
 
 	rmtag = tag -d
 	pushtags = push --tags
