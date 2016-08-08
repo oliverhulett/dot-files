@@ -43,6 +43,8 @@ alias file='file -krz'
 alias top='top -c'
 alias less='less -RFiMx4'
 export LESS='-RFiMx4'
+alias inv='inv -p'
+alias invoke='invoke -p'
 
 if uname -s | real_grep -q 'MINGW' >/dev/null 2>&1 ; then
 	alias ifconfig='ipconfig'
@@ -69,12 +71,8 @@ alias sursync-a='sudo rsync -zvpPAXrogthlm'
 alias rsync-ca='rsync -zvpPAXrogthlcm'
 alias sursync-ca='sudo rsync -zvpPAXrogthlcm'
 
-alias syslog='tail -f /var/log/syslog'
-
 alias iotop='sudo iotop'
 
-alias nfsmnt='sudo mount -t nfs4 -o soft,retry=2,retrans=5,timeo=180'
-alias smbmnt='sudo mount -t cifs -o users,rw,noexec,async,guest'
 alias umount='sudo umount'
 
 alias fuser='sudo fuser -vau'
