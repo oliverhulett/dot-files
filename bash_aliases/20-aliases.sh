@@ -132,14 +132,13 @@ function which()
 		if [ "${arg:0:1}" = "-" ]; then
 			continue
 		fi
-		"$REAL_WHICH" "$arg" 2>/dev/null
 		type "$arg" 2>/dev/null
 		cmd="$arg"
 		case `type -t "$arg" 2>/dev/null` in
 			alias)
 				alias "$arg"
 				find_alias_or_fn "$arg"
-				cmd="$cmd $(alias "$arg" | sed -re "s/^[^=]+='(.+)'$/\1/;s/sudo //g;s/ +-[^ ]+//g")"
+				cmd="$(alias "$arg" | sed -re "s/^[^=]+='(.+)'$/\1/;s/sudo //g;s/ +-[^ ]+//g") $cmd"
 				;;
 			keyword)
 				;;

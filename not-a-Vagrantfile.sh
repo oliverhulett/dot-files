@@ -20,3 +20,8 @@ rm go1.6.linux-amd64.tar.gz
 
 python_setup
 
+pip install --upgrade pyinvoke
+wget --quiet http://artifactory.aus.optiver.com/artifactory/dev/trd/drone_linux_amd64.tar.gz
+sudo tar -C /usr/local/bin -xzf drone_linux_amd64.tar.gz
+rm drone_linux_amd64.tar.gz
+
