@@ -14,6 +14,7 @@
 /etc/rc.local
 /etc/samba/smb.conf
 /etc/sysconfig/clock
+/etc/sysconfig/docker
 /etc/sysconfig/network
 /etc/sysconfig/pgsql
 /etc/systemd/system/rc.local.service

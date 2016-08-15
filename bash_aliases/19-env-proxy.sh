@@ -49,6 +49,29 @@ function proxy_setup()
 	export HTTP_PROXY="${http_proxy}"
 	export https_proxy="${https_proxy_orig/\/\////$(urlencode "$USER"):$(urlencode "$PASSWD")@}"
 	export HTTPS_PROXY="${https_proxy}"
+	update_config=""
+	for f in /etc/sysconfig/docker; do
+		if [ -e "$f" ]; then
+			if grep -qE "^HTTPS?_PROXY=" "$f"; then
+				if ! grep -qF "HTTP_PROXY=$HTTP_PROXY" "$f" || ! grep -qF "HTTPS_PROXY=$HTTPS_PROXY" "$f"; then
+					update_config="$update_config $f"
+				fi
+			fi
+		fi
+	done
+	if [ -n "$update_config" ]; then
+		read -n1 -r -p "Found configuration files to update with new proxy.  Update $update_config? [Y/n] "
+		echo
+		if [ $(echo $REPLY | tr '[a-z]' '[A-Z]') != "N" ]; then
+			for f in $update_config; do
+				sudo -E sed -re 's!^HTTP_PROXY=.+$!HTTP_PROXY='"$HTTP_PROXY"'!' "$f" -i
+				sudo -E sed -re 's!^HTTPS_PROXY=.+$!HTTPS_PROXY='"$HTTPS_PROXY"'!' "$f" -i
+			done
+
+			echo "System configuration updated for new proxy, you may want to restart daemons.  Try:"
+			echo "$ sudo systemctl reload <services>"
+		fi
+	fi
 	unset PASSWD
 }
 
