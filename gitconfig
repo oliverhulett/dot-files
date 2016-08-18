@@ -15,7 +15,7 @@
 	refs = for-each-ref refs/remotes/origin
 	who = for-each-ref --sort=-authorname --format='%(authorname)\t%(committerdate)\t%(refname)\t%(subject)' refs/remotes/origin/
 	when = for-each-ref --sort=-committerdate --format='%(authorname)\t%(committerdate)\t%(refname)\t%(subject)' refs/remotes/origin/
-	tags = "!f() { if [ $# -eq 0 ]; then set -- 5; fi; count=\"--count=$1\"; if [ \"$1\" == \"-a\" -o \"$1\" == \"--all\" ]; then count=; fi; git for-each-ref $count --sort=-taggerdate --format='%(taggerdate)\t%(refname)\t%(authorname)\t%(subject)' refs/tags; }; f"
+	tags = "!f() { if [ $# -eq 0 ]; then set -- 5; fi; count=\"--count=$1\"; if [ \"$1\" == \"-a\" -o \"$1\" == \"--all\" ]; then count=; fi; git for-each-ref $count --sort=-taggerdate --format='%(taggerdate)\t%(tag)\t%(authorname)\t%(subject)' refs/tags; }; f"
 
 	rmtag = tag -d
 	pushtags = push --tags

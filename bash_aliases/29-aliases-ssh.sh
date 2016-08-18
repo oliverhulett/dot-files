@@ -9,7 +9,6 @@ function sshname()
 	if [ -z "${REAL_SSH}" ]; then
 		REAL_SSH="/usr/bin/ssh"
 	fi
-	set -x
 	if [[ "$1" =~ ^([0-9]{1,4})$ ]]; then
 		svrnum="$(printf '%04d' ${BASH_REMATCH[1]})"
 		svrloc="sy"
@@ -31,6 +30,5 @@ function sshname()
 	else
 		echo $target
 	fi
-	set +x
 }
 

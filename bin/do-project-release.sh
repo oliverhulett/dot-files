@@ -50,22 +50,26 @@ if [ -z "${GIT_URL}" ]; then
 	exit 1
 fi
 
-if ! git rev-parse -q --verify "refs/tags/${TAG_VERSION}" >/dev/null 2>/dev/null; then
-	echo "Tag version does not exist.  Project must be tagged first."
-	echo "Try:"
-	echo "  ./tagme.sh ${TAG_VERSION} <MESSAGE>"
-	echo "or"
-	echo "  git tag ${TAG_VERSION} -m '<MESSAGE>' && git push --tags"
-	exit 1
+VERSION_NAME="${TAG_VERSION}"
+if ! git rev-parse -q --verify "refs/tags/${VERSION_NAME}" >/dev/null 2>/dev/null; then
+	VERSION_NAME="${PROJECT_NAME}_${TAG_VERSION}"
+	if ! git rev-parse -q --verify "refs/tags/${VERSION_NAME}" >/dev/null 2>/dev/null; then
+		echo "Tag version does not exist.  Project must be tagged first."
+		echo "Try:"
+		echo "  ./tagme.sh ${TAG_VERSION} <MESSAGE>"
+		echo "or"
+		echo "  git tag ${TAG_VERSION} -m '<MESSAGE>' && git push --tags"
+		exit 1
+	else
+		git tag -f ${TAG_VERSION} ${VERSION_NAME}
+		git push --tags
+	fi
 fi
 
+pip install --upgrade trdb-release-manager
 if ! command which release_notes_generator >/dev/null 2>/dev/null; then
-	echo "release_notes_generator not found.  Attempting to pip install..."
-	pip install release_notes_generator
-	if ! command which release_notes_generator >/dev/null 2>/dev/null; then
-		echo "release_notes_generator not found"
-		exit 1
-	fi
+	echo "release_notes_generator not found"
+	exit 1
 fi
 
 function run()
