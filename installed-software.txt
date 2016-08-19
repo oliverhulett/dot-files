@@ -955,6 +955,7 @@ popt-1.13-16.el7.x86_64
 postgresql-9.2.13-1.el7_1.x86_64
 postgresql-devel-9.2.13-1.el7_1.x86_64
 postgresql-libs-9.2.13-1.el7_1.x86_64
+postgresql-server-9.2.13-1.el7_1.x86_64
 ppp-2.4.5-33.el7.x86_64
 procps-ng-3.3.10-3.el7.x86_64
 protobuf-2.5.0-8.el7.x86_64

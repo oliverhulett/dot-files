@@ -27,7 +27,7 @@
 	pin = "!f() { ~/.git_wrappers/pin_externals.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 	unpin = "!f() { ~/.git_wrappers/unpin_externals.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 	upgrade = "!f() { ~/.git_wrappers/update_externals.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
-	tagexternals = "!f() { ~/.git_wrappers/tag_externals.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
+	externals2tags = "!f() { ~/.git_wrappers/tag_externals.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 
 	unstage = reset HEAD
 	undo-commit = reset HEAD^

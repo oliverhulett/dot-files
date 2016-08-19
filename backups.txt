@@ -16,6 +16,6 @@
 /etc/sysconfig/clock
 /etc/sysconfig/docker
 /etc/sysconfig/network
-/etc/sysconfig/pgsql
+/etc/systemd/system/postgresql.service.d
 /etc/systemd/system/rc.local.service
 /home/olihul/.kde/share

@@ -36,3 +36,6 @@ if [ -f ./deps.json ]; then
 	courier
 fi
 
+git submodule init
+git submodule update
+
