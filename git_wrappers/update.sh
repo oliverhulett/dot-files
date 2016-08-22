@@ -21,21 +21,23 @@ if [ "$1" == "-c" -o "$1" == "--clean" -o "$1" == "e-c" -o "$1" == "ec-" -o "$1"
 	fi
 	find ./ -not \( -name .git -prune -or -name .svn -prune \) -name externals.json | while read; do
 		echo "Removing externals from: $REPLY"
-		sed -nre 's/^[ \t]+"(.+)": \{/\1/p' "$REPLY" | tee >(xargs rm -rf) | xargs
+		sed -nre 's/^[ \t]+"(.+)": \{/\1/p' "$REPLY" | tee >(cd "$(dirname "$REPLY")" && xargs rm -rf) | xargs
 	done
 	echo "Removing '.git/externals/' and likely external directories: " x_*
 	rm -rf .git/externals x_* 2>/dev/null
-fi
 
-if [ -x ./git_setup.py ]; then
-	./git_setup.py -kq
-elif [ -f ./.gitsvnextmodules -o -f ./externals.json ]; then
-	getdep
+	git submodule deinit --force .
+else
+	if [ -x ./git_setup.py ]; then
+		./git_setup.py -kq
+	elif [ -f ./.gitsvnextmodules -o -f ./externals.json ]; then
+		getdep
+	fi
+	if [ -f ./deps.json ]; then
+		courier
+	fi
+	
+	git submodule init
+	git submodule sync
+	git submodule update --recursive
 fi
-if [ -f ./deps.json ]; then
-	courier
-fi
-
-git submodule init
-git submodule update
-

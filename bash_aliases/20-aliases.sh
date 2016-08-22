@@ -132,7 +132,12 @@ function which()
 		if [ "${arg:0:1}" = "-" ]; then
 			continue
 		fi
-		type "$arg" 2>/dev/null
+		for suffix in "" ".sh" ".py"; do
+			if type "${arg}${suffix}" 2>/dev/null; then
+				arg="${arg}${suffix}"
+				break
+			fi
+		done
 		cmd="$arg"
 		case `type -t "$arg" 2>/dev/null` in
 			alias)
@@ -172,7 +177,7 @@ function which()
 #		if [ -z "$commands" ]; then
 #			command_not_found_handle "$arg" 2>/dev/null
 #		fi
-		echo
+#		echo
 	done
 }
 
