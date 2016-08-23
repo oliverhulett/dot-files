@@ -1,6 +1,3 @@
-[user]
-	name = Oliver Hulett
-	email = Oliver.Hulett@Optiver.com.au
 [alias]
 	lg = "!f() { if [ $# -eq 0 ]; then set -- 10; fi; count=\"--max-count=$1\"; if [ \"$1\" == \"-a\" -o \"$1\" == \"--all\" ]; then count=; fi; git log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cd)%C(bold blue)<%an>%Creset' --abbrev-commit $count; }; f"
 	alias = config --get-regexp alias
@@ -20,7 +17,7 @@
 	rmtag = tag -d
 	pushtags = push --tags
 
-	cp = "!f() { set -x;  cp -v \"$@\"; declare -a toadd; if [ -d \"${@:$#}\" ]; then for arg in \"${@:1:$# - 1}\"; do if [ \"${arg:0:1}\" == \"-\" ]; then toadd[${#toadd[@]}]=\"${@:$#}/$(basename $arg)\"; fi; done; else toadd=( \"${@:$#}\" ); fi; git add -v --ignore-errors \"${toadd[@]}\"; }; cd \"$GIT_PREFIX\" && f"
+	cp = "!f() { cp -v \"$@\"; declare -a toadd; if [ -d \"${@:$#}\" ]; then for arg in \"${@:1:$# - 1}\"; do if [ \"${arg:0:1}\" == \"-\" ]; then toadd[${#toadd[@]}]=\"${@:$#}/$(basename $arg)\"; fi; done; else toadd=( \"${@:$#}\" ); fi; git add -v --ignore-errors \"${toadd[@]}\"; }; cd \"$GIT_PREFIX\" && f"
 	new = "!f() { ~/.git_wrappers/new.sh \"$@\"; }; cd \"$GIT_PREFIX\" && f"
 	update = "!f() { ~/.git_wrappers/update.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 	ignore = "!f() { for i in \"$@\"; do echo \"$i\" >>.gitignore; done; echo \"$(sort -u .gitignore)\" >.gitignore; git add .gitignore; }; cd \"$GIT_PREFIX\" && f"
@@ -87,3 +84,6 @@
 	fetch = refs/tags/*:refs/tags/*
 [diff "nodiff"]
 	command = /usr/bin/true
+[user]
+	name = Oliver Hulett
+	email = oliver.hulett@optiver.com.au
