@@ -4,8 +4,8 @@ GIT_URL_BASE="ssh://git@git.comp.optiver.com:7999"
 REPO_DIR="${HOME}/repo"
 
 if [ $# -eq 2 ]; then
-	PROJ="$1"
-	REPO="$2"
+	PROJ="$(echo $1 | tr '[A-Z]' '[a-z]')"
+	REPO="$(echo $2 | tr '[A-Z]' '[a-z]')"
 else
 	echo 2>/dev/null "Clone a repo into the repo heirarchy"
 	echo 2>/dev/null "$(basename "$0") <PROJECT> <REPOSITORY>"

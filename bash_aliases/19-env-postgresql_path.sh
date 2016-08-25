@@ -7,3 +7,6 @@ if [ -e ${PSQL_DIR} ]; then
 	export LD_LIBRARY_PATH="$(echo "$LD_LIBRARY_PATH" | sed -re 's!(^|:)'"${PSQL_DIR}/lib"'/?(:|$)!\2!'):${PSQL_DIR}/lib"
 fi
 
+export DB_HOST=localhost
+export DB_PORT=5432
+

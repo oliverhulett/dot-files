@@ -27,6 +27,6 @@ _complete_invoke() {
 # * -F: use given function name to generate completions.
 # * -o default: when function generates no results, use filenames.
 # * positional args: program names to complete for.
-complete -F _complete_invoke -o default invoke inv ./build.py
+complete -F _complete_invoke -o default invoke inv c5inv c5invoke
 
 # vim: set ft=sh :

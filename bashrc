@@ -140,9 +140,8 @@ COMP_CONFIGURE_HINTS=1
 COMP_TAR_INTERNAL_PATHS=1
 [ -f /etc/profile.d/bash-completion ] && . /etc/profile.d/bash-completion
 [ -f /etc/profile.d/bash-completion.sh ] && . /etc/profile.d/bash-completion.sh
-
-# enable programmable completion features (you don't need to enable this if it's already enabled
-# in /etc/bash.bashrc and /etc/profile sources /etc/bash.bashrc
+[ -f /etc/profile.d/bash_completion.sh ] && . /etc/profile.d/bash_completion.sh
+[ -f /etc/profile.d/bash_completion ] && . /etc/profile.d/bash_completion
 if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
 	. /etc/bash_completion
 fi

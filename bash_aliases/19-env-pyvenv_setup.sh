@@ -1,11 +1,14 @@
 ## Set up python virtual env and supporting jazz
 source "${HOME}/etc/dot-files/bash_common.sh"
 
+PIP_TRUSTED_HOST=devpi.aus.optiver.com
+PIP_INDEX_URL=http://devpi.aus.optiver.com/optiver/prod/+simple/
+
 if [ ! -f "$HOME/.pip/pip.conf" ]; then
 	mkdir "$HOME/.pip" 2>/dev/null >/dev/null
 	echo "[global]" >>"$HOME/.pip/pip.conf"
-	echo "index-url=http://devpi.aus.optiver.com/optiver/prod/+simple/" >>"$HOME/.pip/pip.conf"
-	echo "trusted-host=devpi.aus.optiver.com" >>"$HOME/.pip/pip.conf"
+	echo "index-url=${PIP_INDEX_URL}" >>"$HOME/.pip/pip.conf"
+	echo "trusted-host=${PIP_TRUSTED_HOST}" >>"$HOME/.pip/pip.conf"
 fi
 
 if [ ! -f "$HOME/.pydistutils.cfg" ]; then
@@ -14,7 +17,7 @@ if [ ! -f "$HOME/.pydistutils.cfg" ]; then
 	echo "[register]" >>"$HOME/.pydistutils.cfg"
 	echo "repository=devpi" >>"$HOME/.pydistutils.cfg"
 	echo "[easy_install]" >>"$HOME/.pydistutils.cfg"
-	echo "index-url=http://devpi.aus.optiver.com/optiver/prod/+simple/" >>"$HOME/.pip/pip.conf"
+	echo "index-url=${PIP_INDEX_URL}" >>"$HOME/.pip/pip.conf"
 fi
 
 if [ ! -f "$HOME/.pypirc" ]; then
@@ -24,7 +27,7 @@ if [ ! -f "$HOME/.pypirc" ]; then
 	echo "; This is the real username and password, it's not a placeholder" >>"$HOME/.pypirc"
 	echo "username=optiver" >>"$HOME/.pypirc"
 	echo "password=optiver" >>"$HOME/.pypirc"
-	echo "repository=http://devpi.aus.optiver.com/optiver/prod/" >>"$HOME/.pypirc"
+	echo "repository=${PIP_INDEX_URL%/+simple/}" >>"$HOME/.pypirc"
 fi
 
 function pip()

@@ -77,6 +77,8 @@ alias umount='sudo umount'
 
 alias fuser='sudo fuser -vau'
 
+alias service='sudo service'
+
 alias poweroff='sudo shutdown -hP'
 alias powerdown='sudo shutdown -hP'
 #alias restart='sudo shutdown -r'
