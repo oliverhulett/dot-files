@@ -20,7 +20,7 @@
 	cp = "!f() { cp -v \"$@\"; declare -a toadd; if [ -d \"${@:$#}\" ]; then for arg in \"${@:1:$# - 1}\"; do if [ \"${arg:0:1}\" == \"-\" ]; then toadd[${#toadd[@]}]=\"${@:$#}/$(basename $arg)\"; fi; done; else toadd=( \"${@:$#}\" ); fi; git add -v --ignore-errors \"${toadd[@]}\"; }; cd \"$GIT_PREFIX\" && f"
 	new = "!f() { ~/.git_wrappers/new.sh \"$@\"; }; cd \"$GIT_PREFIX\" && f"
 	update = "!f() { ~/.git_wrappers/update.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
-	ignore = "!f() { for i in \"$@\"; do echo \"$i\" >>.gitignore; done; echo \"$(sort -u .gitignore)\" >.gitignore; git add .gitignore; }; cd \"$GIT_PREFIX\" && f"
+	ignore = "!f() { for i in \"$@\"; do echo \"$i\" >>.gitignore; done; echo \"$(sort -u .gitignore)\" >.gitignore; sed -re '/^$/d' -i .gitignore; git add .gitignore; }; cd \"$GIT_PREFIX\" && f"
 	pin = "!f() { ~/.git_wrappers/pin_externals.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 	unpin = "!f() { ~/.git_wrappers/unpin_externals.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 	upgrade = "!f() { ~/.git_wrappers/update_externals.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
