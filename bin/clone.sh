@@ -29,8 +29,23 @@ set -e
 
 if [ ! -d "${DEST_DIR}/master" ]; then
 	git clone --recursive ${GIT_URL} master
-	( cd master && git update -c )
+	( cd master && git update )
 else
 	echo "${DEST_DIR}/master already exists."
 fi
 
+if [ ! -e "${DEST_DIR}/.project" ]; then
+	ECLIPSE_PROJECT_FILES="$(dirname "$(dirname "$(readlink -f "$0")")")/eclipse-project-files"
+	if [ -e "master/CMakeLists.txt" ]; then
+		## C++ project
+		cp -rv "${ECLIPSE_PROJECT_FILES}/cpp/".[a-z]* ./
+	elif [ -d "master/src" ]; then
+		## GO project
+		cp -rv "${ECLIPSE_PROJECT_FILES}/go/".[a-z]* ./
+	else
+		## Fallback to python project.  Most projects will have some python anyway.
+		cp -rv "${ECLIPSE_PROJECT_FILES}/python/".[a-z]* ./
+	fi
+	( cd master && ln -sv ../.[a-z]* ./ )
+	sed -re 's!<name>.+@master</name>!<name>'"${REPO}"'@master</name>!' .project -i 2>/dev/null
+fi

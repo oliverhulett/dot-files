@@ -8,4 +8,4 @@ function get_all_applications ( )
 	COMPREPLY=( $(compgen -W "${processes}" -- $prefix ) )
 }
  
-complete -F get_all_applications xless.sh
+complete -F get_all_applications xless.sh xless
