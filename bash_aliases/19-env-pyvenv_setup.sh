@@ -32,9 +32,11 @@ fi
 
 function pip()
 {
-	if ! echo "${HTTP_PROXY}" | grep -q "`whoami`" 2>/dev/null; then
-		source "${HOME}/.bash_aliases/19-env-proxy.sh" 2>/dev/null
-		proxy_setup
+	if [ -z "${PIP_AUTO_COMPLETE}" -o "${PIP_AUTO_COMPLETE}" != "1" ]; then
+		if ! echo "${HTTP_PROXY}" | grep -q "`whoami`" 2>/dev/null; then
+			source "${HOME}/.bash_aliases/19-env-proxy.sh" 2>/dev/null
+			proxy_setup
+		fi
 	fi
 	if [ -z "$REAL_PIP" ]; then
 		REAL_PIP="$(get_real_exe pip)"
