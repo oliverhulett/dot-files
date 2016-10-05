@@ -24,7 +24,7 @@ if [ ! -d "$MASTER_DIR" ]; then
 	MASTER_DIR="${CURR_DIR}"
 fi
 
-## This script is designed to be called as a bash alias, so there we should be in the root of the checkout from which we want to branch.
+## This script is designed to be called as a git alias, so we should be in the root of the checkout from which we want to branch.
 git pull --all
 git fetch origin ${CURR_BRANCH}
 
