@@ -12,21 +12,21 @@ MAILTO=olihul@optiver.com.au
 ## Save list of installed software
 00 0 * * *  rpm -qa | sort >${HOME}/etc/dot-files/installed-software.txt
 ## Backup a small number of key system-wide configuration files.
-00 0 * * *  rsync -PAXrogthlm --files-from=${HOME}/etc/dot-files/backups.txt / ${HOME}/etc/
+00 0 * * *  rsync -PAXrogthlm --files-from=${HOME}/etc/dot-files/backups.txt / ${HOME}/etc/ >/dev/null
 ## Commit dot-files to git for extra backups
-10 0 * * *  cd ${HOME}/etc/dot-files && git commit --allow-empty -aqm "Autocommit: $(date -R)" && git push -q >/dev/null
+10 0 * * *  cd ${HOME}/etc/dot-files && git commit --allow-empty -aqm "Autocommit: $(date -R)" && git push -q >/dev/null 2>/dev/null
 ## Push local configuration and backups to another box.
-15 0 * * *  rsync -PAXrogthlm ${HOME}/etc/ /media/sf_H_DRIVE/etc/
-15 0 * * *  rsync -PAXrogthlm ${HOME}/opt/ /media/sf_H_DRIVE/opt/
+15 0 * * *  rsync -PAXrogthlm ${HOME}/etc/ /media/sf_H_DRIVE/etc/ >/dev/null
+15 0 * * *  rsync -PAXrogthlm ${HOME}/opt/ /media/sf_H_DRIVE/opt/ >/dev/null
 ## Install dot-files to development machines
-15 0 * * *  PATH="${HOME}/bin:${PATH}" ${HOME}/bin/install-dot-files.sh
+15 0 * * *  PATH="${HOME}/bin:${PATH}" ${HOME}/bin/install-dot-files.sh >/dev/null
 
 ## Keep /usr/local/bin up-to-date
-@daily  rsync -zPAXrogthlm opsynxsr0335:/usr/local/bin/ /usr/local/bin/
+@daily  rsync -zPAXrogthlm opsynxsr0335:/usr/local/bin/ /usr/local/bin/ >/dev/null
 ## Keep /opt/optiver up-to-date
-@daily  rsync -zPAXrogthlm --delete --exclude='gcc/4.7.2' --delete-excluded opsynxsr0335:/opt/optiver/ /opt/optiver/
+@daily  rsync -zPAXrogthlm --delete --exclude='gcc/4.7.2' --delete-excluded opsynxsr0335:/opt/optiver/ /opt/optiver/ >/dev/null
 ## Keep ~/repo up-to-date
-@daily find ${HOME}/repo/ -name .git -prune | while read; do ( cd "$(dirname "$REPLY")" && git pullb -q && git update || echo -e "\n${REPLY} Update Failed\n\n" ); done
+@daily find ${HOME}/repo/ -name .git -prune | while read; do ( cd "$(dirname "$REPLY")" && git pullb -q >/dev/null && git update >/dev/null || echo -e "\n${REPLY} Update Failed\n\n" ); done
 
 ## Clean builds every now and then
 @weekly find ${HOME}/repo/ -name .git -prune | while read; do ( cd "$(dirname "$REPLY")" && [ -e build.py ] && ( ./build.py -c -t all || echo -e "\n${REPLY} Clean Failed\n\n" ) ); done
