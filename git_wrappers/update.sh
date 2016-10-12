@@ -29,7 +29,7 @@ if [ "$1" == "-c" -o "$1" == "--clean" -o "$1" == "e-c" -o "$1" == "ec-" -o "$1"
 	git submodule deinit --force .
 else
 	if [ -x ./git_setup.py ]; then
-		./git_setup.py -kq
+		python ./git_setup.py -kq
 	elif [ -f ./.gitsvnextmodules -o -f ./externals.json ]; then
 		getdep
 	fi

@@ -13,7 +13,7 @@ fi
 
 git pull --all
 if [ -x ./git_setup.py ]; then
-	./git_setup.py -kq
+	python ./git_setup.py -kq
 else
 	getdep
 fi
@@ -51,7 +51,7 @@ EOF
 
 ## Update...
 if [ -x ./git_setup.py ]; then
-	./git_setup.py -kq
+	python ./git_setup.py -kq
 else
 	getdep
 fi

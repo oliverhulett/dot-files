@@ -37,7 +37,7 @@ python -m json.tool "externals.json" > /dev/null && echo "$(python -m json.tool 
 
 echo
 if [ -x ./git_setup.py ]; then
-	./git_setup.py -kq
+	python ./git_setup.py -kq
 else
 	getdep
 fi

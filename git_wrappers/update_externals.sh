@@ -20,7 +20,7 @@ find . -xdev -not \( -name '.git' -prune -or -name '.svn' -prune \) -name 'exter
 
 git pull --all
 if [ -x ./git_setup.py ]; then
-	./git_setup.py -kq
+	python ./git_setup.py -kq
 else
 	getdep
 fi
@@ -32,7 +32,7 @@ echo
 
 ## Update...
 if [ -x ./git_setup.py ]; then
-	./git_setup.py -kq
+	python ./git_setup.py -kq
 else
 	getdep
 fi
