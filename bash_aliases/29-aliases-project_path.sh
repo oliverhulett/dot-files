@@ -1,4 +1,5 @@
 # Aliases and function for finding top of project
+unalias get-project-root 2>/dev/null
 function get-project-root()
 {
 	if [ $# -eq 0 ]; then
@@ -26,3 +27,23 @@ function get-project-root()
 	get-project-root "$marker" "$(dirname "$dir")"
 }
 
+unalias repo 2>/dev/null
+function repo()
+{
+	dir="$(get-repo-dir "$@")"
+	echo "$dir"
+	cd "$dir"
+}
+unalias get-repo-dir 2>/dev/null
+function get-repo-dir()
+{
+	proj="$1"
+	repo="$2"
+	branch="${3:-master}"
+	if [ ! -d "${HOME}/repo/${proj}" ]; then
+		branch="${repo:-master}"
+		repo="${proj}"
+		proj='*'
+	fi
+	echo ${HOME}/repo/${proj}/${repo}/${branch}
+}
