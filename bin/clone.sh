@@ -46,6 +46,8 @@ if [ ! -e "${DEST_DIR}/.project" ]; then
 		## Fallback to python project.  Most projects will have some python anyway.
 		cp -rv "${ECLIPSE_PROJECT_FILES}/python/".[a-z]* ./
 	fi
+fi
+if [ ! -e "${DEST_DIR}/master/.project" ]; then
 	( cd master && ln -sv ../.[a-z]* ./ )
 	sed -re 's!<name>.+@master</name>!<name>'"${REPO}"'@master</name>!' .project -i 2>/dev/null
 fi
