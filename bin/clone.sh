@@ -4,8 +4,8 @@ GIT_URL_BASE="ssh://git@git.comp.optiver.com:7999"
 REPO_DIR="${HOME}/repo"
 
 if [ $# -eq 2 ]; then
-	PROJ="$(echo $1 | tr '[A-Z]' '[a-z]')"
-	REPO="$(echo $2 | tr '[A-Z]' '[a-z]')"
+	PROJ="$(echo $1 | tr '[A-Z]' '[a-z]' | tr ' ' -)"
+	REPO="$(echo $2 | tr '[A-Z]' '[a-z]' | tr ' ' -)"
 else
 	echo 2>/dev/null "Clone a repo into the repo heirarchy"
 	echo 2>/dev/null "$(basename "$0") <PROJECT> <REPOSITORY>"
@@ -28,7 +28,8 @@ trap cleanup EXIT
 set -e
 
 if [ ! -d "${DEST_DIR}/master" ]; then
-	git clone --recursive ${GIT_URL} master
+	echo "Cloning ${GIT_URL}"
+	git clone --recursive "${GIT_URL}" master
 	( cd master && git update )
 else
 	echo "${DEST_DIR}/master already exists."
@@ -46,8 +47,8 @@ if [ ! -e "${DEST_DIR}/.project" ]; then
 		## Fallback to python project.  Most projects will have some python anyway.
 		cp -rv "${ECLIPSE_PROJECT_FILES}/python/".[a-z]* ./
 	fi
+	sed -re 's!<name>.+@master</name>!<name>'"${REPO}"'@master</name>!' .project -i 2>/dev/null
 fi
 if [ ! -e "${DEST_DIR}/master/.project" ]; then
 	( cd master && ln -sv ../.[a-z]* ./ )
-	sed -re 's!<name>.+@master</name>!<name>'"${REPO}"'@master</name>!' .project -i 2>/dev/null
 fi
