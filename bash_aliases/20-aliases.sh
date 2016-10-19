@@ -87,20 +87,6 @@ alias reboot='sudo shutdown -r'
 # Functions
 # #########
 
-unalias table 2>/dev/null
-#function table
-#{
-#	filename="-"
-#	for f in "$@"; do
-#		if [ -f "$f" ]; then
-#			filename="$f"
-#			break
-#		fi
-#	done
-#	head -1 "$filename"
-#	"$@"
-#}
-
 unalias cat 2>/dev/null
 function cat
 {
