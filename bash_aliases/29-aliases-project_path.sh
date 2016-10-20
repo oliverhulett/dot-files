@@ -37,13 +37,42 @@ function repo()
 unalias get-repo-dir 2>/dev/null
 function get-repo-dir()
 {
+	set -- $(echo "$@" | tr '/' ' ')
 	proj="$1"
-	repo="$2"
-	branch="${3:-master}"
+	shift
+	repo="$1"
+	shift
+	branch="${1:-master}"
+	shift
 	if [ ! -d "${HOME}/repo/${proj}" ]; then
 		branch="${repo:-master}"
 		repo="${proj}"
 		proj='*'
 	fi
-	echo ${HOME}/repo/${proj}/${repo}/${branch}
+	echo ${HOME}/repo/${proj}/${repo}/${branch}/"$(echo $* | tr ' ' '/')"
 }
+alias repo-dir=get-repo-dir
+
+function complete_repo()
+{
+	compgen_cmd="compgen -d -X '.*' -X 'RemoteSystemsTempFiles'"
+	if [ $COMP_CWORD -gt 3 ]; then
+		compgen_cmd="$compgen_cmd -S '/'"
+	fi
+	dir_part="$(echo ${COMP_WORDS[@]:1:$((COMP_CWORD - 1))} | tr ' ' '/')"
+	if [ ! -d "${HOME}/repo/${dir_part}" ]; then
+		new_dir_part="$(cd "${HOME}/repo" && echo */${dir_part})"
+		if [ -d "${HOME}/repo/${new_dir_part}" ]; then
+			dir_part="${new_dir_part}"
+		fi
+	fi
+	COMPREPLY=($(cd "${HOME}/repo/${dir_part}/" && $compgen_cmd -- "${COMP_WORDS[$COMP_CWORD]}"))
+	if [ $COMP_CWORD == 1 ]; then
+		# Special case, first word can be project or repo
+		for d in ${HOME}/repo/*; do
+			COMPREPLY=("${COMPREPLY[@]}" $(cd "$d" && $compgen_cmd -- "${COMP_WORDS[$COMP_CWORD]}"))
+		done
+	fi
+}
+complete -F complete_repo repo repo-dir get-repo-dir
+

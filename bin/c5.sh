@@ -17,6 +17,9 @@ TTY=
 if [ -t 1 ]; then
 	TTY="--tty=true --interactive=true"
 fi
+if [ $# == 0 ]; then
+	set -- bash
+fi
 docker run -u `id -u`:`id -g` -h `hostname` --cpu-shares=`nproc` \
 	-v /etc/passwd:/etc/passwd -v /etc/shadow:/etc/shadow -v /etc/group:/etc/group -v /etc/gshadow:/etc/gshadow \
 	-v /etc/sudo.conf:/etc/sudo.conf -v /etc/sudoers:/etc/sudoers -v /etc/sudoers.d:/etc/sudoers.d -v /etc/pam.d:/etc/pam.d \
