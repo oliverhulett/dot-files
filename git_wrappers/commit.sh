@@ -16,30 +16,39 @@ branch="$(git branch --no-color | sed -nre 's/^\* //p' | cut -d'_' -f1)"
 startmode="-c startinsert"
 if [ "$branch" == "master" ]; then
 	branch=
-	read -p "Prepend a ticket to commit message? [Y/n/q] " -n1 -r
+	read -p "Prepend a ticket to commit message? [y/N/q] " -n1 -r
 	echo
-	if [ "`echo $REPLY | tr [A-Z] [a-z]`" == "n" ]; then
-		branch=
-	elif [ "`echo $REPLY | tr [A-Z] [a-z]`" == "q" ]; then
-		exit
-	else
+	if [ "`echo $REPLY | tr [A-Z] [a-z]`" == "y" ]; then
 		echo -n "$(tput bold)Ticket:$(tput sgr0)  "
 		read
 		branch="$REPLY:  "
+		REPLY=
+	elif [ "`echo $REPLY | tr [A-Z] [a-z]`" == "q" ]; then
+		exit
+	else
+		branch=
+		if [ "`echo $REPLY | tr [A-Z] [a-z]`" == "n" ]; then
+			REPLY=
+		fi
 	fi
 else
 	read -p "Prepend ticket ($branch) to commit message? [Y/n/o/q] " -n1 -r
 	echo
 	if [ "`echo $REPLY | tr [A-Z] [a-z]`" == "n" ]; then
 		branch=
+		REPLY=
 	elif [ "`echo $REPLY | tr [A-Z] [a-z]`" == "o" ]; then
 		echo -n "$(tput bold)Ticket:$(tput sgr0)  "
 		read
 		branch="$REPLY:  "
+		REPLY=
 	elif [ "`echo $REPLY | tr [A-Z] [a-z]`" == "q" ]; then
 		exit
 	else
 		branch="$branch:  "
+		if [ "`echo $REPLY | tr [A-Z] [a-z]`" == "y" ]; then
+			REPLY=
+		fi
 	fi
 fi
 
@@ -60,11 +69,16 @@ function special_vim()
 }
 
 echo "Type a simple, single line, commit message that will be prefixed with the ticket name; or press 'e' or type 'edit' to launch ${VISUAL:-vim}"
-read -n1 -r -s
-if [ "${REPLY}" == "e" -o "${REPLY}" == "E" ]; then
+set -x
+echo -n "${REPLY}"
+read -r -n$(( ${#REPLY} + 1 )) -s -ei ${REPLY}
+echo -n "${REPLY}"
+if [ ${#REPLY} -eq 1 ] && [ "${REPLY}" == "e" -o "${REPLY}" == "E" ]; then
 	special_vim "$@"
 elif [ -n "${REPLY}" ]; then
-	read -ei "${REPLY}"
+echo -n "${REPLY}"
+	read -ei ${REPLY}
+echo -n "${REPLY}"
 	if [ "$(echo ${REPLY} | tr '[A-Z]' '[a-z]')" == "edit" -o "${REPLY}" == "e" -o "${REPLY}" == "E" ]; then
 		special_vim "$@"
 	else
@@ -74,4 +88,4 @@ elif [ -n "${REPLY}" ]; then
 	fi
 fi
 echo
-
+set +x
