@@ -69,16 +69,12 @@ function special_vim()
 }
 
 echo "Type a simple, single line, commit message that will be prefixed with the ticket name; or press 'e' or type 'edit' to launch ${VISUAL:-vim}"
-set -x
-echo -n "${REPLY}"
-read -r -n$(( ${#REPLY} + 1 )) -s -ei ${REPLY}
-echo -n "${REPLY}"
-if [ ${#REPLY} -eq 1 ] && [ "${REPLY}" == "e" -o "${REPLY}" == "E" ]; then
+msg="${REPLY}"
+read -r -n1 -s
+if [ "${REPLY}" == "e" -o "${REPLY}" == "E" ]; then
 	special_vim "$@"
 elif [ -n "${REPLY}" ]; then
-echo -n "${REPLY}"
-	read -ei ${REPLY}
-echo -n "${REPLY}"
+	read -ei ${msg}${REPLY}
 	if [ "$(echo ${REPLY} | tr '[A-Z]' '[a-z]')" == "edit" -o "${REPLY}" == "e" -o "${REPLY}" == "E" ]; then
 		special_vim "$@"
 	else
@@ -88,4 +84,3 @@ echo -n "${REPLY}"
 	fi
 fi
 echo
-set +x

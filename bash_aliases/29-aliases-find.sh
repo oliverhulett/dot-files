@@ -31,7 +31,7 @@ function safefind
 	if [ ${#DIRS[@]} -eq 0 ]; then
 		DIRS[0]="./"
 	fi
-	find $dashh $dashl $dashp "${DIRS[@]}" -nowarn -not \( -name '.git' -prune -or -name '.svn' -prune \) \( "$@" \)
+	find $dashh $dashl $dashp "${DIRS[@]}" -nowarn -not \( -name '.git' -prune -or -name '.svn' -prune -or -name '.venv' -prune -or -name '.virtualenv' -prune \) \( "$@" \)
 }
 
 unalias findin 2>/dev/null

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 ## Until v2.5 git would pre-pend /usr/bin to path, which means the wrong python is found.
 source "$(dirname "$(readlink -f "$0")")/../bash_aliases/09-profile.d-pyvenv.sh"
@@ -24,17 +24,26 @@ if [ "$1" == "-c" -o "$1" == "--clean" -o "$1" == "e-c" -o "$1" == "ec-" -o "$1"
 		sed -nre 's/^[ \t]+"(.+)": \{/\1/p' "$REPLY" | tee >(cd "$(dirname "$REPLY")" && xargs rm -rf) | xargs
 	done
 	echo "Removing '.git/externals/' and likely external directories: " x_*
-	rm -rf .git/externals x_* 2>/dev/null
+	rm -rf .git/externals x_* 2>/dev/null || true
 
 	git submodule deinit --force .
 else
-	if [ -x ./git_setup.py ]; then
-		python ./git_setup.py -kq
-	elif [ -f ./.gitsvnextmodules -o -f ./externals.json ]; then
-		getdep
-	fi
-	if [ -f ./deps.json ]; then
-		courier
+	if [ -f ".gitsvnextmodules" -o -f "gitsvnextmodules" -o -f "externals.json" -o -f "deps.json" ]; then
+		OUT1="$(python ./git_setup.py -kq 2>&1)" || OUT2="$(getdep 2>&1)" || OUT3="$(courier 2>&1)" || ( echo -e "python ./git_setup.py -kq\n${OUT1}\n\ngetdep\n${OUT2}\n\ncourier\n${OUT3}\n" && false )
+		if [ -n "${OUT3}" ]; then
+			echo -ne "${OUT3}\n"
+			## Special case if we ran courier, remove commit hooks installed by `getdep`.
+			getdep_hook="$(dirname $(dirname $(/usr/bin/which getdep)))/lib/python2.7/site-packages/getdep/hooks/pull-if"
+			for hook in post-checkout post-commit post-merge; do
+				if [ -L ".git/hooks/${hook}" -a ".git/hooks/${hook}" -ef "${getdep_hook}" ]; then
+					rm ".git/hooks/${hook}"
+				fi
+			done
+		elif [ -n "${OUT2}" ]; then
+			echo -ne "${OUT2}\n"
+		elif [ -n "${OUT1}" ]; then
+			echo -ne "${OUT1}\n"
+		fi
 	fi
 	
 	git submodule init

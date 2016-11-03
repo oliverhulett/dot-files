@@ -11,7 +11,7 @@ def _update_env():
     _auth = open(_expanduser(_join("~", "etc", "release.auth"))).read().strip().split(':')
     
     _environ['SMB_USER'] = 'olihul'
-    _environ['SMB_PASS'] = '4tyTw0!?'
+    _environ['SMB_PASS'] = 'f0urtytwo!'
     _environ['WIKI_USER'] = _auth[0]
     _environ['WIKI_PASS'] = _auth[1]
     _environ['JIRA_USER'] = _auth[0]

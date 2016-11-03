@@ -8,7 +8,7 @@ MAILTO=olihul@optiver.com.au
 ## This section, for backups, should run @daily, but the local backups need to happen before the off box backups so that
 ## we're saving the latest stuff off box, hence the 5 minute delay for the off box lines at the end.
 ## Crontabs live in /var/spool/, so take a backup of this crontab on a separate partition.
-00 0 * * *  crontab -l >${HOME}/etc/dot-files/crontab
+00 0 * * *  crontab -l >${HOME}/etc/dot-files/crontab && echo "## Backed up at `date`" >>${HOME}/etc/dot-files/crontab
 ## Save list of installed software
 00 0 * * *  rpm -qa | sort >${HOME}/etc/dot-files/installed-software.txt
 ## Backup a small number of key system-wide configuration files.
@@ -26,7 +26,7 @@ MAILTO=olihul@optiver.com.au
 ## Keep /opt/optiver up-to-date
 @daily  rsync -zPAXrogthlm --delete --exclude='gcc/4.7.2' --delete-excluded opsynxsr0335:/opt/optiver/ /opt/optiver/ >/dev/null
 ## Keep ~/repo up-to-date
-@daily find ${HOME}/repo/ -name .git -prune | while read; do ( cd "$(dirname "$REPLY")" && git pullb -q >/dev/null && git update >/dev/null || echo -e "\n${REPLY} Update Failed\n\n" ); done
+@daily find ${HOME}/repo/ -type d -exec test -d "{}/.git" \; -prune -print | while read; do ( cd "$REPLY" && git pullb -q >/dev/null && git update >/dev/null && ( [ ! -f pins.json ] || git checkout pins.json >/dev/null ) ) || echo -e "\n${REPLY} Update Failed\n\n"; done
 
 ## Clean builds every now and then
 @weekly find ${HOME}/repo/ -name .git -prune | while read; do ( cd "$(dirname "$REPLY")" && [ -e build.py ] && ( ./build.py -c -t all || echo -e "\n${REPLY} Clean Failed\n\n" ) ); done
@@ -34,3 +34,4 @@ MAILTO=olihul@optiver.com.au
 ## Clean /tmp every now and then
 @weekly find /tmp /var/tmp -xdev -not -exec /sbin/fuser -s "{}" \; -delete 2>/dev/null
 
+## Backed up at Fri Nov  4 00:00:01 AEDT 2016
