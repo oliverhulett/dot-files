@@ -1,7 +1,7 @@
 #!/bin/bash -e
 
 ## Until v2.5 git would pre-pend /usr/bin to path, which means the wrong python is found.
-source "$(dirname "$(readlink -f "$0")")/../bash_aliases/09-profile.d-pyvenv.sh"
+source "$(dirname "$(readlink -f "$0")")/../bash_aliases/09-profile.d-pyvenv.sh"|| true
 ## If we're using dependencies.json, check that it is sane.
 if [ -f ./dependencies.json ]; then
 	python -m json.tool ./dependencies.json
@@ -23,8 +23,8 @@ if [ "$1" == "-c" -o "$1" == "--clean" -o "$1" == "e-c" -o "$1" == "ec-" -o "$1"
 		echo "Removing externals from: $REPLY"
 		sed -nre 's/^[ \t]+"(.+)": \{/\1/p' "$REPLY" | tee >(cd "$(dirname "$REPLY")" && xargs rm -rf) | xargs
 	done
-	echo "Removing '.git/externals/' and likely external directories: " x_*
-	rm -rf .git/externals x_* 2>/dev/null || true
+	echo "Removing '.gitexternals', '.git/externals/', and likely external directories: " x_*
+	rm -rf .gitexternals .git/externals x_* 2>/dev/null || true
 
 	git submodule deinit --force .
 else

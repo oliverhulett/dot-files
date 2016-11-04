@@ -21,6 +21,6 @@ rm drone_linux_amd64.tar.gz
 
 python_setup
 
-pip install --upgrade invoke docker-compose
+pip install --upgrade invoke docker-compose devpi
 sudo yum install -y http://artifactory.aus.optiver.com/artifactory/dev/trd/courier-1.1.0-1.x86_64.rpm
 

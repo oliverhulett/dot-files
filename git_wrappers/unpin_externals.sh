@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ## Until v2.5 git would pre-pend /usr/bin to path, which means the wrong python is found.
-source "$(dirname "$(readlink -f "$0")")/../bash_aliases/09-profile.d-pyvenv.sh"
+source "$(dirname "$(readlink -f "$0")")/../bash_aliases/09-profile.d-pyvenv.sh" || true
 if [ ! -f ./externals.json ]; then
 	echo "Cannot modify externals.  No externals.json found."
 	exit 1
