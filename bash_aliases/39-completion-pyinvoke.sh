@@ -22,11 +22,17 @@ _complete_invoke() {
     COMPREPLY=( $(compgen -W "${candidates}" -- $2) )
 }
 
+_complete_build() {
+    local candidates
+    candidates=`./build.py --complete -- ${COMP_WORDS[*]} 2>/dev/null`
+    COMPREPLY=( $(compgen -W "${candidates}" -- $2) )
+}
 
 # Tell shell builtin to use the above for completing 'inv'/'invoke':
 # * -F: use given function name to generate completions.
 # * -o default: when function generates no results, use filenames.
 # * positional args: program names to complete for.
-complete -F _complete_invoke -o default invoke inv c5inv c5invoke ./build.py build.py c5build.py build c5build
+complete -F _complete_invoke -o default invoke inv c5inv c5invoke
+complete -F _complete_build -o default ./build.py build.py c5build.py build c5build
 
 # vim: set ft=sh :
