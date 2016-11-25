@@ -18,6 +18,7 @@ elif [ $REMOTE_HOST_COUNT -eq 1 ] ; then
 	SSH_COLO="${COLO}_logs_today"
 	LOG_PATH="/data/logsync/log/$COLO/$HOST.aus.optiver.com"
 	#exec ssh -t $SSH_COLO /usr/local/bin/apps/logless.py "$LOG_PATH/$1.log"
+	echo "Opening log file: ${SSH_COLO}:${LOG_PATH}/$1.log"
 	exec "$(dirname "$0")/ssh.sh" -t $SSH_COLO less "$LOG_PATH/$1.log"
 else
 	echo 'Multiple hosts found: '
