@@ -3,7 +3,7 @@
 # Wrapper for `go get`
 #
 
-export GOPATH="${HOME}/3rd_party_tools/gotools"
+export GOPATH="${GOTOOLS}"
 
 if ! echo "${HTTP_PROXY}" | grep -q "`whoami`" 2>/dev/null; then
 	source "${HOME}/.bash_aliases/19-env-proxy.sh" 2>/dev/null
@@ -15,5 +15,3 @@ echo "Go-ing and Get-ing packages"
 echo "\$ go get $@"
 go get "$@" || exit 1
 
-echo "Installing packages in path: ${GOPATH}/bin/ -> ${HOME}/bin/"
-( cd "${HOME}/bin/" && ln -nsfv "${GOPATH}/bin/"* ./ )
