@@ -43,8 +43,6 @@ alias file='file -krz'
 alias top='top -c'
 alias less='less -RFiMx4'
 export LESS='-RFiMx4'
-alias inv='inv -p'
-alias invoke='invoke -p'
 
 if uname -s | real_grep -q 'MINGW' >/dev/null 2>&1 ; then
 	alias ifconfig='ipconfig'
