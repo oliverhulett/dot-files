@@ -3,15 +3,18 @@
 ## Until v2.5 git would pre-pend /usr/bin to path, which means the wrong python is found.
 source "$(dirname "$(readlink -f "$0")")/../bash_aliases/09-profile.d-pyvenv.sh" || true
 
-getdep -s
+EXTERNALS="$(git ls-files '*externals.json')"
+
+git update 2>/dev/null >/dev/null
 
 echo
 echo "Pinning externals"
-for d in $(find . -xdev -not \( -name '.git' -prune -or -name '.svn' -prune \) -name 'externals.json'); do
-	( cd $(dirname $d) && python -m getdep.pin_externals )
-	( cd $(dirname $d) && python -m json.tool "externals.json" > /dev/null && echo "$(python -m json.tool "externals.json")" > "externals.json" )
+export PYTHONPATH="${HOME}/repo/pyu/git_utils/master"
+for d in "${EXTERNALS}"; do
+	( cd $(dirname $d) && python -m git_utils.pin_externals )
+    python -m json.tool $d > /dev/null && echo "$(python -m json.tool $d)" > $d
 done
 echo
 
-getdep -s
+git update 2>/dev/null >/dev/null
 

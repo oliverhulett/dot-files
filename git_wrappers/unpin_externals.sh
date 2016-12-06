@@ -2,13 +2,13 @@
 
 ## Until v2.5 git would pre-pend /usr/bin to path, which means the wrong python is found.
 source "$(dirname "$(readlink -f "$0")")/../bash_aliases/09-profile.d-pyvenv.sh" || true
-if [ ! -f ./externals.json ]; then
-	echo "Cannot modify externals.  No externals.json found."
-	exit 1
-fi
 
-python <<EOF
+EXTERNALS="$(git ls-files '*externals.json')"
+
+echo "Unpinning externals..."
+python - ${EXTERNALS} <<EOF
 import os
+import sys
 import json
 import subprocess
 
@@ -29,16 +29,14 @@ def do_file(name):
     with open(name, 'w') as f:
         json.dump(xternals, f, indent=4)
 
-files = ['externals.json']
+files = sys.argv[1:]
 while len(files) > 0:
     do_file(files.pop(0))
 EOF
-python -m json.tool "externals.json" > /dev/null && echo "$(python -m json.tool "externals.json")" > "externals.json"
 
-echo
-if [ -x ./git_setup.py ]; then
-	python ./git_setup.py -kq
-else
-	getdep
-fi
+for d in "${EXTERNALS}"; do
+    python -m json.tool $d > /dev/null && echo "$(python -m json.tool $d)" > $d
+done
+
+git update 2>/dev/null >/dev/null
 
