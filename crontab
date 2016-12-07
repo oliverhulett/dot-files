@@ -34,4 +34,8 @@ MAILTO=olihul@optiver.com.au
 ## Clean /tmp every now and then
 @weekly find /tmp /var/tmp -xdev -not -exec /sbin/fuser -s "{}" \; -delete 2>/dev/null
 
-## Backed up at Wed Dec  7 00:00:02 AEDT 2016
+## Clean docker containers and images every now and then
+@weekly docker rm $(docker ps -a -q)
+@weekly docker rmi $(docker images -q)
+
+## Backed up at Thu Dec  8 00:00:02 AEDT 2016
