@@ -30,7 +30,7 @@ if [ ! -f "$HOME/.pypirc" ]; then
 	echo "repository=${PIP_INDEX_URL%/+simple/}" >>"$HOME/.pypirc"
 fi
 
-function pip()
+function do_pip()
 {
 	if [ -z "${PIP_AUTO_COMPLETE}" -o "${PIP_AUTO_COMPLETE}" != "1" ]; then
 		if ! echo "${HTTP_PROXY}" | grep -q "`whoami`" 2>/dev/null; then
@@ -38,9 +38,8 @@ function pip()
 			proxy_setup
 		fi
 	fi
-	if [ -z "$REAL_PIP" ]; then
-		REAL_PIP="$(get_real_exe pip)"
-	fi
+	REAL_PIP="$(get_real_exe $1)"
+	shift
 	## We need to use the same GCC version that was used by our system python.
 	## `prepend_path` will prepend given paths in reverse order.
 	(
@@ -48,6 +47,8 @@ function pip()
 		"$REAL_PIP" "$@"
 	)
 }
+alias pip3="do_pip pip3"
+alias pip="do_pip pip"
 
 function python_setup()
 {

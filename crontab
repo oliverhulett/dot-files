@@ -24,7 +24,7 @@ MAILTO=olihul@optiver.com.au
 ## Keep /usr/local/bin up-to-date
 @daily  rsync -zPAXrogthlm opsynxsr0335:/usr/local/bin/ /usr/local/bin/ >/dev/null
 ## Keep /opt/optiver up-to-date
-@daily  rsync -zPAXrogthlm --delete --exclude='gcc/4.7.2' --delete-excluded opsynxsr0335:/opt/optiver/ /opt/optiver/ >/dev/null
+@daily  docker run --rm -v /opt/optiver:/mnt docker-registry.aus.optiver.com/servicedelivery/el5-development /bin/bash -c "rsync -zPAXrogthlm --delete --exclude='gcc/4.7.2' --delete-excluded /opt/optiver/ /mnt/ && chown -R $(id -u olihul) /mnt/" >/dev/null
 ## Keep ~/repo up-to-date
 @daily find ${HOME}/repo/ -type d -exec test -d "{}/.git" \; -prune -print | while read; do ( cd "$REPLY" && git pullb -q >/dev/null && git update >/dev/null && ( [ ! -f pins.json ] || git checkout pins.json >/dev/null ) ) || echo -e "\n${REPLY} Update Failed\n\n"; done
 
@@ -38,4 +38,4 @@ MAILTO=olihul@optiver.com.au
 @weekly docker rm $(docker ps -a -q)
 @weekly docker rmi $(docker images -q)
 
-## Backed up at Thu Dec  8 00:00:02 AEDT 2016
+## Backed up at Fri Dec  9 00:00:01 AEDT 2016

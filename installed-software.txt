@@ -1060,6 +1060,8 @@ PyQt4-4.10.1-13.el7.x86_64
 pytalloc-2.1.2-1.el7.x86_64
 python-2.7.5-34.el7.x86_64
 python2-rsa-3.3-2.el7.noarch
+python34-3.4.3-4.el7.x86_64
+python34-libs-3.4.3-4.el7.x86_64
 python-astroid-1.2.1-2.el7.noarch
 python-augeas-0.5.0-2.el7.noarch
 python-backports-1.0-8.el7.x86_64
