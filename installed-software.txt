@@ -821,6 +821,7 @@ mozjs24-24.2.0-6.el7.x86_64
 mpfr-3.1.1-4.el7.x86_64
 mtdev-1.1.5-5.el7.x86_64
 mutter-3.14.4-17.el7.x86_64
+myrepos-1.20151022-1.el7.noarch
 ncurses-5.9-13.20130511.el7.x86_64
 ncurses-base-5.9-13.20130511.el7.noarch
 ncurses-libs-5.9-13.20130511.el7.x86_64
@@ -1060,7 +1061,6 @@ PyQt4-4.10.1-13.el7.x86_64
 pytalloc-2.1.2-1.el7.x86_64
 python-2.7.5-34.el7.x86_64
 python2-rsa-3.3-2.el7.noarch
-python34-3.4.3-4.el7.x86_64
 python34-libs-3.4.3-4.el7.x86_64
 python-astroid-1.2.1-2.el7.noarch
 python-augeas-0.5.0-2.el7.noarch

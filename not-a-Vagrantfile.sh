@@ -7,7 +7,7 @@ source "${HOME}/.bash_aliases/19-env-pyvenv_setup.sh"
 proxy_setup
 
 sudo yum groupinstall -y "Development Tools"
-sudo yum install -y yum-cron wget curl telnet postgresql-server postgresql-contrib postgresql freetype-devel libpng-devel python-devel unixODBC-devel postgresql-devel libxml2-devel libxslt-devel python34
+sudo yum install -y yum-cron wget curl telnet postgresql-server postgresql-contrib postgresql freetype-devel libpng-devel python-devel unixODBC-devel postgresql-devel libxml2-devel libxslt-devel
 sudo yum install -y cmake ccache distcc protobuf protobuf-c protobuf-python protobuf-compiler valgrind protobuf-vim golang-vim jq clang-devel clang clang-analyzer
 sudo yum install -y vagrant yakuake iotop nethogs sysstat aspell aspell-en cifs-utils samba samba-client openssl-libs openssl-static wireshark java-1.8.0-openjdk-devel java-1.8.0-openjdk
 

@@ -74,5 +74,6 @@ function python_setup()
 	pip install --upgrade psycopg2==2.5.4
 	sudo -n yum -y install libxml2-devel libxslt-devel
 	pip install --upgrade 'lxml<3.4'
+	pip install --upgrade invoke
 }
 
