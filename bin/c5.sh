@@ -2,7 +2,7 @@
 
 # Use a docker container to build things under c5
 TMP="$(mktemp -t "docker.$(basename "$1").XXXXXXXXXX")"
-trap 'rm -fv ${TMP}' EXIT
+trap 'echo "Leaving c5" && rm -fv ${TMP}' EXIT
 "$REAL_CAT" >"$TMP" <<-'EOF'
 	#!/bin/bash
 	## LESSOPEN does not work on c5 :(
