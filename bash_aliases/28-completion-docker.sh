@@ -32,7 +32,7 @@
 # "rmi" and "save" commands by settings the following environment
 # variables:
 #
-DOCKER_COMPLETION_SHOW_IMAGE_IDS="non-intermediate"
+# DOCKER_COMPLETION_SHOW_IMAGE_IDS
 #   "none" - Show names only (default)
 #   "non-intermediate" - Show names and ids, but omit intermediate image IDs
 #   "all" - Show names and ids, including intermediate image IDs
