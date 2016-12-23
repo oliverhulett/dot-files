@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash -e
 
 IMAGES="$( (
 	docker images | awk 'NR>1 { if ( $1 != "<none>" ) { print $1 } }'
