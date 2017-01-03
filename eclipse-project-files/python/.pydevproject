@@ -3,7 +3,6 @@
 <pydev_property name="org.python.pydev.PYTHON_PROJECT_INTERPRETER">Default</pydev_property>
 <pydev_property name="org.python.pydev.PYTHON_PROJECT_VERSION">python 2.6</pydev_property>
 <pydev_pathproperty name="org.python.pydev.PROJECT_EXTERNAL_SOURCE_PATH">
-<path>/opt/optiver/onetick/one_market_data/one_tick/bin/</path>
 </pydev_pathproperty>
 
 </pydev_project>
