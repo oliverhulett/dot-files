@@ -15,13 +15,14 @@ function run()
 
 for server in "${SERVERS[@]}"; do
 	run ssh ${server} 'mkdir .bash_aliases .git_wrappers etc 2>/dev/null'
-	run ssh ${server} 'sh -c "ping -qc1 -W2 git.comp.optiver.com >/dev/null && git clone --recursive ssh://git@git.comp.optiver.com:7999/~olihul/dot-files.git etc/dot-files"'
+	run ssh ${server} 'rm -rf pyvenv 2>/dev/null'
+	run ssh ${server} 'sh -c "ping -qc1 -W2 git.comp.optiver.com >/dev/null && git clone --recursive ssh://git@git.comp.optiver.com:7999/~olihul/dot-files.git etc/dot-files 2>/dev/null"'
 	run ssh ${server} 'sh -c "ping -qc1 -W2 git.comp.optiver.com >/dev/null && cd etc/dot-files && git pull && git submodule update"'
 done
 
 run dev-push-all.sh --delete --exclude='.git' --exclude='dot-files' "${SERVERS[@]/%/:}" "${FILES[@]}"
 
 for server in "${SERVERS[@]}"; do
-	run ssh ${server} 'find -L .bash_aliases/ -type l -delete'
 	ssh ${server} 'ping -qc1 -W2 git.comp.optiver.com >/dev/null' || rsync --delete -zpPXrogthlcm --exclude='.git' "${HOME}/etc/dot-files/" ${server}:"${HOME}/etc/dot-files/"
+	run ssh ${server} 'find -L .bash_aliases/ -type l -delete'
 done

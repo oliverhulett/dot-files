@@ -11,4 +11,7 @@ alias c5invoke='INVOKE_BUILD_ROOT="build/c5" c5 inv'
 
 alias virtualenv-2.6=virtualenv
 
-complete -F _root_command c5
+alias dock=dock.sh
+alias sdock=sdock.sh
+
+complete -F _root_command c5 dock.sh dock sdock.sh sdock

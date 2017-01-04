@@ -40,4 +40,4 @@ MAILTO=olihul@optiver.com.au
 @weekly docker rm $(docker ps -a -q)
 @weekly docker rmi $(docker images -q)
 
-## Backed up at Wed Jan  4 00:00:01 AEDT 2017
+## Backed up at Thu Jan  5 00:00:01 AEDT 2017
