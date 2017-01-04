@@ -1,0 +1,4 @@
+[submodule "bootstrap-docker"]
+	path = bootstrap
+	url = ssh://git@git.comp.optiver.com:7999/~olihul/bootstrap-docker-build.git
+	branch = master

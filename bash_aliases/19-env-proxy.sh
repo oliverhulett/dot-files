@@ -36,8 +36,8 @@ function urldecode()
 
 function proxy_setup()
 {
-	echo "Username: $USER";
-	read -rs -p "Password: " PASSWD;
+	echo "HTTP Proxy Username: $USER";
+	read -rs -p "HTTP Proxy Password: " PASSWD;
 	echo;
 	if [ -z "${http_proxy_orig}" ]; then
 		export http_proxy_orig="${http_proxy}"
