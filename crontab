@@ -14,10 +14,11 @@ MAILTO=olihul@optiver.com.au
 ## Backup a small number of key system-wide configuration files.
 00 0 * * *  rsync -PAXrogthlm --files-from=${HOME}/etc/dot-files/backups.txt / ${HOME}/etc/ >/dev/null
 ## Commit dot-files to git for extra backups
-10 0 * * *  cd ${HOME}/etc/dot-files && git commit --allow-empty -aqm "Autocommit: $(date -R)\n$(git status)" && git push -q >/dev/null 2>/dev/null
+10 0 * * *  cd ${HOME}/etc/dot-files && git commit --allow-empty -aqm "Autocommit: $(date -R)\n$(git status)" && git push -q >/dev/null 2>/dev/null && ${HOME}/bin/dock.sh --bootstrap-docker-force-push
 ## Push local configuration and backups to another box.
-15 0 * * *  rsync -PAXrogthlm ${HOME}/etc/ /media/sf_H_DRIVE/etc/ >/dev/null
-15 0 * * *  rsync -PAXrogthlm ${HOME}/opt/ /media/sf_H_DRIVE/opt/ >/dev/null
+15 0 * * *  rsync -PAXrogthlm --delete --exclude='dot-files' --delete-excluded ${HOME}/etc/ /media/sf_H_DRIVE/etc/ >/dev/null
+15 0 * * *  rsync -PAXrogthlm --delete ${HOME}/opt/ /media/sf_H_DRIVE/opt/ >/dev/null
+15 0 * * *  rsync -PAXrogthlm --delete ${HOME}/.ssh/ /media/sf_H_DRIVE/.ssh/ >/dev/null
 ## Install dot-files to development machines
 15 0 * * *  PATH="${HOME}/bin:${PATH}" ${HOME}/bin/install-dot-files.sh >/dev/null
 
@@ -40,4 +41,4 @@ MAILTO=olihul@optiver.com.au
 @weekly docker rm $(docker ps -a -q)
 @weekly docker rmi $(docker images -q)
 
-## Backed up at Thu Jan  5 00:00:01 AEDT 2017
+## Backed up at Fri Jan  6 00:00:01 AEDT 2017
