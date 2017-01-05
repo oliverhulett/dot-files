@@ -5,4 +5,4 @@ if ! echo "${HTTP_PROXY}" | grep -q "`whoami`" 2>/dev/null; then
 	proxy_setup
 fi
 
-$(dirname $0)/../bootstrap/bootstrap_docker_build.py --bootstrap-docker-image="$(dirname $0)/../Dockerfile" --superuser
+$(dirname $0)/../bootstrap/bootstrap_docker_build.py --bootstrap-docker-image="$(dirname $0)/../images/c7/Dockerfile" --superuser
