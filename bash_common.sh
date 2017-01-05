@@ -18,10 +18,10 @@ function reentrance_hash()
 		if [ "$(dirname "$i")" == "/dev/fd" ]; then
 			## I don't know what's going on here, but temporary files (of the form
 			## <(echo this)) tend not to work without this cat-in-a-loop.  :(
-			real_cat "$i" 2>/dev/null 1>&2
+			command cat "$i" 2>/dev/null 1>&2
 		fi
 	done
-	real_cat "${HOME}/etc/dot-files/bash_common.sh" "$@" 2>/dev/null | md5sum
+	command cat "${HOME}/etc/dot-files/bash_common.sh" "$@" 2>/dev/null | md5sum
 }
 
 function reentrance_check()
@@ -48,24 +48,6 @@ function reentered()
 {
 	reentrance_check "$(basename "$(readlink -f "$(caller 0 | cut -d' ' -f3-)")")" "$@"
 }
-
-##  Get real (pathed) versions of commands we will later replace with aliases or functions.
-##  TODO:  Handle executable paths with spaces and executable names with spaces.
-function get_real_exe()
-{
-	for exe in "$@"; do
-		for f in $(type -fa $exe 2>/dev/null | sed -re 's/[^ ]+ is (.+)$/\1/'); do
-			if [ -x "$f" ]; then
-				eval export REAL_$(echo $exe | tr '[a-z]' '[A-Z]')="$f"
-				alias real_${exe}="$f"
-				echo "$f"
-				break
-			fi
-		done
-	done
-	unset exe
-}
-get_real_exe cat >/dev/null 2>/dev/null
 
 function echo_clean_path()
 {

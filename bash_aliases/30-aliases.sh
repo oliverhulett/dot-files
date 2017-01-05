@@ -1,8 +1,6 @@
 # Aliases
 source "${HOME}/etc/dot-files/bash_common.sh"
 
-get_real_exe ls grep >/dev/null
-
 alias lssc='lss --color=none'
 alias lsc='lss --color=none'
 alias lslc='lsl --color=none'
@@ -14,21 +12,21 @@ alias lsncl='lsnc -l'
 function lss
 {
 	#	List all with indicators, human readable sizes and no backups
-	$REAL_LS -ABhF --color=always "$@"
+	command ls -ABhF --color=always "$@"
 }
 function lsn
 {
 	#	No -A, No -B (-B implies -a)
-	$REAL_LS -hF --color=always "$@"
+	command ls -hF --color=always "$@"
 }
 function lsl
 {
 	#	With -l, No -B
-	$REAL_LS -AlhF --color=always "$@"
+	command ls -AlhF --color=always "$@"
 }
 alias ls='lss '
 
-if uname -s | real_grep -q 'MINGW' >/dev/null 2>&1 ; then
+if uname -s | command grep -q 'MINGW' >/dev/null 2>&1 ; then
 	alias cp='cp --preserve'
 else
 	alias cp='cp --preserve=all'
@@ -45,7 +43,7 @@ alias less='less -RFiMx4'
 export LESS='-RFiMx4'
 alias docker-list='__docker_images'
 
-if uname -s | real_grep -q 'MINGW' >/dev/null 2>&1 ; then
+if uname -s | command grep -q 'MINGW' >/dev/null 2>&1 ; then
 	alias ifconfig='ipconfig'
 else
 	alias ifconfig='sudo /sbin/ifconfig'
@@ -53,7 +51,7 @@ fi
 
 GREP_ARGS=
 GREP_ARGS_NC=
-if uname -s | real_grep -q 'MINGW' >/dev/null 2>&1 ; then
+if uname -s | command grep -q 'MINGW' >/dev/null 2>&1 ; then
 	# MINGW's version of grep doesn't support --exclude or --color.
 	# There may be a better test, version for example.
 	GREP_ARGS=
@@ -62,8 +60,8 @@ else
 	GREP_ARGS="--exclude='.svn' --exclude='.git' --color=always"
 	GREP_ARGS_NC="--exclude='.svn' --exclude='.git' --color=never"
 fi
-alias grep="$REAL_GREP ${GREP_ARGS} -n"
-alias ngrep="$REAL_GREP ${GREP_ARGS_NC}"
+alias grep="command grep ${GREP_ARGS} -n"
+alias ngrep="command grep ${GREP_ARGS_NC}"
 
 alias rsync-a='rsync -zvpPAXrogthlm'
 alias sursync-a='sudo rsync -zvpPAXrogthlm'
@@ -98,7 +96,7 @@ function cat
 		FIRST="no"
 		echo " >>> '$f' <<<" >&2
 		echo >&2
-		$REAL_CAT "$f"
+		command cat "$f"
 	done
 }
 
@@ -106,9 +104,9 @@ unalias find_alias_or_fn 2>/dev/null
 function find_alias_or_fn()
 {
 	(
-		real_grep -lR -E "^[^#]*\balias[[:space:]]+${arg}=" ~/.bashrc ~/.bash_profile ~/.bash_aliases ~/etc/dot-files/bash_common.sh
-		real_grep -lR -E "^[^#]*\bfunction[[:space:]]+${arg}[[:space:]]*(\\(\\))?" ~/.bashrc ~/.bash_profile ~/.bash_aliases ~/etc/dot-files/bash_common.sh
-		real_grep -lR -E "^[^#]*(\bfunction)?[[:space:]]+${arg}[[:space:]]*\\(\\)" ~/.bashrc ~/.bash_profile ~/.bash_aliases ~/etc/dot-files/bash_common.sh
+		command grep -lR -E "^[^#]*\balias[[:space:]]+${arg}=" ~/.bashrc ~/.bash_profile ~/.bash_aliases ~/etc/dot-files/bash_common.sh
+		command grep -lR -E "^[^#]*\bfunction[[:space:]]+${arg}[[:space:]]*(\\(\\))?" ~/.bashrc ~/.bash_profile ~/.bash_aliases ~/etc/dot-files/bash_common.sh
+		command grep -lR -E "^[^#]*(\bfunction)?[[:space:]]+${arg}[[:space:]]*\\(\\)" ~/.bashrc ~/.bash_profile ~/.bash_aliases ~/etc/dot-files/bash_common.sh
 	) | sort -u
 }
 
@@ -130,7 +128,7 @@ function which()
 			alias)
 				alias "$arg"
 				find_alias_or_fn "$arg"
-				cmd="$(alias "$arg" | sed -re "s/^[^=]+='(.+)'$/\1/;s/sudo //g;s/ +-[^ ]+//g") $cmd"
+				cmd="$(alias "$arg" | sed -re "s/^[^=]+='(.+)'$/\1/;s/command //g;s/builtin //g;s/sudo //g;s/ +-[^ ]+//g") $cmd"
 				;;
 			keyword)
 				;;
@@ -143,7 +141,7 @@ function which()
 				;;
 		esac
 		echo
-		commands=$($REAL_WHICH -a $cmd 2>/dev/null | uniq)
+		commands=$(command which -a $cmd 2>/dev/null | sort -u)
 		for bin in $commands; do
 			while [ -n "$bin" ]; do
 				if [ -e "$bin" ]; then

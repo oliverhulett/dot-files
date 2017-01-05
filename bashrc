@@ -19,23 +19,9 @@ if [ -e "${HOME}/.bash_profile" ] ; then
 	source "${HOME}/.bash_profile"
 fi
 
-if [ -z "$REAL_WHICH" ]; then
-	## Happy to clobber this here, we will re-read .bash_aliases below.
-	REAL_WHICH="$(which --skip-alias --skip-functions --skip-dot --skip-tilde which 2>/dev/null) --skip-alias --skip-functions --skip-dot --skip-tilde"
-	if ! $REAL_WHICH which 2>/dev/null >/dev/null; then
-		if [ -x /bin/which ]; then
-			REAL_WHICH=/bin/which
-		elif [ -x /usr/bin/which ]; then
-			REAL_WHICH=/usr/bin/which
-		else
-			REAL_WHICH=which
-		fi
-	fi
-fi
-
-export VISUAL=$($REAL_WHICH vim)
+export VISUAL=$(command which vim)
 export EDITOR=$VISUAL
-export PAGER=$($REAL_WHICH less)
+export PAGER=$(command which less)
 alias edt=$VISUAL
 
 export HISTCONTROL="ignoredups"
@@ -105,12 +91,6 @@ shopt -s cdspell
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
-REAL_CAT=/bin/cat
-REAL_WHICH=/bin/which
-REAL_LS=/bin/ls
-get_real_exe ls cat which >/dev/null 2>/dev/null
-export REAL_CAT REAL_WHICH REAL_LS
-
 # We can clear some variables here that will be set/updated by the bash_aliases includes and used later.
 export PROMPT_FOO=
 export PROMPT_COMMAND=
@@ -132,7 +112,7 @@ OLDPWD_FILE="$HOME/.oldpwd"
 trap 'if [ "`pwd`" == "$HOME" ] && [ -n "$OLDPWD" ] && [ "$OLDPWD" != "$HOME" ]; then echo $OLDPWD >"$OLDPWD_FILE"; else pwd >"$OLDPWD_FILE"; fi;' EXIT
 # If `pwd` was written to a file last time, restore directory into $OLDPWD.
 if [ -f "$OLDPWD_FILE" ]; then
-	export OLDPWD=`$REAL_CAT $OLDPWD_FILE 2>/dev/null`
+	export OLDPWD=`command cat $OLDPWD_FILE 2>/dev/null`
 fi
 
 # uncomment the following to activate bash-completion:

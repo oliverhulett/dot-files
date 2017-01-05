@@ -20,10 +20,10 @@ NAME=`basename $IMAGE`-`whoami`-`date "+%s"`
 echo "Starting $NAME ($IMAGE)"
 LABELS="$(docker inspect $IMAGE | jq '.[0].Config.Labels')"
 # Use a docker container to do things
-TMP="$(mktemp -t "docker.$(basename "$1").XXXXXXXXXX")"
+TMP="$(mktemp -p "${HOME}" -t ".$(date '+%Y%m%d-%H%M%S').docker.$(basename "$1").XXXXXXXXXX")"
 trap 'echo "Leaving $NAME (${IMAGE})" && rm -fv ${TMP}' EXIT
-"$REAL_CAT" >"$TMP" <<-EOF
-	#!/bin/bash
+command cat >"$TMP" <<-EOF
+	#!/bin/bash -i
 	export PROMPT_PREFIX="(docker:$(basename $IMAGE)) "
 	source ~/.bashrc
 	"\$@"

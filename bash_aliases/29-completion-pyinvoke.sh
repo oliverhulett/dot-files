@@ -24,7 +24,10 @@ _complete_invoke() {
 
 _complete_build() {
     local candidates
-    candidates=`./build.py --complete -- ${COMP_WORDS[*]} 2>/dev/null`
+    candidates=`./build.py --bootstrap-no-build --complete -- ${COMP_WORDS[*]} 2>/dev/null`
+	if [ $? -ne 0 ]; then
+    	candidates=`./build.py --complete -- ${COMP_WORDS[*]} 2>/dev/null`
+	fi
     COMPREPLY=( $(compgen -W "${candidates}" -- $2) )
 }
 
