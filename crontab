@@ -17,17 +17,14 @@ MAILTO=olihul@optiver.com.au
 10 0 * * *  cd ${HOME}/etc/dot-files && git commit --allow-empty -aqm "Autocommit: $(date -R)\n$(git status)" && git push -q >/dev/null 2>/dev/null && ${HOME}/bin/dock.sh --bootstrap-docker-force-push
 ## Push local configuration and backups to another box.
 15 0 * * *  rsync -PAXrogthlm --delete --exclude='dot-files' --delete-excluded ${HOME}/etc/ /media/sf_H_DRIVE/etc/ >/dev/null
+15 0 * * *  rsync -PAXrogthlm --delete --exclude='dot-files' --delete-excluded ${HOME}/etc/ /vagrant/backups/etc/ >/dev/null
 15 0 * * *  rsync -PAXrogthlm --delete ${HOME}/opt/ /media/sf_H_DRIVE/opt/ >/dev/null
+15 0 * * *  rsync -PAXrogthlm --delete ${HOME}/opt/ /vagrant/backups/opt/ >/dev/null
 15 0 * * *  rsync -PAXrogthlm --delete ${HOME}/.ssh/ /media/sf_H_DRIVE/.ssh/ >/dev/null
+15 0 * * *  rsync -PAXrogthlm --delete ${HOME}/.ssh/ /vagrant/backups/.ssh/ >/dev/null
 ## Install dot-files to development machines
 15 0 * * *  PATH="${HOME}/bin:${PATH}" ${HOME}/bin/install-dot-files.sh >/dev/null
 
-## Keep /usr/local/bin up-to-date
-@daily  rsync -zPAXrogthlm opsynxsr0335:/usr/local/bin/ /usr/local/bin/ >/dev/null
-## Keep /optiver up-to-date
-@daily  rsync -zPAXrogthlm opsynxsr0335:/optiver/ /optiver/ >/dev/null
-## Keep /opt/optiver up-to-date
-@daily  docker run --rm -v /opt/optiver:/mnt docker-registry.aus.optiver.com/servicedelivery/el5-development /bin/bash -c "rsync -zPAXrogthlm --delete --exclude='gcc/4.7.2' --delete-excluded /opt/optiver/ /mnt/ && chown -R $(id -u olihul) /mnt/" >/dev/null
 ## Keep ~/repo up-to-date
 @daily find ${HOME}/repo/ -type d -exec test -d "{}/.git" \; -prune -print | while read; do ( cd "$REPLY" && git pullb -q >/dev/null && git update >/dev/null && ( [ ! -f pins.json ] || git checkout pins.json >/dev/null ) ) || echo -e "\n${REPLY} Update Failed\n\n"; done
 
