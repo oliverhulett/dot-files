@@ -38,9 +38,9 @@ fi
 [ -z $SSH_AUTH_SOCK ] && SSH_PASS_THROUGH="" || SSH_PASS_THROUGH="-v $SSH_AUTH_SOCK:/ssh-agent -e SSH_AUTH_SOCK=/ssh-agent"
 for cmd in echo ""; do
 	$cmd docker run -u `id -u` -h `hostname` --cpu-shares=`nproc` --privileged --name=${NAME} \
-		-v /etc/passwd:/etc/passwd -v /etc/shadow:/etc/shadow -v /etc/group:/etc/group -v /etc/gshadow:/etc/gshadow \
-		-v /etc/sudo.conf:/etc/sudo.conf -v /etc/sudoers:/etc/sudoers -v /etc/sudoers.d:/etc/sudoers.d -v /etc/pam.d:/etc/pam.d \
-		-v /var/run/docker.sock:/var/run/docker.sock $SSH_PASS_THROUGH \
+		-v /etc/passwd:/etc/passwd:ro -v /etc/shadow:/etc/shadow:ro -v /etc/group:/etc/group:ro -v /etc/gshadow:/etc/gshadow:ro \
+		-v /etc/sudo.conf:/etc/sudo.conf:ro -v /etc/sudoers:/etc/sudoers:ro -v /etc/sudoers.d:/etc/sudoers.d:ro -v /etc/pam.d:/etc/pam.d:ro \
+		-v /etc/localtime:/etc/localtime:ro -v /var/run/docker.sock:/var/run/docker.sock $SSH_PASS_THROUGH \
 		-v "${HOME}":"${HOME}" -v "`pwd`":"`pwd`" -w "`pwd`" --env-file=<(/usr/bin/env) \
 		-v "$TMP":"$TMP" --entrypoint="$TMP" \
 		--rm ${TTY} "${DOCKER_RUN_ARGS[@]}" \

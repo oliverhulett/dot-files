@@ -22,7 +22,8 @@ RUN yum install -y python-pip
 RUN pip install -U -i http://devpi.aus.optiver.com/optiver/prod/+simple/ --trusted-host devpi.aus.optiver.com pip wheel setuptools
 RUN pip install -U -i http://devpi.aus.optiver.com/optiver/prod/+simple/ --trusted-host devpi.aus.optiver.com \
 	protobuf==2.5.0 twisted sqlalchemy argparse pyodbc psycopg2==2.5.4 'lxml<3.4' \
-	invoke docker-compose devpi pylint
+	invoke docker-compose devpi pylint \
+	optitest optimockservers exchange-simulator bop_boilerplate
 
 
 ARG GIT_REV

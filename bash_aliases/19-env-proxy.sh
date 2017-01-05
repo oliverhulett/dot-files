@@ -36,9 +36,14 @@ function urldecode()
 
 function proxy_setup()
 {
-	echo "HTTP Proxy Username: $USER";
-	read -rs -p "HTTP Proxy Password: " PASSWD;
-	echo;
+	echo "HTTP Proxy Username: $USER"
+	if [ -r "${HOME}/etc/passwd" ]; then
+		PASSWD="$(sed -ne '1p' "${HOME}/etc/passwd")"
+		echo "HTTP Proxy Password: <from file: ${HOME}/etc/passwd>"
+	else
+		read -rs -p "HTTP Proxy Password: " PASSWD
+		echo
+	fi
 	if [ -z "${http_proxy_orig}" ]; then
 		export http_proxy_orig="${http_proxy}"
 	fi
@@ -50,7 +55,7 @@ function proxy_setup()
 	export https_proxy="${https_proxy_orig/\/\////$(urlencode "$USER"):$(urlencode "$PASSWD")@}"
 	export HTTPS_PROXY="${https_proxy}"
 	update_config=""
-	for f in /etc/sysconfig/docker; do
+	for f in "${HOME}/etc/passwd" /etc/sysconfig/docker; do
 		if [ -e "$f" ]; then
 			if grep -qE "^HTTPS?_PROXY=" "$f"; then
 				if ! grep -qF "HTTP_PROXY=$HTTP_PROXY" "$f" || ! grep -qF "HTTPS_PROXY=$HTTPS_PROXY" "$f"; then
