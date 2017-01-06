@@ -8,18 +8,15 @@ MAILTO=olihul@optiver.com.au
 ## This section, for backups, should run @daily, but the local backups need to happen before the off box backups so that
 ## we're saving the latest stuff off box, hence the 5 minute delay for the off box lines at the end.
 ## Crontabs live in /var/spool/, so take a backup of this crontab on a separate partition.
-00 0 * * *  crontab -l >${HOME}/dot-files/crontab && echo "## Backed up at `date`" >>${HOME}/dot-files/crontab
+00 0 * * *  crontab -l >${HOME}/dot-files/crontab && echo -e "\n## Backed up at `date`" >>${HOME}/dot-files/crontab
 ## Save list of installed software
 00 0 * * *  rpm -qa | sort >${HOME}/dot-files/installed-software.txt
 ## Backup a small number of key system-wide configuration files.
-00 0 * * *  rsync -PAXrogthlm --files-from=${HOME}/dot-files/backups.txt / ${HOME}/backups >/dev/null
+00 0 * * *  rsync -PAXrogthlm --files-from=${HOME}/dot-files/backups.txt / ${HOME}/etc/backups >/dev/null
 ## Commit dot-files to git for extra backups
 10 0 * * *  cd ${HOME}/dot-files && git commit --allow-empty -aqm "Autocommit: $(date -R)\n$(git status)" && git push -q >/dev/null 2>/dev/null && ${HOME}/bin/dock.sh --bootstrap-docker-force-push
 ## Push local configuration and backups to another box.
-15 0 * * *  rsync -PAXrogthlm --delete ${HOME}/etc/ /H_DRIVE/etc/ >/dev/null
-15 0 * * *  rsync -PAXrogthlm --delete ${HOME}/opt/ /H_DRIVE/opt/ >/dev/null
-15 0 * * *  rsync -PAXrogthlm --delete ${HOME}/backups/ /H_DRIVE/backups/ >/dev/null
-15 0 * * *  rsync -PAXrogthlm --delete ${HOME}/.ssh/ /H_DRIVE/.ssh/ >/dev/null
+15 0 * * *  rsync -PAXrogthlm --delete ${HOME}/.ssh ${HOME}/etc ${HOME}/opt /H_DRIVE/ >/dev/null
 ## Install dot-files to development machines
 15 0 * * *  PATH="${HOME}/bin:${PATH}" ${HOME}/bin/install-dot-files.sh >/dev/null
 
@@ -35,4 +32,5 @@ MAILTO=olihul@optiver.com.au
 ## Clean docker containers and images every now and then
 @weekly docker rm $(docker ps -a -q)
 @weekly docker rmi $(docker images -q)
-## Backed up at Fri Jan  6 15:55:55 AEDT 2017
+
+## Backed up at Fri Jan  6 18:19:19 AEDT 2017
