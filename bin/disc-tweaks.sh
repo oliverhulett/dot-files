@@ -15,7 +15,7 @@ function proc_set()
 	if [ $# -eq 2 ]; then
 		echo "Setting $1: $2  (was $(cat "$1"))"
 	fi
-	bash -xc "echo $2 >'$1'"
+	echo $2 >"$1"
 }
 
 ## Factory settings
