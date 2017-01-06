@@ -29,3 +29,18 @@ function _docker_run_sh()
 }
 
 complete -F _docker_run_sh docker-run.sh
+
+# c5 uses a docker container to build things under centos 5
+
+alias c5build='c5 ./build.py --output-dir=build/c5'
+alias c5build.py=c5build
+
+alias c5inv='INVOKE_BUILD_ROOT="build/c5" c5 inv'
+alias c5invoke='INVOKE_BUILD_ROOT="build/c5" c5 inv'
+
+alias virtualenv-2.6=virtualenv
+
+alias dock=dock.sh
+alias sdock=sdock.sh
+
+complete -F _root_command c5 dock.sh dock sdock.sh sdock

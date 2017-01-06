@@ -4,7 +4,7 @@
 # including some apparently interactive shells such as scp and rcp
 # that can't tolerate any output.
 
-source "${HOME}/etc/dot-files/bash_common.sh"
+source "${HOME}/dot-files/bash_common.sh"
 if reentered "${HOME}/.bashrc" "${HOME}/.bash_aliases"/*; then
 	return 0
 fi

@@ -1,5 +1,5 @@
 # Aliases
-source "${HOME}/etc/dot-files/bash_common.sh"
+source "${HOME}/dot-files/bash_common.sh"
 
 alias lssc='lss --color=none'
 alias lsc='lss --color=none'
@@ -104,9 +104,9 @@ unalias find_alias_or_fn 2>/dev/null
 function find_alias_or_fn()
 {
 	(
-		command grep -lR -E "^[^#]*\balias[[:space:]]+${arg}=" ~/.bashrc ~/.bash_profile ~/.bash_aliases ~/etc/dot-files/bash_common.sh
-		command grep -lR -E "^[^#]*\bfunction[[:space:]]+${arg}[[:space:]]*(\\(\\))?" ~/.bashrc ~/.bash_profile ~/.bash_aliases ~/etc/dot-files/bash_common.sh
-		command grep -lR -E "^[^#]*(\bfunction)?[[:space:]]+${arg}[[:space:]]*\\(\\)" ~/.bashrc ~/.bash_profile ~/.bash_aliases ~/etc/dot-files/bash_common.sh
+		command grep -lR -E "^[^#]*\balias[[:space:]]+${arg}=" ~/.bashrc ~/.bash_profile ~/.bash_aliases ~/dot-files/bash_common.sh
+		command grep -lR -E "^[^#]*\bfunction[[:space:]]+${arg}[[:space:]]*(\\(\\))?" ~/.bashrc ~/.bash_profile ~/.bash_aliases ~/dot-files/bash_common.sh
+		command grep -lR -E "^[^#]*(\bfunction)?[[:space:]]+${arg}[[:space:]]*\\(\\)" ~/.bashrc ~/.bash_profile ~/.bash_aliases ~/dot-files/bash_common.sh
 	) | sort -u
 }
 

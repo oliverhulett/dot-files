@@ -4,7 +4,7 @@
 # Modifying /etc/skel/.bash_profile directly will prevent
 # setup from updating it.
 
-source "${HOME}/etc/dot-files/bash_common.sh"
+source "${HOME}/dot-files/bash_common.sh"
 if reentered "${HOME}/.bash_profile"; then
 	return 0
 fi

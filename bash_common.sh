@@ -21,7 +21,7 @@ function reentrance_hash()
 			command cat "$i" 2>/dev/null 1>&2
 		fi
 	done
-	command cat "${HOME}/etc/dot-files/bash_common.sh" "$@" 2>/dev/null | md5sum
+	command cat "${HOME}/dot-files/bash_common.sh" "$@" 2>/dev/null | md5sum
 }
 
 function reentrance_check()

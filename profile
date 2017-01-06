@@ -8,7 +8,7 @@
 # for ssh logins, install and configure the libpam-umask package.
 #umask 022
 
-source "${HOME}/etc/dot-files/bash_common.sh"
+source "${HOME}/dot-files/bash_common.sh"
 if reentered "${HOME}/.profile"; then
 	return 0
 fi

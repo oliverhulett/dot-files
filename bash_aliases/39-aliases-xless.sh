@@ -4,7 +4,7 @@ function get_all_applications ( )
 {
 	local processes prefix
 	prefix="${COMP_WORDS[COMP_CWORD]}"
-	processes=`$HOME/etc/dot-files/optic_application_expander.py`
+	processes=`$HOME/dot-files/optic_application_expander.py`
 	COMPREPLY=( $(compgen -W "${processes}" -- $prefix ) )
 }
  
