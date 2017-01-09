@@ -13,3 +13,4 @@
 /etc/sysconfig/network
 /home/olihul/.config
 /home/olihul/.kde/share
+/home/olihul/.local
