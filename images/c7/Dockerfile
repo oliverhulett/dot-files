@@ -1,7 +1,7 @@
 FROM docker-registry.aus.optiver.com/servicedelivery/el7-development:latest
 
 RUN yum groupinstall -y "development tools"
-RUN yum install -y docker which iotop nethogs sysstat aspell aspell-en jq protobuf-vim golang-vim \
+RUN yum install -y docker which iotop nethogs sysstat aspell aspell-en jq protobuf-vim golang-vim tidy \
 	openssl-libs openssl-static wireshark java-1.8.0-openjdk-devel java-1.8.0-openjdk wget curl telnet \
 	python-devel python-pip libxml2-devel libxslt-devel \
 	cmake ccache distcc protobuf protobuf-c protobuf-python protobuf-compiler valgrind clang-devel clang clang-analyzer

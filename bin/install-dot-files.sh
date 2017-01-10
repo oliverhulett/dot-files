@@ -14,14 +14,14 @@ function run()
 }
 
 for server in "${SERVERS[@]}"; do
-	run ssh ${server} 'mkdir .bash_aliases etc 2>/dev/null'
-	run ssh ${server} 'sh -c "ping -qc1 -W2 git.comp.optiver.com >/dev/null && git clone --recursive ssh://git@git.comp.optiver.com:7999/~olihul/dot-files.git dot-files 2>/dev/null"'
-	run ssh ${server} 'sh -c "ping -qc1 -W2 git.comp.optiver.com >/dev/null && cd dot-files && git pull && git submodule init && git submodule sync && git submodule update"'
+	run ssh ${server} 'mkdir ${HOME}/.bash_aliases ${HOME}/etc 2>/dev/null'
+	run ssh ${server} 'sh -c "ping -qc1 -W2 git.comp.optiver.com >/dev/null && cd ${HOME} && yes | git clone --recursive ssh://git@git.comp.optiver.com:7999/~olihul/dot-files.git dot-files 2>/dev/null"'
+	run ssh ${server} 'sh -c "ping -qc1 -W2 git.comp.optiver.com >/dev/null && cd ${HOME}/dot-files && git pull && git submodule init && git submodule sync && git submodule update"'
 done
 
 run dev-push-all.sh --delete "${SERVERS[@]/%/:}" "${FILES[@]}"
 
 for server in "${SERVERS[@]}"; do
 	ssh ${server} 'ping -qc1 -W2 git.comp.optiver.com >/dev/null' || rsync --delete -zpPXrogthlcm --exclude='.git' "${HOME}/dot-files/" ${server}:"${HOME}/dot-files/"
-	run ssh ${server} 'find -L .bash_aliases/ -type l -delete'
+	run ssh ${server} 'find -L ${HOME}/.bash_aliases/ -type l -delete'
 done

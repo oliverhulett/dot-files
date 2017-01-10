@@ -26,9 +26,12 @@ function _docker_run_sh()
 	local cur prev words cword
 	_get_comp_words_by_ref -n : cur prev words cword
 	_docker_run
+	if [ -z "${COMPREPLY[*]}" ]; then
+		_root_command
+	fi
 }
 
-complete -F _docker_run_sh docker-run.sh
+complete -F _docker_run_sh dockerme putmein
 
 # c5 uses a docker container to build things under centos 5
 

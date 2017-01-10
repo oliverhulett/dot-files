@@ -15,9 +15,11 @@ function canonicalise()
 		fpart="$(basename "$1")"
 		dpart="$(dirname "$1")"
 	fi
-	pushd "$dpart" >/dev/null 2>/dev/null
-	dpart="$(pwd -P)"
-	popd >/dev/null 2>/dev/null
+	if [ -d "$dpart" ]; then
+		pushd "$dpart" >/dev/null 2>/dev/null
+		dpart="$(pwd -P)"
+		popd >/dev/null 2>/dev/null
+	fi
 	echo "${dpart}/${fpart}"
 }
 
