@@ -1,3 +1,7 @@
+/C_REPO/bin
+/C_REPO/VirtualBox VMs/setup.sh
+/C_REPO/VirtualBox VMs/Vagrantfile
+/C_REPO/VirtualBox VMs/vbox_manage.rb
 /etc/fstab
 /etc/group
 /etc/hostname
