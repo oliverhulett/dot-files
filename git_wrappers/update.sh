@@ -1,7 +1,5 @@
 #!/bin/bash -e
 
-## Until v2.5 git would pre-pend /usr/bin to path, which means the wrong python is found.
-source "$(dirname "$(readlink -f "$0")")/../bash_aliases/09-profile.d-pyvenv.sh"|| true
 ## If we're using dependencies.json, check that it is sane.
 if [ -f ./dependencies.json ]; then
 	python -m json.tool ./dependencies.json

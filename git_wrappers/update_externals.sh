@@ -1,8 +1,5 @@
 #!/bin/bash
 
-## Until v2.5 git would pre-pend /usr/bin to path, which means the wrong python is found.
-source "$(dirname "$(readlink -f "$0")")/../bash_aliases/09-profile.d-pyvenv.sh" || true
-
 EXTERNALS="$(git ls-files '*externals.json' '*deps.json')"
 
 ## TODO:  Remove this when they've all been updated...
