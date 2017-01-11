@@ -15,8 +15,8 @@ function run()
 
 for server in "${SERVERS[@]}"; do
 	run ssh ${server} 'mkdir ${HOME}/.bash_aliases ${HOME}/etc 2>/dev/null'
-	run ssh ${server} 'sh -c "ping -qc1 -W2 git.comp.optiver.com >/dev/null && cd ${HOME} && yes | git clone --recursive ssh://git@git.comp.optiver.com:7999/~olihul/dot-files.git dot-files 2>/dev/null"'
-	run ssh ${server} 'sh -c "ping -qc1 -W2 git.comp.optiver.com >/dev/null && cd ${HOME}/dot-files && git pull && git submodule init && git submodule sync && git submodule update"'
+	run ssh ${server} 'sh -c "ping -qc1 -W2 git.comp.optiver.com >/dev/null && cd ${HOME} 2>/dev/null && yes | git clone --recursive ssh://git@git.comp.optiver.com:7999/~olihul/dot-files.git dot-files 2>/dev/null"'
+	run ssh ${server} 'sh -c "ping -qc1 -W2 git.comp.optiver.com >/dev/null && cd ${HOME}/dot-files 2>/dev/null && git pull && git submodule init && git submodule sync && git submodule update"'
 done
 
 run dev-push-all.sh --delete "${SERVERS[@]/%/:}" "${FILES[@]}"

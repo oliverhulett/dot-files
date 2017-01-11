@@ -1,8 +1,7 @@
 FROM docker-registry.aus.optiver.com/servicedelivery/el7-development:latest
 
 RUN yum groupinstall -y "development tools"
-RUN yum install -y docker which iotop nethogs sysstat aspell aspell-en jq protobuf-vim golang-vim tidy \
-	openssl-libs openssl-static wireshark java-1.8.0-openjdk-devel java-1.8.0-openjdk wget curl telnet \
+RUN yum install -y openssl-libs openssl-static java-1.8.0-openjdk-devel java-1.8.0-openjdk \
 	python-devel python-pip libxml2-devel libxslt-devel \
 	cmake ccache distcc protobuf protobuf-c protobuf-python protobuf-compiler valgrind clang-devel clang clang-analyzer
 
@@ -24,9 +23,12 @@ RUN curl -O https://artifactory.aus.optiver.com/artifactory/dev/trd/drone_linux_
 RUN pip install -U -i http://devpi.aus.optiver.com/optiver/prod/+simple/ --trusted-host devpi.aus.optiver.com pip wheel setuptools
 RUN pip install -U -i http://devpi.aus.optiver.com/optiver/prod/+simple/ --trusted-host devpi.aus.optiver.com \
 	protobuf==2.5.0 twisted argparse 'lxml<3.4' \
-	invoke docker-compose devpi pylint \
-	optitest optimockservers exchange-simulator bop_boilerplate
+	invoke docker-compose devpi pylint
 
+RUN yum install -y docker which iotop nethogs sysstat wget curl telnet aspell aspell-en jq protobuf-vim golang-vim tidy dos2unix
+
+RUN pip install -U -i http://devpi.aus.optiver.com/optiver/prod/+simple/ --trusted-host devpi.aus.optiver.com \
+	optitest optimockservers exchange-simulator bop_boilerplate
 
 ARG GIT_REV
 ARG GIT_REPO

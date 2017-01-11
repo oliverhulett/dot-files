@@ -35,7 +35,7 @@ if [ -e "${HOME}/etc/passwd" ]; then
 fi
 
 echo "Cloning dot-files..."
-su -c "cd ${HOME} && git clone --recursive ssh://git@git.comp.optiver.com:7999/~${USER}/dot-files.git" ${USER}
+su -c "cd ${HOME} && yes | git clone --recursive ssh://git@git.comp.optiver.com:7999/~${USER}/dot-files.git" ${USER}
 su -c "cd ${HOME}/dot-files && git pull && git submodule init && git submodule sync && git submodule update" ${USER}
 su -c "mkdir --parents ${HOME}/.bash_aliases" ${USER}
 ( cd ${HOME}/.bash_aliases/ && rm * 2>/dev/null )
@@ -52,10 +52,6 @@ echo "General clean-ups..."
 rm -rf ${HOME}/Desktop 2>/dev/null
 rmdir ${HOME}/{Documents,Downloads,Music,Pictures,Public,Templates,Videos} 2>/dev/null
 sudo systemctl stop collectd.service
-
-echo "Restarting KDE to pick up restored backups..."
-init 3 # This abrubtly kills KDE
-init 5 # And this brings it back online
 
 echo "Restoring Eclpise install and other backups..."
 (
