@@ -16,5 +16,6 @@
 /etc/sysconfig/docker
 /etc/sysconfig/network
 /home/olihul/.config
+/home/olihul/.kde/Autostart
 /home/olihul/.kde/share
 /home/olihul/.local
