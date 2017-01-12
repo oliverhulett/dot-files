@@ -1,17 +1,20 @@
 ## Process management related aliases
 
-function killtermprocs()
+function killprocs()
 {
-	ps | while read PID TTY TIME CMD; do
-		if [ "${CMD}" == "CMD" ]; then
-			continue
-		elif [ "${CMD}" == "bash" ]; then
-			continue
-		elif [ "${CMD}" == "ps" ]; then
-			continue
-		else
-			kill "$@" ${PID}
+	PROCS="$(pgrep -d, -U `whoami` "$@")"
+	if [ -n "${PROCS}" ]; then
+		ps -fp "${PROCS}"
+		echo
+		read -n1 -p "Kill listed processes? [y/N] "
+		echo
+		if [ "$(echo ${REPLY} | tr '[a-z]' '[A-Z]')" == "Y" ]; then
+			pkill -U `whoami` "$@"
+			echo
+			ps -fp "${PROCS}"
 		fi
-	done
+	else
+		echo "None Found"
+	fi
 }
 
