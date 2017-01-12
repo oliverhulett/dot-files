@@ -14,14 +14,14 @@ MAILTO=olihul@optiver.com.au
 ## Backup a small number of key system-wide configuration files.
 00 0 * * *  rsync -PAXrogthlm --files-from=${HOME}/dot-files/backups.txt / ${HOME}/etc/backups >/dev/null
 ## Commit dot-files to git for extra backups
-10 0 * * *  cd ${HOME}/dot-files && git commit --allow-empty -aqm "Autocommit: $(date -R)\n$(git status)" && git push -q >/dev/null 2>/dev/null && ${HOME}/dot-files/bin/dock.sh --bootstrap-docker-force-push
+10 0 * * *  cd ${HOME}/dot-files && git commit --allow-empty -aqm "Autocommit: $(date -R)\n$(git status)" && git push -q >/dev/null 2>/dev/null && ${HOME}/dot-files/bin/dock.sh --bootstrap-docker-force-push >/dev/null
 ## Push local configuration and backups to another box.
 15 0 * * *  rsync -PAXrogthlm --delete ${HOME}/.ssh ${HOME}/etc ${HOME}/opt /H_DRIVE/ >/dev/null
 ## Install dot-files to development machines
-15 0 * * *  PATH="${HOME}/bin:${PATH}" ${HOME}/bin/install-dot-files.sh >/dev/null
+15 0 * * *  PATH="${HOME}/bin:${PATH}" ${HOME}/bin/install-dot-files.sh >/dev/null 2>/dev/null
 
 ## Keep ~/repo up-to-date
-@daily find ${HOME}/repo/ -type d -exec test -d "{}/.git" \; -prune -print | while read; do ( cd "$REPLY" && git pullb -q >/dev/null && git update >/dev/null && ( [ ! -f pins.json ] || git checkout pins.json >/dev/null ) ) || echo -e "\n${REPLY} Update Failed\n\n"; done
+@daily find ${HOME}/repo/ -type d -exec test -d "{}/.git" \; -prune -print | while read; do ( cd "$REPLY" && git pullb -q >/dev/null 2>/dev/null && git update >/dev/null 2>/dev/null && ( [ ! -f pins.json ] || git checkout pins.json >/dev/null ) ) || echo -e "\n${REPLY} Update Failed\n\n"; done
 
 ## Clean builds every now and then
 @weekly find ${HOME}/repo/ -name .git -prune | while read; do ( cd "$(dirname "$REPLY")" && [ -e build.py ] && ( ./build.py -c -t all || echo -e "\n${REPLY} Clean Failed\n\n" ) ); done
@@ -32,7 +32,8 @@ MAILTO=olihul@optiver.com.au
 ## Clean docker containers and images every now and then
 @weekly docker rm $(docker ps -a -q)
 @weekly docker rmi $(docker images -q)
+## Kill docker containers running overnight, you can always re-start them.
+@daily docker kill $(docker ps -q)
 
 
-
-## Backed up at Thu Jan 12 00:00:06 AEDT 2017
+## Backed up at Fri Jan 13 00:00:07 AEDT 2017
