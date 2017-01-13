@@ -32,7 +32,7 @@ if [ -e "${HOME}/etc/passwd" ]; then
 fi
 
 echo "Cloning dot-files..."
-su -c "cd ${HOME} && git clone --recursive ssh://git@git.comp.optiver.com:7999/~${USER}/dot-files.git" ${USER}
+su -c "cd ${HOME} && git clone --recursive ssh://git@git.comp.optiver.com:7999/~${USER}/dot-files.git" ${USER} 2>/dev/null
 su -c "cd ${HOME}/dot-files && git pull && git submodule init && git submodule sync && git submodule update" ${USER}
 su -c "mkdir --parents ${HOME}/.bash_aliases" ${USER}
 ( cd ${HOME}/.bash_aliases/ && rm * 2>/dev/null )
