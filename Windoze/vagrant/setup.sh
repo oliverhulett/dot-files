@@ -6,11 +6,12 @@ USER="$1"
 HOME="/home/${USER}"
 usermod -g users --append -G users,adm,wheel,vboxsf,root ${USER}
 
-echo "Installing some things I don't want to docker all the time..."
-PARTS="$2"
-if [ -e "${PARTS}/00_common-yum-install.sh" ]; then
-	sh "${PARTS}/00_common-yum-install.sh"
-fi
+echo "Copying files provisioned into ${HOME} by base image..."
+mkdir /tmp/home/ 2>/dev/null
+mount /dev/mapper/vgdata-home.fs /tmp/home
+rsync -rAXog /tmp/${HOME}/ ${HOME}/
+umount /tmp/home/
+rmdir /tmp/home/
 
 echo "Setting up sudo..."
 echo 'Defaults    secure_path = /home/olihul/bin:/home/olihul/sbin:/optiver/bin:/usr/local/bin:/bin:/usr/bin:/sbin:/usr/sbin' >/etc/sudoers.d/99_olihul
@@ -48,6 +49,9 @@ echo "General clean-ups..."
 rm -rf ${HOME}/Desktop 2>/dev/null
 rmdir ${HOME}/{Documents,Downloads,Music,Pictures,Public,Templates,Videos} 2>/dev/null
 sudo systemctl stop collectd.service
+
+echo "Installing some things I don't want to docker all the time..."
+sh "${HOME}/dot-files/parts/00_common-yum-install.sh" &
 
 echo "Restoring Eclpise install and other backups..."
 (
