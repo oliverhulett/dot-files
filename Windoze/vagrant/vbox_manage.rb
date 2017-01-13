@@ -26,7 +26,7 @@ def vm_exists?
 end
 
 def vm_info
-  vm_exists? ? `VBoxManage showvminfo #{VM_NAME}` : ''
+  vm_exists? ? `VBoxManage showvminfo #{VM_NAME} 2> nul` : ''
 end
 
 def vm_uuid
@@ -45,4 +45,8 @@ end
 
 def vm_running?
   vm_state == "running"
+end
+
+def vm_controller(controller)
+  `VBoxManage showvminfo #{VM_NAME} 2> nul | grep "#{controller}"`
 end

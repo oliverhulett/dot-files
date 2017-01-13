@@ -1,0 +1,3 @@
+# Commands to yum install things I want yum installed commonly...
+yum install -y yakuake docker which wget curl telnet vagrant iotop nethogs sysstat aspell aspell-en cifs-utils samba samba-client wireshark protobuf-vim golang-vim jq
+
