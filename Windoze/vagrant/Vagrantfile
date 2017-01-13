@@ -16,8 +16,8 @@ VM_NAME ||= "Centos7Dev-64bit-olihul"
 
 require_relative 'vbox_manage'
 
-syscall('mkdir "H:\backups\etc\Windows PC"')
-syscall('copy /Y /Z "C:\Users\olihul\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\launch-centos7dev-vm.bat" "H:\backups\etc\Windows PC"')
+syscall('mkdir "H:\backups\etc\Windows PC" 2> nul > nul')
+syscall('copy /Y /Z "C:\Users\olihul\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\launch-centos7dev-vm.bat" "H:\backups\etc\Windows PC" 2> nul > nul')
 
 # All Vagrant configuration is done below. The "2" in Vagrant.configure
 # configures the configuration version (we support older styles for
