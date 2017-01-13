@@ -36,12 +36,12 @@ su -c "cd ${HOME} && git clone --recursive ssh://git@git.comp.optiver.com:7999/~
 su -c "cd ${HOME}/dot-files && git pull && git submodule init && git submodule sync && git submodule update" ${USER}
 su -c "mkdir --parents ${HOME}/.bash_aliases" ${USER}
 ( cd ${HOME}/.bash_aliases/ && rm * 2>/dev/null )
-( cd ${HOME}/.bash_aliases/ && su -c "ln -svf ../dot-files/bash_aliases/* ./" ${USER} )
+( cd ${HOME}/.bash_aliases/ && su -c "ln -sf ../dot-files/bash_aliases/* ./" ${USER} )
 for f in bash_profile profile bash_logout bashrc vim vimrc gitconfig git_wrappers gitignore pydistutils.cfg pypirc invoke.py; do
-	su -c "rm ${HOME}/.$f 2>/dev/null; ln -sfv dot-files/$f ${HOME}/.$f" ${USER}
+	su -c "rm ${HOME}/.$f 2>/dev/null; ln -sf dot-files/$f ${HOME}/.$f" ${USER}
 done
 for f in bin; do
-	su -c "rm ${HOME}/$f 2>/dev/null; ln -sfv dot-files/$f ${HOME}/$f" ${USER}
+	su -c "rm ${HOME}/$f 2>/dev/null; ln -sf dot-files/$f ${HOME}/$f" ${USER}
 done
 crontab -u ${USER} <(head -n -1 ${HOME}/dot-files/crontab)
 

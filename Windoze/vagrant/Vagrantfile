@@ -103,11 +103,8 @@ Vagrant.configure("2") do |config|
 			true
 		SHELL
 	end
-	if File.exists?(File.join("..", "..", "parts"))
-		config.vm.provision "file", source: File.join("..", "..", "parts"), destination: "/tmp/parts"
-	end
 	config.vm.provision "shell" do |s|
-		s.args = "#{ENV['USERNAME']} /tmp/parts"
+		s.args = "#{ENV['USERNAME']}"
 		s.path = "setup.sh"
 	end
 	config.vm.provision "shell", run: "always" do |s|
@@ -115,12 +112,7 @@ Vagrant.configure("2") do |config|
 		s.inline = <<-SHELL
 			HOME="/home/$1"
 			
-			echo "Copying files provisioned into ${HOME} by base image..."
-			mkdir /tmp/home/ 2>/dev/null
-			mount /dev/mapper/vgdata-home.fs /tmp/home
-			rsync -rAXog /tmp/${HOME}/ ${HOME}/
-			umount /tmp/home/
-			rmdir /tmp/home/
+			rm -rf /tmp/.ssh 2>/dev/null
 			
 			echo "Restarting KDE to pick up restored backups..."
 			init 3 # This abrubtly kills KDE
