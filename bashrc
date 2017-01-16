@@ -25,7 +25,7 @@ export PAGER=$(command which less)
 alias edt=$VISUAL
 
 export HISTCONTROL="ignoredups"
-export HISTIGNORE="[   ]*:&:bg:fg:sh:exit"
+export HISTIGNORE="[   ]*:&:bg:fg:sh:exit:history"
 unset HISTFILESIZE
 export HISTSIZE=10000
 
@@ -83,6 +83,8 @@ set -o notify
 
 # Make bash append rather than overwrite the history on disk
 shopt -s histappend
+# Make bash show timestamp of executed command when showing history
+export HISTTIMEFORMAT='%F %T '
 
 # When changing directory small typos can be ignored by bash
 # for example, cd /vr/lgo/apaache would find /var/log/apache
@@ -138,12 +140,36 @@ esac
 # Whenever displaying the prompt, write the previous line to disk
 export PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
 
+# Whenever displaying the prompt, show the run-time of last command
+unset _timer
+_timer_show=0
+function _timer_start()
+{
+	_timer=${_timer:-$SECONDS}
+}
+function _timer_stop()
+{
+	_timer_show=$(($SECONDS - $_timer))
+	unset _timer
+}
+trap '_timer_start' DEBUG
+# _timer_stop has to be at the end of PROMPT_COMMAND otherwise you'll be timing from the next PROMP_COMMAND command
+PROMPT_COMMAND="$PROMPT_COMMAND; _timer_stop"
+function _last_cmd_interactive()
+{
+	set -- `history 1`
+	# `history` outputs command count, then date, then time, then command
+	grep -qw $4 ${HOME}/.interactive_commands >/dev/null 2>/dev/null
+}
+
+PROMPT_TIMER='$(if [ $_timer_show -gt 1 ] && ! _last_cmd_interactive; then echo '"'['"'${_timer_show}s'"'] '"'; fi)'
+PROMPT_EXIT='$(es=$?; if [ $es -eq 0 ]; then echo :\); else echo :\(; fi)'
 if [ "$TERM" == "cygwin" ]; then
-	PS1="${PROMPT_PREFIX}"'\[\e[31m\]\u@\h \[\e[33m\]\w\[\e[0m\] $(es=$?; if [ $es -eq 0 ]; then echo :\); else echo :\(; fi)'"${PROMPT_FOO}"'\n\$ '
+	PS1="${PROMPT_PREFIX}"'\[\e[31m\]\u@\h \[\e[33m\]\w\[\e[0m\] '"${PROMPT_TIMER}${PROMPT_EXIT}${PROMPT_FOO}"'\n\$ '
 elif [ -z "${HOSTNAME/op??nxsr[0-9][0-9][0-9][0-9]*}" ]; then
-	PS1="${PROMPT_PREFIX}"'\[\e[31m\]\u@\h \[\e[33m\]\w\[\e[0m\] $(es=$?; if [ $es -eq 0 ]; then echo :\); else echo :\(; fi)'"${PROMPT_FOO}"' \$ '
+	PS1="${PROMPT_PREFIX}"'\[\e[31m\]\u@\h \[\e[33m\]\w\[\e[0m\] '"${PROMPT_TIMER}${PROMPT_EXIT}${PROMPT_FOO}"' \$ '
 else
-	PS1="${PROMPT_PREFIX}"'\[\e[32m\]\u@\h \[\e[33m\]\w\[\e[0m\] $(es=$?; if [ $es -eq 0 ]; then echo :\); else echo :\(; fi)'"${PROMPT_FOO}"' \$ '
+	PS1="${PROMPT_PREFIX}"'\[\e[32m\]\u@\h \[\e[33m\]\w\[\e[0m\] '"${PROMPT_TIMER}${PROMPT_EXIT}${PROMPT_FOO}"' \$ '
 fi
 export PS1
 

@@ -116,8 +116,9 @@ Vagrant.configure("2") do |config|
 			rm -rf /tmp/.ssh 2>/dev/null
 			
 			echo "Restarting KDE to pick up restored backups..."
-			init 3 # This abrubtly kills KDE
-			init 5 # And this brings it back online
+			#init 3 # This abrubtly kills KDE
+			#init 5 # And this brings it back online
+			sudo systemctl --restart gdm
 			
 			echo "Running disc tweaks..."
 			${HOME}/bin/disc-tweaks.sh

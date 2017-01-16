@@ -14,7 +14,7 @@ MAILTO=olihul@optiver.com.au
 ## Backup a small number of key system-wide configuration files.
 00 0 * * *  rsync -PAXrogthlm --files-from=${HOME}/dot-files/backups.txt / ${HOME}/etc/backups >/dev/null
 ## Commit dot-files to git for extra backups
-10 0 * * *  cd ${HOME}/dot-files && git commit --allow-empty -aqm "Autocommit: $(date -R)\n$(git status)" && git push -q >/dev/null 2>/dev/null && ${HOME}/dot-files/bin/dock.sh --bootstrap-docker-force-push >/dev/null
+10 0 * * *  cd ${HOME}/dot-files && git commit --allow-empty -aqm "Autocommit: $(date -R)\n$(git status --short)" && git push -q >/dev/null 2>/dev/null && ${HOME}/dot-files/bin/dock.sh --bootstrap-docker-force-push >/dev/null
 ## Push local configuration and backups to another box.
 15 0 * * *  rsync -PAXrogthlm --delete ${HOME}/.ssh ${HOME}/etc ${HOME}/opt /H_DRIVE/ >/dev/null
 ## Install dot-files to development machines
@@ -37,4 +37,4 @@ MAILTO=olihul@optiver.com.au
 
 
 
-## Backed up at Mon Jan 16 00:00:01 AEDT 2017
+## Backed up at Tue Jan 17 00:00:06 AEDT 2017
