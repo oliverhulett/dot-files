@@ -6,21 +6,22 @@ function sortinline()
 	FILES=()
 	for f in "$@"; do
 		if [ -f "$f" ]; then
-			FILES[${#FILES[@]}]="$f"
+			FILES[${#FILES[@]}]="$(readlink -e "$f")"
 		else
 			if [ "$f" == "--keep" ]; then
 				KEEP_BLANK="yes"
+			else
+				ARGS[${#ARGS[@]}]="$f"
 			fi
-			ARGS[${#ARGS[@]}]="$f"
 		fi
 	done
 	for f in "${FILES[@]}"; do
 		echo "sort ${ARGS[@]} $f"
 		echo "$(sort "${ARGS[@]}" "$f")" >"$f"
-		if [ "$KEEP_BLANK" == "no" ]; then
-			cleaninline $f
-		fi
 	done
+	if [ "$KEEP_BLANK" == "no" ]; then
+		cleaninline "${FILES[@]}"
+	fi
 }
 
 ## Call uniq on files, write results back to files
@@ -31,21 +32,22 @@ function uniqinline()
 	FILES=()
 	for f in "$@"; do
 		if [ -f "$f" ]; then
-			FILES[${#FILES[@]}]="$f"
+			FILES[${#FILES[@]}]="$(readlink -e "$f")"
 		else
 			if [ "$f" == "--keep" ]; then
 				KEEP_BLANK="yes"
+			else
+				ARGS[${#ARGS[@]}]="$f"
 			fi
-			ARGS[${#ARGS[@]}]="$f"
 		fi
 	done
 	for f in "${FILES[@]}"; do
 		echo "uniq ${ARGS[@]} $f"
 		echo "$(uniq "${ARGS[@]}" "$f")" >"$f"
-		if [ "$KEEP_BLANK" == "no" ]; then
-			cleaninline $f
-		fi
 	done
+	if [ "$KEEP_BLANK" == "no" ]; then
+		cleaninline "${FILES[@]}"
+	fi
 }
 
 ## Clean files of empty lines, write result back to files
@@ -55,7 +57,7 @@ function cleaninline()
 	FILES=()
 	for f in "$@"; do
 		if [ -f "$f" ]; then
-			FILES[${#FILES[@]}]="$f"
+			FILES[${#FILES[@]}]="$(readlink -e "$f")"
 		else
 			ARGS[${#ARGS[@]}]="$f"
 		fi
@@ -66,3 +68,26 @@ function cleaninline()
 	done
 }
 
+## Add items to a list file.  Keep the list file sorted, uniq-ified, and clean of empty lines.
+function list()
+{
+	ARGS=()
+	FILE=""
+	LIST=()
+	for a in "$@"; do
+		if [ "${a:0:1}" == "-" ]; then
+			ARGS[${#ARGS[@]}]="$a"
+		else
+			if [ -z "${FILE}" ]; then
+				FILE="$a"
+			else
+				LIST[${#LIST[@]}]="$a"
+			fi
+		fi
+	done
+	for l in "${LIST[@]}"; do
+		echo "Adding: $l"
+		echo "$l" >>"${FILE}"
+	done
+	sortinline -u "${FILE}"
+}

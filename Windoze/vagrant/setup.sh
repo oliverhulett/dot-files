@@ -51,7 +51,7 @@ rmdir ${HOME}/{Documents,Downloads,Music,Pictures,Public,Templates,Videos} 2>/de
 sudo systemctl stop collectd.service
 
 echo "Installing some things I don't want to docker all the time..."
-sh "${HOME}/dot-files/parts/00_common-yum-install.sh" &
+run-parts "$(dirname "$0")/parts/" &
 
 echo "Restoring Eclpise install and other backups..."
 (

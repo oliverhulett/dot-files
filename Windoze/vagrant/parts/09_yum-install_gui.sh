@@ -1,0 +1,1 @@
+../../../parts/09_yum-install_gui.sh

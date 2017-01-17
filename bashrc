@@ -159,7 +159,8 @@ function _last_cmd_interactive()
 {
 	set -- `history 1`
 	# `history` outputs command count, then date, then time, then command
-	grep -qw $4 ${HOME}/.interactive_commands >/dev/null 2>/dev/null
+	shift 3
+	grep -qwFf ${HOME}/.interactive_commands <(echo "$@") >/dev/null 2>/dev/null
 }
 
 PROMPT_TIMER='$(if [ $_timer_show -gt 1 ] && ! _last_cmd_interactive; then echo '"'['"'${_timer_show}s'"'] '"'; fi)'

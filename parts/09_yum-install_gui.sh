@@ -1,0 +1,3 @@
+# Commands to yum install GUI tools I use...
+yum install -y yakuake wireshark
+
