@@ -38,41 +38,90 @@ unalias get-repo-dir 2>/dev/null
 function get-repo-dir()
 {
 	set -- $(echo "$@" | tr '/' ' ')
-	proj="$1"
-	shift
-	repo="$1"
-	shift
+	if [ $# -lt 1 ]; then
+		return
+	fi
+	if [ -d "${HOME}/repo/$1" ]; then
+		proj="$1"
+		repo="$2"
+		shift 2
+	else
+		proj='*'
+		repo="$1"
+		shift
+	fi
 	branch="${1:-master}"
 	shift
-	if [ ! -d "${HOME}/repo/${proj}" ]; then
-		branch="${repo:-master}"
-		repo="${proj}"
-		proj='*'
-	fi
 	echo ${HOME}/repo/${proj}/${repo}/${branch}/"$(echo $* | tr ' ' '/')"
 }
 alias repo-dir=get-repo-dir
 
-function complete_repo()
+function _compgen_repo_dirs()
 {
-	compgen_cmd="compgen -d -X '.*' -X 'RemoteSystemsTempFiles'"
-	if [ $COMP_CWORD -gt 3 ]; then
-		compgen_cmd="$compgen_cmd -S '/'"
-	fi
-	dir_part="$(echo ${COMP_WORDS[@]:1:$((COMP_CWORD - 1))} | tr ' ' '/')"
-	if [ ! -d "${HOME}/repo/${dir_part}" ]; then
-		new_dir_part="$(cd "${HOME}/repo" && echo */${dir_part})"
-		if [ -d "${HOME}/repo/${new_dir_part}" ]; then
-			dir_part="${new_dir_part}"
-		fi
-	fi
-	COMPREPLY=($(cd "${HOME}/repo/${dir_part}/" && $compgen_cmd -- "${COMP_WORDS[$COMP_CWORD]}"))
-	if [ $COMP_CWORD == 1 ]; then
-		# Special case, first word can be project or repo
+	compgen -d -X '.*' "$@" | command grep -v RemoteSystemsTempFiles
+}
+
+function _repo_completions()
+{
+	COMPREPLY=($(cd "${HOME}/repo/$1" 2>/dev/null && _compgen_repo_dirs -- "${COMP_WORDS[$COMP_CWORD]}"))
+	if [ -z "$1" ]; then
 		for d in ${HOME}/repo/*; do
-			COMPREPLY=("${COMPREPLY[@]}" $(cd "$d" && $compgen_cmd -- "${COMP_WORDS[$COMP_CWORD]}"))
+			COMPREPLY=("${COMPREPLY[@]}" $(cd "$d" && _compgen_repo_dirs -- "${COMP_WORDS[$COMP_CWORD]}"))
 		done
 	fi
 }
-complete -F complete_repo repo repo-dir get-repo-dir
 
+function _complete_repo_dirs()
+{
+	if [ $COMP_CWORD -eq 1 ]; then
+		_repo_completions
+		return
+	elif [ $COMP_CWORD -eq 2 ]; then
+		if [ -d "${HOME}/repo/${COMP_WORDS[1]}" ]; then
+			_repo_completions "${COMP_WORDS[1]}"
+			return
+		fi
+	fi
+	dirpart="$(echo "${COMP_WORDS[@]:1:$(($COMP_CWORD - 1))}" | tr ' ' '/')"
+	if [ ! -d "${HOME}/repo/${dirpart}" ]; then
+		new_dirpart="$(cd "${HOME}/repo" && echo */${dirpart})"
+		if [ -d "${HOME}/repo/${new_dirpart}" ]; then
+			dirpart="${new_dirpart}"
+		fi
+	fi
+	COMPREPLY=($(cd "${HOME}/repo/${dirpart}/" 2>/dev/null && _compgen_repo_dirs -- "${COMP_WORDS[$COMP_CWORD]}"))
+}
+complete -F _complete_repo_dirs repo repo-dir get-repo-dir
+
+function depo()
+{
+	REPO_DIR="$(repo-dir "$1")"
+	if [ ! -d "$REPO_DIR" ]; then
+		REPO_DIR="$(repo-dir "$1" "$2")"
+		shift
+	fi
+	shift
+	IMG_DIR="$(dirname "$REPO_DIR" | sed -re "s!${HOME}/!${HOME}/dot-files/images/!")"
+	IMG_NAME="$(cd "$IMG_DIR" && make name)"
+	if [ -z "$(docker images -q $IMG_NAME)" ]; then
+		( cd "$IMG_DIR" && make build )
+	fi
+	docker-run.sh -v '/u01:/u01' $IMG_NAME "$@"
+}
+
+function _complete_depo()
+{
+	if [ $COMP_CWORD -eq 1 ]; then
+		_repo_completions
+		return
+	elif [ $COMP_CWORD -eq 2 ]; then
+		if [ -d "${HOME}/repo/${COMP_WORDS[1]}" ]; then
+			_repo_completions "${COMP_WORDS[1]}"
+			return
+		fi
+		_command_offset 2
+		return
+	fi
+	_command_offset 3
+}
+complete -F _complete_depo depo
