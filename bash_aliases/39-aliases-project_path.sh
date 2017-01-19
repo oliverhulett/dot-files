@@ -34,6 +34,12 @@ function repo()
 	echo "$dir"
 	cd "$dir"
 }
+unalias clone 2>/dev/null
+function clone()
+{
+	clone.sh "$@"
+	repo "$@"
+}
 unalias get-repo-dir 2>/dev/null
 function get-repo-dir()
 {
