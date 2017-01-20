@@ -1,8 +1,7 @@
 bash
 dash
-diff
 edt
-git
+git diff
 less
 man
 more

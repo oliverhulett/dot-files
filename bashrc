@@ -153,14 +153,14 @@ function _timer_stop()
 	unset _timer
 }
 trap '_timer_start' DEBUG
-# _timer_stop has to be at the end of PROMPT_COMMAND otherwise you'll be timing from the next PROMP_COMMAND command
+# _timer_stop has to be at the end of PROMPT_COMMAND otherwise you'll be timing from the next PROMPT_COMMAND command
 PROMPT_COMMAND="$PROMPT_COMMAND; _timer_stop"
 function _last_cmd_interactive()
 {
 	set -- `history 1`
 	# `history` outputs command count, then date, then time, then command
 	shift 3
-	grep -qwFf ${HOME}/.interactive_commands <(echo "$@") >/dev/null 2>/dev/null
+	grep -qwE "$(sed -re 's/^\^?/^/' ${HOME}/.interactive_commands | paste -sd'|' -)" <(echo "$@") >/dev/null 2>/dev/null
 }
 
 PROMPT_TIMER='$(if [ $_timer_show -gt 1 ] && ! _last_cmd_interactive; then echo '"'['"'${_timer_show}s'"'] '"'; fi)'
