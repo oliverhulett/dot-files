@@ -6,7 +6,15 @@ alias central-archive='ssh central-archive'
 
 alias sshrelay='ssh sshrelay'
 
-alias bt='echo bt | gdb -q -x - '
+unalias bt 2>/dev/null
+function bt()
+{
+	for f in "$@"; do
+		file "$f"
+		exe="$(file "$f" | sed -nre "s/.+, from '([^ ]+).+")"
+		echo bt | gdb -x - "$exe" "$f"
+	done
+}
 
 alias operat='/usr/bin/sudo -iu operat'
 

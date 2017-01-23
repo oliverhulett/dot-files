@@ -72,19 +72,23 @@ function cleaninline()
 function list()
 {
 	ARGS=()
-	FILE=""
 	LIST=()
 	for a in "$@"; do
 		if [ "${a:0:1}" == "-" ]; then
 			ARGS[${#ARGS[@]}]="$a"
 		else
-			if [ -z "${FILE}" ]; then
-				FILE="$a"
-			else
-				LIST[${#LIST[@]}]="$a"
-			fi
+			LIST[${#LIST[@]}]="$a"
 		fi
 	done
+	FILE=""
+	if [ ! -f "${LIST[0]}" -a -f "${LIST[$((${#LIST[@]} - 1))]}" ]; then
+		FILE="${LIST[$((${#LIST[@]} - 1))]}"
+		LIST=( "${LIST[@]:0:$((${#LIST[@]} - 1))}" )
+	else
+		FILE="${LIST[0]}"
+		LIST=( "${LIST[@]:1}" )
+	fi
+	echo "Adding to file: ${FILE}"
 	for l in "${LIST[@]}"; do
 		echo "Adding: $l"
 		echo "$l" >>"${FILE}"

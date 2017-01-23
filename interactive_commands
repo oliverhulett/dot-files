@@ -2,6 +2,7 @@ bash
 dash
 edt
 git diff
+git resolve
 less
 man
 more
