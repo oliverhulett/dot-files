@@ -1,7 +1,9 @@
 bash
+crontab -e
 dash
 edt
 git diff
+git log
 git resolve
 less
 man

@@ -41,8 +41,6 @@ alias c5build.py=c5build
 alias c5inv='INVOKE_BUILD_ROOT="build/c5" c5 inv'
 alias c5invoke='INVOKE_BUILD_ROOT="build/c5" c5 inv'
 
-alias virtualenv-2.6=virtualenv
-
 alias dock=dock.sh
 alias sdock=sdock.sh
 

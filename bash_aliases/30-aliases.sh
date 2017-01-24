@@ -128,7 +128,7 @@ function which()
 			alias)
 				alias "$arg"
 				find_alias_or_fn "$arg"
-				cmd="$(alias "$arg" | sed -re "s/^[^=]+='(.+)'$/\1/;s/command //g;s/builtin //g;s/sudo //g;s/ +-[^ ]+//g") $cmd"
+				cmd="$(alias "$arg" | sed -re "s/^[^=]+=(.+)$/\1/;s/^["'"'"']//;s/["'"'"']$//;s/command //g;s/builtin //g;s/sudo //g;s/ +-[^ ]+//g") $cmd"
 				;;
 			keyword)
 				;;
@@ -141,7 +141,7 @@ function which()
 				;;
 		esac
 		echo
-		commands=$(command which -a $cmd 2>/dev/null | sort -u)
+		commands=$(command which -a $(echo $cmd | tr ' ' '\n' | sort -u) 2>/dev/null)
 		for bin in $commands; do
 			while [ -n "$bin" ]; do
 				if [ -e "$bin" ]; then

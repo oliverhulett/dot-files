@@ -34,15 +34,7 @@ fi
 echo "Cloning dot-files..."
 su -c "cd ${HOME} && git clone --recursive ssh://git@git.comp.optiver.com:7999/~${USER}/dot-files.git" ${USER} 2>/dev/null
 su -c "cd ${HOME}/dot-files && git pull && git submodule init && git submodule sync && git submodule update" ${USER}
-su -c "mkdir --parents ${HOME}/.bash_aliases" ${USER}
-( cd ${HOME}/.bash_aliases/ && rm * 2>/dev/null )
-( cd ${HOME}/.bash_aliases/ && su -c "ln -sf ../dot-files/bash_aliases/* ./" ${USER} )
-for f in bash_profile profile bash_logout bashrc vim vimrc gitconfig git_wrappers gitignore pydistutils.cfg pypirc invoke.py; do
-	su -c "rm ${HOME}/.$f 2>/dev/null; ln -sf dot-files/$f ${HOME}/.$f" ${USER}
-done
-for f in bin; do
-	su -c "rm ${HOME}/$f 2>/dev/null; ln -sf dot-files/$f ${HOME}/$f" ${USER}
-done
+su -c "${HOME}/dot-files/setup-home.sh" ${USER}
 crontab -u ${USER} <(head -n -1 ${HOME}/dot-files/crontab)
 
 echo "General clean-ups..."
@@ -51,7 +43,14 @@ rmdir ${HOME}/{Documents,Downloads,Music,Pictures,Public,Templates,Videos} 2>/de
 sudo systemctl stop collectd.service
 
 echo "Installing some things I don't want to docker all the time..."
-run-parts "$(dirname "$0")/parts/" &
+(
+	yum groupinstall -y "development tools"
+	yum install -y docker which wget curl telnet vagrant iotop nethogs sysstat aspell aspell-en cifs-utils samba samba-client protobuf-vim golang-vim jq \
+		openssl-libs openssl-static java-1.8.0-openjdk-devel java-1.8.0-openjdk \
+		python-devel python-pip libxml2-devel libxslt-devel \
+		cmake ccache distcc protobuf protobuf-c protobuf-python protobuf-compiler valgrind clang-devel clang clang-analyzer \
+		yakuake wireshark
+) &
 
 echo "Restoring Eclpise install and other backups..."
 (

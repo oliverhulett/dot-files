@@ -11,7 +11,9 @@ function bt()
 {
 	for f in "$@"; do
 		file "$f"
-		exe="$(file "$f" | sed -nre "s/.+, from '([^ ]+).+")"
+		exe="$(file "$f" | sed -nre "s/.+, from '([^ ]+).+/\\1/p")"
+		echo "bt $exe $f"
+		echo
 		echo bt | gdb -x - "$exe" "$f"
 	done
 }
