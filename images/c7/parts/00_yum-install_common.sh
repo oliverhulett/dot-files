@@ -1,1 +1,0 @@
-../../../parts/00_yum-install_common.sh
