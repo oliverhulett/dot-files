@@ -25,5 +25,4 @@ for server in "${SERVERS[@]}"; do
 		cd ${HOME}/dot-files 2>/dev/null && git pull && git submodule init && git submodule sync && git submodule update )"
 	' || run rsync --delete -zpPXrogthlcm --exclude='.git' "${HOME}/dot-files/" ${server}:"${HOME}/dot-files/"
 	run ssh ${server} '${HOME}/dot-files/setup-home.sh'
-	run ssh ${server} 'crontab -u $(whoami) <${HOME}/dot-files/crontab.devservers'
 done

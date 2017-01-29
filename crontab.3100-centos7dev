@@ -1,0 +1,40 @@
+HOME=/home/olihul
+MAILTO=olihul@optiver.com.au
+
+## Disc tweaks can cause a lot of dirty pages to accumulate in memory, force an hourly sync to keep on top of it.
+## Only force sync if CPU % Idle time is more than 75% over the last 10 seconds.
+@hourly [ $(mpstat 1 10 | tail -n1 | awk '{print int($10)}') -gt 75 ] && sync >/dev/null 2>/dev/null
+## Crontabs live in /var/spool/, so take a backup of this crontab on a separate partition.
+@hourly crontab -l >${HOME}/dot-files/crontab.$(hostname -s) && echo -e "\n## Backed up at `date`" >>${HOME}/dot-files/crontab.$(hostname -s)
+
+## This section, for backups, should run @daily, but the local backups need to happen before the off box backups so that
+## we're saving the latest stuff off box, hence the 5 minute delay for the off box lines at the end.
+## Save list of installed software.
+00 0 * * *  rpm -qa | sort >${HOME}/dot-files/installed-software.txt
+## Backup a small number of key system-wide configuration files.
+00 0 * * *  rsync -PAXrogthlm --files-from=${HOME}/dot-files/backups.txt / ${HOME}/etc/backups >/dev/null
+## Commit dot-files to git for extra backups.
+10 0 * * *  cd ${HOME}/dot-files && git commit --allow-empty -aqm "Autocommit: $(date -R)\n$(git status --short)" && git push -q >/dev/null 2>/dev/null && ${HOME}/dot-files/bin/dock.sh --bootstrap-docker-force-push >/dev/null
+## Push local configuration and backups to another box.
+15 0 * * *  rsync -PAXrogthlm --delete ${HOME}/.ssh ${HOME}/etc ${HOME}/opt /H_DRIVE/ >/dev/null
+## Install dot-files to development machines.
+15 0 * * *  PATH="${HOME}/bin:${PATH}" ${HOME}/bin/install-dot-files.sh >/dev/null 2>/dev/null
+
+## Keep ~/repo up-to-date.
+@daily find ${HOME}/repo/ -type d -exec test -d "{}/.git" \; -prune -print | while read; do ( cd "$REPLY" && git pullb -q >/dev/null 2>/dev/null && git update >/dev/null 2>/dev/null && ( [ ! -f pins.json ] || git checkout pins.json >/dev/null ) ) || echo -e "\n${REPLY} Update Failed\n\n"; done
+
+## Clean builds every now and then.
+@weekly find ${HOME}/repo/ -name .git -prune | while read; do ( cd "$(dirname "$REPLY")" && [ -e build.py ] && ( ./build.py -c -t all || echo -e "\n${REPLY} Clean Failed\n\n" ) ); done
+@weekly find ${HOME}/repo/ -name .prof -exec rm -rf "{}" \;
+## Clean /tmp every now and then.
+@weekly find /tmp /var/tmp -xdev -not -exec /sbin/fuser -s "{}" \; -delete 2>/dev/null
+
+## Clean docker containers and images every now and then.
+@weekly [ $(docker ps -a -q | wc -l) -gt 0 ] && docker rm $(docker ps -a -q)
+@weekly [ $(docker images -q | wc -l) -gt 0 ] && docker rmi $(docker images -q)
+## Kill docker containers running overnight, you can always re-start them.
+@daily [ $(docker ps -q | wc -l) -gt 0 ] && docker kill $(docker ps -q)
+## Pull favourite docker images nightly.  Sleep a bit first so that an `docker rm` or `docker rmi` has finished first.
+@daily sleep 10 && cat "${HOME}/.docker_favourites | xargs -n1 -P0 docker pull
+
+## Backed up at Mon Jan 30 10:24:11 AEDT 2017

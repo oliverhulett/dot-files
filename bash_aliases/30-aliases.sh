@@ -31,6 +31,7 @@ if uname -s | command grep -q 'MINGW' >/dev/null 2>&1 ; then
 else
 	alias cp='cp --preserve=all'
 fi
+alias sudo='sudo -E'
 alias mount='mount -l'
 alias sdiff='sdiff --strip-trailing-cr -bB'
 alias diff='diff -w'

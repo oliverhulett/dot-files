@@ -1,6 +1,8 @@
 bash
 crontab -e
 dash
+dock
+dock.sh
 edt
 git diff
 git log
@@ -9,6 +11,8 @@ less
 man
 more
 nano
+sdock
+sdock.sh
 sh
 ssh
 top
