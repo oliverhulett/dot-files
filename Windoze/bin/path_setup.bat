@@ -1,4 +1,3 @@
-@echo off
 set path=C:\Repo\dot-files\Windoze\bin;%PATH%
 set path=%PATH%;C:\Program Files\CMake\bin\;C:\Go\bin
 set path=%PATH%;C:\HashiCorp\Vagrant\bin
