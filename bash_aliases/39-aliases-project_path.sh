@@ -101,12 +101,26 @@ complete -F _complete_repo_dirs repo repo-dir get-repo-dir
 
 function depo()
 {
-	REPO_DIR="$(repo-dir "$1")"
-	if [ ! -d "$REPO_DIR" ]; then
+	REPO_DIR=
+	if [ -z "$REPO_DIR" ]; then
 		REPO_DIR="$(repo-dir "$1" "$2")"
-		shift
+		if [ -d "$REPO_DIR" ]; then
+			shift 2
+		else
+			REPO_DIR=
+		fi
 	fi
-	shift
+	if [ -z "$REPO_DIR" ]; then
+		REPO_DIR="$(repo-dir "$1")"
+		if [ -d "$REPO_DIR" ]; then
+			shift
+		else
+			REPO_DIR=
+		fi
+	fi
+	if [ -z "$REPO_DIR" ]; then
+		REPO_DIR="$(get-project-root)"
+	fi
 	IMG_DIR="$(dirname "$REPO_DIR" | sed -re "s!${HOME}/!${HOME}/dot-files/images/!")"
 	IMG_NAME="$(cd "$IMG_DIR" && make name)"
 	if [ -z "$(docker images -q $IMG_NAME)" ]; then
