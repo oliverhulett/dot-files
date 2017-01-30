@@ -101,6 +101,20 @@ function cat
 	done
 }
 
+unalias joinby 2>/dev/null
+function joinby()
+{
+	d="$1"
+	if [ ${#1} -eq 1 ]; then
+		shift
+	else
+		d=","
+	fi
+	echo -n "$1"
+	shift
+	printf "%s" "${@/#/$d}"
+}
+
 unalias find_alias_or_fn 2>/dev/null
 function find_alias_or_fn()
 {

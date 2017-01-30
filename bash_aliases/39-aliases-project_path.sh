@@ -102,7 +102,15 @@ complete -F _complete_repo_dirs repo repo-dir get-repo-dir
 function depo()
 {
 	REPO_DIR=
-	if [ -z "$REPO_DIR" ]; then
+	if [ $# -ge 3 -a -z "$REPO_DIR" ]; then
+		REPO_DIR="$(repo-dir "$1" "$2" "$3")"
+		if [ -d "$REPO_DIR" ]; then
+			shift 3
+		else
+			REPO_DIR=
+		fi
+	fi
+	if [ $# -ge 2 -a -z "$REPO_DIR" ]; then
 		REPO_DIR="$(repo-dir "$1" "$2")"
 		if [ -d "$REPO_DIR" ]; then
 			shift 2
@@ -110,7 +118,7 @@ function depo()
 			REPO_DIR=
 		fi
 	fi
-	if [ -z "$REPO_DIR" ]; then
+	if [ $# -ge 1 -a -z "$REPO_DIR" ]; then
 		REPO_DIR="$(repo-dir "$1")"
 		if [ -d "$REPO_DIR" ]; then
 			shift
@@ -126,6 +134,11 @@ function depo()
 	if [ -z "$(docker images -q $IMG_NAME)" ]; then
 		( cd "$IMG_DIR" && make build )
 	fi
+	if ! grep -qw "$REPO_DIR" <(pwd -P) 2>/dev/null; then
+		echo "Changing directory: $REPO_DIR"
+		cd "$REPO_DIR"
+	fi
+	echo "Running docker image: $IMG_NAME -- $@"
 	docker-run.sh -v '/u01:/u01' $IMG_NAME "$@"
 }
 
@@ -135,13 +148,16 @@ function _complete_depo()
 		_repo_completions
 		return
 	elif [ $COMP_CWORD -eq 2 ]; then
-		if [ -d "${HOME}/repo/${COMP_WORDS[1]}" ]; then
+		REPO_DIR="$(repo-dir "${COMP_WORDS[1]}")"
+		if [ ! -d "${REPO_DIR}" ]; then
 			_repo_completions "${COMP_WORDS[1]}"
 			return
+		else
+			_command_offset 2
+			return
 		fi
-		_command_offset 2
-		return
+	else
+		_command_offset 3
 	fi
-	_command_offset 3
 }
 complete -F _complete_depo depo
