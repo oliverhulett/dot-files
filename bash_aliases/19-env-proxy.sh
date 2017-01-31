@@ -1,10 +1,7 @@
 export HTTP_PROXY='http://sydproxy.comp.optiver.com:8080'
-export HTTPS_PROXY='https://sydproxy.comp.optiver.com:8080'
-export http_proxy="${HTTP_PROXY}"
-export https_proxy="${HTTPS_PROXY}"
+export HTTPS_PROXY='http://sydproxy.comp.optiver.com:8080'
 
 export NO_PROXY='*.comp.optiver.com,*.aus.optiver.com,127.0.0.1,localhost,srcsyd.comp.optiver.com,10.0.2.*,192.168.56.*'
-export no_proxy="${NO_PROXY}"
 
 function urlencode()
 {
@@ -47,16 +44,14 @@ function proxy_setup()
 		read -rs -p "HTTP Proxy Password: " PASSWD
 		echo
 	fi
-	if [ -z "${http_proxy_orig}" ]; then
-		export http_proxy_orig="${http_proxy}"
+	if [ -z "${http_PROXY_ORIG}" ]; then
+		export http_PROXY_ORIG="${HTTP_PROXY}"
 	fi
-	if [ -z "${https_proxy_orig}" ]; then
-		export https_proxy_orig="${https_proxy}"
+	if [ -z "${https_PROXY_ORIG}" ]; then
+		export https_PROXY_ORIG="${HTTPS_PROXY}"
 	fi
-	export http_proxy="${http_proxy_orig/\/\////$(urlencode "$USER"):$(urlencode "$PASSWD")@}"
-	export HTTP_PROXY="${http_proxy}"
-	export https_proxy="${https_proxy_orig/\/\////$(urlencode "$USER"):$(urlencode "$PASSWD")@}"
-	export HTTPS_PROXY="${https_proxy}"
+	export HTTP_PROXY="${HTTP_PROXY}"
+	export HTTPS_PROXY="${HTTPS_PROXY}"
 	update_config=""
 	for f in /etc/sysconfig/docker; do
 		if [ -e "$f" ]; then
