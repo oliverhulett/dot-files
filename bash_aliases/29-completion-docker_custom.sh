@@ -31,7 +31,7 @@ function _docker_run_sh()
 	fi
 }
 
-complete -F _docker_run_sh dockerme putmein
+complete -F _docker_run_sh dockerme putmein docker-run.sh
 
 # c5 uses a docker container to build things under centos 5
 

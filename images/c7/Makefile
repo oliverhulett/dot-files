@@ -36,7 +36,7 @@ pull: CMD = docker pull $(NAME)
 pull: $(MARKERFILE)
 
 push:	## Push the current version of the docker image if there are no modified files
-	docker inspect $(NAME) | grep '"build_modified_files": "0"' > /dev/null || (echo "The image was build from a dirty GIT repo" ; exit 1) 
+	docker inspect $(NAME) | grep '"build_modified_files": "0"' >/dev/null || (echo "The image was build from a dirty GIT repo" ; exit 1) 
 	echo "Pushing Image to Registry"
 	docker tag $(NAME) $(NAME):$(GITREF)
 	docker push $(NAME)

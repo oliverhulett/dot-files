@@ -6,8 +6,10 @@ dock.sh
 edt
 git diff
 git log
+git new
 git resolve
 less
+.+\| *less *$
 man
 more
 nano

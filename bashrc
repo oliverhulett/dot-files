@@ -19,9 +19,9 @@ if [ -e "${HOME}/.bash_profile" ] ; then
 	source "${HOME}/.bash_profile"
 fi
 
-export VISUAL=$(command which vim)
+export VISUAL=$(command which vim 2>/dev/null)
 export EDITOR=$VISUAL
-export PAGER=$(command which less)
+export PAGER=$(command which less 2>/dev/null)
 alias edt=$VISUAL
 
 export HISTCONTROL="ignoredups"

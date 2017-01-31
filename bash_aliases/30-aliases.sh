@@ -34,7 +34,7 @@ fi
 alias sudo='sudo -E'
 alias mount='mount -l'
 alias sdiff='sdiff --strip-trailing-cr -bB'
-alias diff='diff -w'
+alias diff='diff -wB'
 alias time='/usr/bin/time'
 alias chmod='chmod -c'
 alias eject='eject -T'

@@ -5,7 +5,7 @@ RUN yum install -y openssl-libs openssl-static java-1.8.0-openjdk-devel java-1.8
 	python-devel python-pip libxml2-devel libxslt-devel \
 	cmake ccache distcc protobuf protobuf-c protobuf-python protobuf-compiler valgrind clang-devel clang clang-analyzer
 
-ENV export PATH=/usr/lib64/ccache:$PATH
+ENV PATH=/usr/lib64/ccache:$PATH
 
 RUN yum install -y http://artifactory.aus.optiver.com/artifactory/dev/trd/courier-1.1.0-1.x86_64.rpm
 

@@ -6,7 +6,7 @@ IMAGES="$( (
 ) | sort -u)"
 DOCKER_RUN_ARGS=()
 while ! echo "$IMAGES" | grep -qw "$1" 2>/dev/null >/dev/null; do
-	DOCKER_RUN_ARGS[${#DOCKER_RUN_ARGS}]="$1"
+	DOCKER_RUN_ARGS[${#DOCKER_RUN_ARGS[@]}]="$1"
 	shift
 done
 IMAGE="$1"
@@ -18,7 +18,8 @@ fi
 # user specific container name
 NAME=`basename $IMAGE`-`whoami`-`date "+%s"`
 echo "Starting $NAME ($IMAGE)"
-LABELS="$(docker inspect $IMAGE | jq '.[0].Config.Labels')"
+docker inspect $IMAGE | jq '.[0].Config.Labels' 2>/dev/null
+
 # Use a docker container to do things
 TMP="$(mktemp -p "${HOME}" -t ".$(date '+%Y%m%d-%H%M%S').docker.$(basename "$1").XXXXXXXXXX")"
 trap 'echo "Leaving $NAME (${IMAGE})" && rm -fv ${TMP}' EXIT
