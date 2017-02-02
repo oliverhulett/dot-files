@@ -95,7 +95,7 @@ shopt -s cdspell
 
 # We can clear some variables here that will be set/updated by the bash_aliases includes and used later.
 export PROMPT_FOO=
-export PROMPT_COMMAND=
+export PROMPT_COMMAND=":"
 
 if [ -d "$HOME/.bash_aliases" ]; then
 	for f in $(echo $HOME/.bash_aliases/* | sort -n); do
