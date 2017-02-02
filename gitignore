@@ -5,3 +5,7 @@
 .project
 .pydevproject
 .settings
+.sublime-project
+*.sublime-project
+.sublime-project.sublime-workspace
+*.sublime-workspace
