@@ -1,31 +1,31 @@
 #!/bin/bash
+HERE="$(realpath -P "$(dirname "$0")")"
 
-echo "Creating bash aliases..."
-mkdir --parents "${HOME}/.bash_aliases" 2>/dev/null
-rm "${HOME}/.bash_aliases/"* 2>/dev/null
-( cd "${HOME}/.bash_aliases" && ln -sf ../dot-files/bash_aliases/* ./ )
-if [ -f "${HOME}/dot-files/bash_aliases.deny" ]; then
-	echo "Removing denied bash aliases..."
-	( cd "${HOME}/.bash_aliases" && rm $(command cat "${HOME}/dot-files/bash_aliases.deny") )
+DOTFILES=
+if [ -f "${HERE}/dot-files.$(hostname -s)" ]; then
+	echo "Linking dot files from ~/dot-files/dot-files.$(hostname -s)..."
+	DOTFILES="${HERE}/dot-files.$(hostname -s)"
+elif [ -f "${HERE}/dot-files" ]; then
+	echo "Linking dot files from ~/dot-files/dot-files..."
+	DOTFILES="${HERE}/dot-files"
 fi
-echo "Linking dot files..."
-for f in bash_logout bash_profile bashrc docker_favourites gitconfig gitignore git_wrappers interactive_commands invoke.py profile pydistutils.cfg pypirc vimrc vim; do
-	rm "${HOME}/.$f" 2>/dev/null
-	ln -sf dot-files/$f "${HOME}/.$f"
-done
-for f in bin; do
-	rm "${HOME}/$f" 2>/dev/null
-	ln -sf dot-files/$f "${HOME}/$f"
-done
-mkdir --parents "${HOME}/.pip" 2>/dev/null
-for f in pip.conf; do
-	rm "${HOME}/.pip/$f" 2>/dev/null
-	( cd "${HOME}/.pip" && ln -sf ../dot-files/$f $f )
-done
-if [ -f "${HOME}/dot-files/crontab.$(hostname -s)" ]; then
-	echo "Installing crontab from ~/dot-files/crontab.$(hostname)..."
-	crontab <(head -n -2 "${HOME}/dot-files/crontab.$(hostname -s)")
-elif [ -f "${HOME}/dot-files/crontab" ]; then
+if [ -n "${DOTFILES}" ]; then
+	find "${HOME}" -xdev -type l -lname '*dot-files/*' -delete 2>/dev/null
+	## SRC is relative to $HERE.  TARGET is relative to $HOME
+	while read SRC TARGET; do
+		DEST="${HOME}/${TARGET}"
+		rm "${DEST}" 2>/dev/null
+		mkdir --parents "$(dirname "${DEST}")" 2>/dev/null
+		( cd "$(dirname "${DEST}")" && ln -sf "$(realpath --relative-to=. "${HERE}/${SRC}")" "$(basename "${DEST}")" )
+	done <"${DOTFILES}"
+else
+	echo "No dot-files file found, not linking anything..."
+fi
+
+if [ -f "${HERE}/crontab.$(hostname -s)" ]; then
+	echo "Installing crontab from ~/dot-files/crontab.$(hostname -s)..."
+	crontab <(head -n -2 "${HERE}/crontab.$(hostname -s)")
+elif [ -f "${HERE}/crontab" ]; then
 	echo "Installing crontab from ~/dot-files/crontab..."
-	crontab "${HOME}/dot-files/crontab"
+	crontab "${HERE}/crontab"
 fi

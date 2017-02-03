@@ -38,8 +38,8 @@ trap cleanup EXIT
 
 pushd "../${NEW_DIR}" >/dev/null
 
-git checkout -b "${NEW_BRANCH}" || git checkout "${NEW_BRANCH}"
-git push --set-upstream origin "${NEW_BRANCH}"
+git checkout -b "${USER}/${NEW_BRANCH}" || git checkout "${USER}/${NEW_BRANCH}"
+git push --set-upstream origin "${USER}/${NEW_BRANCH}"
 git update
 
 shopt -s nullglob

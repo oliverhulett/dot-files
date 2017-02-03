@@ -33,15 +33,15 @@ function _docker_run_sh()
 
 complete -F _docker_run_sh dockerme putmein docker-run.sh
 
-# c5 uses a docker container to build things under centos 5
+# cc-env uses a docker container to build things under centos 5
 
-alias c5build='c5 ./build.py --output-dir=build/c5'
-alias c5build.py=c5build
+alias cc-env-build='cc-env ./build.py --output-dir=build/c5'
+alias cc-env-build.py=cc-env-build
 
-alias c5inv='INVOKE_BUILD_ROOT="build/c5" c5 inv'
-alias c5invoke='INVOKE_BUILD_ROOT="build/c5" c5 inv'
+alias cc-env-inv='INVOKE_BUILD_ROOT="build/c5" cc-env inv'
+alias cc-env-invoke='INVOKE_BUILD_ROOT="build/c5" cc-env inv'
 
 alias dock=dock.sh
 alias sdock=sdock.sh
 
-complete -F _root_command c5 dock.sh dock sdock.sh sdock
+complete -F _root_command cc-env dock.sh dock sdock.sh sdock

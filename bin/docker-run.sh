@@ -36,4 +36,5 @@ for cmd in echo ""; do
 		-v /etc/sudo.conf:/etc/sudo.conf:ro -v /etc/sudoers:/etc/sudoers:ro -v /etc/sudoers.d:/etc/sudoers.d:ro -v /etc/pam.d:/etc/pam.d:ro -v /etc/localtime:/etc/localtime:ro \
 		--env-file=<(/usr/bin/env) -v "$TMP":"$TMP" --entrypoint="$TMP" \
 		"${DOCKER_RUN_ARGS[@]}" $IMAGE "$@"
+	echo
 done
