@@ -37,4 +37,4 @@ MAILTO=olihul@optiver.com.au
 ## Pull favourite docker images nightly.  Sleep a bit first so that an `docker rm` or `docker rmi` has finished first.
 @daily sleep 10 && cat "${HOME}/.docker_favourites" | xargs -n1 -P0 docker pull
 
-## Backed up at Sat Feb  4 00:00:06 AEDT 2017
+## Backed up at Sun Feb  5 00:00:06 AEDT 2017
