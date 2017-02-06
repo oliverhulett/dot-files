@@ -30,7 +30,7 @@ function get-project-root()
 unalias repo 2>/dev/null
 function repo()
 {
-	dir="$(get-repo-dir "$@")"
+	dir="$(get-repo-dir.sh "$@")"
 	echo "$dir"
 	cd "$dir"
 }
@@ -40,27 +40,8 @@ function clone()
 	clone.sh "$@"
 	repo "${@##\~}"
 }
-unalias get-repo-dir 2>/dev/null
-function get-repo-dir()
-{
-	set -- $(echo "$@" | tr '/' ' ')
-	if [ $# -lt 1 ]; then
-		return
-	fi
-	if [ -d "${HOME}/repo/$1" ]; then
-		proj="$1"
-		repo="$2"
-		shift 2
-	else
-		proj='*'
-		repo="$1"
-		shift
-	fi
-	branch="${1:-master}"
-	shift
-	echo ${HOME}/repo/${proj}/${repo}/${branch}/"$(echo $* | tr ' ' '/')"
-}
-alias repo-dir=get-repo-dir
+alias get-repo-dir=get-repo-dir.sh
+alias repo-dir=get-repo-dir.sh
 
 function _compgen_repo_dirs()
 {
@@ -97,7 +78,7 @@ function _complete_repo_dirs()
 	fi
 	COMPREPLY=($(cd "${HOME}/repo/${dirpart}/" 2>/dev/null && _compgen_repo_dirs -- "${COMP_WORDS[$COMP_CWORD]}"))
 }
-complete -F _complete_repo_dirs repo repo-dir get-repo-dir
+complete -F _complete_repo_dirs repo repo-dir get-repo-dir get-repo-dir.sh
 
 function depo()
 {

@@ -174,9 +174,10 @@ function which()
 			done
 			echo
 		done
-#		if [ -z "$commands" ]; then
+		if [ -z "$commands" ]; then
+			command which "$@"
 #			command_not_found_handle "$arg" 2>/dev/null
-#		fi
+		fi
 #		echo
 	done
 }
