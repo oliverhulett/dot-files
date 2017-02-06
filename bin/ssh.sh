@@ -16,11 +16,8 @@ if [ $# -eq 1 ]; then
 	if [ -n "${host}" ]; then
 		command ssh -o ConnectTimeout=2 -o PasswordAuthentication=no ${user}@${host} echo "Successfully SSH-ed to ${target} \(which is really ${host}\) as ${user} without a password"
 	fi
-	echo "Checking environment set-up on ${target}"
-	if ! command ssh ${user}@${target} -o ConnectTimeout=2 -o PasswordAuthentication=no test -d dot-files; then
-		install-dot-files.sh ${target}
-		command ssh ${target} 'cd .bash_aliases && ln -s ../dot-files/bash_aliases/* ./'
-	fi
+	echo "Setting up environment on ${target}"
+	install-dot-files.sh ${target}
 fi
 command ssh -Y "$@"
 

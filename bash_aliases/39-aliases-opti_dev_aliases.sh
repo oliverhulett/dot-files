@@ -3,6 +3,8 @@ alias logarchive='ssh central-archive'
 alias log-archive='ssh central-archive'
 alias centralarchive='ssh central-archive'
 alias central-archive='ssh central-archive'
+alias centralstaging='ssh central-staging'
+alias central-staging='ssh central-staging'
 
 alias sshrelay='ssh sshrelay'
 
@@ -14,7 +16,7 @@ function bt()
 		exe="$(file "$f" | sed -nre "s/.+, from '([^ ]+).+/\\1/p")"
 		echo "bt $exe $f"
 		echo
-		( cd "$(dirname "$f")" && echo bt | gdb -x - "$exe" "$(basename "$f")" )
+		( cd "$(dirname "$f")" && gdb -x <(echo bt) "$exe" "$(basename "$f")" )
 	done
 }
 

@@ -163,7 +163,7 @@ function _last_cmd_interactive()
 	grep -qwE "$(sed -re 's/^\^?/^/' ${HOME}/.interactive_commands | paste -sd'|' -)" <(echo "$@") >/dev/null 2>/dev/null
 }
 
-PROMPT_TIMER='$(if [ $_timer_show -gt 1 ] && ! _last_cmd_interactive; then echo '"'['"'${_timer_show}s'"'] '"'; fi)'
+PROMPT_TIMER='$(if [ "$_timer_show" -gt 1 ] && ! _last_cmd_interactive; then echo '"'['"'${_timer_show}s'"'] '"'; fi)'
 PROMPT_EXIT='$(es=$?; if [ $es -eq 0 ]; then echo :\); else echo :\(; fi)'
 if [ "$TERM" == "cygwin" ]; then
 	PS1="${PROMPT_PREFIX}"'\[\e[31m\]\u@\h \[\e[33m\]\w\[\e[0m\] '"${PROMPT_TIMER}${PROMPT_EXIT}${PROMPT_FOO}"'\n\$ '
