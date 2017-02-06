@@ -160,7 +160,7 @@ function _last_cmd_interactive()
 	set -- `history 1`
 	# `history` outputs command count, then date, then time, then command
 	shift 3
-	grep -qwE "$(sed -re 's/^\^?/^/' ${HOME}/.interactive_commands | paste -sd'|' -)" <(echo "$@") >/dev/null 2>/dev/null
+	grep -qwE "$(sed -re 's/^\^?/^/' ${HOME}/.interactive_commands 2>/dev/null | paste -sd'|' -)" <(echo "$@") >/dev/null 2>/dev/null
 }
 
 PROMPT_TIMER='$(if [ "$_timer_show" -gt 1 ] && ! _last_cmd_interactive; then echo '"'['"'${_timer_show}s'"'] '"'; fi)'
