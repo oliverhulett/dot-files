@@ -42,6 +42,7 @@ function set_local_paths()
 	if [ -d "$HOME/sbin" ]; then
 		export PATH="$(prepend_path "${HOME}/sbin")"
 	fi
+	export PATH="$(prepend_path "${HOME}/dot-files/bin")"
 	export PATH="$(append_path /usr/local/sbin /usr/sbin /sbin)"
 	shopt -u nullglob
 }

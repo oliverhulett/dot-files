@@ -26,7 +26,6 @@ bash_aliases/39-aliases-ssh.sh .bash_aliases/39-aliases-ssh.sh
 bash_logout .bash_logout
 bash_profile .bash_profile
 bashrc .bashrc
-bin bin
 docker_favourites .docker_favourites
 gitconfig .gitconfig
 gitignore .gitignore
