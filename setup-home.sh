@@ -1,5 +1,6 @@
 #!/bin/bash
-HERE="$(realpath -P "$(dirname "$0")")"
+HERE="$(cd "$(dirname "$0")" && pwd -P)"
+RELPATH="${HERE}/bin/relpath.sh"
 
 DOTFILES=
 if [ -f "${HERE}/dot-files.$(hostname -s)" ]; then
@@ -16,7 +17,7 @@ if [ -n "${DOTFILES}" ]; then
 		DEST="${HOME}/${TARGET}"
 		rm "${DEST}" 2>/dev/null
 		mkdir --parents "$(dirname "${DEST}")" 2>/dev/null
-		( cd "$(dirname "${DEST}")" && ln -sf "$(realpath --relative-to=. "${HERE}/${SRC}")" "$(basename "${DEST}")" )
+		( cd "$(dirname "${DEST}")" && ln -sf "$(${RELPATH} . "${HERE}/${SRC}")" "$(basename "${DEST}")" )
 	done <"${DOTFILES}"
 else
 	echo "No dot-files file found, not linking anything..."
