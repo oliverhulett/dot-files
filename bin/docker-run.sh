@@ -22,7 +22,7 @@ docker inspect $IMAGE | jq '.[0].Config.Labels' 2>/dev/null
 
 # Use a docker container to do things
 TMP="$(mktemp -p "${HOME}" -t ".$(date '+%Y%m%d-%H%M%S').docker.$(basename "$1").XXXXXXXXXX")"
-trap 'echo "Leaving $NAME (${IMAGE})" && rm -fv ${TMP}' EXIT
+trap 'echo && echo "Leaving $NAME (${IMAGE})" && rm -fv ${TMP}' EXIT
 command cat >"$TMP" <<-EOF
 	#!/bin/bash -i
 	export PROMPT_PREFIX="(docker:$(basename $IMAGE)) "

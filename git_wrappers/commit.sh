@@ -12,7 +12,7 @@ echo "$existing_msg"
 echo
 git status
 
-branch="$(git branch --no-color | sed -nre 's/^\* //p' | cut -d'_' -f1)"
+branch="$(git branch --no-color | sed -nre 's/^\* //p' | cut -d'_' -f1 | sed -re 's!^[^/]+/!!')"
 startmode="-c startinsert"
 if [ "$branch" == "master" ]; then
 	branch=

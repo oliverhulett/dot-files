@@ -19,7 +19,7 @@ function bt()
 	done
 }
 
-alias cc-env="docker-run.sh $(sed -nre 's!.+(docker-registry\.aus\.optiver\.com/[^ ]+/[^ ]+).*!\1!p' /usr/local/bin/cc-env | tail -n1)"
+alias cc-env="docker-run.sh $(sed -nre 's!.+(docker-registry\.aus\.optiver\.com/[^ ]+/[^ ]+).*!\1!p' /usr/local/bin/cc-env 2>/dev/null | tail -n1)"
 
 alias operat='/usr/bin/sudo -iu operat'
 
