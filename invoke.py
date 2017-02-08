@@ -9,9 +9,10 @@ def _update_env():
     from os import environ as _environ
     from os.path import join as _join, expanduser as _expanduser
     _auth = open(_expanduser(_join("~", "etc", "release.auth"))).read().strip().split(':')
+    _pass = open(_expanduser(_join("~", "etc", "passwd"))).read().strip()
     
     _environ['SMB_USER'] = 'olihul'
-    _environ['SMB_PASS'] = 'f0urtytwo!'
+    _environ['SMB_PASS'] = _pass
     _environ['WIKI_USER'] = _auth[0]
     _environ['WIKI_PASS'] = _auth[1]
     _environ['JIRA_USER'] = _auth[0]

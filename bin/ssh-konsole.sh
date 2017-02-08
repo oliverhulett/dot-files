@@ -2,7 +2,6 @@
 
 SSH="$(dirname "$0")/ssh.sh"
 SSH_NAME="$(dirname "$0")/ssh-name.sh"
-KONSOLE=( "konsole" "--profile" "Random-SSH-Server" "-e" )
 
 WHERE_PROMPT="Where would you like to go today?"
 WHERE=
@@ -19,16 +18,6 @@ function svr_is_valid()
 	return 0
 }
 
-if [ -z "$(command which "${KONSOLE[0]}" 2>/dev/null)" ]; then
-	if [ -t 0 ]; then
-		echo "Konsole not found, will SSH directly..."
-		KONSOLE=()
-	else
-		kdialog --sorry "Konsole not found, will not be able to SSH to server..."
-		exit 1
-	fi
-fi
-
 while true; do
 	WHERE="$(kdialog --title "Random SSH Server" --inputbox "${WHERE_PROMPT}" "${WHERE}")"
 	if [ $? -ne 0 ]; then
@@ -40,6 +29,27 @@ while true; do
 	fi
 
 	if svr_is_valid; then
-		exec "${KONSOLE[@]}" "${SSH}" "${WHO}"@"$("${SSH_NAME}" "${WHERE}")"
+		break
 	fi
 done
+
+CMD=( "${SSH}" "${WHO}"@"$("${SSH_NAME}" "${WHERE}")" )
+
+function run()
+{
+	for cmd in echo exec; do
+		$cmd "$@"
+	done
+}
+
+if [ -z "$(command which konsole 2>/dev/null)" ]; then
+	if [ -t 0 ]; then
+		echo "Konsole not found, will SSH directly..."
+		run "${CMD[@]}"
+	else
+		kdialog --sorry "Konsole not found, will not be able to SSH to server..."
+		exit 1
+	fi
+else
+	run konsole --profile "Random-SSH-Server" -e "${CMD[@]}"
+fi
