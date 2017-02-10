@@ -40,6 +40,7 @@ echo "General clean-ups..."
 rm -rf ${HOME}/Desktop 2>/dev/null
 rmdir ${HOME}/{Documents,Downloads,Music,Pictures,Public,Templates,Videos} 2>/dev/null
 sudo systemctl stop collectd.service
+sudo systemctl disable collectd.service
 
 echo "Installing some things I don't want to docker all the time..."
 (
@@ -51,7 +52,7 @@ echo "Installing some things I don't want to docker all the time..."
 		yakuake wireshark
 ) &
 
-echo "Restoring Eclpise install and other backups..."
+echo "Restoring local installs and other backups..."
 (
 	for d in /H_DRIVE/*; do
 		d="$(basename $d)"
@@ -60,6 +61,7 @@ echo "Restoring Eclpise install and other backups..."
 		sudo chown -R ${USER}:users ${HOME}/$d
 	done
 	sudo chmod +x ${HOME}/opt/eclipse/eclipse
+	sudo chmod +x ${HOME}/opt/sublime_text_3/sublime_text
 ) &
 
 true
