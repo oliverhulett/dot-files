@@ -2,11 +2,21 @@
 
 CURR_BRANCH="$(git branch --no-color | sed -nre 's/^\* //p')"
 CURR_DIR="$(basename "$(pwd)")"
-NEW_BRANCH="$1"
-NEW_DIR="$(echo ${NEW_BRANCH} | cut -d_ -f1)"
-if [ $# -eq 2 ]; then
-	NEW_DIR="$2"
+
+NEW_TICKET="$(echo $1 | cut -d_ -f1)"
+if [ "$NEW_TICKET" != "$1" ]; then
+	NEW_DESCR="$(echo $1 | cut -d_ -f2-)"
+else
+	NEW_DESCR="$2"
+	shift
 fi
+shift
+
+NEW_BRANCH="$USER/$NEW_TICKET"
+if [ -n "$NEW_DESCR" ]; then
+	NEW_BRANCH="${NEW_BRANCH}_${NEW_DESCR}"
+fi
+
 ## MASTER_DIR should be a sibling of each branch's directory, and called master.
 MASTER_DIR="$(dirname "$(pwd)")/master"
 if [ ! -d "$MASTER_DIR" ]; then
@@ -25,6 +35,15 @@ if [ ! -d "$MASTER_DIR" ]; then
 fi
 
 ## This script is designed to be called as a git alias, so we should be in the root of the checkout from which we want to branch.
+NEW_DIR="$NEW_TICKET"
+if [ "$1" != "" ]; then
+	NEW_DIR="$1"
+fi
+if [ -e "../$NEW_DIR" ]; then
+	echo "New branch directory already exists.  CD into it and run 'git checkout -b $NEW_BRANCH' like everyone else"
+	exit 1
+fi
+
 git pull --all
 git fetch origin ${CURR_BRANCH}
 
@@ -38,8 +57,8 @@ trap cleanup EXIT
 
 pushd "../${NEW_DIR}" >/dev/null
 
-git checkout -b "${USER}/${NEW_BRANCH}" || git checkout "${USER}/${NEW_BRANCH}"
-git push --set-upstream origin "${USER}/${NEW_BRANCH}"
+git checkout -b "${NEW_BRANCH}" || git checkout "${NEW_BRANCH}"
+git push --set-upstream origin "${NEW_BRANCH}"
 git update
 
 shopt -s nullglob
@@ -50,6 +69,5 @@ fi
 rm .project 2>/dev/null
 cp ../.project ./ 2>/dev/null || cp ../master/.project ./ 2>/dev/null
 if [ -f .project ]; then
-	sed -re 's!@master</name>!@'"${NEW_BRANCH}"'</name>!' .project -i 2>/dev/null
+	sed -re 's!@master</name>!@'"${NEW_TICKET}"'</name>!' .project -i 2>/dev/null
 fi
-
