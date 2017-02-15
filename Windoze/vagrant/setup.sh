@@ -41,6 +41,8 @@ rm -rf ${HOME}/Desktop 2>/dev/null
 rmdir ${HOME}/{Documents,Downloads,Music,Pictures,Public,Templates,Videos} 2>/dev/null
 sudo systemctl stop collectd.service
 sudo systemctl disable collectd.service
+sudo systemctl stop timekeeper.service
+sudo systemctl disable timekeeper.service
 
 echo "Installing some things I don't want to docker all the time..."
 (
