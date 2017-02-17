@@ -155,7 +155,7 @@ function _timer_stop()
 }
 trap '_timer_start' DEBUG
 # _timer_stop has to be at the end of PROMPT_COMMAND otherwise you'll be timing from the next PROMPT_COMMAND command
-PROMPT_COMMAND="$PROMPT_COMMAND; _timer_stop"
+PROMPT_COMMAND="$PROMPT_COMMAND; _timer_stop 2>/dev/null"
 function _last_cmd_interactive()
 {
 	set -- `history 1`

@@ -86,12 +86,10 @@ else
 	echo "## Password: 'hardware'"
 	echo "## These pages probably need to be opened in Firefox or IE :("
 	echo
-	echo "## Once restarted run '( cd $(pwd -P) && sudo ./load_driver.sh ) && sudo ifup feth0' to complete the HW reflash."
-	echo "## Before you restart, remember to to tell the other users of this box and to copy the commands you need."
+	echo "## Before you restart, remember to to tell the other users of this box."
 	echo "## The following users are currently log into this machine:"
 	who
 	echo
 	sleep 1
 	exit 0
 fi
-

@@ -69,5 +69,9 @@ while ! ssh -o ConnectTimeout=2 -o PasswordAuthentication=no "${SERVER}" 'echo `
 done
 
 ## HACK ATTACK:  repo/fpga/hardware_au is the location in which the FLASH_FEX_SCRIPT checks out the hardware_au project containing the load_driver.sh script.
-run ssh -t "${SERVER}" "cd repo/fpga/hardware_au/board_support_packages/deploy && sudo ./load_driver.sh; sudo ifup feth0"
+#run ssh -t "${SERVER}" "sudo rmmod chemnitz; cd repo/fpga/hardware_au/board_support_packages/deploy && sudo ./load_driver.sh; sudo ifup feth0"
+## No longer needed...
 
+echo
+echo "DONE"
+echo

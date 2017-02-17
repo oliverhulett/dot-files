@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ "$1" == "-h" -o "$1" == "--help" -o "$1" == "-?" -o ]; then
+if [ "$1" == "-h" -o "$1" == "--help" -o "$1" == "-?" ]; then
 	echo "$(basename $0) [-v] [host...]"
 	echo "  Ping each of the hosts in ~/.ssh/known_hosts"
 	echo "  -v  Print failures at the end"
