@@ -69,5 +69,5 @@ fi
 rm .project 2>/dev/null
 cp ../.project ./ 2>/dev/null || cp ../master/.project ./ 2>/dev/null
 if [ -f .project ]; then
-	sed -re 's!@master</name>!@'"${NEW_TICKET}"'</name>!' .project -i 2>/dev/null
+	sed -re 's!@master</name>!@'"${NEW_TICKET}_${NEW_DESCR}"'</name>!' .project -i 2>/dev/null
 fi

@@ -5,7 +5,7 @@ if [ $# -eq 0 ]; then
 else
 	SERVERS=( "$@" )
 fi
-FILES=( "${HOME}/.ssh/known_hosts" "${HOME}/.ssh/id_rsa" "${HOME}/.ssh/id_rsa.pub" "${HOME}/etc" )
+FILES=( "${HOME}/.ssh/config" "${HOME}/.ssh/known_hosts" "${HOME}/.ssh/id_rsa" "${HOME}/.ssh/id_rsa.pub" "${HOME}/.ssh/olihul_rsa" "${HOME}/.ssh/olihul_rsa.pub" "${HOME}/etc" )
 
 function run()
 {
