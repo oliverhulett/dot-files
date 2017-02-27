@@ -1,5 +1,11 @@
 #!/bin/bash
 
+## Old versions of git play with the path.  Old versions of git are correlated with old versions of Centos, which means old versions of python.
+## If we need a python venv in out bash setup, assume we need it here too.
+if [ -e "${HOME}/.bash_aliases/09-profile.d-pyvenv.sh" ]; then
+	source "${HOME}/.bash_aliases/09-profile.d-pyvenv.sh"
+fi
+
 EXTERNALS="$(git ls-files '*externals.json')"
 
 git update 2>/dev/null >/dev/null
@@ -14,4 +20,3 @@ done
 echo
 
 git update 2>/dev/null >/dev/null
-
