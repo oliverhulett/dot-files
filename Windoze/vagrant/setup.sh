@@ -52,6 +52,12 @@ echo "Installing some things I don't want to docker all the time..."
 		python-devel python-pip libxml2-devel libxslt-devel \
 		cmake ccache distcc protobuf protobuf-c protobuf-python protobuf-compiler valgrind clang-devel clang clang-analyzer \
 		yakuake wireshark
+
+	( cd /tmp && \
+		curl http://downloads.drone.io/release/linux/amd64/drone.tar.gz | tar zx && \
+		sudo install -t /usr/local/bin drone && \
+		rm drone
+	)
 ) &
 
 echo "Restoring local installs and other backups..."
