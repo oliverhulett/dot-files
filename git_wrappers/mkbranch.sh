@@ -3,6 +3,16 @@
 CURR_BRANCH="$(git branch --no-color | sed -nre 's/^\* //p')"
 CURR_DIR="$(basename "$(pwd)")"
 
+function print_help()
+{
+	echo "git mkbranch <NEW_TICKET> [<NEW_DESCR>]"
+	exit 1
+}
+
+if [ "$1" == "-h" -o "$1" == "--help" -o "$1" == "-?" ]; then
+	print_help
+fi
+
 NEW_TICKET="$(echo $1 | cut -d_ -f1)"
 if [ "$NEW_TICKET" != "$1" ]; then
 	NEW_DESCR="$(echo $1 | cut -d_ -f2-)"
@@ -38,10 +48,18 @@ fi
 NEW_DIR="$NEW_TICKET"
 if [ "$1" != "" ]; then
 	NEW_DIR="$1"
+	shift
 fi
 if [ -e "../$NEW_DIR" ]; then
 	echo "New branch directory already exists.  CD into it and run 'git checkout -b $NEW_BRANCH' like everyone else"
-	exit 1
+	print_help
+fi
+
+if [ $# -ne 0 ]; then
+	print_help
+else
+	echo "Creating branch ${NEW_BRANCH} from ${CURR_BRANCH} in ${NEW_DIR}"
+	sleep 1
 fi
 
 git pull --all

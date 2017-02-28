@@ -25,9 +25,7 @@ function python_setup()
 		export PATH="$(prepend_path "${PYVENV_HOME}/bin")"
 
 		## Install the things
-		for p in $(echo $(dirname "$(readlink -f "${BASH_SOURCE}")")/../parts/app-installs/*_pip_* | tr ' ' '\n' | sort); do
-			$p
-		done
+		pip install -U protobuf==2.5.0 twisted argparse 'lxml<3.4' invoke docker-compose devpi pylint >/dev/null 2>/dev/null
 	fi
 	( cd ${PYVENV_HOME}/bin && ln -sf ${PYVERSION} python26 2>/dev/null )
 	( cd ${PYVENV_HOME}/bin && ln -sf ${PYVERSION} python 2>/dev/null )

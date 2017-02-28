@@ -37,4 +37,7 @@ MAILTO=olihul@optiver.com.au
 ## Pull favourite docker images nightly.  Sleep a bit first so that an `docker rm` or `docker rmi` has finished first.
 @daily sleep 10 && cat "${HOME}/.docker_favourites" | xargs -n1 -P0 docker pull
 
-## Backed up at Tue Feb 28 00:00:06 AEDT 2017
+## Python virtualenv should be regreshed regularly.
+@daily rm -rf "${HOME}/pyvenv"
+
+## Backed up at Wed Mar  1 00:00:06 AEDT 2017

@@ -2,6 +2,7 @@ ackrc .ackrc
 bash_aliases/09-profile.d-ccache.sh .bash_aliases/09-profile.d-ccache.sh
 bash_aliases/09-profile.d-gcc_4.7.2.sh .bash_aliases/09-profile.d-gcc_4.7.2.sh
 bash_aliases/09-profile.d-makeflags.sh .bash_aliases/09-profile.d-makeflags.sh
+bash_aliases/09-profile.d-pyvenv.sh .bash_aliases/09-profile.d-pyvenv.sh
 bash_aliases/09-profile.d-ulimit.sh .bash_aliases/09-profile.d-ulimit.sh
 bash_aliases/19-env-git.sh .bash_aliases/19-env-git.sh
 bash_aliases/19-env-proxy.sh .bash_aliases/19-env-proxy.sh
