@@ -1,0 +1,9 @@
+common_cpp feature requrests
+
+Leave daemonise call to the application code
+ - Therefore we can not detach until we're in a ready state and we can use return code for something useful.
+The current state is such that we can't use the return code.  Normal operation will daemonise before the application is ready, so the return code to the shell is zero anyway and the background process may or may not be ready or may have exited or who knows what.
+If we run in the foreground (-f) we can only use the return code if the application fails and exits.  If the application doesn't exit, it might be ready, or it might be waiting for something, or who knows what.
+If the daemonize call is left up to the application, we know that if the application hasn't daemonised it is not ready.  When control returns to the shell we can check the return code; 0 implies the application daemonised and is ready, non-zero implies the application exited with an error.
+
+A declarative state machine implementation.  Let applications describe their start-up state machine in a common way and share an implementation.

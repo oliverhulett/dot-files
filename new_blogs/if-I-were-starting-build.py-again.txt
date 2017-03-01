@@ -1,0 +1,77 @@
+I asked Sam Gibson: If you were starting build.py again, would you still use invoke?
+ - Yes, but would also look at using Buck (Facebook build tool) or Bazel (Goolge build tool) instead.
+The problems with Buck and Bazel is that they would replace CMake, which would require coordination accross all of our C++ projects.  We would also have to come up with something to do the same job(s) for python/GO/...
+
+I asked Rick Grundy: The exchange_sim project's build.py launches docker containers to run tasks (as opposed to requiring e.g. `cc-env ./build.py`), would you do that again?
+ - Yes.  But; The prefix makes it easier to do ad-hoc things locally inside the container.  I tend to use build.py only for pre-commit and CI builds, and have all my "dev tools" installed natively on my local VM.  Prefixing is nice because it slips dockerisation into people's day-to-day workflow so they never need to install anything
+Sounds like an un-wrapped entry point has some nice advantages, but there is still a need to do ad-hoc things (inside and outside the containers) and a need to run build.py tasks without launching the contianer (or in a custom container)
+
+Peter Koller shared a document from Google about their software engineering management and practices, which had a sentence I'd like to highlight.
+https://wiki.site.optiver.com/display/~petkol/2017/02/14/SW+Engineering+@+Google?preview=%2F121836091%2F121836084%2FSW+Engineering+at+Google.pdf
+SW Eng @ Google
+"Commonality of process is a key to making development easy even with an enormous code base and a diversity of languages.  There is a single set of commands to perform all the usual software engineering tasks (such as checkout, edit, build, test, review, commit, file bug report, etc.) and the same commands can be used no matter what project or language"
+
+
+We're looking for a self contained, self describing development tool.
+ - Commonality of process accross languages, dependency management systems, etc.
+ - Ability to bootstrap itself.
+ - Reproducability of build artifacts.
+ - Extensible with per-project customisations.
+
+ 
+On comminality of process:
+ - See zero-barrier-to-entry blog.  Process should be; `git clone && build.py` regardless of language, dependency management system, docker requirements, etc.
+
+On repoducability of build artifacts:
+ - As far as feasible, checking out a tag from last year, and running build.py should produce the same binary that it did last year.
+
+On Extensible with per-project customisations:
+ - The tool builder cannot possibly predict what tasks make sence for all the projects, so don't try.  Instead provide a framework to add/define tasks and a library of functionality to do common stuff.
+
+On ability to bootstrap itself:
+ - Some common/core functionality may be installed, but language and dependency management system specific stuff needs to be installed or at least selected when those projects are in use
+ - Extensibility means the tool must be able to discover tasks in the current project
+ - Reproducability means that the tool must be able to discover the right versions of things to match the tag it is currently building.
+
+
+If I were doing invocations-cpp again...
+ - (Move towards) no tasks in common lib, just composable functions.
+ - (Therefore) no pre-post tasks.  Compose them yourself and pass state via ctx.
+   - Less (none) magic around passing args to pre/post tasks.
+ - Must have a well defined ctx['cpp'] schema.
+ - Keep "task" for thing seen by invoke, need new terminology for the composable parts that make up a task:
+   - e.g. "build application" and "run unit tests" would be tasks in the invoke sence, they show up in the -l listing, we can ./build.py unit-tests, etc.
+   - "build application" is composed of cmake && make && link files && validate XML.  These composable parts need another name and should live in libraries.
+
+
+Build tool gathers usage stats:
+ - user, machine, cmdline, git remote, git branch, git hash, task(s), success (global & per task), error code, execution summary, start time, end time, cpu/memory/disk usage stats, docker image details, host os details, invoke version, invocations version
+ - report some, json dump all
+ - json dump to usage file, periodic upload (somewhere), accumulate and generate reports
+ - report on frequency by projet, flags/tasks, style (bdp vs invoke), versions (invocations and invoke), success, error code, execution time
+Can apply to common build.py as well
+
+
+
+Follow-up on A Journey to Building Projects on Centos 7 Development Interactives
+ - I've cooled on my submodule/upgrade script magic.
+
+If you did all of this, then you'd have a build project that comes with it's own versioned build environment and that anyone can clone and build without having to have any special knowledge about the project or the team that made it and without having to install or have a bunch of custom tools and programs.  The only dependencies on their underlying system are git, docker, and python, and even Ben pheganz will give you that much.
+
+You'd also be very much wasting your time, because someone has already done it.  show how to run script that registers sub module and rewrites build.py
+Show newly generated build.py
+
+Why submodule?  Could be normal external, but what if you're project fetches externals with courier or some other tool, or git_setup.py doesn't work (maybe because it has python26 in its shebang). No added dependency on machine
+
+Process is now
+Clone --recursive ( hint or build.py does it for you if you forget)
+Build.py
+
+This version has 
+Build.py --interactive
+
+So you can experiment and do stuff that build.py doesn't do.
+
+@wilkor's invocations-cpp feedback...
+ - Didn't colourise (force pty)
+ - Didn't parallelise build (force make -j`nprocs` if not overridden)

@@ -1,0 +1,76 @@
+So I'm typing, typing, typing...
+...and I decide I need to generate a Timberjack record, and this is, incredibly, the first time this project has needed to create a Timberjack record.  (A Timberjack record, or something.  My current gripe is about how much work it is to re-use code via externals, substitute Timberjack record for whatever you might want to get from an external and try not to get bogged down in the details.)
+Ideally, what I would want to do is something like this:
+ - type type type...
+ - "Hey, I need an external"
+ - Alt+Tab to my terminal
+ - $ echo "timberjack_utils">> externals.defs
+ - $ ./update-externals
+ - Alt+Tab back to my editor
+ - Start using code from the timberjack_utils library
+It shouldn't be much more complex than that, and it should take much more time.  The longer it takes, and the more context I have to switch, the more flow I lose from my work, and the less likely I am to re-use someone elses code.
+What I actually have to do is:
+ - ...
+The pain of this is hidden because we tend to have fairly large (and important) externals, so often doing without isn't an option, but an external like the timberjack_utils library is an interesting case study.  The barrier to entry has to be very low, otherwise LOG(LM, LL_INFO, "[DATA_RECORDER] [DATA] Record,%s,%s", value1.c_str(), value2.c_str()); is just too tempting, but using a library from the outset would be just as easy in terms of lines of code added with the added benifit that you get any format changes, bug fixes, mock-able and test-able interfaces, etc. for free.
+
+Likewise, setting up a new project should be almost free as well.  cookiecutter, and friends.  build tool can help as well.
+
+
+Why is there a culture of "too many dependencies is bad?"
+ - management of dependencies
+ - upgrading is hard
+
+These are not reasons to avoid dependencies, they're reasons to make dependency management easy and robust.
+
+
+We do this by having a self contained and self describing development tool.
+
+Peter Koller shared a document from Google about their software engineering management and practices, which had a sentence I'd like to highlight.
+https://wiki.site.optiver.com/display/~petkol/2017/02/14/SW+Engineering+@+Google?preview=%2F121836091%2F121836084%2FSW+Engineering+at+Google.pdf
+SW Eng @ Google
+"Commonality of process is a key to making development easy even with an enormous code base and a diversity of languages.  There is a single set of commands to perform all the usual software engineering tasks (such as checkout, edit, build, test, review, commit, file bug report, etc.) and the same commands can be used no matter what project or language"
+
+
+On why we should now have our build tool fetch externals (because the build tool runs in docker, so we can be sure it has the program(s) required to be able to fetch them). Also, how you can do this with invoke (tasks did instead of tasks.py)
+
+
+What if a fellow engineer said this to you: "You should have a look at project X, it will change your life and solve all your problems, and now I have to leave before you can ask me any follow up questions."  How would you proceed?
+ - wiki search for project X?  Pfft, if something needs documentation it is too complex and too hard to use
+Get the code, obviously.
+ - stash search for project X ( hopefully your find it, stash search is pretty shit, but that's not my gripe for today)
+ - git clone
+ - ls, generally have a look around.
+At some stage though you'll probably need to build or run the code.  It should be obvious from the names of the executable files what basic things you can do with this project and how to begin working with it.
+For example, most of our projects need building in one way or another, and there's probably an executable file called build.py, or something equally obvious, so let's try that
+If you're really brave, you can try just
+ - ./build.py
+Which will hopefully do something useful, or at least give you a useful error message.  Eventually you'll probably try
+ - ./build.py -h
+This should be all you need to know about a project to start using it, but for most of our projects it isn't.
+Most of the time it won't even work until you fetch the project's externals.  But how do you do that?
+./git_setup.py or submodules? submodules --recursive? Do you need to install something else to build or run the project?  Or build or run in a Docker container?  Which one?
+Which build.py flags are expected to work?
+
+Projects should be self contained and self describing 
+I don't want to have to read 1000 lines of instructions or install 100 dependencies to use your project 
+I also don't want to be constrained by the software that is already installed on our standard image when developing a project that others will use.  That constrains innovation and experimentation 
+
+Git clone and build.py -h should be enough to get me started.
+Error messages from build.py should make it obvious what I'm missing too that is another topic for another day.
+
+How do I propose we do this?
+Start by having build tool bootstrap itself into a development docker environment the details of which are shipped with the code.  See previous blog
+Make the build tool describe the things it can do.
+
+Make the build tool responsible for fetching dependencies.  This one is controversial.  Reasons:
+ - Commonality of process between languages, dependency fetching methods (current and future)
+ - Can bootstrap itself and the dependency management tool if it needs to
+
+Make the build tool responsible for entering docker containers as required for tasks.  This one is also controversial.  Reasons:
+ - Again, commonality of process
+ - Can easily use different images for different tasks as required
+
+Question:
+Who is better positioned to decide which docker image to use for a task, the developer or the user?
+
+Future work and blog post on how you can use different docker images for different tasks
