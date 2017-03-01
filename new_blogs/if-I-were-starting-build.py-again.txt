@@ -43,6 +43,16 @@ If I were doing invocations-cpp again...
    - e.g. "build application" and "run unit tests" would be tasks in the invoke sence, they show up in the -l listing, we can ./build.py unit-tests, etc.
    - "build application" is composed of cmake && make && link files && validate XML.  These composable parts need another name and should live in libraries.
 
+build.py tasks and docker images:
+ - Decorate tasks with docker image/applicable docker images
+ - If docker required; decorator launches docker container and calls same bdp command inside.
+ - Inside docker container, decorator becomes no-op.
+   - Should we switch out python code for decorator inside container, or have decorator code detect docker container?
+   - Option 1 is "magic"
+   - Option 2 allows docker detection to go wrong and create a docker run bomb
+   - Option 2 allows docker-in-docker
+   - Option 2 with fallback to try running locally if docker fails for some reason
+ - Flags to report on docker containers that would be used
 
 Build tool gathers usage stats:
  - user, machine, cmdline, git remote, git branch, git hash, task(s), success (global & per task), error code, execution summary, start time, end time, cpu/memory/disk usage stats, docker image details, host os details, invoke version, invocations version

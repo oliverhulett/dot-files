@@ -1,0 +1,24 @@
+Test data gathering and reporting strategy with the dot-files project.
+
+ - Create dot-files-stats repo
+ - have dot-files "things" generate usage
+ - write usage generation helpers (new project?  in dot-files?)
+ - write wiki report by hitting stash
+ - wrap more commands to generate more data - can we parse ~/.bash_history instead or as well?
+
+Idea is to re-use stash/git as a storage place for data.
+ - Create git repo for data files
+ - Write usage files per day per machine per user (per ...?)
+   - On new file creation, list local && remote files (for user+machine+..., other days basically)
+   - scrub passwords...?
+   - push local files not on remote.  Can we push directly via stash?  If no, checkout, add, push, delete stats repo.
+ - Run post-processes on stash data and push back to git. - crontab to start with
+ - Generate reports on wiki by hitting stash
+
+One thing is to test event concept, post-processing concept, and duck-type reporting concept.
+Another thing is using stash/git as the data store.  Probably not a long term/large scale solution, but would be nice to have so that people can throw up their own data stores without involving the rest of the world.
+ - Data-store number one is local files
+ - Data-store number two is push to stash
+ - Data-store number three is push to something better
+
+Later, report on events and post-processors by having them report their own usage statistics.  At this time, event fetching and writing helpers need to be in a project of their own, which needs to have a data store of its own.  Then we can look at if/how to automatically cull events based on reporting usage (number of fetches) and post-processors based on number of events created/culled.
