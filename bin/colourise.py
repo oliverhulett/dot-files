@@ -1,4 +1,4 @@
-#!/usr/bin/python26 -u
+#!/usr/bin/env python
 #
 #   Colourize log files.
 #
@@ -50,7 +50,7 @@ class Colouriser(object):
         except:
             pass
 
-    def doColourise(self, fd):
+    def Colourise(self, fd):
         while True:
             try:
                 sys.stdout.flush()
@@ -95,12 +95,12 @@ if __name__ == '__main__':
             sys.stdin = os.fdopen(sys.stdin.fileno(), 'r', 0)
         except:
             pass
-        colouriser.doColourise(sys.stdin)
+        colouriser.Colourise(sys.stdin)
     else:
         for filename in sys.argv[consumed:]:
             try:
                 print "Colourising " + filename + "..."
                 with open(filename, 'r') as f:
-                    colouriser.doColourise(f)
+                    colouriser.Colourise(f)
             except:
                 print sys.stderr, str(sys.exc)

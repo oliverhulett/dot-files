@@ -4,6 +4,7 @@ A schema says that we know what our data should look like.  We know what questio
 I would argue that in many cases that doesn't hold at Optiver.  At the very least as the time progresses and our trading environment and methods change the questions we want to answer change.  A schema forces us to update the data producing applications before we can answer the new questions.
 Realistically we actually spend a lot of time massaging our current schema to answer the new questions, because the lead time for producing data to match a new schema is too slow.  So we find ourselves in a situation where we're massaging data into a schema on the producing side, and then massaging it again before we can run the reports or answer the questions we want to answer.
 If we're going to be massaging data at the consuming side anyway, why bother massaging it into a schema at all at the producing side, when we should be spending our efforts trading instead?
+Another advantage of not having a schema, is that it lowers the requirements to writing new data producers.  New producers only have to match the data-interchange format, not the schema as well.  The burden of symantic meaning is shifted to the consumer
 
 
 
@@ -67,3 +68,7 @@ Need to manage:
 
 Are there any off-the-shelf products that get close to what we want or that we can glue together to get what we want?
  - mongodb?
+ - elastic? logstash to elastic search
+
+May be helpful to:
+ - First class the concept of a training data-set, for developing reports and post processes.

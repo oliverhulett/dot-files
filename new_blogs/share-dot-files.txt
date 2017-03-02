@@ -8,3 +8,5 @@ patterns therein
 share dot-files <- How to document parts?  blog post, readme
  - Enforce permissions, read only
 share clone & repo commands
+ -> (write and) share command completion for clone
+  -> (write and) share stashy and stash tools

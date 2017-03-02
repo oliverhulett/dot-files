@@ -36,6 +36,9 @@ su -c "cd ${HOME} && git clone --recursive ssh://git@git.comp.optiver.com:7999/~
 su -c "cd ${HOME}/dot-files && git pull && git submodule init && git submodule sync && git submodule update" ${USER}
 su -c "${HOME}/dot-files/setup-home.sh" ${USER}
 
+sudo systemctl link "${HOME}/dot-files/backup.service"
+sudo systemctl start backup.service
+
 echo "General clean-ups..."
 rm -rf ${HOME}/Desktop 2>/dev/null
 rmdir ${HOME}/{Documents,Downloads,Music,Pictures,Public,Templates,Videos} 2>/dev/null
@@ -43,15 +46,19 @@ sudo systemctl stop collectd.service
 sudo systemctl disable collectd.service
 sudo systemctl stop timekeeper.service
 sudo systemctl disable timekeeper.service
+sudo sed --in-place -re 's/^CRONDARGS=(.*)-m ?off(.*)/CRONDARGS=\1\2/' /etc/sysconfig/crond
+sudo systemctl restart crond.service
 
 echo "Installing some things I don't want to docker all the time..."
 (
+	# Install yakuake first, because I want it there when the provisioning finishes and GDM is restarted
+	yum install -y yakuake
 	yum groupinstall -y "development tools"
 	yum install -y docker which wget curl telnet vagrant iotop nethogs sysstat aspell aspell-en cifs-utils samba samba-client protobuf-vim golang-vim jq \
 		openssl-libs openssl-static java-1.8.0-openjdk-devel java-1.8.0-openjdk \
 		python-devel python-pip libxml2-devel libxslt-devel \
 		cmake ccache distcc protobuf protobuf-c protobuf-python protobuf-compiler valgrind clang-devel clang clang-analyzer \
-		yakuake wireshark
+		wireshark
 
 	( cd /tmp && \
 		curl http://downloads.drone.io/release/linux/amd64/drone.tar.gz | tar zx && \

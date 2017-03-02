@@ -13,10 +13,6 @@ function run()
 	"$@"
 }
 
-for server in "${SERVERS[@]}"; do
-	run ssh ${server} 'mkdir ${HOME}/.ssh ${HOME}/etc 2>/dev/null'
-done
-
 run dev-push-all.sh --delete "${SERVERS[@]/%/:}" "${FILES[@]}"
 
 for server in "${SERVERS[@]}"; do

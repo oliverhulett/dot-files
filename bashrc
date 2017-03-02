@@ -165,7 +165,11 @@ function _last_cmd_interactive()
 }
 
 PROMPT_TIMER='$(if [ ${_timer_show-0} -gt 1 ] && ! _last_cmd_interactive; then echo '"'['"'${_timer_show}s'"'] '"'; fi)'
-PROMPT_EXIT='$(es=$?; if [ $es -eq 0 ]; then echo :\); else echo :\(; fi)'
+
+# At the start of the prompt command, remember the exit status of the last command
+#PROMPT_COMMAND="_last_exit_status=$?; $PROMP_COMMAND"
+PROMPT_EXIT='$(if [ $? -eq 0 ]; then echo :\); else echo :\(; fi)'
+
 if [ "$TERM" == "cygwin" ]; then
 	PS1="${PROMPT_PREFIX}"'\[\e[31m\]\u@\h \[\e[33m\]\w\[\e[0m\] '"${PROMPT_TIMER}${PROMPT_EXIT}${PROMPT_FOO}"'\n\$ '
 elif [ -z "${HOSTNAME/op??nxsr[0-9][0-9][0-9][0-9]*}" ]; then

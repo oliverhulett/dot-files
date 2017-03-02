@@ -115,7 +115,6 @@ color-filesystem-1-13.el7.noarch
 compat-libcogl12-1.14.0-3.el7.x86_64
 compat-libcogl-pango12-1.14.0-3.el7.x86_64
 compat-libcolord1-1.0.4-1.el7.x86_64
-compat-optiver-runtime-dependencies-devel-1.0.0.1-1.x86_64
 compat-poppler022-0.22.5-4.el7.x86_64
 compat-poppler022-qt-0.22.5-4.el7.x86_64
 control-center-3.14.5-8.el7.x86_64
@@ -432,7 +431,6 @@ initial-setup-0.3.9.30-1.el7.centos.x86_64
 initial-setup-gui-0.3.9.30-1.el7.centos.x86_64
 initscripts-9.49.30-1.el7.x86_64
 inotify-tools-3.14-8.el7.x86_64
-interpol-0.50.82-2.el7.centos.x86_64
 intltool-0.50.2-6.el7.noarch
 iotop-0.6-2.el7.noarch
 iperf-2.0.8-1.el7.x86_64
@@ -1087,7 +1085,6 @@ pinentry-qt-0.8.1-14.el7.x86_64
 pinfo-0.6.10-9.el7.x86_64
 pixman-0.32.6-3.el7.x86_64
 pkgconfig-0.27.1-4.el7.x86_64
-pkimgr-1.0.3-1.el7.centos.noarch
 plasma-scriptengine-python-4.11.19-7.el7.x86_64
 plymouth-0.8.9-0.24.20140113.el7.centos.x86_64
 plymouth-core-libs-0.8.9-0.24.20140113.el7.centos.x86_64
@@ -1163,7 +1160,6 @@ python-devel-2.7.5-34.el7.x86_64
 python-di-0.3-2.el7.noarch
 python-dmidecode-3.10.13-11.el7.x86_64
 python-ethtool-0.8-5.el7.x86_64
-python-hvac-0.2.15-1.el7.centos.noarch
 python-iniparse-0.4-9.el7.noarch
 python-inotify-0.9.4-4.el7.noarch
 python-IPy-0.75-6.el7.noarch
@@ -1352,7 +1348,7 @@ thai-scalable-waree-fonts-0.5.0-7.el7.noarch
 tigervnc-license-1.3.1-3.el7.noarch
 tigervnc-server-minimal-1.3.1-3.el7.x86_64
 time-1.7-45.el7.x86_64
-timekeeper-07.01.07-1.x86_64
+timekeeper-07.02.03-1.x86_64
 tk-8.5.13-6.el7.x86_64
 tmux-1.8-4.el7.x86_64
 tokyocabinet-1.4.48-3.el7.x86_64
@@ -1391,9 +1387,6 @@ vino-3.14.2-1.el7.x86_64
 virtuoso-opensource-6.1.6-6.el7.x86_64
 virt-what-1.13-6.el7.x86_64
 vlgothic-fonts-20130607-2.el7.noarch
-vt2cubby-0.3.0-3.el7.centos.noarch
-vt2ssl-0.4.1-1.el7.centos.noarch
-vtrenew-0.2.1-1.el7.centos.noarch
 wavpack-4.60.1-9.el7.x86_64
 webkitgtk3-2.4.9-5.el7.x86_64
 webrtc-audio-processing-0.1-5.el7.x86_64
@@ -1412,7 +1405,6 @@ xcb-util-image-0.4.0-2.el7.x86_64
 xcb-util-keysyms-0.4.0-1.el7.x86_64
 xdg-user-dirs-0.15-4.el7.x86_64
 xdg-utils-1.1.0-0.16.20120809git.el7.noarch
-xerces-c-2.8-2.8.0-2.x86_64
 xfsdump-3.1.4-1.el7.x86_64
 xfsprogs-3.2.2-2.el7.x86_64
 xkeyboard-config-2.14-1.el7.noarch

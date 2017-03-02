@@ -17,7 +17,12 @@ if [ $# -eq 1 ]; then
 		command ssh -o ConnectTimeout=2 -o PasswordAuthentication=no ${user}@${host} echo "Successfully SSH-ed to ${target} \(which is really ${host}\) as ${user} without a password"
 	fi
 	echo "Setting up environment on ${target}"
-	install-dot-files.sh ${target}
+	command ssh ${target} 'sh -c "(
+		cd ${HOME} 2>/dev/null && git clone --recursive ssh://git@git.comp.optiver.com:7999/~olihul/dot-files.git dot-files 2>/dev/null;
+		cd ${HOME}/dot-files 2>/dev/null && git pull && git submodule init && git submodule sync && git submodule update )"
+	' || run rsync --delete -zpPXrogthlcm --exclude='.git' "${HOME}/dot-files/" ${target}:"${HOME}/dot-files/"
+	command ssh ${target} '${HOME}/dot-files/setup-home.sh'
+	install-dot-files.sh ${target} >/dev/null 2>/dev/null &
 fi
 command ssh -Y "$@"
 

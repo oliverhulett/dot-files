@@ -1,0 +1,10 @@
+[Unit]
+Description=Pre-shutdown backup "service"
+
+[Service]
+Type=oneshot
+RemainAfterExit=true
+ExecStop=/home/olihul/dot-files/backup.sh
+
+[Install]
+WantedBy=multi-user.target
