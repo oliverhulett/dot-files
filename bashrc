@@ -96,7 +96,7 @@ shopt -s cdspell
 
 # We can clear some variables here that will be set/updated by the bash_aliases includes and used later.
 export PROMPT_FOO=
-export PROMPT_COMMAND=":"
+export PROMPT_PREFIX=
 
 if [ -d "$HOME/.bash_aliases" ]; then
 	for f in $(echo $HOME/.bash_aliases/* | sort -n); do
@@ -129,53 +129,58 @@ if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
 	. /etc/bash_completion
 fi
 
-# Change the window title of X terminals
-case $TERM in
-	xterm*|rxvt*|Eterm)
-		PROMPT_COMMAND='echo -ne "\n\033]0;${USER}@${HOSTNAME%%.*}:${PWD/$HOME/~}\007"'
-		;;
-	screen)
-		PROMPT_COMMAND='echo -ne "\n\033_${USER}@${HOSTNAME%%.*}:${PWD/$HOME/~}\033\\"'
-		;;
-esac
-# Whenever displaying the prompt, write the previous line to disk
-export PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
-
-# Whenever displaying the prompt, show the run-time of last command
+# Whenever displaying the prompt, show the run-time of last command.
+# We do this by with a variable _timer, which is initially unset.
+# The function _timer_start will set _timer iff _timer is currently unset.
+# It is installed as a DEBUG handler, so will be triggered before each command.
+# _timer will be unset by PROMPT_COMMAND.
 unset _timer
-_timer_show=0
 function _timer_start()
 {
 	_timer=${_timer:-$SECONDS}
 }
-function _timer_stop()
-{
-	_timer_show=$(($SECONDS - $_timer))
-	unset _timer
-}
 trap '_timer_start' DEBUG
-# _timer_stop has to be at the end of PROMPT_COMMAND otherwise you'll be timing from the next PROMPT_COMMAND command
-PROMPT_COMMAND="$PROMPT_COMMAND; _timer_stop 2>/dev/null"
-function _last_cmd_interactive()
+
+function _prompt_command()
 {
-	set -- `history 1`
-	# `history` outputs command count, then date, then time, then command
-	shift 3
-	grep -qwE "$(sed -re 's/^\^?/^/' ${HOME}/.interactive_commands 2>/dev/null | paste -sd'|' -)" <(echo "$@") >/dev/null 2>/dev/null
+	local _last_exit_status=$?
+
+	# Whenever displaying the prompt, write the previous line to disk
+	history -a
+	
+	if [ "$TERM" == "cygwin" ]; then
+		PROMPT_COLOUR='\[\e[31m\]\u@\h \[\e[33m\]\w\[\e[0m\]'
+		PROMPT_DOLLAR='\n\$'
+	elif [ -z "${HOSTNAME/op??nxsr[0-9][0-9][0-9][0-9]*}" ]; then
+		PROMPT_COLOUR='\[\e[31m\]\u@\h \[\e[33m\]\w\[\e[0m\]' 
+		PROMPT_DOLLAR='\$'
+	else
+		PROMPT_COLOUR='\[\e[32m\]\u@\h \[\e[33m\]\w\[\e[0m\]'
+		PROMPT_DOLLAR='\$'
+	fi
+	
+	# At the start of the prompt command, remember the exit status of the last command
+	if [ $_last_exit_status -eq 0 ]; then
+		PROMPT_EXIT=':)'
+	else
+		PROMPT_EXIT=':('
+	fi
+	
+	# Calculate the run-time of the last command
+	local _timer_show=$(($SECONDS - $_timer))
+	unset _timer
+
+	# Only display run-time of last command if it is greater than 1 second and not an interactive command
+	PROMPT_TIMER=
+	if [ ${_timer_show-0} -gt 1 ]; then
+		set -- `history 1`
+		# `history` outputs command count, then date, then time, then command
+		shift 3
+		if ! grep -qwE "$(sed -re 's/^\^?/^/' ${HOME}/.interactive_commands 2>/dev/null | paste -sd'|' -)" <(echo "$@") >/dev/null 2>/dev/null; then
+			PROMPT_TIMER='['"${_timer_show}s"'] '
+		fi
+	fi
+
+	export PS1="\n${PROMPT_PREFIX}${PROMPT_COLOUR} ${PROMPT_TIMER}${PROMPT_EXIT}${PROMPT_FOO} ${PROMPT_DOLLAR} "
 }
-
-PROMPT_TIMER='$(if [ ${_timer_show-0} -gt 1 ] && ! _last_cmd_interactive; then echo '"'['"'${_timer_show}s'"'] '"'; fi)'
-
-# At the start of the prompt command, remember the exit status of the last command
-#PROMPT_COMMAND="_last_exit_status=$?; $PROMP_COMMAND"
-PROMPT_EXIT='$(if [ $? -eq 0 ]; then echo :\); else echo :\(; fi)'
-
-if [ "$TERM" == "cygwin" ]; then
-	PS1="${PROMPT_PREFIX}"'\[\e[31m\]\u@\h \[\e[33m\]\w\[\e[0m\] '"${PROMPT_TIMER}${PROMPT_EXIT}${PROMPT_FOO}"'\n\$ '
-elif [ -z "${HOSTNAME/op??nxsr[0-9][0-9][0-9][0-9]*}" ]; then
-	PS1="${PROMPT_PREFIX}"'\[\e[31m\]\u@\h \[\e[33m\]\w\[\e[0m\] '"${PROMPT_TIMER}${PROMPT_EXIT}${PROMPT_FOO}"' \$ '
-else
-	PS1="${PROMPT_PREFIX}"'\[\e[32m\]\u@\h \[\e[33m\]\w\[\e[0m\] '"${PROMPT_TIMER}${PROMPT_EXIT}${PROMPT_FOO}"' \$ '
-fi
-export PS1
-
+export PROMPT_COMMAND=_prompt_command

@@ -7,6 +7,8 @@ MAILTO=olihul@optiver.com.au
 
 ## Run backups
 @daily ${HOME}/dot-files/backup.sh
+## Push (and maybe re-build) my personal docker image
+@daily ${HOME}/dot-files/bin/dock.sh --bootstrap-docker-force-push >/dev/null
 ## Install dot-files to development machines.  Sleep for 10 so that the backup script has had a chance to commit the latest dot-files.
 @daily sleep 10 && PATH="${HOME}/bin:${PATH}" ${HOME}/bin/install-dot-files.sh >/dev/null 2>/dev/null
 
@@ -30,4 +32,4 @@ MAILTO=olihul@optiver.com.au
 ## Python virtualenv should be refreshed regularly.
 @daily rm -rf "${HOME}/pyvenv"
 
-## Backed up at Thu Mar  2 17:08:18 AEDT 2017
+## Backed up at Fri Mar  3 00:00:01 AEDT 2017
