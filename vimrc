@@ -1,9 +1,9 @@
 set nocompatible
 syntax enable
 
+" Vundle stuff, see https://github.com/VundleVim/Vundle.vim
+filetype off
 try
-	" Vundle stuff, see https://github.com/VundleVim/Vundle.vim
-	filetype off
 	set rtp+=~/.vim/bundle/Vundle.vim
 	call vundle#begin()
 	Plugin 'VundleVim/Vundle.vim'
@@ -13,12 +13,11 @@ try
 
 	" All of your Plugins must be added before the following line
 	call vundle#end()
-	"filetype plugin indent on
-	filetype plugin on
-	" If you've added a plugin, run `:PluginInstall`
 catch
 	" Vundle not there...
 endtry
+filetype plugin on
+" If you've added a plugin, run `:PluginInstall`
 
 " From ntpeters/vim-better-whitespace: Strip white-space on save
 autocmd BufEnter * silent! EnableStripWhitespaceOnSave
