@@ -15,3 +15,6 @@ MAILTO=olihul@optiver.com.au
 @weekly command which docker >/dev/null 2>/dev/null && [ $(docker images -q | wc -l) -gt 0 ] && docker rmi $(docker images -q)
 ## Kill docker containers running overnight, you can always re-start them.
 @daily command which docker >/dev/null 2>/dev/null && [ $(docker ps -q | wc -l) -gt 0 ] && docker kill $(docker ps -q)
+
+## Python virtualenv should be refreshed regularly.
+@daily rm -rf "${HOME}/pyvenv"

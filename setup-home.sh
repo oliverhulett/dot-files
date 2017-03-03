@@ -9,7 +9,8 @@ if ! echo "${HTTP_PROXY}" | grep -q "`whoami`" 2>/dev/null; then
 fi
 
 echo "Updating dot-files..."
-( cd "${HERE}" && git pull && git submodule init && git submodule sync && git submodule update)
+# Can't pull here, you risk changing this file
+( cd "${HERE}" && git submodule init && git submodule sync && git submodule update )
 
 if [ -f "${HERE}/crontab.$(hostname -s)" ]; then
 	echo "Installing crontab from ~/dot-files/crontab.$(hostname -s)..."

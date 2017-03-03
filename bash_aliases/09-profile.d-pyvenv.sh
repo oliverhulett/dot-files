@@ -23,14 +23,14 @@ done
 function python_setup()
 {
 	PYVERSION=python2.7
-	
+
 	PYVENV_MARKER="${PYVENV_HOME}/.mark"
 	if [ ! -e "${PYVENV_MARKER}" ] || [ "$(command cat "${PYVENV_MARKER}" 2>/dev/null)" != "$(pyvenv_version)" ]; then
 		command ${VIRTUALENV} --no-site-packages -p /usr/bin/${PYVERSION} "$PYVENV_HOME" >/dev/null 2>/dev/null
 		VIRTUAL_ENV_DISABLE_PROMPT=1 source "$PYVENV_HOME/bin/activate"
-	
+
 		pyvenv_version >"${PYVENV_MARKER}"
-	
+
 		## Need to export the path again, in-case activating the venv changed it.
 		export PATH="$(prepend_path "${PYVENV_HOME}/bin")"
 

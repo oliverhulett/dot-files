@@ -21,7 +21,7 @@ if [ $# -eq 1 ]; then
 
 	echo "Setting up environment on ${target}"
 	# Don't actually want submodules here, leave that to install-dot-files.sh
-	command ssh ${target} 'git clone ssh://git@git.comp.optiver.com:7999/~olihul/dot-files.git ${HOME}/dot-files 2>/dev/null && cd ${HOME}/dot-files && git pull'
+	command ssh ${target} 'git clone ssh://git@git.comp.optiver.com:7999/~olihul/dot-files.git ${HOME}/dot-files 2>/dev/null; cd ${HOME}/dot-files && git pull'
 	command ssh ${target} 'test -d ${HOME}/dot-files/.git' || run rsync --delete -zpPXrogthlcm --exclude='.git' "${HOME}/dot-files/" ${target}:"${HOME}/dot-files/"
 	command ssh ${target} '${HOME}/dot-files/setup-home.sh'
 

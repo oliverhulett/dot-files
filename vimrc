@@ -117,6 +117,6 @@ nmap <S-Enter> O<Esc>
 nnoremap <C-J> a<CR><Esc>k$
 
 " Python, JSON, and Yaml should use spaces instead of tabs
-autocmd Filetype python setlocal expandtab tabstop=4 shiftwidth=4
-autocmd Filetype json setlocal expandtab tabstop=4 shiftwidth=4
-autocmd Filetype yaml setlocal expandtab tabstop=4 shiftwidth=4
+autocmd Filetype python setlocal expandtab
+autocmd Filetype json setlocal expandtab
+autocmd Filetype yaml setlocal expandtab
