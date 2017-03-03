@@ -1,0 +1,3 @@
+images/repo
+*.pyc
+vim/bundle/*

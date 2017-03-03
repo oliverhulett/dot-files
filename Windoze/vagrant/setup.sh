@@ -26,14 +26,14 @@ rsync -aAXog ${HOME}/etc/backups/${HOME}/ ${HOME}/
 if [ -e "${HOME}/etc/passwd" ]; then
 	echo "Setting up samba..."
 	( cat ${HOME}/etc/passwd; cat ${HOME}/etc/passwd; ) | sudo smbpasswd -sa ${USER}
-	
+
 	echo "Bootstrapping GIT SSH keys..."
 	curl -u "${USER}:$(cat ${HOME}/etc/passwd)" -X POST -H "Accept: application/json" -H "Content-Type: application/json" https://git/rest/ssh/1.0/keys -d '{"text": "'"$(cat ${HOME}/.ssh/id_rsa.pub)"'"}' 2>/dev/null
 fi
 
 echo "Cloning dot-files..."
-su -c "cd ${HOME} && git clone --recursive ssh://git@git.comp.optiver.com:7999/~${USER}/dot-files.git" ${USER} 2>/dev/null
-su -c "cd ${HOME}/dot-files && git pull && git submodule init && git submodule sync && git submodule update" ${USER}
+su -c "git clone --recursive ssh://git@git.comp.optiver.com:7999/~${USER}/dot-files.git ${HOME}/dot-files" ${USER} 2>/dev/null
+su -c "cd ${HOME}/dot-files && git pull" ${USER}
 su -c "${HOME}/dot-files/setup-home.sh" ${USER}
 
 sudo systemctl link "${HOME}/dot-files/backup.service"
@@ -66,6 +66,8 @@ echo "Installing some things I don't want to docker all the time..."
 		rm drone
 	)
 ) &
+disown -r
+disown
 
 echo "Restoring local installs and other backups..."
 (
@@ -78,5 +80,7 @@ echo "Restoring local installs and other backups..."
 	sudo chmod +x ${HOME}/opt/eclipse/eclipse
 	sudo chmod +x ${HOME}/opt/sublime_text_3/sublime_text
 ) &
+disown -r
+disown
 
 true

@@ -1,5 +1,37 @@
+set nocompatible
 syntax enable
 
+try
+	" Vundle stuff, see https://github.com/VundleVim/Vundle.vim
+	filetype off
+	set rtp+=~/.vim/bundle/Vundle.vim
+	call vundle#begin()
+	Plugin 'VundleVim/Vundle.vim'
+
+	Plugin 'ntpeters/vim-better-whitespace'
+	Plugin 'ConradIrwin/vim-bracketed-paste'
+
+	" All of your Plugins must be added before the following line
+	call vundle#end()
+	"filetype plugin indent on
+	filetype plugin on
+	" If you've added a plugin, run `:PluginInstall`
+catch
+	" Vundle not there...
+endtry
+
+try
+	" From ntpeters/vim-better-whitespace: Strip white-space on save
+	autocmd BufEnter * EnableStripWhitespaceOnSave
+catch
+	" ntpeters/vim-better-whitespace not there
+endtry
+
+" Show tabs as well
+set listchars=tab:»·,trail:·,extends:»,precedes:«
+set list
+
+" Stop vim locking up on write because of your disc-tweaks
 set nofsync
 set swapsync=
 
@@ -37,6 +69,7 @@ nmap <c-q> :q<CR>
 " Shortcut to substitute
 map <c-f> :%s/<c-r>///gc<Left><left><left>
 
+" Personalise
 set number
 set ruler
 set showmatch
@@ -44,6 +77,7 @@ set scrolloff=10
 set smartcase
 set tabstop=4
 set shiftwidth=4
+set textwidth=100
 set smarttab
 set noexpandtab
 set incsearch
@@ -51,6 +85,13 @@ set hlsearch
 set nobackup
 set nowb
 set noswapfile
+set noautoindent
+autocmd FileType * setlocal formatoptions-=t
+autocmd FileType * setlocal formatoptions-=o
+autocmd FileType * setlocal formatoptions-=c
+autocmd FileType * setlocal formatoptions-=a
+autocmd FileType * setlocal formatoptions+=q
+autocmd FileType * setlocal formatoptions+=n
 
 " Don't remember highlighting.
 set viminfo^=h
@@ -74,3 +115,8 @@ vmap <M-k> :m'<-2<CR>`>my`<mzgv`yo`z
 nmap <S-Enter> O<Esc>
 " Ctrl+j as the opposite of Shift+j
 nnoremap <C-J> a<CR><Esc>k$
+
+" Python, JSON, and Yaml should use spaces instead of tabs
+autocmd Filetype python setlocal expandtab tabstop=4 shiftwidth=4
+autocmd Filetype json setlocal expandtab tabstop=4 shiftwidth=4
+autocmd Filetype yaml setlocal expandtab tabstop=4 shiftwidth=4

@@ -2,3 +2,6 @@
 	path = bootstrap
 	url = ssh://git@git.comp.optiver.com:7999/~olihul/bootstrap-docker-build.git
 	branch = master
+[submodule "vim/bundle/Vundle.vim"]
+	path = vim/bundle/Vundle.vim
+	url = https://github.com/VundleVim/Vundle.vim.git

@@ -9,7 +9,7 @@ Another advantage of not having a schema, is that it lowers the requirements to 
 
 
 Annectode:
-I wanted to add some usage statistics gathering to build.py.  Turns out Gareth Edwards had already started doing so.  His approach was to encode usage in a graphite path.
+I wanted to add some usage statistics gathering to build.py.  Turns out Gareth Jones had already started doing so.  His approach was to encode usage in a graphite path.
 Because he was trying to re-use an existing schema, he has hit on a solution that gathers much less information, is space inefficient, and still requires massaging on the consuming side to generate a useful report.
 
 I would have had build tool gather:

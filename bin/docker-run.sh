@@ -1,9 +1,6 @@
 #!/bin/bash -e
 
-IMAGES="$( (
-	docker images | awk 'NR>1 { if ( $1 != "<none>" ) { print $1 } }'
-	docker search --no-trunc docker-registry.aus.optiver.com/ | awk 'NR>1 { print $2 }'
-) | sort -u)"
+IMAGES="$( docker-list | sort -u)"
 DOCKER_RUN_ARGS=()
 while ! echo "$IMAGES" | grep -qw "$1" 2>/dev/null >/dev/null; do
 	DOCKER_RUN_ARGS[${#DOCKER_RUN_ARGS[@]}]="$1"

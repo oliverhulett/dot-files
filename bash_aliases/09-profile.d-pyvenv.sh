@@ -36,12 +36,12 @@ function python_setup()
 
 		## Install the things
 		(
-	set -x
 			command pip install -U pip 2>/dev/null
 			command pip install -U wheel setuptools 2>/dev/null
-			command pip install -U protobuf==2.5.0 twisted argparse 'lxml<3.4' invoke docker-compose devpi pylint >/dev/null 2>/dev/null
-	set +x
+			command pip install -U protobuf==2.5.0 twisted argparse 'lxml<3.4' invoke docker-compose devpi pylint stashy >/dev/null 2>/dev/null
 		) >/dev/null 2>/dev/null &
+		disown
+		disown -r
 	fi
 	( cd ${PYVENV_HOME}/bin && ln -sf ${PYVERSION} python26 2>/dev/null )
 	( cd ${PYVENV_HOME}/bin && ln -sf ${PYVERSION} python 2>/dev/null )

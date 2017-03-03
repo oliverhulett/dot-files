@@ -1,5 +1,5 @@
 # /home/ols/.bashrc:
-# 
+#
 # This file is sourced by all *interactive* bash shells on startup,
 # including some apparently interactive shells such as scp and rcp
 # that can't tolerate any output.
@@ -22,7 +22,15 @@ fi
 export VISUAL=$(command which vim 2>/dev/null)
 export EDITOR=$VISUAL
 export PAGER=$(command which less 2>/dev/null)
-alias edt=$VISUAL
+unalias edt >/dev/null 2>/dev/null
+function edt()
+{
+	if proxy_setup -q >/dev/null; then
+		vim +PluginInstall +q "$@"
+	else
+		vim "$@"
+	fi
+}
 
 export HISTCONTROL="ignoredups"
 export HISTIGNORE="[   ]*:&:bg:fg:sh:exit:history"
@@ -147,25 +155,25 @@ function _prompt_command()
 
 	# Whenever displaying the prompt, write the previous line to disk
 	history -a
-	
+
 	if [ "$TERM" == "cygwin" ]; then
 		PROMPT_COLOUR='\[\e[31m\]\u@\h \[\e[33m\]\w\[\e[0m\]'
 		PROMPT_DOLLAR='\n\$'
 	elif [ -z "${HOSTNAME/op??nxsr[0-9][0-9][0-9][0-9]*}" ]; then
-		PROMPT_COLOUR='\[\e[31m\]\u@\h \[\e[33m\]\w\[\e[0m\]' 
+		PROMPT_COLOUR='\[\e[31m\]\u@\h \[\e[33m\]\w\[\e[0m\]'
 		PROMPT_DOLLAR='\$'
 	else
 		PROMPT_COLOUR='\[\e[32m\]\u@\h \[\e[33m\]\w\[\e[0m\]'
 		PROMPT_DOLLAR='\$'
 	fi
-	
+
 	# At the start of the prompt command, remember the exit status of the last command
 	if [ $_last_exit_status -eq 0 ]; then
 		PROMPT_EXIT=':)'
 	else
 		PROMPT_EXIT=':('
 	fi
-	
+
 	# Calculate the run-time of the last command
 	local _timer_show=$(($SECONDS - $_timer))
 	unset _timer
@@ -184,3 +192,8 @@ function _prompt_command()
 	export PS1="\n${PROMPT_PREFIX}${PROMPT_COLOUR} ${PROMPT_TIMER}${PROMPT_EXIT}${PROMPT_FOO} ${PROMPT_DOLLAR} "
 }
 export PROMPT_COMMAND=_prompt_command
+
+if ! echo "${HTTP_PROXY}" | grep -q "`whoami`" 2>/dev/null; then
+	source "${HOME}/.bash_aliases/19-env-proxy.sh" 2>/dev/null
+	proxy_setup -q
+fi

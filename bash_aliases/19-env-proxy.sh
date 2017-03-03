@@ -36,16 +36,38 @@ function urldecode()
 
 function proxy_setup()
 {
-	if [ $# == 1 ] && id $1 2>/dev/null; then
-		USER="$1"
-	fi
+	QUIET="n"
+	for a in "$@"; do
+		if id $a >/dev/null 2>/dev/null; then
+			USER="$a"
+			continue
+		fi
+		a="${a##-}"
+		while [ -n "$a" ]; do
+			p="$a"
+			case $a in
+				*q*)
+					QUIET="y"
+					a="${a//q/}"
+					;;
+			esac
+			if [ "$p" == "$a" ]; then
+				break
+			fi
+		done
+	done
 	echo "HTTP Proxy Username: $USER"
+	unset PASSWD
 	if [ -r "${HOME}/etc/passwd" ]; then
 		PASSWD="$(sed -ne '1p' "${HOME}/etc/passwd")"
 		echo "HTTP Proxy Password: <from file: ${HOME}/etc/passwd>"
-	else
+	elif [ "$QUIET" == "n" ]; then
 		read -rs -p "HTTP Proxy Password: " PASSWD
 		echo
+	fi
+	if [ -z "$PASSWD" -o -z "$USER" ]; then
+		echo "Not setting proxy password, could not find from ${HOME}/etc/passwd and you told me not to ask"
+		return 1
 	fi
 	if [ -z "${http_proxy_orig}" ]; then
 		export http_proxy_orig="${http_proxy}"
@@ -57,32 +79,34 @@ function proxy_setup()
 	export HTTP_PROXY="${http_proxy}"
 	export https_proxy="${https_proxy_orig/\/\////$(urlencode "$USER"):$(urlencode "$PASSWD")@}"
 	export HTTPS_PROXY="${https_proxy}"
-	update_config=""
-	for f in /etc/sysconfig/docker; do
-		if [ -e "$f" ]; then
-			if grep -qE "^HTTPS?_PROXY=" "$f"; then
-				if ! grep -qF "HTTP_PROXY=$HTTP_PROXY" "$f" || ! grep -qF "HTTPS_PROXY=$HTTPS_PROXY" "$f"; then
-					update_config="$update_config $f"
+	if [ "$QUIET" == "n" ]; then
+		update_config=""
+		for f in /etc/sysconfig/docker; do
+			if [ -e "$f" ]; then
+				if grep -qE "^HTTPS?_PROXY=" "$f"; then
+					if ! grep -qF "HTTP_PROXY=$HTTP_PROXY" "$f" || ! grep -qF "HTTPS_PROXY=$HTTPS_PROXY" "$f"; then
+						update_config="$update_config $f"
+					fi
 				fi
 			fi
-		fi
-	done
-	if [ -n "$update_config" ]; then
-		read -n1 -r -p "Found configuration files to update with new proxy.  Update $update_config? [Y/n] "
-		echo
-		if [ $(echo $REPLY | tr '[a-z]' '[A-Z]') != "N" ]; then
-			for f in $update_config; do
-				sudo -E sed -re 's!^HTTP_PROXY=.+$!HTTP_PROXY='"$HTTP_PROXY"'!' "$f" -i
-				sudo -E sed -re 's!^HTTPS_PROXY=.+$!HTTPS_PROXY='"$HTTPS_PROXY"'!' "$f" -i
-			done
+		done
+		if [ -n "$update_config" ]; then
+			read -n1 -r -p "Found configuration files to update with new proxy.  Update $update_config? [Y/n] "
+			echo
+			if [ $(echo $REPLY | tr '[a-z]' '[A-Z]') != "N" ]; then
+				for f in $update_config; do
+					sudo -E sed -re 's!^HTTP_PROXY=.+$!HTTP_PROXY='"$HTTP_PROXY"'!' "$f" -i
+					sudo -E sed -re 's!^HTTPS_PROXY=.+$!HTTPS_PROXY='"$HTTPS_PROXY"'!' "$f" -i
+				done
 
-			echo "System configuration updated for new proxy, you may want to restart daemons.  Try:"
-			echo "$ sudo systemctl reload <services>"
+				echo "System configuration updated for new proxy, you may want to restart daemons.  Try:"
+				echo "$ sudo systemctl reload <services>"
+			fi
 		fi
 	fi
 	unset PASSWD
+	return 0
 }
 
 HISTIGNORE="${HISTIGNORE}:*//*@*proxy*optiver.com*"
 export HISTIGNORE
-

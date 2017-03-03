@@ -89,4 +89,3 @@ function append_path()
 	unset d
 	echo_clean_path
 }
-
