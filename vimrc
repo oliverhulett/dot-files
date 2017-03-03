@@ -20,12 +20,8 @@ catch
 	" Vundle not there...
 endtry
 
-try
-	" From ntpeters/vim-better-whitespace: Strip white-space on save
-	autocmd BufEnter * EnableStripWhitespaceOnSave
-catch
-	" ntpeters/vim-better-whitespace not there
-endtry
+" From ntpeters/vim-better-whitespace: Strip white-space on save
+autocmd BufEnter * silent! EnableStripWhitespaceOnSave
 
 " Show tabs as well
 set listchars=tab:»·,trail:·,extends:»,precedes:«
