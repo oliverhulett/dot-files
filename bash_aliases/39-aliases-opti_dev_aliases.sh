@@ -38,6 +38,6 @@ function cc-env()
 alias operat='command sudo -iu operat'
 
 ## OMG, so dodgy...
-alias taskset='command sudo -Eu operat command sudo taskset -c 1'
-alias asroot='command sudo -Eu operat command sudo'
+alias taskset='command sudo -Eu operat sudo taskset -c 1'
+alias asroot='command sudo -Eu operat sudo'
 alias asoperat='command sudo -Eu operat'

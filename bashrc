@@ -182,14 +182,14 @@ function _prompt_command()
 
 	PROMPT="${PROMPT_COLOUR} ${PROMPT_TIMER}${PROMPT_EXIT}${PROMPT_FOO} ${PROMPT_DOLLAR} "
 
-#set -x
-#echo $PS1 | sed -ne "s/^(.*)${PROMPT_COLOUR}.*/\1/p"
-#	USER_CUSTOM_FRONT="$(echo $PS1 | sed -ne "s/(.*)${PROMPT_COLOUR}.*/\1/p")"
-#	USER_CUSTOM_BACK="$(echo $PS1 | sed -ne 's/.+$(.*)/\1/p')"
-#echo $PS1 | sed -ne 's/^.+$(.*)$/\1/p'
-
-	export PS1="${USER_CUSTOM_FRONT}${PROMPT}${USER_CUSTOM_BACK}"
-#set +x
+	if echo $PS1 | command grep -q '\\' >/dev/null 2>/dev/null || echo $PS1 | command grep -q '\$' >/dev/null 2>/dev/null; then
+		# If it looks like a prompt, we're going to replace it...
+		USER_CUSTOM_FRONT="$(echo $PS1 | sed -nre "s!(.*)$(printf "%q" "${PROMPT_COLOUR}").*!\1!p")"
+	else
+		# ...otherwise we'll use it as a custom prefix.
+		USER_CUSTOM_FRONT="$PS1"
+	fi
+	export PS1="${USER_CUSTOM_FRONT}${PROMPT}"
 	echo
 }
 export PROMPT_COMMAND=_prompt_command
