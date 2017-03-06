@@ -46,5 +46,3 @@ if [ -n "${DOTFILES}" ]; then
 else
 	echo "No dot-files file found, not linking anything..."
 fi
-
-wait
