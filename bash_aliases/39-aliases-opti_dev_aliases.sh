@@ -19,11 +19,25 @@ function bt()
 	done
 }
 
-alias cc-env="docker-run.sh $(sed -nre 's!.+(docker-registry\.aus\.optiver\.com/[^ ]+/[^ ]+).*!\1!p' /usr/local/bin/cc-env 2>/dev/null | tail -n1)"
+unalias cc-env 2>/dev/null
+function cc-env()
+{
+	CC_EXE="/usr/local/bin/cc-env"
+	if [ "$(md5sum "${CC_EXE}" | cut -d' ' -f1)" != "c78d61908e14ea86987db72adf7873e4" ]; then
+		echo "[WARN] ${CC_EXE} has changed, make sure you're still faking it right.  Last hash was: c78d61908e14ea86987db72adf7873e4"
+		md5sum "${CC_EXE}"
+	fi
+	CC_IMAGE="$(sed -nre 's!.+(docker-registry\.aus\.optiver\.com/[^ ]+/[^ ]+).*!\1!p' "${CC_EXE}" 2>/dev/null | tail -n1)"
+	docker-run.sh ${CC_IMAGE} "$@"
+	if [ "$(md5sum "${CC_EXE}" | cut -d' ' -f1)" != "c78d61908e14ea86987db72adf7873e4" ]; then
+		echo "[WARN] ${CC_EXE} has changed, make sure you're still faking it right.  Last hash was: c78d61908e14ea86987db72adf7873e4"
+		md5sum "${CC_EXE}"
+	fi
+}
 
-alias operat='/usr/bin/sudo -iu operat'
+alias operat='command sudo -iu operat'
 
 ## OMG, so dodgy...
-alias taskset='/usr/bin/sudo -Eu operat /usr/bin/sudo taskset -c 1'
-alias asroot='/usr/bin/sudo -Eu operat /usr/bin/sudo'
-alias asoperat='/usr/bin/sudo -Eu operat'
+alias taskset='command sudo -Eu operat command sudo taskset -c 1'
+alias asroot='command sudo -Eu operat command sudo'
+alias asoperat='command sudo -Eu operat'

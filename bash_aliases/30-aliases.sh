@@ -42,7 +42,6 @@ alias file='file -krz'
 alias top='top -c'
 alias less='less -RFiMx4'
 export LESS='-RFiMx4'
-alias docker-list='__docker_images'
 
 if uname -s | command grep -q 'MINGW' >/dev/null 2>&1 ; then
 	alias ifconfig='ipconfig'

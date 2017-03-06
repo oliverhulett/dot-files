@@ -104,7 +104,6 @@ shopt -s cdspell
 
 # We can clear some variables here that will be set/updated by the bash_aliases includes and used later.
 export PROMPT_FOO=
-export PROMPT_PREFIX=
 
 if [ -d "$HOME/.bash_aliases" ]; then
 	for f in $(echo $HOME/.bash_aliases/* | sort -n); do
@@ -189,11 +188,21 @@ function _prompt_command()
 		fi
 	fi
 
-	export PS1="\n${PROMPT_PREFIX}${PROMPT_COLOUR} ${PROMPT_TIMER}${PROMPT_EXIT}${PROMPT_FOO} ${PROMPT_DOLLAR} "
+	PROMPT="${PROMPT_COLOUR} ${PROMPT_TIMER}${PROMPT_EXIT}${PROMPT_FOO} ${PROMPT_DOLLAR} "
+
+#set -x
+#echo $PS1 | sed -ne "s/^(.*)${PROMPT_COLOUR}.*/\1/p"
+#	USER_CUSTOM_FRONT="$(echo $PS1 | sed -ne "s/(.*)${PROMPT_COLOUR}.*/\1/p")"
+#	USER_CUSTOM_BACK="$(echo $PS1 | sed -ne 's/.+$(.*)/\1/p')"
+#echo $PS1 | sed -ne 's/^.+$(.*)$/\1/p'
+
+	export PS1="${USER_CUSTOM_FRONT}${PROMPT}${USER_CUSTOM_BACK}"
+#set +x
+	echo
 }
 export PROMPT_COMMAND=_prompt_command
 
 if ! echo "${HTTP_PROXY}" | grep -q "`whoami`" 2>/dev/null; then
 	source "${HOME}/.bash_aliases/19-env-proxy.sh" 2>/dev/null
-	proxy_setup -q
+	proxy_setup -q >/dev/null 2>/dev/null
 fi

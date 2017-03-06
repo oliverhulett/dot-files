@@ -24,7 +24,7 @@ fi
 
 function checkprocs()
 {
-	( cd /proc >/dev/null 2>/dev/null && /bin/ls -1d "$@" 2>/dev/null )
+	( cd /proc >/dev/null 2>/dev/null && command ls -1d "$@" 2>/dev/null )
 }
 
 function is_ssh()

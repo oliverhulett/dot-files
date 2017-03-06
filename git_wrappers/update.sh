@@ -36,7 +36,7 @@ else
 		if [ -n "${OUT3}" ]; then
 			echo -ne "${OUT3}\n"
 			## Special case if we ran courier, remove commit hooks installed by `getdep`.
-			getdep_hook="$(dirname $(dirname $(/usr/bin/which getdep)))/lib/python2.7/site-packages/getdep/hooks/pull-if"
+			getdep_hook="$(dirname $(dirname $(command which getdep)))/lib/python2.7/site-packages/getdep/hooks/pull-if"
 			for hook in post-checkout post-commit post-merge; do
 				if [ -L ".git/hooks/${hook}" -a ".git/hooks/${hook}" -ef "${getdep_hook}" ]; then
 					rm ".git/hooks/${hook}"
@@ -48,7 +48,7 @@ else
 			echo -ne "${OUT1}\n"
 		fi
 	fi
-	
+
 	git submodule init
 	git submodule sync
 	git submodule update

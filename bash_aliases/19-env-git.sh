@@ -4,7 +4,7 @@ GIT_COMPLETE_FILE="/usr/share/git-core/contrib/completion/git-completion.bash"
 if [ -e "${GIT_COMPLETE_FILE}" ]; then
 	source "${GIT_COMPLETE_FILE}"
 else
-	GIT_COMPLETE_FILE="$(dirname "$(dirname "$(readlink -f "$BASH_SOURCE")")")/git-completion.bash"
+	GIT_COMPLETE_FILE="${HOME}/etc/git-completion.bash"
 	if [ -e "${GIT_COMPLETE_FILE}" ]; then
 		source "${GIT_COMPLETE_FILE}"
 	fi
@@ -14,7 +14,7 @@ GIT_PROMPT_FILE="/usr/share/git-core/contrib/completion/git-prompt.sh"
 if [ -e "${GIT_PROMPT_FILE}" ]; then
 	source "${GIT_PROMPT_FILE}"
 else
-	GIT_PROMPT_FILE="$(dirname "$(dirname "$(readlink -f "$BASH_SOURCE")")")/git-prompt.sh"
+	GIT_PROMPT_FILE="${HOME}/etc/git-prompt.sh"
 	if [ -e "${GIT_PROMPT_FILE}" ]; then
 		source "${GIT_PROMPT_FILE}"
 	fi

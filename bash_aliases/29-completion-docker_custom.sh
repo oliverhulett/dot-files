@@ -3,11 +3,14 @@
 # Add remote images from docker-registry.aus.optiver.com/ to the images output.
 function __docker_remote_images()
 {
+	if [ -z "$(command which docker 2>/dev/null)" ]; then
+		return
+	fi
 	local CACHE_FILE="/tmp/.docker-remote-images-$USER"
 	if ! find "$CACHE_FILE" -mmin 60 >/dev/null 2>/dev/null; then
 		docker search --no-trunc docker-registry.aus.optiver.com/ | awk 'NR>1 { print $2 }' >"$CACHE_FILE"
 	fi
-	/bin/cat "$CACHE_FILE" 2>/dev/null
+	command cat "$CACHE_FILE" 2>/dev/null
 }
 
 # Wrap existing __docker_images() completion func in our own version that adds remote images.

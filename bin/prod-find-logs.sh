@@ -1,10 +1,10 @@
 #!/bin/bash
 
 LOG_ARCHIVE_DIR="/media/log-archive/"
-if [ ! -d "${LOG_ARCHIVE_DIR}" ] || [ -z "$(/bin/ls "${LOG_ARCHIVE_DIR}")" ]; then
+if [ ! -d "${LOG_ARCHIVE_DIR}" ] || [ -z "$(command ls "${LOG_ARCHIVE_DIR}")" ]; then
 	## In case we're on central-archive...
 	LOG_ARCHIVE_DIR="/u01/archive_sync/"
-	if [ ! -d "${LOG_ARCHIVE_DIR}" ] || [ -z "$(/bin/ls "${LOG_ARCHIVE_DIR}")" ]; then
+	if [ ! -d "${LOG_ARCHIVE_DIR}" ] || [ -z "$(command ls "${LOG_ARCHIVE_DIR}")" ]; then
 		LOG_ARCHIVE_DIR="central-archive:/u01/archive_sync/"
 	fi
 fi
@@ -57,7 +57,7 @@ if ! is_ssh "${LOG_ARCHIVE_DIR}" && [ ! -d "${LOG_ARCHIVE_DIR}" ]; then
 	usage
 	exit 1
 fi
-if ! is_ssh "${LOG_ARCHIVE_DIR}" && [ -z "$(/bin/ls "${LOG_ARCHIVE_DIR}")" ]; then
+if ! is_ssh "${LOG_ARCHIVE_DIR}" && [ -z "$(command ls "${LOG_ARCHIVE_DIR}")" ]; then
 	echo "Specified log archive directory is empty: ${LOG_ARCHIVE_DIR}"
 	echo "Perhaps you need to mount it?"
 	usage
