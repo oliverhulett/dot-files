@@ -22,15 +22,7 @@ fi
 export VISUAL=$(command which vim 2>/dev/null)
 export EDITOR=$VISUAL
 export PAGER=$(command which less 2>/dev/null)
-unalias edt >/dev/null 2>/dev/null
-function edt()
-{
-	if proxy_setup -q >/dev/null; then
-		vim +PluginInstall +q "$@"
-	else
-		vim "$@"
-	fi
-}
+alias edt="vim +'silent! PluginInstall' +qall; vim"
 
 export HISTCONTROL="ignoredups"
 export HISTIGNORE="[   ]*:&:bg:fg:sh:exit:history"
