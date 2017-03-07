@@ -57,6 +57,8 @@ class Stashy(object):
         print
         for t in self._tag_names[project][repo]:
             print "tag:", t
+        for l in self.stash.projects[project].repos[repo].browse():
+            print l
 
 if __name__ == '__main__':
     Stashy().dump(*sys.argv[1:])
