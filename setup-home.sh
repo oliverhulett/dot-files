@@ -10,7 +10,8 @@ fi
 
 echo "Updating dot-files..."
 # Can't pull here, you risk changing this file
-nohup ( cd "${HERE}" && git submodule init && git submodule sync && git submodule update ) >/dev/null 2>/dev/null &
+( cd "${HERE}" && git submodule init && git submodule sync && git submodule update ) >/dev/null 2>/dev/null &
+disown -h
 disown
 
 if [ -f "${HERE}/crontab.$(hostname -s)" ]; then
