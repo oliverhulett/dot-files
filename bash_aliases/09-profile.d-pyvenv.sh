@@ -20,7 +20,7 @@ for cmd in virtualenv virtualenv-2.7 virtualenv-27 virtualenv-2.6 virtualenv-26;
 	fi
 done
 
-function python_setup()
+function venv_setup()
 {
 	PYVERSION=python2.7
 
@@ -33,21 +33,23 @@ function python_setup()
 
 		## Need to export the path again, in-case activating the venv changed it.
 		export PATH="$(prepend_path "${PYVENV_HOME}/bin")"
-
-		## Install the things
-		(
-			command pip install -U pip 2>/dev/null
-			command pip install -U wheel setuptools 2>/dev/null
-			command pip install -U protobuf==2.5.0 twisted argparse 'lxml<3.4' invoke docker-compose devpi pylint stashy >/dev/null 2>/dev/null
-		) >/dev/null 2>/dev/null &
-		disown -h
-		disown
 	fi
 	( cd ${PYVENV_HOME}/bin && ln -sf ${PYVERSION} python26 2>/dev/null )
 	( cd ${PYVENV_HOME}/bin && ln -sf ${PYVERSION} python 2>/dev/null )
 }
-python_setup
-alias python='python_setup; command python'
-alias python26='python_setup; command python26'
-alias python2.7='python_setup; command python2.7'
-alias pip='python_setup; proxy_setup; command pip'
+
+function python_setup()
+{
+	venv_setup
+
+	## Install the things
+	command pip install -U pip 2>/dev/null
+	command pip install -U wheel setuptools 2>/dev/null
+	command pip install -U protobuf==2.5.0 twisted argparse 'lxml<3.4' invoke docker-compose devpi pylint stashy >/dev/null 2>/dev/null
+}
+nohup python_setup >/dev/null 2>/dev/null &
+
+alias python='venv_setup; command python'
+alias python26='venv_setup; command python26'
+alias python2.7='venv_setup; command python2.7'
+alias pip='venv_setup; proxy_setup; command pip'
