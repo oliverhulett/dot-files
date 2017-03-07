@@ -10,9 +10,8 @@ fi
 
 echo "Updating dot-files..."
 # Can't pull here, you risk changing this file
-( cd "${HERE}" && git submodule init && git submodule sync && git submodule update ) &
-disown -h
-disown -r
+nohup ( cd "${HERE}" && git submodule init && git submodule sync && git submodule update ) >/dev/null 2>/dev/null &
+disown
 
 if [ -f "${HERE}/crontab.$(hostname -s)" ]; then
 	echo "Installing crontab from ~/dot-files/crontab.$(hostname -s)..."
