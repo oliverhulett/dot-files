@@ -9,24 +9,25 @@ import re
 class Colouriser(object):
     def __init__(self, pattern=None):
         ##  Bash colours.  From: http://www.tldp.org/HOWTO/Bash-Prompt-HOWTO/x329.html
-        self.colours = {#'Black':       '0;30',
-                        'Dark Gray':   '1;30',
-                        'Blue':        '0;34',
-                        'Light Blue':  '1;34',
-                        'Green':       '0;32',
-                        'Light Green': '1;32',
-                        'Cyan':        '0;36',
-                        'Light Cyan':  '1;36',
-                        'Red':         '0;31',
-                        'Light Red':   '1;31',
-                        'Purple':      '0;35',
-                        'Light Purple':'1;35',
-                        'Brown':       '0;33',
-                        #'Yellow':      '1;33',
-                        #'Light Gray':  '0;37',
-                        #'White':       '1;37',
-                        'reset':       '0'
-                        }
+        self.colours = (
+            #('Black',       '0;30'),
+            ('Light Blue',  '1;34'),
+            ('Light Green', '1;32'),
+            ('Light Cyan',  '1;36'),
+            ('Light Purple','1;35'),
+            ('Light Red',   '1;31'),
+            ('Green',       '0;32'),
+            ('Cyan',        '0;36'),
+            ('Purple',      '0;35'),
+            ('Brown',       '0;33'),
+            ('Red',         '0;31'),
+            ('Dark Gray',   '1;30'),
+            ('Blue',        '0;34'),
+            #('Yellow',      '1;33'),
+            #('Light Gray',  '0;37'),
+            #('White',       '1;37'),
+            ('reset',       '0'),
+        )
 
         ##  These are the sequences need to get colored ouput.
         self.reset_seq = "\033[0m"
@@ -71,9 +72,9 @@ class Colouriser(object):
             try:
                 logmodule = match.group(1)
                 if (logmodule not in self.colour_map):
-                    self.colour_map[logmodule] = self.colours.keys()[self.next_colour % len(self.colours)]
+                    self.colour_map[logmodule] = self.next_colour % len(self.colours)
                     self.next_colour += 1
-                colour = self.colour_seq_tmpl % (self.colours[self.colour_map[logmodule]])
+                colour = self.colour_seq_tmpl % (self.colours[self.colour_map[logmodule]][1])
                 print "%s%s%s" % (colour, line.strip(), self.reset_seq)
             except:
                 print line.strip()

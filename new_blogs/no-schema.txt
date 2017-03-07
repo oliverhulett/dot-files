@@ -71,4 +71,7 @@ Are there any off-the-shelf products that get close to what we want or that we c
  - elastic? logstash to elastic search
 
 May be helpful to:
- - First class the concept of a training data-set, for developing reports and post processes.
+ - First class the concept of a "training data-set", for developing reports and post processes.
+
+Transition:
+ - Create 1Tick and Timberjack loaders in a box (dockerised) providing the "training data-set" concept.
