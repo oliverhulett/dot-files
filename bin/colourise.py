@@ -40,10 +40,10 @@ class Colouriser(object):
 
         self.fallback_regex = re.compile(r"[0-9-:,\. ]+ \[?([^\] ]+)\]?.+")
         self.default_regexes = [
-                                re.compile(r"[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{9} \[[^\]]+\] \[([^\]]+)\].+"),
+                                re.compile(r"[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{9}(?: \[ *[0-9\.]+ *[um]s\])? \[[^\]]+\] \[([^\]]+)\].+"),
                                 re.compile(r"[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2},[0-9]{3} \[[^\]]+\] ([^:]+):.+")
                                 ]
-        if (pattern is not None):
+        if pattern is not None:
             self.regex = re.compile(pattern)
 
         try:
@@ -61,17 +61,17 @@ class Colouriser(object):
             if not line:
                 break
 
-            if (self.regex is None):
+            if self.regex is None:
                 self.regex = self.fallback_regex
                 for reg in self.default_regexes:
-                    if (reg.match(line) is not None):
+                    if reg.match(line) is not None:
                         self.regex = reg
                         break
 
             match = self.regex.match(line)
             try:
                 logmodule = match.group(1)
-                if (logmodule not in self.colour_map):
+                if logmodule not in self.colour_map:
                     self.colour_map[logmodule] = self.next_colour % len(self.colours)
                     self.next_colour += 1
                 colour = self.colour_seq_tmpl % (self.colours[self.colour_map[logmodule]][1])
@@ -83,15 +83,15 @@ if __name__ == '__main__':
     consumed = 1
     try:
         pattern = sys.argv[1]
-        if (os.path.isfile(pattern)):
+        if os.path.isfile(pattern):
             raise
         else:
             colouriser = Colouriser(pattern)
             consumed += 1
     except:
         colouriser = Colouriser()
-    if (len(sys.argv) == consumed):
-        print "Colourising stdin..."
+    if len(sys.argv) == consumed:
+        print >>sys.stderr, "Colourising stdin..."
         try:
             sys.stdin = os.fdopen(sys.stdin.fileno(), 'r', 0)
         except:
@@ -100,8 +100,8 @@ if __name__ == '__main__':
     else:
         for filename in sys.argv[consumed:]:
             try:
-                print "Colourising " + filename + "..."
+                print >>sys.stderr, "Colourising " + filename + "..."
                 with open(filename, 'r') as f:
                     colouriser.Colourise(f)
             except:
-                print sys.stderr, str(sys.exc)
+                print >>sys.stderr, str(sys.exc)
