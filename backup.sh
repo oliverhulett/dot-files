@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/bin/bash -x
+HOME="$(dirname "$(cd "$(dirname "$0")" && pwd -P)")"
 
 ## Crontabs live in /var/spool/, so take a backup of this crontab on a separate partition.
 crontab -l >${HOME}/dot-files/crontab.$(hostname -s) && echo -e "\n## Backed up at `date`" >>${HOME}/dot-files/crontab.$(hostname -s)
