@@ -89,3 +89,16 @@ function append_path()
 	unset d
 	echo_clean_path
 }
+
+function setup_log()
+{
+	LOG_DIR="${HOME}/.setup-logs"
+	mkdir "${LOG_DIR}" 2>/dev/null
+	LOG_FILE="${LOG_DIR}/$(date '+%Y%m%d')_$(whoami)_dot-files.log"
+	if [ -e "${LOG_FILE}" ]; then
+		echo >>"${LOG_FILE}"
+		echo >>"${LOG_FILE}"
+	fi
+	echo "$(date '+%Y-%m-%d %H:%M:%S.%N') basename="'"'"$(basename "$0")"'"'" caller="'"'"$(caller 0)"'"' >>"${LOG_FILE}"
+	echo "${LOG_FILE}"
+}

@@ -1,4 +1,5 @@
 #!/bin/bash
+source "${HOME}/dot-files/bash_common.sh"
 
 HERE="$(cd "$(dirname "$0")" && pwd -P)"
 RELPATH="${HERE}/bin/relpath.sh"
@@ -10,7 +11,7 @@ fi
 
 echo "Updating dot-files..."
 # Can't pull here, you risk changing this file
-( cd "${HERE}" && git submodule init && git submodule sync && git submodule update ) >/dev/null 2>/dev/null &
+( cd "${HERE}" && git submodule init && git submodule sync && git submodule update ) 2>&1 >>"$(setup_log)" &
 disown -h
 disown
 
