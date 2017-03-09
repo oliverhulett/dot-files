@@ -38,10 +38,10 @@ class Colouriser(object):
         self.colour_map = {}
         self.regex = None
 
-        self.fallback_regex = re.compile(r"[0-9-:,\. ]+ \[?([^\] ]+)\]?.+")
+        self.fallback_regex = re.compile(r"^[0-9-:,\. ]+ \[?([^\] ]+)\]?.+")
         self.default_regexes = [
-                                re.compile(r"[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{9}(?: \[ *[0-9\.]+ *[um]s\])? \[[^\]]+\] \[([^\]]+)\].+"),
-                                re.compile(r"[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2},[0-9]{3} \[[^\]]+\] ([^:]+):.+")
+                                re.compile(r"^[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{9}(?: \[ *[0-9\.]+ *[um]s\])? \[[^\]]+\] \[([^\]]+)\].+"),
+                                re.compile(r"^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}[\.,][0-9]{3} \[[^\]]+\] ([^:]+):.+")
                                 ]
         if pattern is not None:
             self.regex = re.compile(pattern)

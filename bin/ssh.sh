@@ -1,6 +1,7 @@
 #!/bin/bash
 source "${HOME}/dot-files/bash_common.sh"
 
+echo "$0" "$@"
 ## Wrap SSH to install ID keys.
 if [ $# -eq 1 ]; then
 	user="${1%%@*}"
@@ -26,7 +27,7 @@ if [ $# -eq 1 ]; then
 	command ssh ${target} 'test -d ${HOME}/dot-files/.git' || run rsync --delete -zpPXrogthlcm --exclude='.git' "${HOME}/dot-files/" ${target}:"${HOME}/dot-files/"
 	command ssh ${target} '${HOME}/dot-files/setup-home.sh'
 
-	install-dot-files.sh ${target} 2>&1 >>"$(setup_log)" &
+	install-dot-files.sh ${target} >>"$(setup_log)" 2>&1 &
 	disown -h
 	disown
 fi

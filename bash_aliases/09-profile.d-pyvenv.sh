@@ -42,12 +42,15 @@ function python_setup()
 {
 	venv_setup
 
-	## Install the things
-	command pip install -U pip 2>/dev/null
-	command pip install -U wheel setuptools 2>/dev/null
-	command pip install -U protobuf==2.5.0 twisted argparse 'lxml<3.4' invoke==0.13.0 docker-compose devpi pylint stashy >/dev/null 2>/dev/null
+	PYVENV_MARKER="${PYVENV_HOME}/.mark"
+	if [ ! -e "${PYVENV_MARKER}" ] || [ "$(command cat "${PYVENV_MARKER}" 2>/dev/null)" != "$(pyvenv_version)" ]; then
+		## Install the things
+		command pip install -U pip
+		command pip install -U wheel setuptools
+		command pip install -U protobuf==2.5.0 twisted argparse 'lxml<3.4' invoke==0.13.0 docker-compose devpi pylint stashy
+	fi
 }
-python_setup 2>&1 >>"$(setup_log)" &
+python_setup >>"$(setup_log)" 2>&1 &
 disown -h
 disown
 

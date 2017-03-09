@@ -11,7 +11,7 @@ fi
 
 echo "Updating dot-files..."
 # Can't pull here, you risk changing this file
-( cd "${HERE}" && git submodule init && git submodule sync && git submodule update ) 2>&1 >>"$(setup_log)" &
+( cd "${HERE}" && git submodule init && git submodule sync && git submodule update ) >>"$(setup_log)" 2>&1 &
 disown -h
 disown
 

@@ -99,6 +99,10 @@ function setup_log()
 		echo >>"${LOG_FILE}"
 		echo >>"${LOG_FILE}"
 	fi
-	echo "$(date '+%Y-%m-%d %H:%M:%S.%N') basename="'"'"$(basename "$0")"'"'" caller="'"'"$(caller 0)"'"' >>"${LOG_FILE}"
+	bname="$0"
+	if [ "${bname:0:1}" == "-" ]; then
+		bname="${bname:1}"
+	fi
+	echo "$(date '+%Y-%m-%d %H:%M:%S.%N') basename="'"'"$(basename "$bname")"'"'" caller="'"'"$(caller 0)"'"' >>"${LOG_FILE}"
 	echo "${LOG_FILE}"
 }

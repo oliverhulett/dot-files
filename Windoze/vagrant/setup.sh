@@ -35,12 +35,12 @@ fi
 echo "Cloning dot-files..."
 su -c "git clone --recursive ssh://git@git.comp.optiver.com:7999/~${USER}/dot-files.git ${HOME}/dot-files" ${USER} 2>/dev/null
 su -c "cd ${HOME}/dot-files && git pull" ${USER}
-su -c "${HOME}/dot-files/setup-home.sh" ${USER}
 
 source "${HOME}/dot-files/bash_common.sh"
+su -c "${HOME}/dot-files/setup-home.sh" ${USER} 2>&1 >>"$(setup_logs)"
 
 systemctl link "${HOME}/dot-files/backup.service"
-systemctl start backup.service
+systemctl start backup.service 2>&1 >>"$(setup_logs)"
 
 echo "General clean-ups..."
 rm -rf ${HOME}/Desktop 2>/dev/null
