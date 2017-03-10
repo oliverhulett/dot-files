@@ -8,6 +8,7 @@
 # for ssh logins, install and configure the libpam-umask package.
 #umask 022
 
+export PATH="${PATH:-/bin:/usr/bin}"
 source "${HOME}/dot-files/bash_common.sh"
 if reentered "${HOME}/.profile"; then
 	return 0
@@ -23,4 +24,3 @@ if [ -n "$BASH_VERSION" ]; then
 		source "$HOME/.bashrc"
 	fi
 fi
-

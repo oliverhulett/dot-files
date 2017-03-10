@@ -4,6 +4,7 @@
 # including some apparently interactive shells such as scp and rcp
 # that can't tolerate any output.
 
+export PATH="${PATH:-/bin:/usr/bin}"
 source "${HOME}/dot-files/bash_common.sh"
 if reentered "${HOME}/.bashrc" "${HOME}/.bash_aliases"/*; then
 	return 0

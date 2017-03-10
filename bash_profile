@@ -4,6 +4,7 @@
 # Modifying /etc/skel/.bash_profile directly will prevent
 # setup from updating it.
 
+export PATH="${PATH:-/bin:/usr/bin}"
 source "${HOME}/dot-files/bash_common.sh"
 if reentered "${HOME}/.bash_profile"; then
 	return 0
@@ -44,4 +45,3 @@ export LANGUAGE="en_AU:en"
 export LC_MESSAGES="en_AU.UTF-8"
 export LC_CTYPE="en_AU.UTF-8"
 export LC_COLLATE="en_AU.UTF-8"
-
