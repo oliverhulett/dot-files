@@ -6,6 +6,7 @@
 
 export PATH="${PATH:-/bin:/usr/bin}"
 source "${HOME}/dot-files/bash_common.sh"
+export PATH="$(append_path "/bin" "/usr/bin")"
 if reentered "${HOME}/.bashrc" "${HOME}/.bash_aliases"/*; then
 	return 0
 fi
