@@ -57,7 +57,7 @@ function echo_clean_path()
 function rm_path()
 {
 	for d in "$@"; do
-		d="$(readlink -f "$d")"
+		d="$(cd "$d" 2>/dev/null && pwd || echo "${d%%/}" | sed -re 's!/+!/!g')"
 		if [ -n "$d" ]; then
 			PATH="$(echo "${PATH}" | sed -re 's!(^|:)'"$d"'/?(:|$)!\1!g')"
 		fi
@@ -69,7 +69,7 @@ function rm_path()
 function prepend_path()
 {
 	for d in "$@"; do
-		d="$(readlink -f "$d")"
+		d="$(cd "$d" 2>/dev/null && pwd || echo "${d%%/}" | sed -re 's!/+!/!g')"
 		if [ -n "$d" ]; then
 			PATH="$d:$(echo "${PATH}" | sed -re 's!(^|:)'"$d"'/?(:|$)!\1!g')"
 		fi
@@ -81,7 +81,7 @@ function prepend_path()
 function append_path()
 {
 	for d in "$@"; do
-		d="$(readlink -f "$d")"
+		d="$(cd "$d" 2>/dev/null && pwd || echo "${d%%/}" | sed -re 's!/+!/!g')"
 		if [ -n "$d" ]; then
 			PATH="$(echo "${PATH}" | sed -re 's!(^|:)'"$d"'/?(:|$)!\2!g'):$d"
 		fi
