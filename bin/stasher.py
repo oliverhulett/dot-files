@@ -24,6 +24,11 @@ class Stashy(object):
         self._tag_names = {}
 
     def dump(self, project=None, repo=None):
+        if project is not None:
+            project = project.upper()
+        if repo is not None:
+            repo = repo.lower()
+
         if project is None:
             for p in self._project_keys:
                 print p
