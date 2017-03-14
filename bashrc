@@ -28,8 +28,8 @@ unalias edt 2>/dev/null
 function edt()
 {
 	vim +'silent! PluginInstall' +qall
-	log edt "$@"
 	vim "$@"
+	log "Command=edt Seconds=$(($SECONDS - $_timer)) Files={$@}"
 }
 
 export HISTCONTROL="ignoredups"

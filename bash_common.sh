@@ -4,6 +4,7 @@
 #DEBUG_BASHRC="${DEBUG_BASHRC:-*}"
 function source()
 {
+	log "source $@"
 	if [ -z "${DEBUG_BASHRC:+x}" ]; then
 		builtin source "$@"
 	else
@@ -37,6 +38,7 @@ function reentrance_check()
 		unset var guard name FILE
 		return 1
 	else
+		log "re-entered ${name}"
 		if [ -n "${DEBUG_BASHRC:+x}" ]; then
 			echo "$(date '+%T.%N') ${DEBUG_BASHRC} - re-entered ${name}"
 		fi
