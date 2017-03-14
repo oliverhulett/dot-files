@@ -24,7 +24,13 @@ fi
 export VISUAL=$(command which vim 2>/dev/null)
 export EDITOR=$VISUAL
 export PAGER=$(command which less 2>/dev/null)
-alias edt="vim +'silent! PluginInstall' +qall; vim"
+unalias edt 2>/dev/null
+function edt()
+{
+	vim +'silent! PluginInstall' +qall
+	log edt "$@"
+	vim "$@"
+}
 
 export HISTCONTROL="ignoredups"
 export HISTIGNORE="[   ]*:&:bg:fg:sh:exit:history"

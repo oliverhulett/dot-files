@@ -104,11 +104,22 @@ function callstack()
 	done
 }
 
-function tee_totaler()
+function _logfile()
 {
 	LOG_DIR="${HOME}/.setup-logs"
 	mkdir "${LOG_DIR}" 2>/dev/null
 	LOGFILE="${LOG_DIR}/$(date '+%Y%m%d')_$(whoami)_dot-files.log"
+	echo "${LOGFILE}"
+}
+
+function log()
+{
+	echo "$(date '+%Y-%m-%d %H:%M:%S') [$$] [$(basename "$0")] [LOG   ] $@" >>"$(_logfile)"
+}
+
+function tee_totaler()
+{
+	LOGFILE="$(_logfile)"
 
 	KEYS=
 	for k in "$@"; do
@@ -117,5 +128,5 @@ function tee_totaler()
 
 	tee -i >(awk --assign T="%Y-%m-%d %H:%M:%S${KEYS} " '{ print strftime(T) $0 ; fflush(stdout) }' >>"${LOGFILE}")
 }
-capture_output='declare -rx log_fd=3; exec 3> >(tee_totaler $$ "$(basename "$0")" "LOG   " >/dev/null 2>/dev/null); echo "$ $0 $@" >&${log_fd}; callstack >&${log_fd}; exec > >(tee_totaler $$ "$(basename "$0")" STDOUT 2>/dev/null); exec 2> >(tee_totaler $$ "$(basename "$0")" STDERR >&2);'
+capture_output='if [ -z "$log_fd" ]; then declare -x log_fd=3; exec 3> >(tee_totaler $$ "$(basename "$0")" "DEBUG " >/dev/null 2>/dev/null); echo "$ $0 $@" >&${log_fd}; callstack >&${log_fd}; exec > >(tee_totaler $$ "$(basename "$0")" STDOUT 2>/dev/null); exec 2> >(tee_totaler $$ "$(basename "$0")" STDERR >&2); trap "unset log_fd" EXIT; fi;'
 uncapture_output='exec >/dev/tty 2>/dev/tty'
