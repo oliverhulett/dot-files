@@ -1,5 +1,8 @@
 #!/bin/bash -i
 
+source "${HOME}/dot-files/bash_common.sh"
+eval "${capture_output}"
+
 SUBLIME_INSTALL="${HOME}/opt/sublime_text_3"
 proxy_setup
 

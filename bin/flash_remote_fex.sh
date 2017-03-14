@@ -1,5 +1,8 @@
 #!/bin/bash -e
 
+source "${HOME}/dot-files/bash_common.sh"
+eval "${capture_output}"
+
 if [ $# -ne 2 -o "$1" == "-h" -o "$1" == "-?" ]; then
 	echo 1>&2 "$(basename "$0") requires a bit-file image to flash and a remote server on which to flash it."
 	echo 1>&2 "$(basename "$0") <bitfile> <server>"

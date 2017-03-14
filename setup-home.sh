@@ -1,5 +1,6 @@
 #!/bin/bash
 source "${HOME}/dot-files/bash_common.sh"
+eval $capture_output
 
 HERE="$(cd "$(dirname "$0")" && pwd -P)"
 RELPATH="${HERE}/bin/relpath.sh"
@@ -11,9 +12,9 @@ fi
 
 echo "Updating dot-files..."
 # Can't pull here, you risk changing this file
-( cd "${HERE}" && git submodule init && git submodule sync && git submodule update ) >>"$(setup_log)" 2>&1 &
-disown -h
-disown
+( cd "${HERE}" && git submodule init && git submodule sync && git submodule update ) >&${log_fd} &
+disown -h 2>/dev/null
+disown 2>/dev/null
 
 if [ -f "${HERE}/crontab.$(hostname -s)" ]; then
 	echo "Installing crontab from ~/dot-files/crontab.$(hostname -s)..."
@@ -42,7 +43,7 @@ if [ -n "${DOTFILES}" ]; then
 		DEST="${HOME}/${TARGET}"
 		rm "${DEST}" 2>/dev/null
 		mkdir --parents "$(dirname "${DEST}")" 2>/dev/null
-		( cd "$(dirname "${DEST}")" && ln -sf "$(${RELPATH} . "${HERE}/${SRC}")" "$(basename "${DEST}")" )
+		( cd "$(dirname "${DEST}")" && ln -vsf "$(${RELPATH} . "${HERE}/${SRC}")" "$(basename "${DEST}")" ) >&${log_fd}
 	done <"${DOTFILES}"
 else
 	echo "No dot-files file found, not linking anything..."

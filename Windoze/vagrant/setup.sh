@@ -37,10 +37,11 @@ su -c "git clone --recursive ssh://git@git.comp.optiver.com:7999/~${USER}/dot-fi
 su -c "cd ${HOME}/dot-files && git pull" ${USER}
 
 source "${HOME}/dot-files/bash_common.sh"
-su -c "${HOME}/dot-files/setup-home.sh" ${USER} 2>&1 >>"$(setup_log)"
+eval $capture_output
+su -c "${HOME}/dot-files/setup-home.sh" ${USER}
 
 systemctl link "${HOME}/dot-files/backup.service"
-systemctl start backup.service 2>&1 >>"$(setup_log)"
+systemctl start backup.service
 
 echo "General clean-ups..."
 rm -rf ${HOME}/Desktop 2>/dev/null
@@ -68,7 +69,7 @@ echo "Installing some things I don't want to docker all the time..."
 		install -t /usr/local/bin drone && \
 		rm drone
 	)
-) 2>&1 >>"$(setup_log)" &
+)
 disown -r
 disown
 
@@ -82,7 +83,7 @@ echo "Restoring local installs and other backups..."
 	done
 	chmod +x ${HOME}/opt/eclipse/eclipse
 	chmod +x ${HOME}/opt/sublime_text_3/sublime_text
-) 2>&1 >>"$(setup_log)" &
+)
 disown -rh
 disown -r
 

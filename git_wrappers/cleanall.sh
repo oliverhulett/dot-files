@@ -1,5 +1,8 @@
 #!/bin/bash
 
+source "${HOME}/dot-files/bash_common.sh"
+eval "${capture_output}"
+
 function cleanempty()
 {
 	echo "Removing broken symlinks and empty directories."

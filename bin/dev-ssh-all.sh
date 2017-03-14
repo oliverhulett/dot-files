@@ -2,6 +2,9 @@
 #
 #	Run an SSH command on the development servers.
 #
+source "${HOME}/dot-files/bash_common.sh"
+eval "${capture_output}"
+
 declare -a DEV_SRVS=( $(ssh-ping.sh 2>/dev/null | sort -u) )
 
 trap wait EXIT

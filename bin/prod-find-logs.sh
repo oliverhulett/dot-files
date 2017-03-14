@@ -1,5 +1,8 @@
 #!/bin/bash
 
+source "${HOME}/dot-files/bash_common.sh"
+eval "${capture_output}"
+
 LOG_ARCHIVE_DIR="/media/log-archive/"
 if [ ! -d "${LOG_ARCHIVE_DIR}" ] || [ -z "$(command ls "${LOG_ARCHIVE_DIR}")" ]; then
 	## In case we're on central-archive...

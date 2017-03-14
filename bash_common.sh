@@ -90,19 +90,32 @@ function append_path()
 	echo_clean_path
 }
 
-function setup_log()
+function callstack()
+{
+	frame=${1:-0}
+	while caller $frame >/dev/null 2>/dev/null; do
+		set -- $(caller $frame)
+		line="$1"
+		shift
+		fn="$1"
+		shift
+		echo "frame=$frame caller=$fn line=$line file="'"'"$*"'"'
+		frame=$(($frame + 1))
+	done
+}
+
+function tee_totaler()
 {
 	LOG_DIR="${HOME}/.setup-logs"
 	mkdir "${LOG_DIR}" 2>/dev/null
-	LOG_FILE="${LOG_DIR}/$(date '+%Y%m%d')_$(whoami)_dot-files.log"
-	if [ -e "${LOG_FILE}" ]; then
-		echo >>"${LOG_FILE}"
-		echo >>"${LOG_FILE}"
-	fi
-	bname="$0"
-	if [ "${bname:0:1}" == "-" ]; then
-		bname="${bname:1}"
-	fi
-	echo "$(date '+%Y-%m-%d %H:%M:%S.%N') basename="'"'"$(basename "$bname")"'"'" caller="'"'"$(caller 0)"'"' >>"${LOG_FILE}"
-	echo "${LOG_FILE}"
+	LOGFILE="${LOG_DIR}/$(date '+%Y%m%d')_$(whoami)_dot-files.log"
+
+	KEYS=
+	for k in "$@"; do
+		KEYS="${KEYS} "'['"$k"']'
+	done
+
+	tee -i >(awk --assign T="%Y-%m-%d %H:%M:%S${KEYS} " '{ print strftime(T) $0 ; fflush(stdout) }' >>"${LOGFILE}")
 }
+capture_output='declare -rx log_fd=3; exec 3> >(tee_totaler $$ "$(basename "$0")" "LOG   " >/dev/null 2>/dev/null); echo "$ $0 $@" >&${log_fd}; callstack >&${log_fd}; exec > >(tee_totaler $$ "$(basename "$0")" STDOUT 2>/dev/null); exec 2> >(tee_totaler $$ "$(basename "$0")" STDERR >&2);'
+uncapture_output='exec >/dev/tty 2>/dev/tty'

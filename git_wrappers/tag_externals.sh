@@ -1,5 +1,8 @@
 #!/bin/bash
 
+source "${HOME}/dot-files/bash_common.sh"
+eval "${capture_output}"
+
 EXTERNALS="$(git ls-files '*externals.json' '*deps.json')"
 
 git pull --all

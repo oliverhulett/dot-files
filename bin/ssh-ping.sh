@@ -1,5 +1,8 @@
 #!/bin/bash
 
+source "${HOME}/dot-files/bash_common.sh"
+eval "${capture_output}"
+
 if [ "$1" == "-h" -o "$1" == "--help" -o "$1" == "-?" ]; then
 	echo "$(basename $0) [-v] [host...]"
 	echo "  Ping each of the hosts in ~/.ssh/known_hosts"

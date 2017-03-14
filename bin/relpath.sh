@@ -1,5 +1,8 @@
 #!/bin/bash
 
+source "${HOME}/dot-files/bash_common.sh"
+eval "${capture_output}"
+
 if [ $# -eq 1 ]; then
 	SRC="$(pwd)"
 else

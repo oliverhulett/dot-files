@@ -49,7 +49,7 @@ function set_local_paths()
 	shopt -u nullglob
 }
 
-set_local_paths
+set_local_paths >/dev/null 2>/dev/null
 
 # Test for an interactive shell.  There is no need to set anything
 # past this point for scp and rcp, and it's important to refrain from

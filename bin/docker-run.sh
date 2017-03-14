@@ -1,5 +1,8 @@
 #!/bin/bash -e
 
+source "${HOME}/dot-files/bash_common.sh"
+eval "${capture_output}"
+
 IMAGES="$( docker-list.sh | sort -u)"
 DOCKER_RUN_ARGS=()
 while ! echo "$IMAGES" | grep -qw "$1" 2>/dev/null >/dev/null; do

@@ -3,6 +3,9 @@
 #	Report on the system usage for each development server.
 #	Useful for getting the least loaded dev server.
 #
+source "${HOME}/dot-files/bash_common.sh"
+eval "${capture_output}"
+
 if [ $# -eq 0 ]; then
 	DEV_SRVS=( $(ssh-ping.sh 2>/dev/null | sort -u) )
 else

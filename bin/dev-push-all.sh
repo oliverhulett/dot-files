@@ -2,6 +2,9 @@
 #
 #	Push a list of files to the development servers.
 #
+source "${HOME}/dot-files/bash_common.sh"
+eval "${capture_output}"
+
 declare -a DEV_SRVS=
 
 declare -a DIRS SPLITS

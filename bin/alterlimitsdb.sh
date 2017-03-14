@@ -3,6 +3,9 @@
 #	Wrapper for the alterlimitsdb python module.
 #
 
+source "${HOME}/dot-files/bash_common.sh"
+eval "${capture_output}"
+
 if [ -z "$ALTERLIMITSDB_DIR" ]; then
 	export ALTERLIMITSDB_DIR="${HOME}/limits_system/limits_server/alterlimitsdb"
 fi

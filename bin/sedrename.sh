@@ -1,6 +1,9 @@
 #!/bin/bash
 # Renaming things for fun and profit.
 
+source "${HOME}/dot-files/bash_common.sh"
+eval "${capture_output}"
+
 pat=
 width=0
 declare -a args dirs

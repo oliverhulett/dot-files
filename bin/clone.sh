@@ -1,5 +1,8 @@
 #!/bin/bash
 
+source "${HOME}/dot-files/bash_common.sh"
+eval "${capture_output}"
+
 GIT_URL_BASE="ssh://git@git.comp.optiver.com:7999"
 REPO_DIR="${HOME}/repo"
 

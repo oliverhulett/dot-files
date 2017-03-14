@@ -1,5 +1,8 @@
 #!/bin/bash
 
+source "${HOME}/dot-files/bash_common.sh"
+eval "${capture_output}"
+
 for f in "$@"; do
 	mkdir --parents "$(dirname "$f")" >/dev/null 2>/dev/null || true
 done

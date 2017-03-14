@@ -38,19 +38,6 @@ function venv_setup()
 	( cd ${PYVENV_HOME}/bin && ln -sf ${PYVERSION} python 2>/dev/null )
 }
 
-function python_setup()
-{
-	venv_setup
-
-	## Install the things
-	command pip install -U pip
-	command pip install -U wheel setuptools
-	command pip install -U -r "${HOME}/dot-files/python_setup.txt"
-}
-python_setup >>"$(setup_log)" 2>&1 &
-disown -h
-disown
-
 alias python='venv_setup; command python'
 alias python26='venv_setup; command python26'
 alias python2.7='venv_setup; command python2.7'

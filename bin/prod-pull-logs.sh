@@ -3,6 +3,9 @@
 #	Pull logs from the log_archive.
 #
 
+source "${HOME}/dot-files/bash_common.sh"
+eval "${capture_output}"
+
 BASE_DIR="${HOME}/logs/"
 
 function usage()

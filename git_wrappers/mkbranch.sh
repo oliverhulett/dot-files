@@ -1,5 +1,8 @@
 #!/bin/bash
 
+source "${HOME}/dot-files/bash_common.sh"
+eval "${capture_output}"
+
 CURR_BRANCH="$(git branch --no-color | sed -nre 's/^\* //p')"
 CURR_DIR="$(basename "$(pwd)")"
 

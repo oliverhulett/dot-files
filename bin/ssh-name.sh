@@ -1,5 +1,8 @@
 #!/bin/bash
 
+source "${HOME}/dot-files/bash_common.sh"
+eval "${capture_output}"
+
 function testname()
 {
 	host="$(command ssh -o ConnectTimeout=2 -o PasswordAuthentication=no "${@}" hostname 2>/dev/null)"

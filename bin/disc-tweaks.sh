@@ -10,6 +10,9 @@
 ##	compiling source code from and writing object files to the spinning HDD partition, because that
 ##	is the partition with all the space.
 
+source "${HOME}/dot-files/bash_common.sh"
+eval "${capture_output}"
+
 function proc_set()
 {
 	if [ $# -eq 2 ]; then

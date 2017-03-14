@@ -3,6 +3,9 @@
 # Wrapper for `go get`
 #
 
+source "${HOME}/dot-files/bash_common.sh"
+eval "${capture_output}"
+
 export GOPATH="${GOTOOLS}"
 
 if ! echo "${HTTP_PROXY}" | grep -q "`whoami`" 2>/dev/null; then

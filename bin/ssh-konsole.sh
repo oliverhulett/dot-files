@@ -1,5 +1,8 @@
 #!/bin/bash
 
+source "${HOME}/dot-files/bash_common.sh"
+eval "${capture_output}"
+
 SSH="$(dirname "$0")/ssh.sh"
 SSH_NAME="$(dirname "$0")/ssh-name.sh"
 

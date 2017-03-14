@@ -1,5 +1,8 @@
 #!/bin/bash
 
+source "${HOME}/dot-files/bash_common.sh"
+eval "${capture_output}"
+
 for dir in "$@"; do
 	echo "$dir"
 	find "$dir" -xdev -type d -print0 | xargs -t0 -n4 nice ionice -c3 setfacl -d -m u::rwx,m:rwx

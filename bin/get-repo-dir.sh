@@ -1,5 +1,8 @@
 #!/bin/bash
 
+source "${HOME}/dot-files/bash_common.sh"
+eval "${capture_output}"
+
 set -- $(echo "$@" | tr '/' ' ')
 if [ $# -lt 1 ]; then
 	exit 1
