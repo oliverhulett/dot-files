@@ -1,9 +1,9 @@
 #!/bin/bash
 
-## Early exist to a generic editor for things that aren't commits.
 source "${HOME}/dot-files/bash_common.sh"
 eval "${capture_output}"
 
+## Early exist to a generic editor for things that aren't commits.
 if ! [ $# -eq 1 -a "$1" -ef .git/COMMIT_EDITMSG ]; then
 	$VISUAL "$@" || vim "$@"
 	exit
@@ -68,6 +68,7 @@ fi
 
 function special_vim()
 {
+	eval "${uncapture_output}"
 	vim -c "autocmd InsertLeave <buffer> let [c, l] = [getpos('.'), strlen(getline('.'))]" -c "autocmd InsertLeave <buffer> 1,!sed -re 's/^(${branch})?(.+)/${branch}\2/'" -c "autocmd InsertLeave <buffer> call setpos('.', c) | if l < strlen(getline('.')) | call setpos('.', [c[0], c[1], c[2] + ${#branch}, c[3]])" $startmode "$@"
 }
 

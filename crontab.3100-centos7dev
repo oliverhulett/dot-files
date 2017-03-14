@@ -32,4 +32,4 @@ MAILTO=olihul@optiver.com.au
 ## Python virtualenv should be refreshed regularly.
 @daily rm -rf "${HOME}/pyvenv"
 
-## Backed up at Tue Mar 14 00:00:01 AEDT 2017
+## Backed up at Tue Mar 14 17:44:49 AEDT 2017

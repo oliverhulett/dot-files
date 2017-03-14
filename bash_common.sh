@@ -128,5 +128,5 @@ function tee_totaler()
 
 	tee -i >(awk --assign T="%Y-%m-%d %H:%M:%S${KEYS} " '{ print strftime(T) $0 ; fflush(stdout) }' >>"${LOGFILE}")
 }
-capture_output='if [ -z "$log_fd" ]; then declare -x log_fd=3; exec 3> >(tee_totaler $$ "$(basename "$0")" "DEBUG " >/dev/null 2>/dev/null); echo "$ $0 $@" >&${log_fd}; callstack >&${log_fd}; exec > >(tee_totaler $$ "$(basename "$0")" STDOUT 2>/dev/null); exec 2> >(tee_totaler $$ "$(basename "$0")" STDERR >&2); trap "unset log_fd" EXIT; fi;'
+capture_output='if [ -z "$log_fd" ]; then declare -x log_fd=3; exec 3> >(tee_totaler $$ "$(basename "$0")" "DEBUG " >/dev/null 2>/dev/null); exec > >(tee_totaler $$ "$(basename "$0")" STDOUT 2>/dev/null); exec 2> >(tee_totaler $$ "$(basename "$0")" STDERR >&2); trap "unset log_fd" EXIT; fi; echo "$ $0 $@" >&${log_fd}; callstack >&${log_fd};'
 uncapture_output='exec >/dev/tty 2>/dev/tty'
