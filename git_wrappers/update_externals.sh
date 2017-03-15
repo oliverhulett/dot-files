@@ -15,7 +15,7 @@ EXTERNALS="$(git ls-files '*externals.json' '*deps.json')"
 find . -xdev -not \( -name '.git' -prune -or -name '.svn' -prune \) -name 'externals.json' | while read; do sed -re 's/git@git:7999/git@git.comp.optiver.com:7999/' "$REPLY" -i; done
 
 git pull --all
-git update 2>/dev/null >/dev/null
+git update 2>&${log_fd} >&${log_fd}
 
 echo
 echo "upgrading externals"

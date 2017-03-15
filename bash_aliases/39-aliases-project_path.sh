@@ -30,7 +30,7 @@ function get-project-root()
 unalias repo 2>/dev/null
 function repo()
 {
-	dir="$(get-repo-dir.sh "$@")"
+	dir="$(get-repo-dir.sh "$@" | head -n1)"
 	echo "$dir"
 	cd "$dir"
 }

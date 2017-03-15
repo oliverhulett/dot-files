@@ -19,4 +19,6 @@ fi
 branch="${1:-master}"
 shift
 shopt -s nullglob
-echo ${HOME}/repo/${proj}/${repo}/${branch}/"$(echo $* | tr ' ' '/')"
+for d in ${HOME}/repo/${proj}/${repo}/${branch}/"$(echo $* | tr ' ' '/')"; do
+	echo "$d"
+done

@@ -29,7 +29,7 @@ function edt()
 {
 	vim +'silent! PluginInstall' +qall
 	vim "$@"
-	log "Command=edt Seconds=$(($SECONDS - $_timer)) Files={$@}"
+	log "Command=edt Seconds=$(($SECONDS - $_timer)) CWD=$(pwd) Files={$@}"
 }
 
 export HISTCONTROL="ignoredups"

@@ -39,7 +39,6 @@ for dir in "${dirs[@]}"; do
 	for i in "${dir:-.}"/*; do
 		f="${dir:-.}/$(basename "$i" | sed -re "$pat")"
 		mkdir -p "$(dirname "$f")"
-		mv -v "$i" "$f" 2>/dev/null
+		mv -v "$i" "$f" 2>&${log_fd}
 	done
 done
-

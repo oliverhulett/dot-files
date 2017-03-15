@@ -34,10 +34,14 @@ fi
 
 echo "Cloning dot-files..."
 su -c "git clone --recursive ssh://git@git.comp.optiver.com:7999/~${USER}/dot-files.git ${HOME}/dot-files" ${USER} 2>/dev/null
-su -c "cd ${HOME}/dot-files && git pull" ${USER}
+su -c "cd ${HOME}/dot-files && git commit --allow-empty -aqm "'"Vagrant setup autocommit: $(date -R)\n$(git status --short)"'" && git pull" ${USER}
 
 source "${HOME}/dot-files/bash_common.sh"
 eval $capture_output
+if ! echo "${HTTP_PROXY}" | grep -q "${USER}" 2>/dev/null; then
+	source "${HOME}/dot-files/bash_aliases/19-env-proxy.sh" 2>/dev/null
+	proxy_setup -q >/dev/null 2>/dev/null
+fi
 su -c "${HOME}/dot-files/setup-home.sh" ${USER}
 
 systemctl link "${HOME}/dot-files/backup.service"
@@ -69,7 +73,7 @@ echo "Installing some things I don't want to docker all the time..."
 		install -t /usr/local/bin drone && \
 		rm drone
 	)
-)
+) >&${log_fd} 2>&${log_fd} &
 disown -r
 disown
 
@@ -83,7 +87,7 @@ echo "Restoring local installs and other backups..."
 	done
 	chmod +x ${HOME}/opt/eclipse/eclipse
 	chmod +x ${HOME}/opt/sublime_text_3/sublime_text
-)
+) >&${log_fd} 2>&${log_fd} &
 disown -rh
 disown -r
 

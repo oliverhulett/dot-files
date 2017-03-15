@@ -36,7 +36,7 @@ if [ -n "${DOTFILES}" ]; then
 	# Find and delete any links pointing to existing dot-files files.  They'll be re-added later.
 	# Prune the search of a bunch of directories we know to be large and not have links to dot-files files
 	PRUNE="-name repo -prune -o -name pyvenv -prune -o -name .conda -prune"
-	find "${HOME}" -xdev \( $PRUNE \) -o -type l -lname '*dot-files/*' -delete 2>/dev/null
+	find "${HOME}" -xdev \( $PRUNE \) -o -type l -lname '*dot-files/*' -print0 2>&${log_fd} | xargs -0 rm -v 2>&${log_fd} >&${log_fd}
 
 	## SRC is relative to $HERE.  TARGET is relative to $HOME
 	while read SRC TARGET; do

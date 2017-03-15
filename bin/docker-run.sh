@@ -36,13 +36,16 @@ if [ "$(md5sum /optiver/bin/dockerme | cut -d' ' -f1)" != "454f54d2f74f62f9a5189
 	md5sum /optiver/bin/dockerme
 fi
 
-for cmd in echo ""; do
-	$cmd dockerme -h `hostname` --cpu-shares=`nproc` --privileged --name=${NAME} \
-		-v /etc/sudo.conf:/etc/sudo.conf:ro -v /etc/sudoers:/etc/sudoers:ro -v /etc/sudoers.d:/etc/sudoers.d:ro -v /etc/pam.d:/etc/pam.d:ro -v /etc/localtime:/etc/localtime:ro \
-		--env-file=<(/usr/bin/env) -v "$TMP":"$TMP" --entrypoint="$TMP" \
-		"${DOCKER_RUN_ARGS[@]}" $IMAGE "$@"
+function run()
+{
+	echo "$@"
+	"$@" >/dev/tty 2>/dev/tty
 	echo
-done
+}
+run dockerme -h `hostname` --cpu-shares=`nproc` --privileged --name=${NAME} \
+	-v /etc/sudo.conf:/etc/sudo.conf:ro -v /etc/sudoers:/etc/sudoers:ro -v /etc/sudoers.d:/etc/sudoers.d:ro -v /etc/pam.d:/etc/pam.d:ro -v /etc/localtime:/etc/localtime:ro \
+	--env-file=<(/usr/bin/env) -v "$TMP":"$TMP" --entrypoint="$TMP" \
+	"${DOCKER_RUN_ARGS[@]}" $IMAGE "$@"
 
 if [ "$(md5sum /optiver/bin/dockerme | cut -d' ' -f1)" != "454f54d2f74f62f9a51894cc8c41ecc0" ]; then
 	echo "[WARN] /optiver/bin/dockerme has changed, you might have used the wrong docker command.  Last hash was: 454f54d2f74f62f9a51894cc8c41ecc0"

@@ -63,18 +63,20 @@ fi
 # echo DIRS = "${DIRS[@]}"
 # echo SPLITS = "${SPLITS[@]}"
 
+function run()
+{
+	echo "$@"
+	"$@"
+}
+
 function do_svr()
 {
 	srv="$1"
 	echo "Server: $srv  ============================================================================"
-	for cmd in echo ""; do
-		$cmd ssh ${USER}@${srv} "rm -v $(printf "'%s' " "${DIRS[@]}") 2>/dev/null; mkdir -pv $(printf "'%s' " "${DIRS[@]}")" 2>/dev/null
-	done
+	run ssh ${USER}@${srv} "rm -v $(printf "'%s' " "${DIRS[@]}") 2>/dev/null; mkdir -pv $(printf "'%s' " "${DIRS[@]}")" 2>&${log_fd}
 	for i in ${!DIRS[@]}; do
 		echo
-		for cmd in echo ""; do
-			$cmd rsync -zpPXrogthlcm ${RSYNC_ARG} ${SPLITS[$i]} ${USER}@${srv}:"'${DIRS[$i]}/'" || echo -e "\n\nFailed to push files to ${USER}@${srv}" >&2
-		done
+		run rsync -zpPXrogthlcm ${RSYNC_ARG} ${SPLITS[$i]} ${USER}@${srv}:"'${DIRS[$i]}/'" || echo -e "\n\nFailed to push files to ${USER}@${srv}" >&2
 	done
 	echo
 }
@@ -91,4 +93,3 @@ for srv in "${DEV_SRVS[@]}"; do
 	fi
 	do_svr "$srv"
 done
-

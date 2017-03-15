@@ -26,7 +26,7 @@ function venv_setup()
 
 	PYVENV_MARKER="${PYVENV_HOME}/.mark"
 	if [ ! -e "${PYVENV_MARKER}" ] || [ "$(command cat "${PYVENV_MARKER}" 2>/dev/null)" != "$(pyvenv_version)" ]; then
-		command ${VIRTUALENV} --no-site-packages -p /usr/bin/${PYVERSION} "$PYVENV_HOME" >/dev/null 2>/dev/null
+		command ${VIRTUALENV} --no-site-packages -p /usr/bin/${PYVERSION} "$PYVENV_HOME" >&${log_fd} 2>&${log_fd}
 		VIRTUAL_ENV_DISABLE_PROMPT=1 source "$PYVENV_HOME/bin/activate"
 
 		pyvenv_version >"${PYVENV_MARKER}"
@@ -34,8 +34,8 @@ function venv_setup()
 		## Need to export the path again, in-case activating the venv changed it.
 		export PATH="$(prepend_path "${PYVENV_HOME}/bin")"
 	fi
-	( cd ${PYVENV_HOME}/bin && ln -sf ${PYVERSION} python26 2>/dev/null )
-	( cd ${PYVENV_HOME}/bin && ln -sf ${PYVERSION} python 2>/dev/null )
+	( cd ${PYVENV_HOME}/bin && ln -sf ${PYVERSION} python26 2>&${log_fd} )
+	( cd ${PYVENV_HOME}/bin && ln -sf ${PYVERSION} python 2>&${log_fd} )
 }
 
 alias python='venv_setup; command python'

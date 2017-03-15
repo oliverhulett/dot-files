@@ -20,6 +20,6 @@ for srv in "${DEV_SRVS[@]}"; do
 		continue
 	fi
 	echo "Server: $srv  ============================================================================"
-	ssh ${USER}@${srv} "$@" 2>/dev/null &
+	ssh ${USER}@${srv} "$@" 2>&${log_fd} &
 	echo
 done

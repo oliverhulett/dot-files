@@ -5,7 +5,7 @@ eval "${capture_output}"
 
 function testname()
 {
-	host="$(command ssh -o ConnectTimeout=2 -o PasswordAuthentication=no "${@}" hostname 2>/dev/null)"
+	host="$(command ssh -o ConnectTimeout=2 -o PasswordAuthentication=no "${@}" hostname 2>&${log_fd})"
 	if [ -n "$host" ]; then
 		echo $host
 		exit 0

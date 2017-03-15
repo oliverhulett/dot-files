@@ -41,7 +41,7 @@ while len(files) > 0:
 EOF
 
 for d in "${EXTERNALS}"; do
-    python -m json.tool $d > /dev/null && echo "$(python -m json.tool $d)" > $d
+	python -m json.tool $d >&${log_fd} && echo "$(python -m json.tool $d)" > $d
 done
 
-git update 2>/dev/null >/dev/null
+git update 2>&${log_fd} >&${log_fd}

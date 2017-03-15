@@ -12,7 +12,7 @@ fi
 EXTERNALS="$(git ls-files '*externals.json' '*deps.json')"
 
 git pull --all
-git update 2>/dev/null >/dev/null
+git update 2>&${log_fd} >&${log_fd}
 
 echo
 python - ${EXTERNALS} <<EOF
@@ -62,4 +62,3 @@ git pin
 echo
 ## Unpin non-tags... (Will also update...)
 git unpin
-

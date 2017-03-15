@@ -12,7 +12,7 @@ fi
 ## Crontabs live in /var/spool/, so take a backup of this crontab on a separate partition.
 crontab -l >${HOME}/dot-files/crontab.$(hostname -s) && echo -e "\n## Backed up at `date`" >>${HOME}/dot-files/crontab.$(hostname -s)
 ## Save list of installed software.
-( rpm -qa; pip freeze ) | sort >${HOME}/dot-files/installed-software.txt
+( rpm -qa | sort; pip freeze | sort ) >${HOME}/dot-files/installed-software.txt
 ## Commit dot-files to git for extra backups.
 ( cd ${HOME}/dot-files && git commit --allow-empty -aqm "Autocommit: $(date -R)\n$(git status --short)" && git pullb && git push -q )
 ## Backup a small number of key system-wide configuration files.

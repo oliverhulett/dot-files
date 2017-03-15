@@ -3,7 +3,7 @@ function jsoncheck()
 {
 	for f in "$@"; do
 		echo -n "Validating '$f': "
-		python -m json.tool "$f" >/dev/null
+		python -m json.tool "$f" >&${log_fd}
 		if [ 0 -eq $? ]; then
 			echo "Good"
 		else
@@ -16,7 +16,7 @@ function jsoncheck()
 function jsonpretty()
 {
 	for f in "$@"; do
-		python -m json.tool "$f" >/dev/null && echo "$(python -m json.tool "$f")" >"$f"
+		python -m json.tool "$f" >&${log_fd} && echo "$(python -m json.tool "$f")" >"$f"
 	done
 }
 

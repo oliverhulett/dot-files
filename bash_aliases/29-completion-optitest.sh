@@ -1,6 +1,6 @@
-
-expand_optitest_job () 
-{ 
+# Command line completion for optitest
+expand_optitest_job ()
+{
 	unalias grep 2>/dev/null >/dev/null
 	cmd="${COMP_WORDS[@]:0:$COMP_CWORD}"
 	last="${COMP_WORDS[$(($COMP_CWORD - 1))]}"
@@ -15,13 +15,12 @@ expand_optitest_job ()
 	elif [ "${prefix:0:1}" == "-" ]; then
 		COMPREPLY=($(compgen -W "-h --help --junit --junitdir -l --list -v --verbose -c --config -j --jobs --version" -- "$prefix"))
 	else
-		tests="$($(echo $cmd | sed -e 's/ = /=/g') --list 2>/dev/null | sed -nre '/^Will run .+ tests.$/,$p' | sed '1d' | sort)"
+		tests="$($(echo $cmd | sed -e 's/ = /=/g') --list 2>&${log_fd} | sed -nre '/^Will run .+ tests.$/,$p' | sed '1d' | sort)"
 		COMPREPLY=($(compgen -W "$tests" -- "$prefix"))
 		if [ ${#COMPREPLY[@]} -eq 0 ]; then
-			COMPREPLY=($(compgen -W "$(echo "$tests" | grep "$prefix" 2>/dev/null)"))
+			COMPREPLY=($(compgen -W "$(echo "$tests" | grep "$prefix" 2>&${log_fd})"))
 		fi
 	fi
 }
 
 complete -o default -F expand_optitest_job optitest
-

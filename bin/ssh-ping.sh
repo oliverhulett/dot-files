@@ -22,7 +22,7 @@ fi
 
 declare -a FAILURES
 for svr in "$@"; do
-	command ssh -o ConnectTimeout=2 -o PasswordAuthentication=no $svr hostname 2>/dev/null || FAILURES[${#FAILURES[@]}]="$svr"
+	command ssh -o ConnectTimeout=2 -o PasswordAuthentication=no $svr hostname 2>&${log_fd} || FAILURES[${#FAILURES[@]}]="$svr"
 done
 
 function join()
@@ -36,6 +36,9 @@ if [ "$VERBOSE" == "yes" ]; then
 	echo
 	echo "${#FAILURES[@]} Failure(s)"
 	echo 'Remove failed hosts with `sed -e '"'/^($(join "${FAILURES[@]}"))/d'"' ~/.ssh/known_hosts -i`'
+else
+	log "${#FAILURES[@]} Failure(s)"
+	log 'Remove failed hosts with `sed -e '"'/^($(join "${FAILURES[@]}"))/d'"' ~/.ssh/known_hosts -i`'
 fi
 
 exit ${#FAILURES[@]}
