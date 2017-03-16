@@ -1,0 +1,7 @@
+ - To get output to go to the capture log but not to the terminal, we have to redirect to ${log_fd} rather than the more natural /dev/null.  Is that a bit shit, or is it nice and explicit and the way it should be?
+ - uncapture_output...
+    - Doesn't work, or does it?
+      - Some concerns that colours weren't working, but they appear to be.  It's going to be dependent on how the application determines tty, isn't it?
+        - gtest - yes
+        - jq - no?
+      - Can we better emulate a tty?  Can we try reading from /dev/tty instead of re-directing?

@@ -49,10 +49,8 @@ execute ':silent ! stty -ixoff'
 execute ':silent ! stty -ixon'
 
 " Shortcut to save from anywhere
-nmap <c-s> :w<CR>
 nmap <c-w> :w<CR>
 " From visual mode, restore selection
-vmap <c-s> <Esc><c-s>gv
 vmap <c-w> <Esc><c-s>gv
 " But from insert mode, don't return to insert mode
 imap <c-s> <Esc><c-s>
@@ -81,12 +79,23 @@ set nobackup
 set nowb
 set noswapfile
 set noautoindent
+set spell spelllang=en_gb
 autocmd FileType * setlocal formatoptions-=t
 autocmd FileType * setlocal formatoptions-=o
 autocmd FileType * setlocal formatoptions-=c
 autocmd FileType * setlocal formatoptions-=a
 autocmd FileType * setlocal formatoptions+=q
 autocmd FileType * setlocal formatoptions+=n
+
+" Shortcut keys to turn on spell-checking
+nnoremap <c-l> :setlocal spell! spelllang=en_gb<cr>
+imap <c-l> <c-g>u<Esc>[s
+nmap <leader>l ]s
+nmap <leader>s z=<c-g>u
+nnoremap <leader>a :spellrepall<cr>
+
+" No spell-check patterns
+syn match SingleChar '\<\A*\a\A*\>' contains=@NoSpell
 
 " Don't remember highlighting.
 set viminfo^=h

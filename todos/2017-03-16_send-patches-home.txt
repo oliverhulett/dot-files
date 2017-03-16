@@ -1,0 +1,3 @@
+I want to sync (only some) files from dot-files at work to dot-files at home.
+Can't be completely automatic (at the moment) because things are differently pathed and the requirements are not identical.
+I'm thinking about `git send-email` and/or `git format-patch` and a list of files to sync.  E-mail the patches to myself and then apply them (selectively) at home.

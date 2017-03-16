@@ -1,7 +1,7 @@
 #!/bin/bash
 
 source "${HOME}/dot-files/bash_common.sh"
-eval "${capture_output}"
+eval "${setup_log_fd}"
 
 ## Early exist to a generic editor for things that aren't commits.
 if ! [ $# -eq 1 -a "$1" -ef .git/COMMIT_EDITMSG ]; then

@@ -51,9 +51,9 @@ Most of the time it won't even work until you fetch the project's externals.  Bu
 ./git_setup.py or submodules? submodules --recursive? Do you need to install something else to build or run the project?  Or build or run in a Docker container?  Which one?
 Which build.py flags are expected to work?
 
-Projects should be self contained and self describing 
-I don't want to have to read 1000 lines of instructions or install 100 dependencies to use your project 
-I also don't want to be constrained by the software that is already installed on our standard image when developing a project that others will use.  That constrains innovation and experimentation 
+Projects should be self contained and self describing
+I don't want to have to read 1000 lines of instructions or install 100 dependencies to use your project
+I also don't want to be constrained by the software that is already installed on our standard image when developing a project that others will use.  That constrains innovation and experimentation
 
 Git clone and build.py -h should be enough to get me started.
 Error messages from build.py should make it obvious what I'm missing too that is another topic for another day.

@@ -106,6 +106,23 @@ function callstack()
 	done
 }
 
+function setuplogs()
+{
+	WHEN=
+	WHO="$(whoami)"
+	for a in "$@"; do
+		if echo "$a" | grep -vqE '^[0-9]+$' >/dev/null 2>/dev/null && id -u "$a" >/dev/null 2>/dev/null; then
+			WHO="$a"
+		else
+			WHEN="$WHEN $a"
+		fi
+	done
+	if [ -z "$WHEN" ]; then
+		WHEN="today"
+	fi
+	less "${HOME}/.setup-logs/$(date --date="${WHEN}" '+%Y%m%d')_${WHO}_dot-files.log"
+}
+
 function _logfile()
 {
 	LOG_DIR="${HOME}/.setup-logs"
@@ -130,16 +147,32 @@ function tee_totaler()
 
 	tee -i >(awk --assign T="%Y-%m-%d %H:%M:%S${KEYS} " '{ print strftime(T) $0 ; fflush(stdout) }' >>"${LOGFILE}")
 }
-capture_output='{
+_hidex='setx=n; [[ $- == *x* ]] && setx=y; set +x;'
+_restorex='[ ${setx:-n} == y ] && set -x;'
+_redirect='{
+	if [ -z "$_redirected" ]; then
+		exec > >(tee_totaler $$ "$(basename "$0")" STDOUT 2>/dev/null);
+		exec 2> >(tee_totaler $$ "$(basename "$0")" STDERR >&2);
+		_redirected="true";
+		trap "unset _redirected" EXIT;
+	fi;
+}'
+setup_log_fd='{
+	eval "$_hidex" 2>/dev/null
 	if [ -z "$log_fd" ]; then
 		declare -x log_fd=3;
 		exec 3> >(tee_totaler $$ "$(basename "$0")" "DEBUG " >/dev/null 2>/dev/null);
-		exec > >(tee_totaler $$ "$(basename "$0")" STDOUT 2>/dev/null);
-		exec 2> >(tee_totaler $$ "$(basename "$0")" STDERR >&2);
 		trap "unset log_fd" EXIT;
 	fi;
 	echo "$ $0 $@" >&${log_fd};
-	trap "echo \$ $0 $*\; Returned=\$? >&${log_fd}" EXIT;
+	trap "echo '"'"'\$ $0 $*;'"'"' Returned=\$? >&${log_fd}" EXIT;
 	callstack >&${log_fd};
+	eval "$_restorex"
 }'
-uncapture_output='exec >/dev/tty 2>/dev/tty'
+capture_output='{
+	eval "$_hidex" 2>/dev/null
+	eval "$_redirect"
+	eval "$setup_log_fd"
+	eval "$_restorex"
+}'
+uncapture_output='{ unset _redirected; exec >/dev/tty 2>/dev/tty }'

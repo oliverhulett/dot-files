@@ -1,12 +1,12 @@
-speed up install-dot-files/ssh login
 share ssh-konsole command
  -> share ssh command
   -> share install-dot-files command
    -> share setup_home command
 Removing passwords...
-patterns therein
+ -> patterns therein
 share dot-files <- How to document parts?  blog post, readme
  - Enforce permissions, read only
 share clone & repo commands
- -> (write and) share command completion for clone
+ -> share command completion for clone
   -> (write and) share stashy and stash tools
+   -> (write and) share optic tools

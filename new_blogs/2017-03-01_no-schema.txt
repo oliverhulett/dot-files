@@ -4,11 +4,11 @@ A schema says that we know what our data should look like.  We know what questio
 I would argue that in many cases that doesn't hold at Optiver.  At the very least as the time progresses and our trading environment and methods change the questions we want to answer change.  A schema forces us to update the data producing applications before we can answer the new questions.
 Realistically we actually spend a lot of time massaging our current schema to answer the new questions, because the lead time for producing data to match a new schema is too slow.  So we find ourselves in a situation where we're massaging data into a schema on the producing side, and then massaging it again before we can run the reports or answer the questions we want to answer.
 If we're going to be massaging data at the consuming side anyway, why bother massaging it into a schema at all at the producing side, when we should be spending our efforts trading instead?
-Another advantage of not having a schema, is that it lowers the requirements to writing new data producers.  New producers only have to match the data-interchange format, not the schema as well.  The burden of symantic meaning is shifted to the consumer
+Another advantage of not having a schema, is that it lowers the requirements to writing new data producers.  New producers only have to match the data-interchange format, not the schema as well.  The burden of semantic meaning is shifted to the consumer
 
 
 
-Annectode:
+Anecdote:
 I wanted to add some usage statistics gathering to build.py.  Turns out Gareth Jones had already started doing so.  His approach was to encode usage in a graphite path.
 Because he was trying to re-use an existing schema, he has hit on a solution that gathers much less information, is space inefficient, and still requires massaging on the consuming side to generate a useful report.
 
@@ -16,7 +16,7 @@ I would have had build tool gather:
  - usage stats on user, machine, cmdline, git remote, git branch, git hash, task(s), success (global & per task), error code, execution summary, start time, end time, cpu/memory/disk usage stats, docker image details, host os details, invoke version, invocations version
  - report some, json dump all
  - json dump to usage file, periodic upload (somewhere), accumulate and generate reports
- - report on frequency by projet, flags/tasks, style (bdp vs invoke), versions (invocations and invoke), success, error code, execution time
+ - report on frequency by project, flags/tasks, style (bdp vs invoke), versions (invocations and invoke), success, error code, execution time
 
 Instead we got:
 +digraph {

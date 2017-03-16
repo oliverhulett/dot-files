@@ -1,0 +1,5 @@
+`less -+F` doesn't work when using ~/.lessfilter.
+Likewise 'F' from within less.
+
+ - Is it ~/.lessfilter at fault or /usr/bin/lesspipe.sh?  If the former, the latter may suggest how to make it work right.
+ - Should we try using an input pre-processor (and an input post-processor) instead of an input pipe?  See LESSOPEN="|..." vs LESSOPEN=||..."

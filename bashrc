@@ -152,7 +152,7 @@ function _prompt_command()
 {
 	local _last_exit_status=$?
 
-	setx="n"
+	local setx="n"
 	if [[ $- == *x* ]]; then
 		setx="y"
 	fi

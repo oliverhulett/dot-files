@@ -1,7 +1,8 @@
-#!/bin/bash -e
+#!/bin/bash
 
 source "${HOME}/dot-files/bash_common.sh"
 eval "${capture_output}"
+source "${HOME}/dot-files/bash_aliases/39-aliases-opti_dev_aliases.sh"
 
 IMAGES="$( docker-list.sh | sort -u)"
 DOCKER_RUN_ARGS=()
@@ -31,10 +32,7 @@ command cat >"$TMP" <<-EOF
 EOF
 chmod u+x "$TMP"
 
-if [ "$(md5sum /optiver/bin/dockerme | cut -d' ' -f1)" != "454f54d2f74f62f9a51894cc8c41ecc0" ]; then
-	echo "[WARN] /optiver/bin/dockerme has changed, you might have the wrong docker command.  Last hash was:  454f54d2f74f62f9a51894cc8c41ecc0"
-	md5sum /optiver/bin/dockerme
-fi
+proxy_exe "/optiver/bin/dockerme" "e377e9746adfa1f2d28b394e31e5f6e5"
 
 function run()
 {
@@ -47,7 +45,4 @@ run dockerme -h `hostname` --cpu-shares=`nproc` --privileged --name=${NAME} \
 	--env-file=<(/usr/bin/env) -v "$TMP":"$TMP" --entrypoint="$TMP" \
 	"${DOCKER_RUN_ARGS[@]}" $IMAGE "$@"
 
-if [ "$(md5sum /optiver/bin/dockerme | cut -d' ' -f1)" != "454f54d2f74f62f9a51894cc8c41ecc0" ]; then
-	echo "[WARN] /optiver/bin/dockerme has changed, you might have used the wrong docker command.  Last hash was: 454f54d2f74f62f9a51894cc8c41ecc0"
-	md5sum /optiver/bin/dockerme
-fi
+proxy_exe "/optiver/bin/dockerme" "e377e9746adfa1f2d28b394e31e5f6e5"

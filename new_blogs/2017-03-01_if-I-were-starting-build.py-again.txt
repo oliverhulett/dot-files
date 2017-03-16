@@ -1,10 +1,10 @@
 I asked Sam Gibson: If you were starting build.py again, would you still use invoke?
- - Yes, but would also look at using Buck (Facebook build tool) or Bazel (Goolge build tool) instead.
-The problems with Buck and Bazel is that they would replace CMake, which would require coordination accross all of our C++ projects.  We would also have to come up with something to do the same job(s) for python/GO/...
+ - Yes, but would also look at using Buck (Facebook build tool) or Bazel (Google build tool) instead.
+The problems with Buck and Bazel is that they would replace CMake, which would require coordination across all of our C++ projects.  We would also have to come up with something to do the same job(s) for python/GO/...
 
 I asked Rick Grundy: The exchange_sim project's build.py launches docker containers to run tasks (as opposed to requiring e.g. `cc-env ./build.py`), would you do that again?
- - Yes.  But; The prefix makes it easier to do ad-hoc things locally inside the container.  I tend to use build.py only for pre-commit and CI builds, and have all my "dev tools" installed natively on my local VM.  Prefixing is nice because it slips dockerisation into people's day-to-day workflow so they never need to install anything
-Sounds like an un-wrapped entry point has some nice advantages, but there is still a need to do ad-hoc things (inside and outside the containers) and a need to run build.py tasks without launching the contianer (or in a custom container)
+ - Yes.  But; The prefix makes it easier to do ad-hoc things locally inside the container.  I tend to use build.py only for pre-commit and CI builds, and have all my "dev tools" installed natively on my local VM.  Prefixing is nice because it slips dockerisation into people's day-to-day work-flow so they never need to install anything
+Sounds like an un-wrapped entry point has some nice advantages, but there is still a need to do ad-hoc things (inside and outside the containers) and a need to run build.py tasks without launching the container (or in a custom container)
 
 Peter Koller shared a document from Google about their software engineering management and practices, which had a sentence I'd like to highlight.
 https://wiki.site.optiver.com/display/~petkol/2017/02/14/SW+Engineering+@+Google?preview=%2F121836091%2F121836084%2FSW+Engineering+at+Google.pdf
@@ -13,25 +13,25 @@ SW Eng @ Google
 
 
 We're looking for a self contained, self describing development tool.
- - Commonality of process accross languages, dependency management systems, etc.
+ - Commonality of process across languages, dependency management systems, etc.
  - Ability to bootstrap itself.
- - Reproducability of build artifacts.
+ - Reproducibility of build artefacts.
  - Extensible with per-project customisations.
 
- 
-On comminality of process:
+
+On commonality of process:
  - See zero-barrier-to-entry blog.  Process should be; `git clone && build.py` regardless of language, dependency management system, docker requirements, etc.
 
-On repoducability of build artifacts:
+On reproducibility of build artefacts:
  - As far as feasible, checking out a tag from last year, and running build.py should produce the same binary that it did last year.
 
 On Extensible with per-project customisations:
- - The tool builder cannot possibly predict what tasks make sence for all the projects, so don't try.  Instead provide a framework to add/define tasks and a library of functionality to do common stuff.
+ - The tool builder cannot possibly predict what tasks make sense for all the projects, so don't try.  Instead provide a framework to add/define tasks and a library of functionality to do common stuff.
 
 On ability to bootstrap itself:
  - Some common/core functionality may be installed, but language and dependency management system specific stuff needs to be installed or at least selected when those projects are in use
  - Extensibility means the tool must be able to discover tasks in the current project
- - Reproducability means that the tool must be able to discover the right versions of things to match the tag it is currently building.
+ - Reproducibility means that the tool must be able to discover the right versions of things to match the tag it is currently building.
 
 
 If I were doing invocations-cpp again...
@@ -40,7 +40,7 @@ If I were doing invocations-cpp again...
    - Less (none) magic around passing args to pre/post tasks.
  - Must have a well defined ctx['cpp'] schema.
  - Keep "task" for thing seen by invoke, need new terminology for the composable parts that make up a task:
-   - e.g. "build application" and "run unit tests" would be tasks in the invoke sence, they show up in the -l listing, we can ./build.py unit-tests, etc.
+   - e.g. "build application" and "run unit tests" would be tasks in the invoke sense, they show up in the -l listing, we can ./build.py unit-tests, etc.
    - "build application" is composed of cmake && make && link files && validate XML.  These composable parts need another name and should live in libraries.
 
 build.py tasks and docker images:
@@ -51,14 +51,14 @@ build.py tasks and docker images:
    - Option 1 is "magic"
    - Option 2 allows docker detection to go wrong and create a docker run bomb
    - Option 2 allows docker-in-docker
-   - Option 2 with fallback to try running locally if docker fails for some reason
+   - Option 2 with fall-back to try running locally if docker fails for some reason
  - Flags to report on docker containers that would be used
 
 Build tool gathers usage stats:
  - user, machine, cmdline, git remote, git branch, git hash, task(s), success (global & per task), error code, execution summary, start time, end time, cpu/memory/disk usage stats, docker image details, host os details, invoke version, invocations version
  - report some, json dump all
  - json dump to usage file, periodic upload (somewhere), accumulate and generate reports
- - report on frequency by projet, flags/tasks, style (bdp vs invoke), versions (invocations and invoke), success, error code, execution time
+ - report on frequency by project, flags/tasks, style (bdp vs invoke), versions (invocations and invoke), success, error code, execution time
 Can apply to common build.py as well
 
 
@@ -77,7 +77,7 @@ Process is now
 Clone --recursive ( hint or build.py does it for you if you forget)
 Build.py
 
-This version has 
+This version has
 Build.py --interactive
 
 So you can experiment and do stuff that build.py doesn't do.

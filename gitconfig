@@ -12,6 +12,7 @@
 	refs = for-each-ref refs/remotes/origin
 	who = "!f() { git for-each-ref --sort=-authorname --format='%(authorname)#%(committerdate)#%(refname)#%(subject)' refs/remotes/origin/ \"$@\" | column -ts'#' -o'    '; }; f"
 	when = "!f() { git for-each-ref --sort=-committerdate --format='%(authorname)#%(committerdate)#%(refname)#%(subject)' refs/remotes/origin/ \"$@\" | column -ts'#' -o'    '; }; f"
+	mine = "!f() { git for-each-ref --sort=-committerdate --format='#%(committerdate)#%(refname)#%(subject)' refs/remotes/origin/$(whoami) \"$@\" | column -ts'#' -o'    '; }; f"
 	tags = "!f() { if [ $# -eq 0 ]; then set -- 5; fi; count=\"--lines=$1\"; if [ \"$1\" == \"-a\" -o \"$1\" == \"--all\" ]; then count=\"--lines=-0\"; fi; git for-each-ref --format='%(taggerdate:raw)%(committerdate:raw)#%(taggerdate)%(committerdate)#%(refname:short)#%(authorname)%(*authorname)#%(subject)' refs/tags | sort -rn | cut -d'#' -f2- | head $count | column -ts'#' -o'    '; }; f"
 
 	rmtag = "!f() { for t in \"$@\"; do git tag -d $t && git push origin :refs/tags/$t; done; }; f"
@@ -21,6 +22,8 @@
 	new = "!f() { ~/.git_wrappers/new.sh \"$@\"; }; cd \"$GIT_PREFIX\" && f"
 	update = "!f() { ~/.git_wrappers/update.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 	ignore = "!f() { for i in \"$@\"; do echo \"$i\" >>.gitignore; done; echo \"$(sort -u .gitignore)\" >.gitignore; sed -re '/^$/d' -i .gitignore; git add .gitignore; }; cd \"$GIT_PREFIX\" && f"
+	added = "!f() { : git log ; follow=; if [ $# -le 1 ]; then follow=\"--follow\"; fi; git log $follow --diff-filter=A --find-renames=40% -- \"$@\"; }; cd \"$GIT_PREFIX\" && f"
+
 	pin = "!f() { ~/.git_wrappers/pin_externals.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 	unpin = "!f() { ~/.git_wrappers/unpin_externals.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 	upgrade = "!f() { ~/.git_wrappers/update_externals.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX

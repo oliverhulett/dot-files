@@ -1,6 +1,6 @@
 #!/bin/bash
 source "${HOME}/dot-files/bash_common.sh"
-eval $capture_output
+eval "${capture_output}"
 
 HERE="$(cd "$(dirname "$0")" && pwd -P)"
 RELPATH="${HERE}/bin/relpath.sh"
