@@ -1,7 +1,6 @@
 #!/bin/bash
 
-source "${HOME}/dot-files/bash_common.sh"
-eval "${capture_output}"
+source "${HOME}/dot-files/bash_common.sh" 2>/dev/null && eval "${capture_output}" || true
 
 if [ $# -eq 1 ]; then
 	SRC="$(pwd)"

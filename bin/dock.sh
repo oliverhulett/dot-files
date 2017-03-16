@@ -1,7 +1,6 @@
 #!/bin/bash
 
-source "${HOME}/dot-files/bash_common.sh"
-eval "${capture_output}"
+source "${HOME}/dot-files/bash_common.sh" 2>/dev/null && eval "${capture_output}" || true
 
 if [ $# -eq 0 ]; then
 	set -- --interactive
@@ -12,4 +11,10 @@ if ! echo "${HTTP_PROXY}" | grep -q "`whoami`" 2>/dev/null; then
 	proxy_setup
 fi
 
-$(dirname $0)/../bootstrap/bootstrap_docker_build.py --bootstrap-docker-image="$(dirname $0)/../images/c7/Dockerfile" "$@"
+function run()
+{
+	echo "$@"
+	"$@" >/dev/tty 2>/dev/tty
+	echo
+}
+run $(dirname $0)/../bootstrap/bootstrap_docker_build.py --bootstrap-docker-image="$(dirname $0)/../images/c7/Dockerfile" "$@"

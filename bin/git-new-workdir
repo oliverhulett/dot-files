@@ -1,4 +1,6 @@
-#!/bin/sh
+#!/bin/bash
+
+source "${HOME}/dot-files/bash_common.sh" 2>/dev/null && eval "${capture_output}" || true
 
 usage () {
 	echo "usage:" $@

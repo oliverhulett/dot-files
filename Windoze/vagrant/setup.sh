@@ -68,6 +68,8 @@ echo "Installing some things I don't want to docker all the time..."
 		cmake ccache distcc protobuf protobuf-c protobuf-python protobuf-compiler valgrind clang-devel clang clang-analyzer \
 		wireshark
 
+	PIP_CONFIG_FILE="${HOME}/dot-files/pip.conf pip install pygments
+
 	( cd /tmp && \
 		curl http://downloads.drone.io/release/linux/amd64/drone.tar.gz | tar zx && \
 		install -t /usr/local/bin drone && \

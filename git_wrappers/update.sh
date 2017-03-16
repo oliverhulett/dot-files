@@ -1,7 +1,6 @@
 #!/bin/bash -e
 
-source "${HOME}/dot-files/bash_common.sh"
-eval "${capture_output}"
+source "${HOME}/dot-files/bash_common.sh" 2>/dev/null && eval "${capture_output}" || true
 
 ## Old versions of git play with the path.  Old versions of git are correlated with old versions of Centos, which means old versions of python.
 ## If we need a python venv in out bash setup, assume we need it here too.

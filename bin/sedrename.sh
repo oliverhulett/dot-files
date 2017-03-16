@@ -1,8 +1,7 @@
 #!/bin/bash
 # Renaming things for fun and profit.
 
-source "${HOME}/dot-files/bash_common.sh"
-eval "${capture_output}"
+source "${HOME}/dot-files/bash_common.sh" 2>/dev/null && eval "${capture_output}" || true
 
 function print_help()
 {

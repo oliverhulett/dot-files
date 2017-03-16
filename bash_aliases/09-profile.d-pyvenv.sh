@@ -22,6 +22,7 @@ done
 
 function venv_setup()
 {
+	source "${HOME}/dot-files/bash_common.sh" && eval "${capture_output}" || true
 	PYVERSION=python2.7
 
 	PYVENV_MARKER="${PYVENV_HOME}/.mark"
@@ -34,11 +35,12 @@ function venv_setup()
 		## Need to export the path again, in-case activating the venv changed it.
 		export PATH="$(prepend_path "${PYVENV_HOME}/bin")"
 	fi
-	( cd ${PYVENV_HOME}/bin && ln -sf ${PYVERSION} python26 2>&${log_fd} )
-	( cd ${PYVENV_HOME}/bin && ln -sf ${PYVERSION} python 2>&${log_fd} )
+	( cd ${PYVENV_HOME}/bin && ln -vsf ${PYVERSION} python26 >&${log_fd} 2>&${log_fd} )
+	( cd ${PYVENV_HOME}/bin && ln -vsf ${PYVERSION} python >&${log_fd} 2>&${log_fd} )
+	eval "${uncapture_output}"
 }
 
 alias python='venv_setup; command python'
 alias python26='venv_setup; command python26'
 alias python2.7='venv_setup; command python2.7'
-alias pip='venv_setup; proxy_setup; command pip'
+alias pip='venv_setup; command pip'

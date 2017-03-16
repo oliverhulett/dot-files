@@ -147,8 +147,9 @@ function tee_totaler()
 
 	tee -i >(awk --assign T="%Y-%m-%d %H:%M:%S${KEYS} " '{ print strftime(T) $0 ; fflush(stdout) }' >>"${LOGFILE}")
 }
-_hidex='setx=n; [[ $- == *x* ]] && setx=y; set +x;'
-_restorex='[ ${setx:-n} == y ] && set -x;'
+_hidex='_setx=n; [[ $- == *x* ]] && _setx=y; set +x;'
+eval "${_hidex}"
+_restorex='[ ${_setx:-n} == y ] && set -x; unset _setx;'
 _redirect='{
 	if [ -z "$_redirected" ]; then
 		exec > >(tee_totaler $$ "$(basename "$0")" STDOUT 2>/dev/null);
@@ -175,4 +176,5 @@ capture_output='{
 	eval "$setup_log_fd"
 	eval "$_restorex"
 }'
-uncapture_output='{ unset _redirected; exec >/dev/tty 2>/dev/tty }'
+uncapture_output='{ unset _redirected; exec >/dev/tty 2>/dev/tty; }'
+eval "${_restorex}"

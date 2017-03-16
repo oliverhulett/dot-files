@@ -1,7 +1,6 @@
 #!/bin/bash
 
-source "${HOME}/dot-files/bash_common.sh"
-eval "${setup_log_fd}"
+source "${HOME}/dot-files/bash_common.sh" 2>/dev/null && eval "${setup_log_fd}" || true
 
 ## Early exist to a generic editor for things that aren't commits.
 if ! [ $# -eq 1 -a "$1" -ef .git/COMMIT_EDITMSG ]; then

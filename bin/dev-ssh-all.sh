@@ -2,8 +2,7 @@
 #
 #	Run an SSH command on the development servers.
 #
-source "${HOME}/dot-files/bash_common.sh"
-eval "${capture_output}"
+source "${HOME}/dot-files/bash_common.sh" 2>/dev/null && eval "${capture_output}" || true
 
 declare -a DEV_SRVS=( $(ssh-ping.sh 2>/dev/null | sort -u) )
 

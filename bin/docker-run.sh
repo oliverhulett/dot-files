@@ -1,7 +1,6 @@
 #!/bin/bash
 
-source "${HOME}/dot-files/bash_common.sh"
-eval "${capture_output}"
+source "${HOME}/dot-files/bash_common.sh" 2>/dev/null && eval "${capture_output}" || true
 source "${HOME}/dot-files/bash_aliases/39-aliases-opti_dev_aliases.sh"
 
 IMAGES="$( docker-list.sh | sort -u)"

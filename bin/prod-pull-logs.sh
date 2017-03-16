@@ -3,8 +3,7 @@
 #	Pull logs from the log_archive.
 #
 
-source "${HOME}/dot-files/bash_common.sh"
-eval "${capture_output}"
+source "${HOME}/dot-files/bash_common.sh" 2>/dev/null && eval "${capture_output}" || true
 
 BASE_DIR="${HOME}/logs/"
 

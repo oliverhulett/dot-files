@@ -51,10 +51,10 @@ execute ':silent ! stty -ixon'
 " Shortcut to save from anywhere
 nmap <c-w> :w<CR>
 " From visual mode, restore selection
-vmap <c-w> <Esc><c-s>gv
+vmap <c-w> <Esc><c-w>gv
 " But from insert mode, don't return to insert mode
-imap <c-s> <Esc><c-s>
-imap <c-w> <Esc><c-s>
+imap <c-s> <Esc><c-w>
+imap <c-w> <Esc><c-w>
 
 " Shortcut to quit with <CTRL>+Q
 nmap <c-q> :q<CR>

@@ -1,8 +1,7 @@
 # Set-up python virtual env
 function python_setup()
 {
-	source "${HOME}/dot-files/bash_common.sh"
-	eval "${capture_output}"
+	source "${HOME}/dot-files/bash_common.sh" 2>/dev/null && eval "${capture_output}" || true
 	venv_setup
 
 	## Install the things
