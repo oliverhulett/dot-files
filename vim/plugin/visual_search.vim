@@ -36,4 +36,3 @@ if !hasmapto("<Plug>VLToggle")
   nmap <unique> <Leader>vl <Plug>VLToggle
 endif
 let &cpo = s:save_cpo | unlet s:save_cpo
-

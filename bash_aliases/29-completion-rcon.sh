@@ -16,4 +16,3 @@ expand_rcon_job ()
 }
 
 complete -F expand_rcon_job rcon
-

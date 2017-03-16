@@ -79,4 +79,3 @@ function findin
 	echo "Looking for ${PATS[@]} in ${DIRS[@]} (-iname 'Makefile' -or -iname 'Jamfile' ${EXTS[@]})"
 	safefind "${DIRS[@]}" -type f -not -name '*~' \( -iname 'Makefile' -or -iname Jamfile "${EXTS[@]}" \) -print0 | xargs -0 grep -n --color=always -E "${PATS[@]}"
 }
-

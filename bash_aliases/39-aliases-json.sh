@@ -19,4 +19,3 @@ function jsonpretty()
 		python -m json.tool "$f" >&${log_fd} && echo "$(python -m json.tool "$f")" >"$f"
 	done
 }
-

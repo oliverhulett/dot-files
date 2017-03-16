@@ -19,4 +19,3 @@ for f in "$@"; do
 		git add -Nvf "$f" || rm -v "$f"
 	fi
 done
-

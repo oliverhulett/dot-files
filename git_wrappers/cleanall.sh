@@ -39,4 +39,3 @@ set +x
 git update
 
 git status
-

@@ -16,4 +16,3 @@ echo "Setting GOPATH='${GOPATH}'"
 echo "Go-ing and Get-ing packages"
 echo "\$ go get $@"
 go get "$@" || exit 1
-

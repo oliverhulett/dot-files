@@ -133,4 +133,3 @@ function do_find()
 }
 
 do_find "${LOG_ARCHIVE_DIR}" -type f -iname '\*.log.bz2' '\(' "${DATES[@]}" '\)' '\(' "${APPS[@]}" '\)'
-

@@ -4,4 +4,3 @@ function spell
 {
 	echo $* | aspell pipe --suggest --guess
 }
-

@@ -25,4 +25,3 @@ function killprocs()
 		echo "No processes found matching patterns: $@"
 	fi
 }
-

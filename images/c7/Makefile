@@ -69,4 +69,3 @@ $(DOCKERRUN_FILE): Makefile
 		( cd "$$(dirname "$$0")" && make $(DOCKERRUN_FILE) )
 		"$$(dirname "$$0")/$(DOCKERRUN_FILE)" "$$@"
 	EOF
-

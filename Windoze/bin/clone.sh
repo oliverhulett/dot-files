@@ -33,4 +33,3 @@ if [ ! -d "${DEST_DIR}\\master" ]; then
 else
 	echo "${DEST_DIR}\\master already exists."
 fi
-
