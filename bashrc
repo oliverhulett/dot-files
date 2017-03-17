@@ -152,11 +152,7 @@ function _prompt_command()
 {
 	local _last_exit_status=$?
 
-	local setx="n"
-	if [[ $- == *x* ]]; then
-		setx="y"
-	fi
-	set +x
+	eval "${_hidex}"
 
 	# Whenever displaying the prompt, write the previous line to disk
 	history -a
@@ -205,9 +201,7 @@ function _prompt_command()
 	fi
 	export PS1="${USER_CUSTOM_FRONT}${PROMPT}"
 	echo
-	if [ "$setx" == "y" ]; then
-		set -x
-	fi
+	eval "${_restorex}"
 }
 export PROMPT_COMMAND=_prompt_command
 

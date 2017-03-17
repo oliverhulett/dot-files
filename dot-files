@@ -24,6 +24,7 @@ bash_aliases/39-aliases-links.sh .bash_aliases/39-aliases-links.sh
 bash_aliases/39-aliases-opti_dev_aliases.sh .bash_aliases/39-aliases-opti_dev_aliases.sh
 bash_aliases/39-aliases-proc.sh .bash_aliases/39-aliases-proc.sh
 bash_aliases/39-aliases-project_path.sh .bash_aliases/39-aliases-project_path.sh
+bash_aliases/39-aliases-sed_1_liners.sh .bash_aliases/39-aliases-sed_1_liners.sh
 bash_aliases/39-aliases-site_packages.sh .bash_aliases/39-aliases-site_packages.sh
 bash_aliases/39-aliases-sort_unique.sh .bash_aliases/39-aliases-sort_unique.sh
 bash_aliases/39-aliases-spell.sh .bash_aliases/39-aliases-spell.sh

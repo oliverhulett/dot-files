@@ -18,6 +18,8 @@ sdock.sh
 setup-logs
 sh
 ssh
+sudo -e
+sudoedit
 top
 vim
 watch

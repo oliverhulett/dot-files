@@ -36,8 +36,8 @@ echo "Cloning dot-files..."
 su -c "git clone --recursive ssh://git@git.comp.optiver.com:7999/~${USER}/dot-files.git ${HOME}/dot-files" ${USER} 2>/dev/null
 su -c "cd ${HOME}/dot-files && git commit --allow-empty -aqm "'"Vagrant setup autocommit: $(date -R)\n$(git status --short)"'" && git pull" ${USER}
 
-source "${HOME}/dot-files/bash_common.sh"
-eval "${capture_output}"
+source "${HOME}/dot-files/bash_common.sh" 2>/dev/null && eval "${capture_output}" || true
+
 if ! echo "${HTTP_PROXY}" | grep -q "${USER}" 2>/dev/null; then
 	source "${HOME}/dot-files/bash_aliases/19-env-proxy.sh" 2>/dev/null
 	proxy_setup -q ${USER}

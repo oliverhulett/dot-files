@@ -10,6 +10,8 @@ try
 
 	Plugin 'ntpeters/vim-better-whitespace'
 	Plugin 'ConradIrwin/vim-bracketed-paste'
+	Plugin 'reedes/vim-litecorrect'
+	Plugin 'vim-scripts/wordlist.vim'
 
 	" All of your Plugins must be added before the following line
 	call vundle#end()
@@ -21,6 +23,9 @@ filetype plugin on
 
 " From ntpeters/vim-better-whitespace: Strip white-space on save
 autocmd BufEnter * silent! EnableStripWhitespaceOnSave
+
+" From reeds/vim-litecorrect:  Lightweight auto cow wrecks
+autocmd FileType * silent! call litecorrect#init()
 
 " Show tabs as well
 set listchars=tab:»·,trail:·,extends:»,precedes:«
@@ -93,6 +98,9 @@ imap <c-l> <c-g>u<Esc>[s
 nmap <leader>l ]s
 nmap <leader>s z=<c-g>u
 nnoremap <leader>a :spellrepall<cr>
+
+" Add word completion, ctrl+P to complete in insert mode
+set complete+=kspell
 
 " No spell-check patterns
 syn match SingleChar '\<\A*\a\A*\>' contains=@NoSpell
