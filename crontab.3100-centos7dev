@@ -1,11 +1,35 @@
-# HEADER: While it can still be managed manually, it is definitely not recommended.
-# HEADER: not be deleted, as doing so could cause duplicate cron jobs.
-6 6 * * 2-5 /usr/sbin/docker-gc
-35 5 * * * run-parts /etc/cron.daily && anacron -u cron.daily
-40 5 * * 0 run-parts /etc/cron.weekly && anacron -u cron.weekly
-40 5 1 * * run-parts /etc/cron.monthly && anacron -u cron.monthly
-49 2 * * * /sbin/dynamic_dns.sh
-#Ansible: Daily pyfa interpol data file rotation
-35 5 * * Tue-Sat /usr/sbin/logrotate -f /optiver/tooling/pyfieldagent/logrotate.conf
+HOME=/home/olihul
+MAILTO=olihul@optiver.com.au
 
-## Backed up at Mon Mar 20 09:11:17 AEDT 2017 by olihul
+## Disc tweaks can cause a lot of dirty pages to accumulate in memory, force an hourly sync to keep on top of it.
+## Only force sync if CPU % Idle time is more than 75% over the last 10 seconds.
+@hourly [ $(mpstat 1 10 | tail -n1 | awk '{print int($10)}') -gt 75 ] && sync >/dev/null 2>/dev/null
+
+## Run backups
+@daily ${HOME}/dot-files/backup.sh
+## Push (and maybe re-build) my personal docker image
+@daily ${HOME}/dot-files/bin/dock.sh --bootstrap-docker-force-push >/dev/null
+## Install dot-files to development machines.  Sleep for 10 so that the backup script has had a chance to commit the latest dot-files.
+@daily sleep 10 && PATH="${HOME}/bin:${PATH}" ${HOME}/bin/install-dot-files.sh >/dev/null 2>/dev/null
+
+## Keep ~/repo up-to-date.
+@daily find ${HOME}/repo/ -type d -exec test -d "{}/.git" \; -prune -print | while read; do ( cd "$REPLY" && git pullb -q >/dev/null 2>/dev/null && git update >/dev/null 2>/dev/null && ( [ ! -f pins.json ] || git checkout pins.json >/dev/null ) ) || echo -e "\n${REPLY} Update Failed\n\n"; done
+
+## Clean builds every now and then.
+@weekly find ${HOME}/repo/ -name .git -prune | while read; do ( cd "$(dirname "$REPLY")" && [ -e build.py ] && ( ./build.py -c -t all || echo -e "\n${REPLY} Clean Failed\n\n" ) ); done
+@weekly find ${HOME}/repo/ -name .prof -exec rm -rf "{}" \;
+## Clean /tmp every now and then.
+@weekly find /tmp /var/tmp -xdev -not -exec /sbin/fuser -s "{}" \; -delete 2>/dev/null
+
+## Clean docker containers and images every now and then.
+@weekly [ $(docker ps -a -q | wc -l) -gt 0 ] && docker rm $(docker ps -a -q)
+@weekly [ $(docker images -q | wc -l) -gt 0 ] && docker rmi $(docker images -q)
+## Kill docker containers running overnight, you can always re-start them.
+@daily [ $(docker ps -q | wc -l) -gt 0 ] && docker kill $(docker ps -q)
+## Pull favourite docker images nightly.  Sleep a bit first so that an `docker rm` or `docker rmi` has finished first.
+@daily sleep 10 && cat "${HOME}/.docker_favourites" | xargs -n1 -P0 docker pull
+
+## Python virtualenv should be refreshed regularly.
+@daily rm -rf "${HOME}/pyvenv"
+
+## Backed up at Mon Mar 20 00:00:01 AEDT 2017
