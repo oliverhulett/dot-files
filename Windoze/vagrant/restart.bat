@@ -1,5 +1,5 @@
 vagrant halt
-vagrant destroy -f
+vagrant destroy
 vagrant box update
 vagrant up
 REM pause
