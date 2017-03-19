@@ -8,4 +8,4 @@
 #Ansible: Daily pyfa interpol data file rotation
 35 5 * * Tue-Sat /usr/sbin/logrotate -f /optiver/tooling/pyfieldagent/logrotate.conf
 
-## Backed up at Mon Mar 20 08:57:46 AEDT 2017
+## Backed up at Mon Mar 20 09:11:17 AEDT 2017 by olihul

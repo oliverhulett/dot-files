@@ -9,7 +9,7 @@ if ! echo "${HTTP_PROXY}" | grep -q "`whoami`" 2>/dev/null; then
 fi
 
 ## Crontabs live in /var/spool/, so take a backup of this crontab on a separate partition.
-crontab -l >${HOME}/dot-files/crontab.$(hostname -s) && echo -e "\n## Backed up at `date`" >>${HOME}/dot-files/crontab.$(hostname -s)
+crontab -l >${HOME}/dot-files/crontab.$(hostname -s) && echo -e "\n## Backed up at `date` by `whoami`" >>${HOME}/dot-files/crontab.$(hostname -s)
 ## Save list of installed software.
 ( rpm -qa | sort; pip freeze | sort ) >${HOME}/dot-files/installed-software.txt
 ## Commit dot-files to git for extra backups.
