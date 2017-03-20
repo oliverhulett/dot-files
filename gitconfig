@@ -19,7 +19,7 @@
 	rmtag = "!f() { for t in \"$@\"; do git tag -d $t && git push origin :refs/tags/$t; done; }; f"
 	pushtags = push --tags
 
-	cp = "!f() { cp -nv \"$@\"; declare -a toadd; for arg in \"${@:1:$# - 1}\"; do if [ \"${arg:0:1}\" != \"-\" ]; then toadd[${#toadd[@]}]=\"${@:$#}/$(basename $arg)\"; fi; done; if [ ${#toadd[@]} -eq 1 -a ! -d \"${toadd[0]}\" ]; then toadd=( \"${@:$#}\" ); fi; git add -v --ignore-removal --ignore-errors \"${toadd[@]}\"; }; cd \"$GIT_PREFIX\" && f"
+	cp = "!f() { cp -nv \"$@\"; declare -a toadd; for arg in \"${@:1:$# - 1}\"; do if [ \"${arg:0:1}\" != \"-\" ]; then toadd[${#toadd[@]}]=\"${@:$#}/$(basename -- $arg)\"; fi; done; if [ ${#toadd[@]} -eq 1 -a ! -d \"${toadd[0]}\" ]; then toadd=( \"${@:$#}\" ); fi; git add -v --ignore-removal --ignore-errors \"${toadd[@]}\"; }; cd \"$GIT_PREFIX\" && f"
 	new = "!f() { ~/.git_wrappers/new.sh \"$@\"; }; cd \"$GIT_PREFIX\" && f"
 	update = "!f() { ~/.git_wrappers/update.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 	ignore = "!f() { for i in \"$@\"; do echo \"$i\" >>.gitignore; done; echo \"$(sort -u .gitignore)\" >.gitignore; sed -re '/^$/d' -i .gitignore; git add .gitignore; }; cd \"$GIT_PREFIX\" && f"

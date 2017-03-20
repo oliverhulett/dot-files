@@ -8,7 +8,7 @@ if [ $# -eq 2 ]; then
 	REPO="$(echo $2 | tr '[A-Z]' '[a-z]')"
 else
 	echo 2>/dev/null "Clone a repo into the repo heirarchy"
-	echo 2>/dev/null "$(basename "$0") <PROJECT> <REPOSITORY>"
+	echo 2>/dev/null "$(basename -- "$0") <PROJECT> <REPOSITORY>"
 	exit 1
 fi
 

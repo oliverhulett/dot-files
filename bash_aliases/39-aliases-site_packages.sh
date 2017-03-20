@@ -7,7 +7,7 @@ function site-packages()
 		thon="$(command which $p 2>/dev/null)"
 		if [ -n "$thon" ]; then
 			if [[ $thon != /bin/python* ]]; then
-				for d in "$(basename "$thon")" python2.7 python2.6 python26 python python3 python3.4; do
+				for d in "$(basename -- "$thon")" python2.7 python2.6 python26 python python3 python3.4; do
 					for l in lib64 lib; do
 						dir="$(dirname "$thon")/../$l/$d/site-packages"
 						if [ -d "$dir" ]; then

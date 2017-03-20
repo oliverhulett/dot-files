@@ -16,17 +16,17 @@ if [ $# == 0 ]; then
 fi
 
 # user specific container name
-NAME=`basename $IMAGE`-`whoami`-`date "+%s"`
+NAME=`basename -- $IMAGE`-`whoami`-`date "+%s"`
 echo "Starting $NAME ($IMAGE)"
 docker inspect $IMAGE | jq '.[0].Config.Labels' 2>/dev/null
 
 # Use a docker container to do things
-TMP="$(mktemp -p "${HOME}" -t ".$(date '+%Y%m%d-%H%M%S').docker.$(basename "$1").XXXXXXXXXX")"
+TMP="$(mktemp -p "${HOME}" -t ".$(date '+%Y%m%d-%H%M%S').docker.$(basename -- "$1").XXXXXXXXXX")"
 trap 'ec=$?; echo && echo "Leaving $NAME (${IMAGE})" && echo "Ran: $@" && echo "Exit code: $ec" && rm -fv ${TMP}' EXIT
 command cat >"$TMP" <<-EOF
 	#!/bin/bash -i
 	source ~/.bashrc
-	export PS1="(docker:$(basename $IMAGE)) $PS1"
+	export PS1="(docker:$(basename -- $IMAGE)) $PS1"
 	"\$@"
 EOF
 chmod u+x "$TMP"

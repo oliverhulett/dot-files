@@ -3,7 +3,7 @@
 source "${HOME}/dot-files/bash_common.sh" 2>/dev/null && eval "${capture_output}" || true
 
 CURR_BRANCH="$(git branch --no-color | sed -nre 's/^\* //p')"
-CURR_DIR="$(basename "$(pwd)")"
+CURR_DIR="$(basename -- "$(pwd)")"
 
 function print_help()
 {
@@ -39,7 +39,7 @@ fi
 if [ ! -d "$MASTER_DIR" ]; then
 	## Or MASTER_DIR should be a sibling of each branch's directory, and with the same name as the parent directory.
 	parent="$(dirname "$(pwd)")"
-	MASTER_DIR="$(dirname "${parent}")/$(basename "${parent}")"
+	MASTER_DIR="$(dirname "${parent}")/$(basename -- "${parent}")"
 fi
 if [ ! -d "$MASTER_DIR" ]; then
 	## Or MASTER_DIR falls back to being CURR_DIR.

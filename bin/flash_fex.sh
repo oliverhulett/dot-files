@@ -1,8 +1,8 @@
 #!/bin/bash -e
 
 if [ $# -ne 1 -o "$1" == "-h" -o "$1" == "-?" ]; then
-	echo 1>&2 "$(basename "$0") requires a bit-file image to flash."
-	echo 1>&2 "$(basename "$0") <bitfile>"
+	echo 1>&2 "$(basename -- "$0") requires a bit-file image to flash."
+	echo 1>&2 "$(basename -- "$0") <bitfile>"
 	exit 1
 fi
 ARTIFACT="$1"
@@ -59,7 +59,7 @@ pushd "${DEPLOY_DIR}"
 if [ "${ARTIFACT#http}" == "${ARTIFACT}" ]; then
 	BITFILE="${ARTIFACT}"
 else
-	BITFILE="$(basename "${ARTIFACT}")"
+	BITFILE="$(basename -- "${ARTIFACT}")"
 	if [ ! -e "${BITFILE}" ]; then
 		run wget --no-check-certificate --no-verbose "${ARTIFACT}"
 	fi

@@ -14,7 +14,7 @@ function canonicalise()
 	fpart=
 	dpart="$1"
 	if [ -f "$1" -o -L "$1" ]; then
-		fpart="$(basename "$1")"
+		fpart="$(basename -- "$1")"
 		dpart="$(dirname "$1")"
 	fi
 	if [ -d "$dpart" ]; then

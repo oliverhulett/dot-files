@@ -19,6 +19,7 @@ catch
 	" Vundle not there...
 endtry
 filetype plugin on
+filetype indent on
 " If you've added a plugin, run `:PluginInstall`
 
 " From ntpeters/vim-better-whitespace: Strip white-space on save
@@ -87,10 +88,11 @@ set noautoindent
 set spell spelllang=en_gb
 autocmd FileType * setlocal formatoptions-=t
 autocmd FileType * setlocal formatoptions-=o
+autocmd FileType * setlocal formatoptions-=r
 autocmd FileType * setlocal formatoptions-=c
 autocmd FileType * setlocal formatoptions-=a
-autocmd FileType * setlocal formatoptions+=q
 autocmd FileType * setlocal formatoptions+=n
+autocmd FileType * setlocal formatoptions+=q
 
 " Shortcut keys to turn on spell-checking
 nnoremap <c-l> :setlocal spell! spelllang=en_gb<cr>
@@ -102,8 +104,111 @@ nnoremap <leader>a :spellrepall<cr>
 " Add word completion, ctrl+P to complete in insert mode
 set complete+=kspell
 
+hi clear SpellLocal
+hi clear SpellCap
+hi clear SpellRare
+hi clear SpellBad
+hi SpellBad cterm=underline
 " No spell-check patterns
-syn match SingleChar '\<\A*\a\A*\>' contains=@NoSpell
+syn match SingleChar '\<\A*\a{1,2}\A*\>' contains=@NoSpell
+" Enable spell check on certain files only.
+"autocmd FileType markdown setlocal spell
+
+"make cmdline tab completion similar to bash
+set wildmode=list:longest
+"enable ctrl-n and ctrl-p to scroll through matches
+set wildmenu
+"stuff to ignore when tab completing
+set wildignore=*.o,*.obj,*~
+
+"statusline setup
+set statusline =%#identifier#
+"tail of the filename
+set statusline+=[%f]
+set statusline+=%*
+
+"display a warning if fileformat isn't unix
+set statusline+=%#warningmsg#
+set statusline+=%{&ff!='unix'?'['.&ff.']':''}
+set statusline+=%*
+
+"display a warning if file encoding isn't utf-8
+set statusline+=%#warningmsg#
+set statusline+=%{(&fenc!='utf-8'&&&fenc!='')?'['.&fenc.']':''}
+set statusline+=%*
+
+"help file flag
+set statusline+=%h
+"file format
+set statusline+=%5*%{&ff}%*
+"file type
+set statusline+=%3*%y%*
+
+"read only flag
+set statusline+=%#identifier#
+set statusline+=%r
+set statusline+=%*
+
+"modified flag
+set statusline+=%#warningmsg#
+set statusline+=%m
+set statusline+=%*
+
+"display a warning if &et is wrong, or we have mixed-indenting
+set statusline+=%#error#
+set statusline+=%{StatuslineTabWarning()}
+set statusline+=%*
+
+"display a warning if &paste is set
+set statusline+=%#error#
+set statusline+=%{&paste?'[paste]':''}
+set statusline+=%*
+
+"left/right separator
+set statusline+=%=
+set statusline+=%{StatuslineCurrentHighlight()}\ \ "current highlight
+"cursor column
+set statusline+=%c,
+"cursor line/total lines
+set statusline+=%l/%L
+"percent through file
+set statusline+=\ %P
+set laststatus=2
+
+"return the syntax highlight group under the cursor ''
+function! StatuslineCurrentHighlight()
+	let name = synIDattr(synID(line('.'),col('.'),1),'name')
+	if name == ''
+		return ''
+	else
+		return '[' . name . ']'
+	endif
+endfunction
+
+"return '[&et]' if &et is set wrong
+"return '[mixed-indenting]' if spaces and tabs are used to indent
+"return an empty string if everything is fine
+function! StatuslineTabWarning()
+	if !exists("b:statusline_tab_warning")
+		let b:statusline_tab_warning = ''
+
+		if !&modifiable
+			return b:statusline_tab_warning
+		endif
+
+		let tabs = search('^\t', 'nw') != 0
+
+		"find spaces that aren't used as alignment in the first indent column
+		let spaces = search('^ \{' . &ts . ',}[^\t]', 'nw') != 0
+
+		if tabs && spaces
+			let b:statusline_tab_warning =  '[mixed-indenting]'
+		elseif (spaces && !&et) || (tabs && &et)
+			let b:statusline_tab_warning = '[&et]'
+		endif
+	endif
+	return b:statusline_tab_warning
+endfunction
 
 " Don't remember highlighting.
 set viminfo^=h

@@ -5,15 +5,15 @@ source "${HOME}/dot-files/bash_common.sh" 2>/dev/null && eval "${capture_output}
 
 function print_help()
 {
-	echo "$(basename "$0") [-h|-?|--help]"
-	echo "$(basename "$0") [-fg] [--force] [--git] [-p|--pattern=]<PATTERN> <DIRS...>"
+	echo "$(basename -- "$0") [-h|-?|--help]"
+	echo "$(basename -- "$0") [-fg] [--force] [--git] [-p|--pattern=]<PATTERN> <DIRS...>"
 	echo "    -g --git:      Use git-move, otherwise just use mv"
 	echo "    -f --force:    Use the --force flag with the move command"
 	echo "    -p --pattern:  The sed pattern to use.  If this flag is omitted the first argument is used as the sed pattern"
 	echo "    <DIRS...>:     The directores in which to look for files to rename"
 }
 
-OPTS=$(getopt -o "fhgp:" --long "force,help,git,pattern:" -n "$(basename "$0")" -- "$@")
+OPTS=$(getopt -o "fhgp:" --long "force,help,git,pattern:" -n "$(basename -- "$0")" -- "$@")
 if [ $? != 0 ]; then
 	print_help
 	exit $?
@@ -58,7 +58,7 @@ fi
 width=0
 for dir in "${dirs[@]}"; do
 	for i in "${dir:-.}"/*; do
-		f="${dir:-.}/$(basename "$i" | sed -re "$PATTERN")"
+		f="${dir:-.}/$(basename -- "$i" | sed -re "$PATTERN")"
 		args[${#args[*]}]="$i"
 		args[${#args[*]}]="$f"
 		if [ "`echo -n $i | wc -c`" -gt "$width" ]; then
@@ -80,7 +80,7 @@ echo
 
 for dir in "${dirs[@]}"; do
 	for i in "${dir:-.}"/*; do
-		f="${dir:-.}/$(basename "$i" | sed -re "$PATTERN")"
+		f="${dir:-.}/$(basename -- "$i" | sed -re "$PATTERN")"
 		mkdir -p "$(dirname "$f")"
 		$GIT mv -v $FORCE "$i" "$f" 2>&${log_fd}
 	done

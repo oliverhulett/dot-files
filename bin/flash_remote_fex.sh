@@ -3,8 +3,8 @@
 source "${HOME}/dot-files/bash_common.sh" 2>/dev/null && eval "${capture_output}" || true
 
 if [ $# -ne 2 -o "$1" == "-h" -o "$1" == "-?" ]; then
-	echo 1>&2 "$(basename "$0") requires a bit-file image to flash and a remote server on which to flash it."
-	echo 1>&2 "$(basename "$0") <bitfile> <server>"
+	echo 1>&2 "$(basename -- "$0") requires a bit-file image to flash and a remote server on which to flash it."
+	echo 1>&2 "$(basename -- "$0") <bitfile> <server>"
 	exit 1
 fi
 ARTIFACT="$1"
@@ -35,7 +35,7 @@ if ! ssh "${SERVER}" -o ConnectTimeout=2 -o PasswordAuthentication=no echo "SSH 
 fi
 
 if [ "${ARTIFACT#http}" == "${ARTIFACT}" ]; then
-	BITFILE="$(basename "${ARTIFACT}")"
+	BITFILE="$(basename -- "${ARTIFACT}")"
 	run scp "${ARTIFACT}" "${SERVER}:${BITFILE}"
 else
 	BITFILE="${ARTIFACT}"
@@ -43,12 +43,12 @@ fi
 
 function cleanup()
 {
-	run ssh "${SERVER}" "rm $(basename "${FLASH_FEX_SCRIPT}") ${BITFILE} 2>/dev/null" || true
+	run ssh "${SERVER}" "rm $(basename -- "${FLASH_FEX_SCRIPT}") ${BITFILE} 2>/dev/null" || true
 }
 trap cleanup EXIT
 
-run scp "${FLASH_FEX_SCRIPT}" "${SERVER}:$(basename "${FLASH_FEX_SCRIPT}")"
-run ssh -t "${SERVER}" "./$(basename "${FLASH_FEX_SCRIPT}") ${BITFILE}"
+run scp "${FLASH_FEX_SCRIPT}" "${SERVER}:$(basename -- "${FLASH_FEX_SCRIPT}")"
+run ssh -t "${SERVER}" "./$(basename -- "${FLASH_FEX_SCRIPT}") ${BITFILE}"
 if [ $? -ne 0 ]; then
 	echo "## Failed to flash HW on ${SERVER}"
 	exit 1

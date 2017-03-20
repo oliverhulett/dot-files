@@ -20,7 +20,7 @@ SRC="$(cd "$SRC" 2>/dev/null && pwd)"
 DEST="$1"
 FILEPART=
 if [ -f "$DEST" ]; then
-	FILEPART="$(basename "$DEST")"
+	FILEPART="$(basename -- "$DEST")"
 	DEST="$(dirname "$DEST")"
 fi
 if [ ! -e "$DEST" ]; then
@@ -32,7 +32,7 @@ DEST="$(cd "$DEST" 2>/dev/null && pwd)"
 crs="$(echo $SRC | rev)"
 tsed="$(echo $DEST | rev)"
 
-while [ "$(basename "$crs")" == "$(basename "$tsed")" ]; do
+while [ "$(basename -- "$crs")" == "$(basename -- "$tsed")" ]; do
 	crs="$(dirname "$crs")"
 	tsed="$(dirname "$tsed")"
 done

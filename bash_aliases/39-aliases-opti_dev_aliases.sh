@@ -15,7 +15,7 @@ function bt()
 		exe="$(file "$f" | sed -nre "s/.+, from '([^ ]+).+/\\1/p")"
 		echo "bt $exe $f"
 		echo
-		( cd "$(dirname "$f")" && gdb -x <(echo bt) "$exe" "$(basename "$f")" )
+		( cd "$(dirname "$f")" && gdb -x <(echo bt) "$exe" "$(basename -- "$f")" )
 	done
 }
 

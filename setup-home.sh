@@ -42,7 +42,7 @@ if [ -n "${DOTFILES}" ]; then
 		DEST="${HOME}/${TARGET}"
 		rm "${DEST}" 2>/dev/null
 		mkdir --parents "$(dirname "${DEST}")" 2>/dev/null
-		( cd "$(dirname "${DEST}")" && ln -vsf "$(${RELPATH} . "${HERE}/${SRC}")" "$(basename "${DEST}")" ) >&${log_fd}
+		( cd "$(dirname "${DEST}")" && ln -vsf "$(${RELPATH} . "${HERE}/${SRC}")" "$(basename -- "${DEST}")" ) >&${log_fd}
 	done <"${DOTFILES}"
 else
 	echo "No dot-files file found, not linking anything..."

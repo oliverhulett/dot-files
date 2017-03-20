@@ -28,7 +28,7 @@ function reentrance_hash()
 function reentrance_check()
 {
 	name="$1"
-	FILE="$(basename "$1" .sh | tr '[a-z]' '[A-Z]' | tr -cd '[_a-zA-Z0-9]')"
+	FILE="$(basename -- "$1" .sh | tr '[a-z]' '[A-Z]' | tr -cd '[_a-zA-Z0-9]')"
 	shift
 	var="_${FILE}_GUARD"
 	## Hash can only be a single 'token' otherwise the `eval` below doesn't work.
@@ -48,7 +48,7 @@ function reentrance_check()
 }
 function reentered()
 {
-	reentrance_check "$(basename "$(readlink -f "$(caller 0 | cut -d' ' -f3-)")")" "$@"
+	reentrance_check "$(basename -- "$(readlink -f "$(caller 0 | cut -d' ' -f3-)")")" "$@"
 }
 
 function echo_clean_path()
@@ -106,7 +106,7 @@ function callstack()
 	done
 }
 
-function setuplogs()
+function dotlogs()
 {
 	WHEN=
 	WHO="$(whoami)"
@@ -120,12 +120,12 @@ function setuplogs()
 	if [ -z "$WHEN" ]; then
 		WHEN="today"
 	fi
-	less "${HOME}/.setup-logs/$(date --date="${WHEN}" '+%Y%m%d')_${WHO}_dot-files.log"
+	less "${HOME}/.dotlogs/$(date --date="${WHEN}" '+%Y%m%d')_${WHO}_dot-files.log"
 }
 
 function _logfile()
 {
-	LOG_DIR="${HOME}/.setup-logs"
+	LOG_DIR="${HOME}/.dotlogs"
 	mkdir "${LOG_DIR}" 2>/dev/null
 	LOGFILE="${LOG_DIR}/$(date '+%Y%m%d')_$(whoami)_dot-files.log"
 	echo "${LOGFILE}"
@@ -133,7 +133,7 @@ function _logfile()
 
 function log()
 {
-	echo "$(date '+%Y-%m-%d %H:%M:%S') [$$] [$(basename "$0")] [LOG   ] $@" >>"$(_logfile)"
+	echo "$(date '+%Y-%m-%d %H:%M:%S') [$$] [$(basename -- "$0")] [LOG   ] $@" >>"$(_logfile)"
 }
 
 function tee_totaler()
@@ -152,8 +152,8 @@ eval "${_hidex}"
 _restorex='[ ${_setx:-n} == y ] && set -x; unset _setx;'
 _redirect='{
 	if [ -z "$_redirected" ]; then
-		exec > >(tee_totaler $$ "$(basename "$0")" STDOUT 2>/dev/null);
-		exec 2> >(tee_totaler $$ "$(basename "$0")" STDERR >&2);
+		exec > >(tee_totaler $$ "$(basename -- "$0")" STDOUT 2>/dev/null);
+		exec 2> >(tee_totaler $$ "$(basename -- "$0")" STDERR >&2);
 		_redirected="true";
 		trap "unset _redirected" EXIT;
 	fi;
@@ -162,7 +162,7 @@ setup_log_fd='{
 	eval "$_hidex" 2>/dev/null
 	if [ -z "$log_fd" ]; then
 		declare -x log_fd=3;
-		exec 3> >(tee_totaler $$ "$(basename "$0")" "DEBUG " >/dev/null 2>/dev/null);
+		exec 3> >(tee_totaler $$ "$(basename -- "$0")" "DEBUG " >/dev/null 2>/dev/null);
 		trap "unset log_fd" EXIT;
 	fi;
 	echo "$ $0 $@" >&${log_fd};

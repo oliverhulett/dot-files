@@ -82,7 +82,7 @@ disown
 echo "Restoring local installs and other backups..."
 (
 	for d in /H_DRIVE/*; do
-		d="$(basename $d)"
+		d="$(basename -- $d)"
 		rsync -rAXog /H_DRIVE/$d ${HOME}/
 		find ${HOME}/$d -type f -print0 | xargs -0 chmod -x
 		chown -R ${USER}:users ${HOME}/$d

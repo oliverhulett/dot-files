@@ -71,15 +71,15 @@ fi
 cnt=0
 proclst=
 for log in "$@"; do
-	srvdir="$(basename "$(dirname "$(readlink -m "$log")")" | sed -re 's/([^.]+)\..+/\1/')"
-	out="${BASE_DIR}/${srvdir}/$(basename "$log" .bz2)"
+	srvdir="$(basename -- "$(dirname "$(readlink -m "$log")")" | sed -re 's/([^.]+)\..+/\1/')"
+	out="${BASE_DIR}/${srvdir}/$(basename -- "$log" .bz2)"
 	if [ "${FILTERED}" == "y" ]; then
 		out="${out}.filtered.00.txt"
 		while [ -e "$out" ]; do
-			idx="$(basename "$out" .txt)"
+			idx="$(basename -- "$out" .txt)"
 			idx="${idx##*.}"
 			idx=$(( $idx + 1 ))
-			out="$(basename "$out" .txt)"
+			out="$(basename -- "$out" .txt)"
 			out="${out%.*}.$(printf '%02d' ${idx}).txt"
 			out="${BASE_DIR}/${srvdir}/${out}"
 		done

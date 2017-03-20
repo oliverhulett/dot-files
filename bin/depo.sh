@@ -27,9 +27,9 @@ else
 	fi
 fi
 
-BRANCH="$(basename "$REPO_PATH")"
-PROJ="$(basename "$(dirname "$REPO_PATH")")"
-REPO_NAME="$(basename "$(dirname "$(dirname "$REPO_PATH")")")"
+BRANCH="$(basename -- "$REPO_PATH")"
+PROJ="$(basename -- "$(dirname "$REPO_PATH")")"
+REPO_NAME="$(basename -- "$(dirname "$(dirname "$REPO_PATH")")")"
 
 echo "Using repository: $REPO_NAME/$PROJ/$BRANCH"
 

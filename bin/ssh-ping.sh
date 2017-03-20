@@ -3,7 +3,7 @@
 source "${HOME}/dot-files/bash_common.sh" 2>/dev/null && eval "${capture_output}" || true
 
 if [ "$1" == "-h" -o "$1" == "--help" -o "$1" == "-?" ]; then
-	echo "$(basename $0) [-v] [host...]"
+	echo "$(basename -- $0) [-v] [host...]"
 	echo "  Ping each of the hosts in ~/.ssh/known_hosts"
 	echo "  -v  Print failures at the end"
 	exit 0
