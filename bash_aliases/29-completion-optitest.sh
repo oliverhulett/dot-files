@@ -1,6 +1,7 @@
 # Command line completion for optitest
 expand_optitest_job ()
 {
+	source "${HOME}/dot-files/bash_common.sh" 2>/dev/null && eval "${setup_log_fd}" || true
 	unalias grep 2>/dev/null >/dev/null
 	cmd="${COMP_WORDS[@]:0:$COMP_CWORD}"
 	last="${COMP_WORDS[$(($COMP_CWORD - 1))]}"

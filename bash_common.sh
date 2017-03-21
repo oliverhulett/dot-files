@@ -162,6 +162,7 @@ setup_log_fd='{
 	eval "$_hidex" 2>/dev/null
 	if [ -z "$log_fd" ]; then
 		declare -x log_fd=3;
+		echo "log_fd=${log_fd}"
 		exec 3> >(tee_totaler $$ "$(basename -- "$0")" "DEBUG " >/dev/null 2>/dev/null);
 		trap "unset log_fd" EXIT;
 	fi;

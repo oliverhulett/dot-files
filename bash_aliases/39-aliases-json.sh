@@ -1,6 +1,7 @@
 ## Validate JSON
 function jsoncheck()
 {
+	source "${HOME}/dot-files/bash_common.sh" 2>/dev/null && eval "${setup_log_fd}" || true
 	for f in "$@"; do
 		echo -n "Validating '$f': "
 		python -m json.tool "$f" >&${log_fd}
@@ -15,6 +16,7 @@ function jsoncheck()
 ## Pretty print JSON
 function jsonpretty()
 {
+	source "${HOME}/dot-files/bash_common.sh" 2>/dev/null && eval "${setup_log_fd}" || true
 	for f in "$@"; do
 		python -m json.tool "$f" >&${log_fd} && echo "$(python -m json.tool "$f")" >"$f"
 	done

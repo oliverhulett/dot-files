@@ -40,7 +40,7 @@ function proxy_exe()
 unalias cc-env 2>/dev/null
 function cc-env()
 {
-	eval "${capture_output}"
+	source "${HOME}/dot-files/bash_common.sh" 2>/dev/null && eval "${capture_output}" || true
 	CC_EXE="/usr/local/bin/cc-env"
 	if [ ! -x "$CC_EXE" ]; then
 		echo "[FATAL] ${CC_EXE} does not exist"

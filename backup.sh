@@ -15,6 +15,6 @@ crontab -l >${HOME}/dot-files/crontab.$(hostname -s) && echo -e "\n## Backed up 
 ## Commit dot-files to git for extra backups.
 ( cd ${HOME}/dot-files && git commit --allow-empty -aqm "Autocommit: $(date -R)\n$(git status --short)" && git pullb && git push -q )
 ## Backup a small number of key system-wide configuration files.
-rsync -PAXrogthlm --files-from=${HOME}/dot-files/backups.txt / ${HOME}/etc/backups
+rsync -PAXrogthlm --delete --files-from=${HOME}/dot-files/backups.txt / ${HOME}/etc/backups
 ## Push local configuration and backups to another box.
 rsync -PAXrogthlm --delete ${HOME}/.ssh ${HOME}/etc ${HOME}/opt /H_DRIVE/

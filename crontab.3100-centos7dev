@@ -1,3 +1,6 @@
+## The master crontab for 3100-centos7dev (my VM) is /var/spool/crontab.  Edit the crontab with `crontab -e` always.
+## There is a backup of the crontab in ~/dot-files, but that is not the master, it is only used to bootstrap the crontab
+## after a machine re-build (e.g. vagrant destroy && vagrant up)
 HOME=/home/olihul
 MAILTO=olihul@optiver.com.au
 
@@ -30,6 +33,6 @@ MAILTO=olihul@optiver.com.au
 @daily sleep 10 && cat "${HOME}/.docker_favourites" | xargs -n1 -P0 docker pull
 
 ## Python virtualenv should be refreshed regularly.
-@daily rm -rf "${HOME}/pyvenv"
+@daily source "${HOME}/dot-files/bash_aliases/09-profile.d-pyvenv.sh && rm -rf "${PYVENV_HOME}"
 
-## Backed up at Tue Mar 21 00:00:01 AEDT 2017 by olihul
+## Backed up at Wed Mar 22 00:00:01 AEDT 2017 by olihul

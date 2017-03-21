@@ -1,3 +1,6 @@
+## The master crontab for dev interactives (not my VM) is ~/dot-files/crontab.  Edit that files always.
+## That file is installed into /var/spool/crontab regularly.  /var/spool/crontab will be regularly overwritten
+## by ~/dot-files/crontab (or ~/dot-files/crontab.`hostname` if it exists)
 HOME=/home/olihul
 MAILTO=olihul@optiver.com.au
 
@@ -17,4 +20,4 @@ MAILTO=olihul@optiver.com.au
 @daily command which docker >/dev/null 2>/dev/null && [ $(docker ps -q | wc -l) -gt 0 ] && docker kill $(docker ps -q)
 
 ## Python virtualenv should be refreshed regularly.
-@daily rm -rf "${HOME}/pyvenv"
+@daily source "${HOME}/dot-files/bash_aliases/09-profile.d-pyvenv.sh && rm -rf "${PYVENV_HOME}"

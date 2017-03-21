@@ -1,4 +1,4 @@
-export PYVENV_HOME="${PYVENV_HOME:-${HOME}/pyvenv}"
+export PYVENV_HOME="${PYVENV_HOME:-${HOME}/opt/pyvenv}"
 
 source "$(dirname "$(readlink -f "${BASH_SOURCE}")")/../bash_common.sh"
 

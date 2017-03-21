@@ -18,11 +18,12 @@ echo "Setting up sudo..."
 echo 'Defaults    secure_path = /home/olihul/dot-files/bin:/home/olihul/bin:/home/olihul/sbin:/optiver/bin:/usr/local/bin:/bin:/usr/bin:/sbin:/usr/sbin' >/etc/sudoers.d/99_olihul
 
 echo "Restoring backups..."
-rsync -rAXog /H_DRIVE/etc ${HOME}/
-find ${HOME}/etc/ -type f -print0 | xargs -0 chmod -x
-chmod 0400 ${HOME}/etc/passwd ${HOME}/etc/release.auth 2>/dev/null
-chown -R ${USER}:users ${HOME}/etc
-rsync -aAXog ${HOME}/etc/backups/${HOME}/ ${HOME}/
+mkdir ${HOME}/etc 2>/dev/null
+for f in passwd release.auth; do
+	cp -v /H_DRIVE/etc/$f ${HOME}/etc/$f
+	chown ${USER}:users ${HOME}/etc/$f
+	chmod 0400 ${HOME}/etc/$f
+done
 
 if [ -e "${HOME}/etc/passwd" ]; then
 	echo "Setting up samba..."
@@ -68,6 +69,8 @@ echo "Installing some things I don't want to docker all the time..."
 		cmake ccache distcc protobuf protobuf-c protobuf-python protobuf-compiler valgrind clang-devel clang clang-analyzer \
 		wireshark
 
+	PIP_CONFIG_FILE="${HOME}/dot-files/pip.conf" pip install -U pip
+	PIP_CONFIG_FILE="${HOME}/dot-files/pip.conf" pip install -U setuptools wheel
 	PIP_CONFIG_FILE="${HOME}/dot-files/pip.conf" pip install pygments
 
 	( cd /tmp && \
@@ -76,8 +79,8 @@ echo "Installing some things I don't want to docker all the time..."
 		rm drone
 	)
 ) >&${log_fd} 2>&${log_fd} &
-disown -r
-disown
+disown -h 2>/dev/null
+disown 2>/dev/null
 
 echo "Restoring local installs and other backups..."
 (
@@ -90,7 +93,7 @@ echo "Restoring local installs and other backups..."
 	chmod +x ${HOME}/opt/eclipse/eclipse
 	chmod +x ${HOME}/opt/sublime_text_3/sublime_text
 ) >&${log_fd} 2>&${log_fd} &
-disown -rh
-disown -r
+disown -h 2>/dev/null
+disown 2>/dev/null
 
 true
