@@ -22,11 +22,11 @@ done
 
 function venv_setup()
 {
-	source "${HOME}/dot-files/bash_common.sh" && eval "${capture_output}" || true
 	PYVERSION=python2.7
 
 	PYVENV_MARKER="${PYVENV_HOME}/.mark"
 	if [ ! -e "${PYVENV_MARKER}" ] || [ "$(command cat "${PYVENV_MARKER}" 2>/dev/null)" != "$(pyvenv_version)" ]; then
+		source "${HOME}/dot-files/bash_common.sh" && eval "${capture_output}" || true
 		command ${VIRTUALENV} --no-site-packages -p /usr/bin/${PYVERSION} "$PYVENV_HOME" >&${log_fd} 2>&${log_fd}
 		VIRTUAL_ENV_DISABLE_PROMPT=1 source "$PYVENV_HOME/bin/activate"
 
@@ -34,10 +34,10 @@ function venv_setup()
 
 		## Need to export the path again, in-case activating the venv changed it.
 		export PATH="$(prepend_path "${PYVENV_HOME}/bin")"
+		( cd ${PYVENV_HOME}/bin && ln -vsf ${PYVERSION} python26 >&${log_fd} 2>&${log_fd} )
+		( cd ${PYVENV_HOME}/bin && ln -vsf ${PYVERSION} python >&${log_fd} 2>&${log_fd} )
+		eval "${uncapture_output}"
 	fi
-	( cd ${PYVENV_HOME}/bin && ln -vsf ${PYVERSION} python26 >&${log_fd} 2>&${log_fd} )
-	( cd ${PYVENV_HOME}/bin && ln -vsf ${PYVERSION} python >&${log_fd} 2>&${log_fd} )
-	eval "${uncapture_output}"
 }
 
 alias python='venv_setup; command python'

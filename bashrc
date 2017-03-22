@@ -12,16 +12,16 @@ if reentered "${HOME}/.bashrc" "${HOME}/.bash_aliases"/*; then
 fi
 
 # source the users profile if it exists
-if [ -e "${HOME}/.profile" ] ; then
+if [ -e "${HOME}/.profile" ]; then
 	source "${HOME}/.profile"
 fi
 
 # source the users bash_profile if it exists
-if [ -e "${HOME}/.bash_profile" ] ; then
+if [ -e "${HOME}/.bash_profile" ]; then
 	source "${HOME}/.bash_profile"
 fi
 
-export BASH_ENV="${HOME}/.bashrc"
+#export BASH_ENV="${HOME}/.bashrc"
 
 export VISUAL=$(command which vim 2>/dev/null)
 export EDITOR=$VISUAL
@@ -29,9 +29,16 @@ export PAGER=$(command which less 2>/dev/null)
 unalias edt 2>/dev/null
 function edt()
 {
-	source "${HOME}/dot-files/bash_common.sh" 2>/dev/null && eval "${setup_log_fd}" || true
-	vim +'silent! PluginInstall' +q1 "$@"
-	log "Command=edt Seconds=$(($SECONDS - $_timer)) CWD=$(pwd) Files={$@}"
+	source "${HOME}/dot-files/bash_common.sh" 2>/dev/null || true
+	VUNDLE_LAST_UPDATED_MARKER="${HOME}/.vim/bundle/.last_updated"
+	if [ -z "$(find "${VUNDLE_LAST_UPDATED_MARKER}" -mtime -1 2>/dev/null)" ]; then
+		vim +'silent! PluginInstall' +qall
+		date >"${VUNDLE_LAST_UPDATED_MARKER}"
+	fi
+	vim "${VUNDLE_UPDATE_CMDS[@]}" "$@"
+	es=$?
+	log "Command=edt Seconds=$(($SECONDS - $_timer)) Returned=$es CWD=$(pwd) Files={$@}"
+	return $es
 }
 
 export HISTCONTROL="ignoredups"
