@@ -29,7 +29,7 @@ class Colouriser(object):
             ('reset',       '0'),
         )
 
-        ##  These are the sequences need to get colored ouput.
+        ##  These are the sequences needed to get coloured output.
         self.reset_seq = "\033[0m"
         self.colour_seq_tmpl = "\033[%sm"
         self.bold_seq = "\033[1m"
@@ -40,8 +40,8 @@ class Colouriser(object):
 
         self.fallback_regex = re.compile(r"^[0-9-:,\. ]+ \[?([^\] ]+)\]?.+")
         self.default_regexes = [
-                                re.compile(r"^[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{9}(?: \[ *[0-9\.]+ *[um]s\])? \[[^\]]+\] \[([^\]]+)\].+"),
-                                re.compile(r"^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}[\.,][0-9]{3} \[[^\]]+\] ([^:]+):.+")
+                                re.compile(r"^[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{9}(?: \[ *[0-9\.]+ *[umn]?s\])? \[[^\]]+\] \[([^\]]+)\].+"),
+                                re.compile(r"^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}[\.,][0-9]+ \[[^\]]+\] ([^:]+):.+")
                                 ]
         if pattern is not None:
             self.regex = re.compile(pattern)

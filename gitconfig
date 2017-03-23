@@ -39,10 +39,10 @@
 	pullb = "!f() { git pull --prune --recurse-submodules "$@"; git cleanbranches; }; f" ## Want to execute from top level, not GIT_PREFIX
 	cleanbranches = "!f() { shopt -s nullglob; test -d .git && for h in $(cd .git/refs/heads && find ./ -type f); do set -- .git/refs/remotes/*/\"${h#./}\"; if [ $# -eq 0 -a \"${h#./}\" != \"master\" ]; then git branch -d \"${h#./}\"; fi; done; }; f" ## Want to execute from top level, not GIT_PREFIX
 	mkbranch = "!f() { ~/.git_wrappers/mkbranch.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
-	mvbranch = "!f() { : git branch ; git branch -m \"$1\" \"$2\" && git push origin :\"$1\" && git push --set-upstream origin \"$2\"; }; f"
-	rmbranch = "!f() { : git branch ; dashd=\"-d\"; if [ \"$1\" == \"-D\" ]; then dashd=\"-D\"; shift; fi; for b in \"$@\"; do git branch $dashd \"$b\"; git push origin --delete \"$b\"; done; git pull --prune; }; f"
+	mvbranch = "!f() { : git checkout ; git branch -m \"$1\" \"$2\" && git push origin :\"$1\" && git push --set-upstream origin \"$2\"; }; f"
+	rmbranch = "!f() { : git checkout ; dashd=\"-d\"; if [ \"$1\" == \"-D\" ]; then dashd=\"-D\"; shift; fi; for b in \"$@\"; do git branch $dashd \"$b\"; git push origin --delete \"$b\"; done; git pull --prune; }; f"
 
-	mergeflict = "!f() { : git branch ; git push; git pull --all && git fetch origin $1 && git merge FETCH_HEAD; }; f"
+	mergeflict = "!f() { : git checkout ; git push; git pull --all && git fetch origin $1 && git merge FETCH_HEAD; }; f"
 	gresolve = "!f() { : git mergetool ; git mergetool --tool=kdiff3 -y \"$@\" && echo \"Removing kdiff3 original files.\" && find ./ -name '*.orig' -delete -print; } && f" ## Want to execute from top level, not GIT_PREFIX
 	resolved = "!f() { : git add ; if [ $# -eq 0 ]; then set -- $(git diff --name-only --diff-filter=U); fi; git add \"$@\"; }; cd \"$GIT_PREFIX\" && f"
 
