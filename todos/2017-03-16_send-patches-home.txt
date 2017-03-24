@@ -1,3 +1,9 @@
 I want to sync (only some) files from dot-files at work to dot-files at home.
 Can't be completely automatic (at the moment) because things are differently pathed and the requirements are not identical.
-I'm thinking about `git send-email` and/or `git format-patch` and a list of files to sync.  E-mail the patches to myself and then apply them (selectively) at home.
+ - Can I fix that pathing?  export DOTFILES= or something?
+ - How about using BASH_ENV to load ~/.bash_aliases/*-profile.d-*
+   - Could export DOTFILES there (and others as needed)
+   - Will ~/.bashrc still be loaded for shells?
+
+Windoze/sync2home now exists.  Run from my Optiver windows machine it'll create patches for dot-files and bin for all changes since last time it was run and zip and e-mail them.
+I've hooked it into the vagrant restart.bat
