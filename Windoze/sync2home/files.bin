@@ -1,0 +1,6 @@
+../../bin/colourise.py
+../../bin/relpath.sh
+../../bin/sedrename.sh
+../../bin/setperms.sh
+../../bin/ssh-ping.sh
+../../bin/ssh.sh
