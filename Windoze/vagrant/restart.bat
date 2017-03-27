@@ -1,4 +1,4 @@
-HERE=%~d0
+set HERE=%~dp0
 cd /d %HERE%
 
 echo "STOPPING VM"
