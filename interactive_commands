@@ -22,6 +22,7 @@ sh
 ssh
 sudo -e
 sudoedit
+sudo su
 top
 vim
 watch
