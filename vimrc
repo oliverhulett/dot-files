@@ -235,4 +235,5 @@ nnoremap <C-J> a<CR><Esc>k$
 " Python, JSON, and Yaml should use spaces instead of tabs
 autocmd Filetype python setlocal expandtab
 autocmd Filetype json setlocal expandtab
+autocmd Filetype javascript setlocal expandtab
 autocmd Filetype yaml setlocal expandtab
