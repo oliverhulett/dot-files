@@ -19,7 +19,6 @@ catch
 	" Vundle not there...
 endtry
 filetype plugin on
-filetype indent on
 " If you've added a plugin, run `:PluginInstall`
 
 " From ntpeters/vim-better-whitespace: Strip white-space on save
@@ -203,7 +202,7 @@ function! StatuslineTabWarning()
 		if tabs && spaces
 			let b:statusline_tab_warning =  '[mixed-indenting]'
 		elseif (spaces && !&et) || (tabs && &et)
-			let b:statusline_tab_warning = '[&et]'
+			let b:statusline_tab_warning = '[&expant-tabs]'
 		endif
 	endif
 	return b:statusline_tab_warning
@@ -233,7 +232,8 @@ nmap <S-Enter> O<Esc>
 nnoremap <C-J> a<CR><Esc>k$
 
 " Python, JSON, and Yaml should use spaces instead of tabs
-autocmd Filetype python setlocal expandtab
-autocmd Filetype json setlocal expandtab
 autocmd Filetype javascript setlocal expandtab
+autocmd Filetype json setlocal expandtab
+autocmd Filetype python setlocal expandtab
+autocmd Filetype xml setlocal expandtab
 autocmd Filetype yaml setlocal expandtab

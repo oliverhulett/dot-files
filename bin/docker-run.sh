@@ -5,7 +5,7 @@ source "${HOME}/dot-files/bash_aliases/39-aliases-opti_dev_aliases.sh"
 
 IMAGES="$(docker-list.sh | sort -u)"
 DOCKER_RUN_ARGS=()
-while ! echo "$IMAGES" | grep -qw "$1" 2>/dev/null >/dev/null; do
+while ! echo "$IMAGES" | grep -qE '^'"$1"'$' 2>/dev/null >/dev/null; do
 	DOCKER_RUN_ARGS[${#DOCKER_RUN_ARGS[@]}]="$1"
 	shift
 done
@@ -22,7 +22,8 @@ docker inspect $IMAGE 2>&${log_fd} | jq '.[0].Config.Labels' 2>&${log_fd}
 
 # Use a docker container to do things
 TMP="$(mktemp -p "${HOME}" -t ".$(date '+%Y%m%d-%H%M%S').docker.$(basename -- "$1").XXXXXXXXXX")"
-trap 'ec=$?; echo && echo "Leaving $NAME (${IMAGE})" && echo "Ran: $@" && echo "Exit code: $ec" && rm -fv ${TMP}' EXIT
+NODIR="$(mktemp -d)"
+trap 'ec=$?; echo && echo "Leaving $NAME (${IMAGE})" && echo "Ran: $@" && echo "Exit code: $ec" && rm -fr "${TMP}" "${NODIR}"' EXIT
 command cat >"$TMP" <<-EOF
 	#!/bin/bash -i
 	source ~/.bashrc
@@ -39,8 +40,6 @@ function run()
 	"$@" >/dev/tty 2>/dev/tty
 	echo
 }
-NODIR="$(mktemp -d)"
-trap 'rm -rf "${NODIR}"' EXIT
 run dockerme -h `hostname` --cpu-shares=`nproc` --privileged --name=${NAME} \
 	-v /etc/sudo.conf:/etc/sudo.conf:ro -v /etc/sudoers:/etc/sudoers:ro -v /etc/sudoers.d:/etc/sudoers.d:ro -v /etc/pam.d:/etc/pam.d:ro -v /etc/localtime:/etc/localtime:ro \
 	--env-file=<(/usr/bin/env) -v "$TMP":"$TMP" --entrypoint="$TMP" -v "${NODIR}":"${HOME}/opt" \

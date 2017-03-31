@@ -8,8 +8,7 @@ fi
 ARTIFACT="$1"
 shift
 
-HW_AU_REPO=( "ssh://git@git.comp.optiver.au:7999/fpga/hardware_au.git" "ssh://git@git:7999/fpga/hardware_au.git" )
-HW_AU_DIR="${HOME}/repo/fpga/hardware_au"
+DEPLOY_TOOLS="https://artifactory/artifactory/dev/fpga/deploy_tools/1.0.1/1.0.1_deploy-tools.tar.gz"
 
 LVLS=0
 function pushd()
@@ -25,37 +24,19 @@ function run()
 	done
 }
 
-if [ -d "${HW_AU_DIR}/.git" ]; then
-	pushd "${HW_AU_DIR}"
-	run git stash
-	run git pull --force
-	run git stash pop || true
-else
-	mkdir -p "${HW_AU_DIR}"
-	pushd "${HW_AU_DIR}"
-	for url in "${HW_AU_REPO[@]}"; do
-		run git clone "${url}" . || true
-	done
-	test -d "${HW_AU_DIR}/.git"
-fi
-
+SCRATCH="$(mktemp -d)"
 function cleanup()
 {
 	for (( i=0; i < $LVLS; i=$(( $i + 1 )) )); do
 		popd
 	done
+	rm -rf "${SCRATCH}"
 }
 trap cleanup EXIT
+pushd "${SCRATCH}"
 
-DEPLOY_DIR="${HW_AU_DIR}/board_support_packages/deploy"
-KO_FILE="${DEPLOY_DIR}/chemnitz.ko"
-DRIVER_DIR="${HW_AU_DIR}/board_support_packages/drivers/fiberblaze_smartnic/v7690-1_7_2/driver"
-if [ ! -e "${KO_FILE}" ]; then
-	( cd "${DRIVER_DIR}" && run make )
-	run cp "${DRIVER_DIR}/chemnitz.ko" "${KO_FILE}"
-fi
-
-pushd "${DEPLOY_DIR}"
+run wget --no-check-certificate --no-verbose "${DEPLOY_TOOLS}"
+run tar -xzvf "$(basename -- "${DEPLOY_TOOLS}")"
 if [ "${ARTIFACT#http}" == "${ARTIFACT}" ]; then
 	BITFILE="${ARTIFACT}"
 else
@@ -69,9 +50,9 @@ if [ "${BITFILE%.bit}" == "${BITFILE}" ]; then
 	BITFILE="$(tar -tf "${BITFILE}")"
 fi
 
-echo "## About to flash the board.  If anyone asks, you're tageting board: fex_fb"
+echo "## About to flash the board.  If anyone asks, you're targeting board: fex_fb"
 #echo "fex_fb" | run sudo "${DEPLOY_DIR}/flash_tool.py" "${BITFILE}"
-run sudo "${DEPLOY_DIR}/flash_tool.py" "${BITFILE}"
+run sudo "${SCRATCH}/flash_tool.py" "${BITFILE}"
 
 if [ $? -ne 0 ]; then
 	echo "## Failed to write the bitfile from '${ARTIFACT}'"

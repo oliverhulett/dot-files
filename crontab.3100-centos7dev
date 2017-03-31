@@ -33,6 +33,6 @@ MAILTO=olihul@optiver.com.au
 @daily sleep 10 && cat "${HOME}/.docker_favourites" | xargs -n1 -P0 docker pull
 
 ## Python virtualenv should be refreshed regularly.
-@daily source "${HOME}/dot-files/bash_aliases/09-profile.d-pyvenv.sh && rm -rf "${PYVENV_HOME}"
+@daily source "${HOME}/dot-files/bash_aliases/09-profile.d-pyvenv.sh" && rm -rf "${PYVENV_HOME}"
 
-## Backed up at Fri Mar 31 00:00:07 AEDT 2017 by olihul
+## Backed up at Sat Apr  1 00:00:01 AEDT 2017 by olihul

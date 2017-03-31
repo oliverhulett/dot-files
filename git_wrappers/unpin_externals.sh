@@ -18,25 +18,25 @@ import json
 import subprocess
 
 def do_file(name):
-    global files
-    with open(name) as f:
-        xternals = json.load(f)
-    if '@import' in xternals:
-        files += [os.path.join(n, 'externals.json') for n in xternals['@import']]
-    for key in xternals.iterkeys():
-        d = os.path.join(os.path.dirname(name), key)
-        if 'ref' in xternals[key] and 'rev' in xternals[key]:
-            p = subprocess.Popen(['git', 'rev-parse', '-q', '--verify', 'refs/tags/{0}'.format(xternals[key]['ref'])], stdout=subprocess.PIPE, cwd=d)
-            p.communicate()
-            if p.returncode != 0:
-                print "Un-pinning non-tag: {0} @ {1}".format(key, xternals[key]['ref'])
-                del xternals[key]['rev']
-    with open(name, 'w') as f:
-        json.dump(xternals, f, indent=4)
+	global files
+	with open(name) as f:
+		xternals = json.load(f)
+	if '@import' in xternals:
+		files += [os.path.join(n, 'externals.json') for n in xternals['@import']]
+	for key in xternals.iterkeys():
+		d = os.path.join(os.path.dirname(name), key)
+		if 'ref' in xternals[key] and 'rev' in xternals[key]:
+			p = subprocess.Popen(['git', 'rev-parse', '-q', '--verify', 'refs/tags/{0}'.format(xternals[key]['ref'])], stdout=subprocess.PIPE, cwd=d)
+			p.communicate()
+			if p.returncode != 0:
+				print "Un-pinning non-tag: {0} @ {1}".format(key, xternals[key]['ref'])
+				del xternals[key]['rev']
+	with open(name, 'w') as f:
+		json.dump(xternals, f, indent=4)
 
 files = sys.argv[1:]
 while len(files) > 0:
-    do_file(files.pop(0))
+	do_file(files.pop(0))
 EOF
 
 for d in "${EXTERNALS}"; do

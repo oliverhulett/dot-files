@@ -21,30 +21,30 @@ import json
 import subprocess
 
 def do_file(name):
-    global files
-    with open(name) as f:
-        xternals = json.load(f)
-    if '@import' in xternals:
-        files += [os.path.join(n, 'externals.json') for n in xternals['@import']]
-    for key in xternals.iterkeys():
-        d = os.path.join(os.path.dirname(name), key)
-        if 'ref' in xternals[key] and (xternals[key]['ref'] == 'master'):
-            p = subprocess.Popen(['git', 'tags', '1'], stdout=subprocess.PIPE, cwd=d)
-            out, _ = p.communicate()
-            try:
-                tag = out.strip().split()[6]
-                print 'Tagging external {0} @ {1}'.format(key, tag)
-                if 'rev' in xternals[key]:
-                    del xternals[key]['rev']
-                xternals[key]['ref'] = tag
-            except:
-                pass
-    with open(name, 'w') as f:
-        json.dump(xternals, f, indent=4)
+	global files
+	with open(name) as f:
+		xternals = json.load(f)
+	if '@import' in xternals:
+		files += [os.path.join(n, 'externals.json') for n in xternals['@import']]
+	for key in xternals.iterkeys():
+		d = os.path.join(os.path.dirname(name), key)
+		if 'ref' in xternals[key] and (xternals[key]['ref'] == 'master'):
+			p = subprocess.Popen(['git', 'tags', '1'], stdout=subprocess.PIPE, cwd=d)
+			out, _ = p.communicate()
+			try:
+				tag = out.strip().split()[6]
+				print 'Tagging external {0} @ {1}'.format(key, tag)
+				if 'rev' in xternals[key]:
+					del xternals[key]['rev']
+				xternals[key]['ref'] = tag
+			except:
+				pass
+	with open(name, 'w') as f:
+		json.dump(xternals, f, indent=4)
 
 files = sys.argv[1:]
 while len(files) > 0:
-    do_file(files.pop(0))
+	do_file(files.pop(0))
 EOF
 
 for d in $(git submodule foreach --quiet pwd); do

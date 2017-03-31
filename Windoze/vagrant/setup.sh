@@ -95,4 +95,14 @@ echo "Restoring local installs and other backups..."
 disown -h 2>/dev/null
 disown 2>/dev/null
 
+echo "Copying cc-env custom files for eclipse indexer and friends..."
+(
+	CC_EXE="/usr/local/bin/cc-env"
+	CC_IMAGE="$(sed -nre 's!.+(docker-registry\.aus\.optiver\.com/[^ ]+/[^ ]+).*!\1!p' "${CC_EXE}" 2>/dev/null | tail -n1)"
+	mkdir --parents /media/cc-env/opt/ 2>/dev/null || true
+	${HOME}/dot-files/bin/docker-run.sh -v /media/cc-env:/media/cc-env -u 0 ${CC_IMAGE} rsync -vpPAXrogthlm --delete /opt/optiver /media/cc-env/opt/optiver
+) >&${log_fd} 2>&${log_fd} &
+disown -h 2>/dev/null
+disown 2>/dev/null
+
 true

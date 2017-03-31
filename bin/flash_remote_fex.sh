@@ -60,7 +60,7 @@ echo
 if [ "${REPLY}" == "n" -o "${REPLY}" == "N" ]; then
 	exit 0
 fi
-run ssh -t "${SERVER}" "sudo shutdown -h +1 'Shutting down to re-flash the FPGA.  You have 1 minute to cancel (sudo shutdown -c)'"
+run ssh -t "${SERVER}" "sudo /sbin/shutdown -h +1 'Shutting down to re-flash the FPGA.  You have 1 minute to cancel (sudo /sbin/shutdown -c)'"
 
 echo
 read -n1 -s -p "Do the lights out thing, then press any key to continue..."
