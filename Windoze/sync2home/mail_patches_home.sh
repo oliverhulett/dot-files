@@ -30,7 +30,7 @@ for f in files.*; do
 	NUM_PATCHES=$(( $NUM_PATCHES + $np ))
 done
 if [ $NUM_PATCHES == 0 ]; then
-	echo "No patches formatted, not sending e-mail"
+	echo "No patches formatted, not sending e-mail.  Press Enter to exit"
 	read
 	exit 0
 fi
@@ -49,4 +49,5 @@ echo "Committing last mailed hash: ${NEXT_HASH}"
 echo ${NEXT_HASH} >"${HASH_FILE}"
 git commit .last-mailed-hash -m"Sync2Home autocommit: ${NUM_PATCHES} patches: ${LAST_HASH} to ${NEXT_HASH}" --allow-empty
 git push
+echo "Done.  Press Enter to exit"
 read
