@@ -183,26 +183,23 @@ function! StatuslineCurrentHighlight()
 	endif
 endfunction
 
-"return '[&et]' if &et is set wrong
+"recalculate the trailing whitespace warning when idle, and after saving
+autocmd cursorhold,bufwritepost * unlet! b:statusline_tab_warning
+
+"return '[&expand-tabs]' if &et is set wrong
 "return '[mixed-indenting]' if spaces and tabs are used to indent
 "return an empty string if everything is fine
 function! StatuslineTabWarning()
 	if !exists("b:statusline_tab_warning")
-		let b:statusline_tab_warning = ''
-
-		if !&modifiable
-			return b:statusline_tab_warning
-		endif
-
 		let tabs = search('^\t', 'nw') != 0
-
-		"find spaces that aren't used as alignment in the first indent column
-		let spaces = search('^ \{' . &ts . ',}[^\t]', 'nw') != 0
+		let spaces = search('^ ', 'nw') != 0
 
 		if tabs && spaces
 			let b:statusline_tab_warning =  '[mixed-indenting]'
 		elseif (spaces && !&et) || (tabs && &et)
-			let b:statusline_tab_warning = '[&expant-tabs]'
+			let b:statusline_tab_warning = '[&et]'
+		else
+			let b:statusline_tab_warning = ''
 		endif
 	endif
 	return b:statusline_tab_warning

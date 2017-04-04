@@ -44,7 +44,4 @@ alias cc-env-build.py=cc-env-build
 alias cc-env-inv='INVOKE_BUILD_ROOT="build/c5" cc-env inv'
 alias cc-env-invoke='INVOKE_BUILD_ROOT="build/c5" cc-env inv'
 
-alias dock=dock.sh
-alias sdock=sdock.sh
-
-complete -F _root_command cc-env dock.sh dock sdock.sh sdock
+complete -F _root_command cc-env
