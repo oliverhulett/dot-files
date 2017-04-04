@@ -1,6 +1,8 @@
 #!/bin/bash
 
-source "${HOME}/dot-files/bash_common.sh" 2>/dev/null && eval "${setup_log_fd}" || true
+HERE="$(dirname "$(readlink -f "$0")")"
+DOTFILES="$(dirname "${HERE}")"
+source "${DOTFILES}/bash_common.sh" 2>/dev/null && eval "${setup_log_fd}" || true
 
 ## Early exist to a generic editor for things that aren't commits.
 if ! [ $# -eq 1 -a "$1" -ef .git/COMMIT_EDITMSG ]; then
