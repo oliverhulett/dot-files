@@ -1,6 +1,8 @@
 #!/bin/bash -e
 
-source "${HOME}/dot-files/bash_common.sh" 2>/dev/null && eval "${capture_output}" || true
+HERE="$(dirname "$(readlink -f "$0")")"
+DOTFILES="$(dirname "${HERE}")"
+source "${DOTFILES}/bash_common.sh" 2>/dev/null && eval "${capture_output}" || true
 
 ## Old versions of git play with the path.  Old versions of git are correlated with old versions of Centos, which means old versions of python.
 ## If we need a python venv in out bash setup, assume we need it here too.

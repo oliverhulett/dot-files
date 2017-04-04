@@ -2,7 +2,9 @@
 #
 #	Push a list of files to the development servers.
 #
-source "${HOME}/dot-files/bash_common.sh" 2>/dev/null && eval "${capture_output}" || true
+HERE="$(dirname "$(readlink -f "$0")")"
+DOTFILES="$(dirname "${HERE}")"
+source "${DOTFILES}/bash_common.sh" 2>/dev/null && eval "${capture_output}" || true
 
 declare -a DEV_SRVS=
 

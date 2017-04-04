@@ -1,6 +1,8 @@
 #!/bin/bash
 
-source "${HOME}/dot-files/bash_common.sh" 2>/dev/null && eval "${capture_output}" || true
+HERE="$(dirname "$(readlink -f "$0")")"
+DOTFILES="$(dirname "${HERE}")"
+source "${DOTFILES}/bash_common.sh" 2>/dev/null && eval "${capture_output}" || true
 
 LOG_ARCHIVE_DIR="/media/log-archive/"
 if [ ! -d "${LOG_ARCHIVE_DIR}" ] || [ -z "$(command ls "${LOG_ARCHIVE_DIR}")" ]; then

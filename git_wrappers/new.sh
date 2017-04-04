@@ -1,6 +1,8 @@
 #!/bin/bash
 
-source "${HOME}/dot-files/bash_common.sh" 2>/dev/null && eval "${capture_output}" || true
+HERE="$(dirname "$(readlink -f "$0")")"
+DOTFILES="$(dirname "${HERE}")"
+source "${DOTFILES}/bash_common.sh" 2>/dev/null && eval "${capture_output}" || true
 
 for f in "$@"; do
 	mkdir --parents "$(dirname "$f")" >/dev/null 2>/dev/null || true

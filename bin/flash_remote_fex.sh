@@ -1,6 +1,8 @@
 #!/bin/bash -e
 
-source "${HOME}/dot-files/bash_common.sh" 2>/dev/null && eval "${capture_output}" || true
+HERE="$(dirname "$(readlink -f "$0")")"
+DOTFILES="$(dirname "${HERE}")"
+source "${DOTFILES}/bash_common.sh" 2>/dev/null && eval "${capture_output}" || true
 
 if [ $# -ne 2 -o "$1" == "-h" -o "$1" == "-?" ]; then
 	echo 1>&2 "$(basename -- "$0") requires a bit-file image to flash and a remote server on which to flash it."

@@ -1,6 +1,8 @@
 #!/bin/bash
 
-source "${HOME}/dot-files/bash_common.sh" 2>/dev/null && eval "${capture_output}" || true
+HERE="$(dirname "$(readlink -f "$0")")"
+DOTFILES="$(dirname "${HERE}")"
+source "${DOTFILES}/bash_common.sh" 2>/dev/null && eval "${capture_output}" || true
 
 CURR_BRANCH="$(git branch --no-color | sed -nre 's/^\* //p')"
 CURR_DIR="$(basename -- "$(pwd)")"
