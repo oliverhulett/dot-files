@@ -149,6 +149,12 @@ function tee_totaler()
 }
 _hidex='_setx=n; [[ $- == *x* ]] && _setx=y; set +x;'
 eval "${_hidex}"
+if [ -z "${_orig_stdout}" ]; then
+	_orig_stdout="$(readlink -f /proc/self/fd/1)"
+fi
+if [ -z "${_orig_stderr}" ]; then
+	_orig_stderr="$(readlink -f /proc/self/fd/2)"
+fi
 _restorex='[ ${_setx:-n} == y ] && set -x; unset _setx;'
 _redirect='{
 	if [ -z "$_redirected" ]; then
@@ -176,5 +182,5 @@ capture_output='{
 	eval "$setup_log_fd"
 	eval "$_restorex"
 }'
-uncapture_output='{ unset _redirected; exec >/dev/tty 2>/dev/tty; }'
+uncapture_output='{ unset _redirected; exec >"${_orig_stdout}" 2>"${_orig_stderr}"; }'
 eval "${_restorex}"
