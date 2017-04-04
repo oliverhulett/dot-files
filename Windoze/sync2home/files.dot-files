@@ -14,5 +14,6 @@
 ../../profile
 ../../setup-home.sh
 ../../todos
+../../trap_stack.sh
 ../../vim
 ../../vimrc

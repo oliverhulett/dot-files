@@ -13,7 +13,7 @@ function source()
 	fi
 }
 
-function reentrance_hash()
+function _reentrance_hash()
 {
 	for i in "$@"; do
 		if [ "$(dirname "$i")" == "/dev/fd" ]; then
@@ -32,7 +32,7 @@ function reentrance_check()
 	shift
 	var="_${FILE}_GUARD"
 	## Hash can only be a single 'token' otherwise the `eval` below doesn't work.
-	guard="__ENTERED_${FILE}_$(reentrance_hash "$@" | cut -d' ' -f1)"
+	guard="__ENTERED_${FILE}_$(_reentrance_hash "$@" | cut -d' ' -f1)"
 	if [ "${!var}" != "${guard}" ]; then
 		eval ${var}="${guard}"
 		unset var guard name FILE
@@ -51,7 +51,7 @@ function reentered()
 	reentrance_check "$(basename -- "$(readlink -f "$(caller 0 | cut -d' ' -f3-)")")" "$@"
 }
 
-function echo_clean_path()
+function _echo_clean_path()
 {
 	echo "$(echo $PATH | sed -re 's/^://;s/::+/:/g;s/:$//')"
 }
@@ -65,7 +65,7 @@ function rm_path()
 		fi
 	done
 	unset d
-	echo_clean_path
+	_echo_clean_path
 }
 
 function prepend_path()
@@ -77,7 +77,7 @@ function prepend_path()
 		fi
 	done
 	unset d
-	echo_clean_path
+	_echo_clean_path
 }
 
 function append_path()
@@ -89,7 +89,7 @@ function append_path()
 		fi
 	done
 	unset d
-	echo_clean_path
+	_echo_clean_path
 }
 
 function callstack()
@@ -136,7 +136,7 @@ function log()
 	echo "$(date '+%Y-%m-%d %H:%M:%S') [$$] [$(basename -- "$0")] [LOG   ] $@" >>"$(_logfile)"
 }
 
-function tee_totaler()
+function _tee_totaler()
 {
 	LOGFILE="$(_logfile)"
 
@@ -147,40 +147,83 @@ function tee_totaler()
 
 	tee -i >(awk --assign T="%Y-%m-%d %H:%M:%S${KEYS} " '{ print strftime(T) $0 ; fflush(stdout) }' >>"${LOGFILE}")
 }
+
 _hidex='_setx=n; [[ $- == *x* ]] && _setx=y; set +x;'
 eval "${_hidex}"
-if [ -z "${_orig_stdout}" ]; then
-	_orig_stdout="$(readlink -f /proc/self/fd/1)"
-fi
-if [ -z "${_orig_stderr}" ]; then
-	_orig_stderr="$(readlink -f /proc/self/fd/2)"
-fi
 _restorex='[ ${_setx:-n} == y ] && set -x; unset _setx;'
+
+set -x
+_common_exit_trap="${_common_exit_trap:-}"
+_installed_exit_trap="${_installed_exit_trap:-}"
+set +x
+function _prepend_exit_trap()
+{
+echo "_prepend_exit_trap" "$@"
+set -x
+	if [ -z "${_common_exit_trap}" ]; then
+		_common_exit_trap="$*"
+	else
+		_common_exit_trap="$*; ${_common_exit_trap}"
+	fi
+	builtin trap "${_installed_exit_trap:-: }; ${_common_exit_trap}" EXIT
+set +x
+}
+
+function trap()
+{
+echo "trap" "$@"
+set -x
+	if [ "${1:0:1}" == "-" -a ${#1} -gt 1 ]; then
+		# trap has a flag, use the builtin
+		builtin trap "$@"
+		return $?
+	fi
+	local spec="$1"
+	shift
+	for sig in "$@"; do
+		if [ "$sig" == "EXIT" ]; then
+			if [ -z "$spec" -o "$spec" == "-" ]; then
+				_installed_exit_trap=
+			else
+				_installed_exit_trap="${spec}"
+			fi
+			builtin trap "${_installed_exit_trap:-: }; ${_common_exit_trap}" EXIT
+		else
+			builtin trap "$spec" $sig
+		fi
+	done
+set +x
+}
+
 _redirect='{
 	if [ -z "$_redirected" ]; then
-		exec > >(tee_totaler $$ "$(basename -- "$0")" STDOUT 2>/dev/null);
-		exec 2> >(tee_totaler $$ "$(basename -- "$0")" STDERR >&2);
+set -x;
+		_orig_stdout="$(readlink -f /proc/self/fd/1)";
+		_orig_stderr="$(readlink -f /proc/self/fd/2)";
+set +x;
+		exec > >(_tee_totaler $$ "$(basename -- "$0")" STDOUT 2>/dev/null);
+		exec 2> >(_tee_totaler $$ "$(basename -- "$0")" STDERR >&2);
 		_redirected="true";
-		trap "unset _redirected" EXIT;
+		_prepend_exit_trap "unset _redirected";
 	fi;
 }'
 setup_log_fd='{
-	eval "$_hidex" 2>/dev/null
+	eval "$_hidex" 2>/dev/null;
 	log_fd=3;
 	if [ ! -t "${log_fd}" ]; then
-		exec 3> >(tee_totaler $$ "$(basename -- "$0")" "DEBUG " >/dev/null 2>/dev/null);
-		trap "unset log_fd" EXIT;
+		exec 3> >(_tee_totaler $$ "$(basename -- "$0")" "DEBUG " >/dev/null 2>/dev/null);
+		_prepend_exit_trap "unset log_fd";
 	fi;
 	echo "$ $0 $@" >&${log_fd};
-	trap "echo '"'"'\$ $0 $*;'"'"' Returned=\$? >&${log_fd}" EXIT;
+	_prepend_exit_trap "echo '"'"'\$ $0 $*;'"'"' Returned=\$? >&${log_fd}";
 	callstack >&${log_fd};
-	eval "$_restorex"
+	eval "$_restorex";
 }'
 capture_output='{
-	eval "$_hidex" 2>/dev/null
-	eval "$_redirect"
-	eval "$setup_log_fd"
-	eval "$_restorex"
+	eval "$_hidex" 2>/dev/null;
+	eval "$_redirect";
+	eval "$setup_log_fd";
+	eval "$_restorex";
 }'
-uncapture_output='{ unset _redirected; exec >"${_orig_stdout}" 2>"${_orig_stderr}"; }'
+uncapture_output='{ set -x; unset _redirected; exec >"${_orig_stdout:-/dev/tty}" 2>"${_orig_stderr:-/dev/tty}"; set +x; }'
 eval "${_restorex}"
