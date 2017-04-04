@@ -10,7 +10,7 @@ touch "$@"
 TMPFILE="$(mktemp)"
 NOTICE="# Create template file.  This line will be removed."
 echo "$NOTICE" >"$TMPFILE"
-$VISUAL "$TMPFILE" >/dev/tty 2>/dev/tty
+$VISUAL "$TMPFILE" >"${_orig_stdout}" 2>"${_orig_stderr}"
 sed -re "1,1{/^${NOTICE}\$/d}" "$TMPFILE" -i
 
 for f in "$@"; do

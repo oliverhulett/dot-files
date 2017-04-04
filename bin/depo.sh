@@ -86,7 +86,7 @@ echo "Using base docker image: $BASE_DOCKER"
 function run()
 {
 	echo "$@"
-	"$@" >/dev/tty 2>/dev/tty
+	"$@" >"${_orig_stdout}" 2>"${_orig_stderr}"
 	echo
 }
 

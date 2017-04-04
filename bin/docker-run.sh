@@ -37,7 +37,7 @@ proxy_exe "/optiver/bin/dockerme" "e377e9746adfa1f2d28b394e31e5f6e5"
 function run()
 {
 	echo "$@"
-	"$@" >/dev/tty 2>/dev/tty
+	"$@" >"${_orig_stdout}" 2>"${_orig_stderr}"
 	echo
 }
 run dockerme -h `hostname` --cpu-shares=`nproc` --privileged --name=${NAME} \
