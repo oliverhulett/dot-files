@@ -1,17 +1,20 @@
 ## Common function used by bashrc and bash_alias/* files.
 ## `source bash_common.sh` must be idempotent.
 
-
 _hidex='_setx=n; [[ $- == *x* ]] && _setx=y; set +x;'
 eval "${_hidex}"
 _restorex='[ ${_setx:-n} == y ] && set -x; unset _setx;'
 
-DEBUG_BASHRC="${DEBUG_BASHRC:-*}"
+export DEBUG_BASHRC="${DEBUG_BASHRC:-*}"
 function source()
 {
 	log "${DEBUG_BASHRC} - source $@"
-	DEBUG_BASHRC="${DEBUG_BASHRC}"'*' builtin source "$@"
+	DEBUG_BASHRC="${DEBUG_BASHRC}"'*'
+	builtin source "$@"
+	es=$?
+	DEBUG_BASHRC="${DEBUG_BASHRC%\*}"
 	log "${DEBUG_BASHRC} - ~source $@"
+	return $es
 }
 
 function _reentrance_hash()
@@ -151,24 +154,23 @@ function _tee_totaler()
 
 _redirect='{
 	if [ -z "$_redirected" ]; then
-		ls -l /proc/self/fd;
-		#_orig_stdout="$(readlink -f /proc/self/fd/1)";
-		#_orig_stderr="$(readlink -f /proc/self/fd/2)";
-		exec > >(_tee_totaler $$ "$(basename -- "$0")" STDOUT 2>/dev/null);
-		exec 2> >(_tee_totaler $$ "$(basename -- "$0")" STDERR >&2);
-		_redirected="true";
 		trap -n redirect "unset _redirected" EXIT;
+		_orig_stdout="$(readlink -f /proc/$$/fd/1)";
+		_orig_stderr="$(readlink -f /proc/$$/fd/2)";
+		exec > >(_tee_totaler "$$" "$(basename -- "$0")" STDOUT 2>/dev/null);
+		exec 2> >(_tee_totaler "$$" "$(basename -- "$0")" STDERR >&2);
+		_redirected="true";
 	fi;
 }'
 setup_log_fd='{
 	eval "$_hidex" 2>/dev/null;
 	log_fd=3;
 	if [ ! -t "${log_fd}" ]; then
-		exec 3> >(_tee_totaler $$ "$(basename -- "$0")" "DEBUG " >/dev/null 2>/dev/null);
 		trap -n log_fd "unset log_fd" EXIT;
+		exec 3> >(_tee_totaler "$$" "$(basename -- "$0")" "DEBUG " >/dev/null 2>/dev/null);
 	fi;
-	echo "$ $0 $@" >&${log_fd};
 	trap -n setup_log_fd "echo '"'"'\$ $0 $*;'"'"' Returned=\$? >&${log_fd}" EXIT;
+	echo "$ $0 $@" >&${log_fd};
 	callstack >&${log_fd};
 	eval "$_restorex";
 }'

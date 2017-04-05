@@ -25,7 +25,7 @@ docker inspect $IMAGE 2>&${log_fd} | jq '.[0].Config.Labels' 2>&${log_fd}
 # Use a docker container to do things
 TMP="$(mktemp -p "${HOME}" -t ".$(date '+%Y%m%d-%H%M%S').docker.$(basename -- "$1").XXXXXXXXXX")"
 NODIR="$(mktemp -d)"
-trap 'ec=$?; echo && echo "Leaving $NAME (${IMAGE})" && echo "Ran: $@" && echo "Exit code: $ec" && rm -fr "${TMP}" "${NODIR}"' EXIT
+trap 'ec=$?; echo && echo "Leaving $NAME (${IMAGE})" && echo "Ran: $@" && echo "Exit code: $ec" && rm -fr "${TMP}" "${NODIR}" 2>/dev/null' EXIT
 command cat >"$TMP" <<-EOF
 	#!/bin/bash -i
 	source ~/.bashrc
