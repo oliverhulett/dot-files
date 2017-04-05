@@ -16,9 +16,10 @@ function print_help()
 }
 
 OPTS=$(getopt -o "fhgp:" --long "force,help,git,pattern:" -n "$(basename -- "$0")" -- "$@")
-if [ $? != 0 ]; then
+es=$?
+if [ $es != 0 ]; then
 	print_help
-	exit $?
+	exit $es
 fi
 
 GIT=

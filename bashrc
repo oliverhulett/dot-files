@@ -128,7 +128,7 @@ set_local_paths
 # Two stage command to remember $OLDPWD.
 OLDPWD_FILE="$HOME/.oldpwd"
 # Trap EXIT and write `pwd` to a file.
-trap 'if [ "`pwd`" == "$HOME" ] && [ -n "$OLDPWD" ] && [ "$OLDPWD" != "$HOME" ]; then echo $OLDPWD >"$OLDPWD_FILE"; else pwd >"$OLDPWD_FILE"; fi;' EXIT
+trap -n oldpwd 'if [ "`pwd`" == "$HOME" ] && [ -n "$OLDPWD" ] && [ "$OLDPWD" != "$HOME" ]; then echo $OLDPWD >"$OLDPWD_FILE"; else pwd >"$OLDPWD_FILE"; fi;' EXIT
 # If `pwd` was written to a file last time, restore directory into $OLDPWD.
 if [ -f "$OLDPWD_FILE" ]; then
 	export OLDPWD=`command cat $OLDPWD_FILE 2>/dev/null`
@@ -155,7 +155,7 @@ function _timer_start()
 {
 	_timer=${_timer:-$SECONDS}
 }
-trap '_timer_start' DEBUG
+builtin trap '_timer_start' DEBUG
 
 function _prompt_command()
 {

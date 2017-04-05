@@ -29,9 +29,11 @@ function proxy_exe()
 		echo "[WARN] ${EXE} has changed, make sure you're still faking it right."
 		echo "Last hash was: ${OLD_MD5}"
 		md5sum "${EXE}"
+		log "[WARN] ${EXE} has changed, make sure you're still faking it right: LastHash=${OLD_MD5} NewHash=${NEW_MD5}"
 		if [ ! -e "${HOME}/etc/backups/${EXE}" ] || [ "${NEW_MD5}" != "$(md5sum "${HOME}/etc/backups/${EXE}" | cut -d' ' -f1)" ]; then
 			cp -v --parents --backup=numbered "${EXE}" "${HOME}/etc/backups/"
 		fi
+		log "Try: diff ${EXE} $(command ls -1 ${HOME}/etc/backups/${EXE}.* 2>/dev/null | sort --sort=version | tail -n1)"
 		echo "Try: diff ${EXE} $(command ls -1 ${HOME}/etc/backups/${EXE}.* 2>/dev/null | sort --sort=version | tail -n1)"
 		echo
 	fi
@@ -40,18 +42,17 @@ function proxy_exe()
 unalias cc-env 2>/dev/null
 function cc-env()
 {
-	source "${HOME}/dot-files/bash_common.sh" 2>/dev/null && eval "${capture_output}" || true
 	CC_EXE="/usr/local/bin/cc-env"
 	if [ ! -x "$CC_EXE" ]; then
+		log "[FATAL] ${CC_EXE} does not exist"
 		echo "[FATAL] ${CC_EXE} does not exist"
 		return -1
 	fi
 	proxy_exe "${CC_EXE}" "57c4472ab67a9cf67a8fbd81eeaa0e83"
-	CC_IMAGE="$(sed -nre 's!.+(docker-registry\.aus\.optiver\.com/[^ ]+/[^ ]+).*!\1!p' "${CC_EXE}" 2>&${log_fd} | tail -n1)"
+	CC_IMAGE="$(sed -nre 's!.+(docker-registry\.aus\.optiver\.com/[^ ]+/[^ ]+).*!\1!p' "${CC_EXE}" | tail -n1)"
 	docker-run.sh ${CC_IMAGE} "$@"
 	es=$?
 	proxy_exe "${CC_EXE}" "57c4472ab67a9cf67a8fbd81eeaa0e83"
-	eval "${uncapture_output}"
 	return $es
 }
 
