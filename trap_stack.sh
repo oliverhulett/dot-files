@@ -113,18 +113,18 @@ function _install_trap()
 
 function _fire()
 {
+	local _last_exit_status=$?
 	eval "${_hidex}"
 	local sig="$1"
 	local stack="`_trap_stack "$sig"`"
 	local ref='echo "${'"${stack}"'[$idx]}"'
-	local es=0
 	for (( idx=0 ; idx < `_stack_size "${stack}"` ; idx += 1 )); do
 		local spec="`eval $ref`"
+		( return $_last_exit_status )
 		eval ${spec:-:}
-		es=$(( $es + $? ))
 	done
 	eval "${_restorex}"
-	return $es
+	return $_last_exit_status
 }
 
 function trap()

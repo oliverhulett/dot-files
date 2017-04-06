@@ -25,6 +25,7 @@
 								<option id="gnu.cpp.compiler.exe.debug.option.debugging.level.1352886269" name="Debug Level" superClass="gnu.cpp.compiler.exe.debug.option.debugging.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.preprocessor.def.1357029691" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="FLOGGER_STRICT_STRINGS=1"/>
+									<listOptionValue builtIn="false" value="COMMON6_DEPRECATED_SUPPORT=1"/>
 									<listOptionValue builtIn="false" value="USE_PROFILER_TYPE=2"/>
 									<listOptionValue builtIn="false" value="HAS_INTERNAL_SCHEMA=1"/>
 									<listOptionValue builtIn="false" value="COMMON_USE_SSE42_HARDWARE_CRC=1"/>
@@ -33,6 +34,7 @@
 								</option>
 								<option id="gnu.cpp.compiler.option.include.paths.393033090" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="/media/cc-env/opt/optiver/xercesc/2.8.0/include"/>
+									<listOptionValue builtIn="false" value="/media/cc-env/opt/optiver/boost/1.52.0/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1030406425" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
@@ -48,6 +50,7 @@
 							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.53698105" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug">
 								<option id="gnu.cpp.link.option.paths.248803569" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="/media/cc-env/opt/optiver/xercesc/2.8.0/lib64"/>
+									<listOptionValue builtIn="false" value="/media/cc-env/opt/optiver/boost/1.52.0/lib64"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.168693358" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
@@ -88,6 +91,7 @@
 								<option id="gnu.cpp.compiler.option.preprocessor.def.334942354" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="MLP6_LIMIT_CHECKER=1"/>
 									<listOptionValue builtIn="false" value="FLOGGER_STRICT_STRINGS=1"/>
+									<listOptionValue builtIn="false" value="COMMON6_DEPRECATED_SUPPORT=1"/>
 									<listOptionValue builtIn="false" value="USE_PROFILER_TYPE=2"/>
 									<listOptionValue builtIn="false" value="HAS_INTERNAL_SCHEMA=1"/>
 									<listOptionValue builtIn="false" value="COMMON_USE_SSE42_HARDWARE_CRC=1"/>
@@ -96,6 +100,7 @@
 								</option>
 								<option id="gnu.cpp.compiler.option.include.paths.132840836" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="/media/cc-env/opt/optiver/xercesc/2.8.0/include"/>
+									<listOptionValue builtIn="false" value="/media/cc-env/opt/optiver/boost/1.52.0/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.668402697" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
@@ -111,6 +116,7 @@
 							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.exe.release.1352002869" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.release">
 								<option id="gnu.cpp.link.option.paths.1101577655" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="/media/cc-env/opt/optiver/xercesc/2.8.0/lib64"/>
+									<listOptionValue builtIn="false" value="/media/cc-env/opt/optiver/boost/1.52.0/lib64"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.17133582" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
@@ -151,6 +157,7 @@
 								<option id="gnu.cpp.compiler.exe.debug.option.debugging.level.824450634" name="Debug Level" superClass="gnu.cpp.compiler.exe.debug.option.debugging.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.preprocessor.def.1105586326" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="FLOGGER_STRICT_STRINGS=1"/>
+									<listOptionValue builtIn="false" value="COMMON6_DEPRECATED_SUPPORT=1"/>
 									<listOptionValue builtIn="false" value="USE_PROFILER_TYPE=2"/>
 									<listOptionValue builtIn="false" value="HAS_INTERNAL_SCHEMA=1"/>
 									<listOptionValue builtIn="false" value="COMMON_USE_SSE42_HARDWARE_CRC=1"/>
@@ -159,6 +166,7 @@
 								</option>
 								<option id="gnu.cpp.compiler.option.include.paths.1817029649" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="/media/cc-env/opt/optiver/xercesc/2.8.0/include"/>
+									<listOptionValue builtIn="false" value="/media/cc-env/opt/optiver/boost/1.52.0/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.37599657" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
@@ -174,6 +182,7 @@
 							<tool errorParsers="org.eclipse.cdt.core.GLDErrorParser" id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.671695629" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug">
 								<option id="gnu.cpp.link.option.paths.1713411206" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="/media/cc-env/opt/optiver/xercesc/2.8.0/lib64"/>
+									<listOptionValue builtIn="false" value="/media/cc-env/opt/optiver/boost/1.52.0/lib64"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1874672254" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
