@@ -91,7 +91,7 @@ echo "Restoring local installs and other backups..."
 		find ${HOME}/$d -type f -print0 | xargs -0 chmod -x
 		chown -R ${USER}:users ${HOME}/$d
 	done
-	chmod +x ${HOME}/opt/eclipse/eclipse ${HOME}/opt/sublime_text_3/sublime_text ${HOME}/opt/subl.sh ${HOME}/opt/clion-2016.3.2/bin/clion.sh
+	chmod +x ${HOME}/opt/pyvenv/bin/* ${HOME}/opt/eclipse/eclipse ${HOME}/opt/sublime_text_3/sublime_text ${HOME}/opt/subl.sh ${HOME}/opt/clion-2016.3.2/bin/clion.sh
 ) >&${log_fd} 2>&${log_fd} &
 disown -h 2>/dev/null
 disown 2>/dev/null
