@@ -153,11 +153,11 @@ function _tee_totaler()
 }
 
 _redirect='{
-	if [ -z "$_redirected" ]; then
+	if [ "$0" == "${BASH_SOURCE}" -a -z "$_redirected" ]; then
 		trap -n redirect "unset _redirected" EXIT;
 		_orig_stdout="$(readlink -f /proc/$$/fd/1)";
 		_orig_stderr="$(readlink -f /proc/$$/fd/2)";
-		builtin trap "log \$ \$BASH_COMMAND" DEBUG;
+		#builtin trap "log \$ \$BASH_COMMAND" DEBUG;
 		exec > >(_tee_totaler "$$" "$(basename -- "$0")" STDOUT 2>/dev/null);
 		exec 2> >(_tee_totaler "$$" "$(basename -- "$0")" STDERR >&2);
 		_redirected="true";
@@ -178,7 +178,7 @@ setup_log_fd='{
 capture_output='{
 	eval "$_hidex" 2>/dev/null;
 	eval "$setup_log_fd";
-	[ "$0" == "${BASH_SOURCE}" ] && eval "$_redirect";
+	eval "$_redirect";
 	eval "$_restorex";
 }'
 uncapture_output='{
