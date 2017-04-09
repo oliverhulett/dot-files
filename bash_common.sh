@@ -63,7 +63,7 @@ function _logfile()
 
 function log()
 {
-	echo "$(date '+%Y-%m-%d %H:%M:%S') [$$] [$(basename -- "$0")] [LOG   ] $@" >>"$(_logfile)"
+	echo "$(date '+%Y-%m-%d %H:%M:%S.%N') [$$] [$(basename -- "$0")] [LOG   ] $@" >>"$(_logfile)"
 }
 
 builtin source "${HOME}/dot-files/trap_stack.sh"
@@ -157,6 +157,7 @@ _redirect='{
 		trap -n redirect "unset _redirected" EXIT;
 		_orig_stdout="$(readlink -f /proc/$$/fd/1)";
 		_orig_stderr="$(readlink -f /proc/$$/fd/2)";
+		builtin trap "log \$ \$BASH_COMMAND" DEBUG;
 		exec > >(_tee_totaler "$$" "$(basename -- "$0")" STDOUT 2>/dev/null);
 		exec 2> >(_tee_totaler "$$" "$(basename -- "$0")" STDERR >&2);
 		_redirected="true";
@@ -170,15 +171,20 @@ setup_log_fd='{
 		exec 3> >(_tee_totaler "$$" "$(basename -- "$0")" "DEBUG " >/dev/null 2>/dev/null);
 	fi;
 	trap -n setup_log_fd "echo '"'"'\$ $0 $*;'"'"' Returned=\$? >&${log_fd}" EXIT;
-	echo "$ $0 $@" >&${log_fd};
 	callstack >&${log_fd};
+	echo "$ $0 $@" >&${log_fd};
 	eval "$_restorex";
 }'
 capture_output='{
 	eval "$_hidex" 2>/dev/null;
-	eval "$_redirect";
 	eval "$setup_log_fd";
+	[ "$0" == "${BASH_SOURCE}" ] && eval "$_redirect";
 	eval "$_restorex";
 }'
-uncapture_output='{ unset _redirected; exec >"${_orig_stdout:-/dev/tty}" 2>"${_orig_stderr:-/dev/tty}"; }'
+uncapture_output='{
+	if [ -n "$_redirected" ]; then
+		unset _redirected;
+		exec >"${_orig_stdout:-/dev/tty}" 2>"${_orig_stderr:-/dev/tty}";
+	fi;
+}'
 eval "${_restorex}"

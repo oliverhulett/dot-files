@@ -107,7 +107,7 @@ function _install_trap()
 		builtin trap "_fire $sig" $sig
 		es=$?
 	fi
-	log "Installed trap: Signal=$sig TrapName=$NAME StackIdx=$cnt Spec='$spec'"
+	log "Installed trap: Signal=$sig StackIdx=$cnt TrapName=$NAME Spec="'"'"$spec"'"'
 	return $es
 }
 
