@@ -12,6 +12,8 @@ try
 	Plugin 'ConradIrwin/vim-bracketed-paste'
 	Plugin 'reedes/vim-litecorrect'
 	Plugin 'vim-scripts/wordlist.vim'
+	Plugin 'vim-syntastic/syntastic'
+	Plugin 'myint/syntastic-extras'
 
 	" All of your Plugins must be added before the following line
 	call vundle#end()
@@ -24,7 +26,7 @@ filetype plugin on
 " From ntpeters/vim-better-whitespace: Strip white-space on save
 autocmd BufEnter * silent! EnableStripWhitespaceOnSave
 
-" From reeds/vim-litecorrect:  Lightweight auto cow wrecks
+" From reeds/vim-litecorrect: Lightweight auto-cow-wrecks
 autocmd FileType * silent! call litecorrect#init()
 
 " Show tabs as well
@@ -91,6 +93,40 @@ autocmd FileType * setlocal formatoptions-=c
 autocmd FileType * setlocal formatoptions-=a
 autocmd FileType * setlocal formatoptions+=n
 autocmd FileType * setlocal formatoptions+=q
+
+" Syntastic settings
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+
+function! GetBufferList()
+	redir =>buflist
+	silent! ls!
+	redir END
+	return buflist
+endfunction
+function! ToggleList(bufname, pfx)
+	let buflist = GetBufferList()
+	for bufnum in map(filter(split(buflist, '\n'), 'v:val =~ "'.a:bufname.'"'), 'str2nr(matchstr(v:val, "\\d\\+"))')
+		if bufwinnr(bufnum) != -1
+			exec(a:pfx.'close')
+			return
+		endif
+	endfor
+	if a:pfx == 'l' && len(getloclist(0)) == 0
+			echohl ErrorMsg
+			echo "Location List is Empty."
+			return
+	endif
+	let winnr = winnr()
+	exec(a:pfx.'open')
+	if winnr() != winnr
+		wincmd p
+	endif
+endfunction
+nmap <silent> <leader>k :call ToggleList("Location List", 'l')<cr>
+nmap <leader>kk :lprev<cr>
+nmap <leader>kj :lnext<cr>
 
 " Shortcut keys to turn on spell-checking
 nnoremap <c-l> :setlocal spell! spelllang=en_gb<cr>
@@ -162,6 +198,11 @@ set statusline+=%#error#
 set statusline+=%{&paste?'[paste]':''}
 set statusline+=%*
 
+"Syntastic warnings
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+
 "left/right separator
 set statusline+=%=
 set statusline+=%{StatuslineCurrentHighlight()}\ \ "current highlight
@@ -195,7 +236,7 @@ function! StatuslineTabWarning()
 		let spaces = search('^ ', 'nw') != 0
 
 		if tabs && spaces
-			let b:statusline_tab_warning =  '[mixed-indenting]'
+			let b:statusline_tab_warning = '[mixed-indenting]'
 		elseif (spaces && !&et) || (tabs && &et)
 			let b:statusline_tab_warning = '[&et]'
 		else

@@ -32,6 +32,8 @@ function edt()
 	source "${HOME}/dot-files/bash_common.sh" 2>/dev/null || true
 	VUNDLE_LAST_UPDATED_MARKER="${HOME}/.vim/bundle/.last_updated"
 	if [ -z "$(find "${VUNDLE_LAST_UPDATED_MARKER}" -mtime -1 2>/dev/null)" ]; then
+		source "${HOME}/.bash_aliases/19-env-proxy.sh" 2>/dev/null
+		proxy_setup -q >/dev/null 2>/dev/null
 		vim +'silent! PluginInstall' +qall
 		date >"${VUNDLE_LAST_UPDATED_MARKER}"
 	fi

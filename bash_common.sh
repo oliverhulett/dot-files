@@ -1,5 +1,7 @@
 ## Common function used by bashrc and bash_alias/* files.
 ## `source bash_common.sh` must be idempotent.
+# shellcheck shell=sh
+# shellcheck disable=SC2016,SC2015
 
 _hidex='_setx=n; [[ $- == *x* ]] && _setx=y; set +x;'
 eval "${_hidex}"
@@ -8,12 +10,12 @@ _restorex='[ ${_setx:-n} == y ] && set -x; unset _setx;'
 export DEBUG_BASHRC="${DEBUG_BASHRC:-*}"
 function source()
 {
-	log "${DEBUG_BASHRC} - source $@"
+	log "${DEBUG_BASHRC} - source $*"
 	DEBUG_BASHRC="${DEBUG_BASHRC}"'*'
 	builtin source "$@"
 	es=$?
 	DEBUG_BASHRC="${DEBUG_BASHRC%\*}"
-	log "${DEBUG_BASHRC} - ~source $@"
+	log "${DEBUG_BASHRC} - ~source $*"
 	return $es
 }
 
@@ -32,13 +34,13 @@ function _reentrance_hash()
 function reentrance_check()
 {
 	name="$1"
-	FILE="$(basename -- "$1" .sh | tr '[a-z]' '[A-Z]' | tr -cd '[_a-zA-Z0-9]')"
+	FILE="$(basename -- "$1" .sh | tr '[:lower:]' '[:upper:]' | tr -cd '_a-zA-Z0-9')"
 	shift
 	var="_${FILE}_GUARD"
 	## Hash can only be a single 'token' otherwise the `eval` below doesn't work.
 	guard="__ENTERED_${FILE}_$(_reentrance_hash "$@" | cut -d' ' -f1)"
 	if [ "${!var}" != "${guard}" ]; then
-		eval ${var}="${guard}"
+		eval "${var}"="${guard}"
 		unset var guard name FILE
 		return 1
 	else
@@ -63,14 +65,14 @@ function _logfile()
 
 function log()
 {
-	echo "$(date '+%Y-%m-%d %H:%M:%S.%N') [$$] [$(basename -- "$0")] [LOG   ] $@" >>"$(_logfile)"
+	echo "$(date '+%Y-%m-%d %H:%M:%S.%N') [$$] [$(basename -- "$0")] [LOG   ] $*" >>"$(_logfile)"
 }
 
 builtin source "${HOME}/dot-files/trap_stack.sh"
 
 function _echo_clean_path()
 {
-	echo "$(echo $PATH | sed -re 's/^://;s/::+/:/g;s/:$//')"
+	echo "$PATH" | sed -re 's/^://;s/::+/:/g;s/:$//'
 }
 
 function rm_path()
@@ -112,14 +114,14 @@ function append_path()
 function callstack()
 {
 	frame=${1:-0}
-	while caller $frame >/dev/null 2>/dev/null; do
-		set -- $(caller $frame)
+	while caller "$frame" >/dev/null 2>/dev/null; do
+		set -- $(caller "$frame")
 		line="$1"
 		shift
 		fn="$1"
 		shift
 		echo "frame=$frame caller=$fn line=$line file="'"'"$*"'"'
-		frame=$(($frame + 1))
+		frame=$((frame + 1))
 	done
 }
 

@@ -46,8 +46,8 @@ if ! echo "${HTTP_PROXY}" | grep -q "${USER}" 2>/dev/null; then
 fi
 su -c "${HOME}/dot-files/setup-home.sh" ${USER}
 
-systemctl link "${HOME}/dot-files/backup.service"
-systemctl start backup.service
+systemctl link "${HOME}/dot-files/autocommit.service"
+systemctl start autocommit.service
 
 echo "General clean-ups..."
 rm -rf ${HOME}/Desktop 2>/dev/null

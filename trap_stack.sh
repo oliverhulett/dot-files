@@ -10,6 +10,9 @@
 ## Concepts stolen from http://stackoverflow.com/a/16115145
 ##
 ## `source trap_stack.sh` is sourced by bash_common.sh, so must be idempotent.
+# shellcheck shell=sh
+# shellcheck source=bash_common.sh
+# shellcheck disable=SC2016,SC2086,SC2046
 
 __ANON_STACK_NAME="__anon__"
 
@@ -36,21 +39,21 @@ function _print_traps()
 	fi
 	local es=0
 	for sig in "$@"; do
-		builtin trap -p -- $sig
+		builtin trap -p -- "$sig"
 		es=$?
 		if [ $es != 0 ]; then
 			break
 		fi
-		local stack="`_trap_stack "$sig"`"
-		local name_list="`_trap_stack_name_list "$stack"`"
+		local stack="$(_trap_stack "$sig")"
+		local name_list="$(_trap_stack_name_list "$stack")"
 		local ref='echo "${'"${stack}"'[$idx]}"'
 		local nameref='echo "${'"__name${stack}"'[$idx]}"'
-		for (( idx=0 ; idx < `_stack_size "${stack}"` ; idx += 1 )); do
-			local spec="`eval $ref`"
+		for (( idx=0 ; idx < $(_stack_size "${stack}") ; idx += 1 )); do
+			local spec="$(eval $ref)"
 			if [ -z "${spec}" ]; then
 				continue
 			fi
-			local NAME="`eval $nameref`"
+			local NAME="$(eval $nameref)"
 			if [ "$NAME" == "${__ANON_STACK_NAME}" ]; then
 				echo "trap -- '${spec}' $sig"
 			else
@@ -68,20 +71,21 @@ function _install_trap()
 	local sig="$3"
 	## For each signal, we have an array of traps and an array of names.
 	## The trap at a given index has the name given at the same index of the names array.
-	local stack="`_trap_stack "$sig"`"
-	local name_list="`_trap_stack_name_list "$stack"`"
+	local stack="$(_trap_stack "$sig")"
+	local name_list="$(_trap_stack_name_list "$stack")"
 	## There is also a named variable giving the index of that name in both arrays.
 	local lookup="${stack}_${NAME}"
 	## Here we have the name, so look up the index.  If the variable giving the index doesn't exist,
 	## it should default to the size of the signal's list of traps.
-	local s=`_stack_size "$stack"`
-	local cnt=`eval 'echo ${'"${lookup}"':-$s}'`
-	if [ $cnt == 0 -a "$NAME" != "${__ANON_STACK_NAME}" ]; then
+	# shellcheck disable=SC2034
+	local s=$(_stack_size "$stack")
+	local cnt=$(eval 'echo ${'"${lookup}"':-$s}')
+	if [ $cnt == 0 ] && [ "$NAME" != "${__ANON_STACK_NAME}" ]; then
 		## Force anonymous trap to be at index zero.
 		eval "${stack}_${__ANON_STACK_NAME}=$cnt"
 		eval "${stack}"'['"${cnt}"']=""'
 		eval "${name_list}"'['"${cnt}"']="${__ANON_STACK_NAME}"'
-		cnt=$(( $cnt + 1 ))
+		cnt=$(( cnt + 1 ))
 	fi
 	## Write the index back to the variable (:= doesn't work in an eval, and the value of `lookup` is not exposed if eval'd in a function)
 	eval "${lookup}=$cnt"
@@ -103,7 +107,7 @@ function _install_trap()
 	eval "${stack}"'['"${cnt}"']="$spec"'
 	## Also, store the name of the trap in the list of names.
 	eval "${name_list}"'['"${cnt}"']="$NAME"'
-	if [ -n "$spec" -o "${NAME}" != "${__ANON_STACK_NAME}" ]; then
+	if [ -n "$spec" ] || [ "${NAME}" != "${__ANON_STACK_NAME}" ]; then
 		builtin trap "_fire $sig" $sig
 		es=$?
 	fi
@@ -111,17 +115,18 @@ function _install_trap()
 	return $es
 }
 
+# shellcheck disable=SC2154
 function _fire()
 {
 	local _last_exit_status=$?
 	eval "${_hidex}"
 	local sig="$1"
-	local stack="`_trap_stack "$sig"`"
+	local stack="$(_trap_stack "$sig")"
 	local ref='echo "${'"${stack}"'[$idx]}"'
-	for (( idx=0 ; idx < `_stack_size "${stack}"` ; idx += 1 )); do
-		local spec="`eval $ref`"
+	for (( idx=0 ; idx < $(_stack_size "${stack}") ; idx += 1 )); do
+		local spec="$(eval $ref)"
 		( return $_last_exit_status )
-		eval ${spec:-:}
+		eval "${spec:-:}"
 	done
 	eval "${_restorex}"
 	return $_last_exit_status
@@ -162,7 +167,7 @@ function trap()
 		esac
 	done
 	if [ "$p" == "y" ]; then
-		_print_traps $*
+		_print_traps "$@"
 		return $?
 	fi
 	local spec="$1"
