@@ -31,15 +31,17 @@ function edt()
 {
 	source "${HOME}/dot-files/bash_common.sh" 2>/dev/null || true
 	VUNDLE_LAST_UPDATED_MARKER="${HOME}/.vim/bundle/.last_updated"
-	if [ -z "$(find "${VUNDLE_LAST_UPDATED_MARKER}" -mtime -1 2>/dev/null)" ]; then
+	if [ -z "$(find "${VUNDLE_LAST_UPDATED_MARKER}" -mtime -1 2>/dev/null)" ] || \
+		[ "$(command grep -E '[ \t]*Plugin ' "${HOME}/.vimrc" | xargs -L1 | sort)" != "$(tail -n +2 "${VUNDLE_LAST_UPDATED_MARKER}")" ]; then
 		source "${HOME}/.bash_aliases/19-env-proxy.sh" 2>/dev/null
 		proxy_setup -q >/dev/null 2>/dev/null
 		vim +'silent! PluginInstall' +qall
 		date >"${VUNDLE_LAST_UPDATED_MARKER}"
+		command grep -E '[ \t]*Plugin ' "${HOME}/.vimrc" | xargs -L1 | sort >>"${VUNDLE_LAST_UPDATED_MARKER}"
 	fi
 	vim "${VUNDLE_UPDATE_CMDS[@]}" "$@"
 	es=$?
-	log "Command=edt Seconds=$(($SECONDS - $_timer)) Returned=$es CWD=$(pwd) Files={$@}"
+	log "Command=edt Seconds=$((SECONDS - _timer)) Returned=$es CWD=$(pwd) Files={$*}"
 	return $es
 }
 
@@ -83,9 +85,9 @@ fi
 # colors for ls, etc.  Prefer "$HOME/.dir_colors" #64489
 if type -f dircolors >/dev/null 2>&1; then
 	if [ -f "$HOME/.dir_colors" ]; then
-		eval `dircolors -b "$HOME/.dir_colors" 2>/dev/null` 2>/dev/null
+		eval "$(dircolors -b "$HOME/.dir_colors" 2>/dev/null)" 2>/dev/null
 	elif [ -f "/etc/DIR_COLORS" ]; then
-		eval `dircolors -b /etc/DIR_COLORS 2>/dev/null` 2>/dev/null
+		eval "$(dircolors -b /etc/DIR_COLORS 2>/dev/null)" 2>/dev/null
 	fi
 fi
 
@@ -133,18 +135,18 @@ OLDPWD_FILE="$HOME/.oldpwd"
 trap -n oldpwd 'if [ "`pwd`" == "$HOME" ] && [ -n "$OLDPWD" ] && [ "$OLDPWD" != "$HOME" ]; then echo $OLDPWD >"$OLDPWD_FILE"; else pwd >"$OLDPWD_FILE"; fi;' EXIT
 # If `pwd` was written to a file last time, restore directory into $OLDPWD.
 if [ -f "$OLDPWD_FILE" ]; then
-	export OLDPWD=`command cat $OLDPWD_FILE 2>/dev/null`
+	export OLDPWD=$(command cat $OLDPWD_FILE 2>/dev/null)
 fi
 
 # uncomment the following to activate bash-completion:
-COMP_CONFIGURE_HINTS=1
-COMP_TAR_INTERNAL_PATHS=1
-[ -f /etc/profile.d/bash-completion ] && . /etc/profile.d/bash-completion
-[ -f /etc/profile.d/bash-completion.sh ] && . /etc/profile.d/bash-completion.sh
-[ -f /etc/profile.d/bash_completion.sh ] && . /etc/profile.d/bash_completion.sh
-[ -f /etc/profile.d/bash_completion ] && . /etc/profile.d/bash_completion
+export COMP_CONFIGURE_HINTS=1
+export COMP_TAR_INTERNAL_PATHS=1
+[ -f /etc/profile.d/bash-completion ] && source /etc/profile.d/bash-completion
+[ -f /etc/profile.d/bash-completion.sh ] && source /etc/profile.d/bash-completion.sh
+[ -f /etc/profile.d/bash_completion.sh ] && source /etc/profile.d/bash_completion.sh
+[ -f /etc/profile.d/bash_completion ] && source /etc/profile.d/bash_completion
 if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
-	. /etc/bash_completion
+	source /etc/bash_completion
 fi
 
 # Whenever displaying the prompt, show the run-time of last command.
@@ -187,13 +189,13 @@ function _prompt_command()
 	fi
 
 	# Calculate the run-time of the last command
-	local _timer_show=$(($SECONDS - $_timer))
+	local _timer_show=$((SECONDS - _timer))
 	unset _timer
 
 	# Only display run-time of last command if it is greater than 1 second and not an interactive command
 	PROMPT_TIMER=
 	if [ ${_timer_show-0} -gt 1 ]; then
-		set -- `history 1`
+		set -- $(history 1)
 		# `history` outputs command count, then date, then time, then command
 		shift 3
 		if ! grep -qwE "$(sed -re 's/^\^?/^/' ${HOME}/.interactive_commands 2>/dev/null | paste -sd'|' -)" <(echo "$@") >/dev/null 2>/dev/null; then
@@ -216,7 +218,7 @@ function _prompt_command()
 }
 export PROMPT_COMMAND=_prompt_command
 
-if ! echo "${HTTP_PROXY}" | grep -q "`whoami`" 2>/dev/null; then
+if ! echo "${HTTP_PROXY}" | grep -q "$(whoami)" 2>/dev/null; then
 	source "${HOME}/.bash_aliases/19-env-proxy.sh" 2>/dev/null
 	proxy_setup -q >/dev/null 2>/dev/null
 fi

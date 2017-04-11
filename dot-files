@@ -36,6 +36,7 @@ bash_logout .bash_logout
 bash_profile .bash_profile
 bashrc .bashrc
 docker_favourites .docker_favourites
+flake8 .config/flake8
 gitconfig .gitconfig
 gitignore .gitignore
 git_wrappers .git_wrappers

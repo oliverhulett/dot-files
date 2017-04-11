@@ -5,7 +5,7 @@ ZIPPER="C:/Program Files/7-Zip/7z.exe"
 HERE="$(dirname "$0")"
 HASH_FILE="${HERE}/.last-mailed-hash"
 
-cd "${HERE}"
+cd "${HERE}" || ( echo "Failed to enter run directory.  Press any key to exit"; read -r -n1; exit 1 )
 git pullb
 
 TODAY="$(date '+%Y-%m-%d')"
@@ -24,20 +24,25 @@ for f in files.*; do
 	d="$(echo $f | sed -re 's/^files.//')"
 	mkdir "${PATCHES_ROOT}/$d" 2>/dev/null
 	echo "Formatting patches from ${LAST_HASH} for $f"
-	fmt_cmd="git format-patch --output-directory=${PATCHES_ROOT}/$d --no-binary --attach --to oliver.hulett@gmail.com ${LAST_HASH} -- $(cat $f | xargs)"
+	fmt_cmd="git format-patch --output-directory=${PATCHES_ROOT}/$d --no-binary --attach --to oliver.hulett@gmail.com ${LAST_HASH} -- $(xargs <$f)"
 	echo $fmt_cmd
-	np=$($fmt_cmd | wc -l)
-	NUM_PATCHES=$(( $NUM_PATCHES + $np ))
+	np=$($fmt_cmd | command grep -cv '^\s*$')
+	NUM_PATCHES=$(( NUM_PATCHES + np ))
 done
 if [ $NUM_PATCHES == 0 ]; then
-	echo "No patches formatted, not sending e-mail.  Press Enter to exit"
-	read
+	echo "No patches formatted, not sending e-mail.  Press any key to exit"
+	read -r -n1
 	exit 0
 fi
 
 echo "Zipping $NUM_PATCHES patches"
 echo "${ZIPPER}" a "${ZIPFILE}" "${PATCHES_ROOT}"
 "${ZIPPER}" a "${ZIPFILE}" "${PATCHES_ROOT}"
+if [ ! -s "${ZIPFILE}" ]; then
+	echo "Failed to zip patches, not sending e-mail.  Press any key to exit"
+	read -r -n1
+	exit 0
+fi
 
 echo "Mailing $NUM_PATCHES patches"
 echo "${MAILER}" -smtp unixmail.comp.optiver.com -f olihul@optiver.com.au -t oliver.hulett@gmail.com -sub "${TODAY} dotfiles" -attach "${ZIPFILE}",application/x-7z-compressed,a
@@ -49,5 +54,5 @@ echo "Committing last mailed hash: ${NEXT_HASH}"
 echo ${NEXT_HASH} >"${HASH_FILE}"
 git commit .last-mailed-hash -m"Sync2Home autocommit: ${NUM_PATCHES} patches: ${LAST_HASH} to ${NEXT_HASH}" --allow-empty
 git push
-echo "Done.  Press Enter to exit"
-read
+echo "Done.  Press any key to exit"
+read -r -n1

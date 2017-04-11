@@ -66,18 +66,34 @@ echo "Installing some things I don't want to docker all the time..."
 	yum groupinstall -y "development tools"
 	yum install -y docker which wget curl telnet vagrant iotop nethogs sysstat aspell aspell-en cifs-utils samba samba-client protobuf-vim golang-vim jq \
 		openssl-libs openssl-static java-1.8.0-openjdk-devel java-1.8.0-openjdk \
-		python-devel python-pip libxml2-devel libxslt-devel \
+		python-devel python-pip libxml2-devel libxslt-devel gmp-devel \
 		cmake ccache distcc protobuf protobuf-c protobuf-python protobuf-compiler valgrind clang-devel clang clang-analyzer \
 		wireshark
 
 	PIP_CONFIG_FILE="${HOME}/dot-files/pip.conf" pip install -U pip
 	PIP_CONFIG_FILE="${HOME}/dot-files/pip.conf" pip install -U setuptools wheel
-	PIP_CONFIG_FILE="${HOME}/dot-files/pip.conf" pip install pygments
+	PIP_CONFIG_FILE="${HOME}/dot-files/pip.conf" pip install pygments flake8
 
 	( cd /tmp && \
 		curl http://downloads.drone.io/release/linux/amd64/drone.tar.gz | tar zx && \
 		install -t /usr/local/bin drone && \
 		rm drone
+	)
+
+	TMPDIR="$(mktemp -d)"
+	( cd "${TMPDIR}" && \
+		HASKELL="https://haskell.org/platform/download/7.10.2/haskell-platform-7.10.2-a-unknown-linux-deb7.tar.gz" && \
+		wget "${HASKELL}" && tar -xzvf "$(basename "${HASKELL}")" && \
+		./install-haskell-platform.sh && \
+		cabal update && \
+		cabal install --global --prefix=/usr/local shellcheck
+	)
+	rm -rf "${TMPDIR}" 2>/dev/null
+
+	mkdir --parents /opt/bats 2>/dev/null || true
+	( cd /opt/bats && \
+		git clone https://github.com/sstephenson/bats.git . && \
+		./install.sh /usr/local
 	)
 ) >&${log_fd} 2>&${log_fd} &
 disown -h 2>/dev/null

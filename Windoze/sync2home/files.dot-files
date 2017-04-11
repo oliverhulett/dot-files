@@ -5,6 +5,7 @@
 ../../bash_profile
 ../../bashrc
 ../../dot-files
+../../flake8
 ../../gitconfig
 ../../gitignore
 ../../git_wrappers
@@ -13,6 +14,7 @@
 ../../lessfilter
 ../../profile
 ../../setup-home.sh
+../../tests
 ../../todos
 ../../trap_stack.sh
 ../../vim

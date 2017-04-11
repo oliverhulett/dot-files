@@ -1,6 +1,7 @@
 argparse
 devpi
 docker-compose
+flake8
 invoke==0.13.0
 lxml<3.4
 protobuf==2.5.0

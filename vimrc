@@ -8,12 +8,14 @@ try
 	call vundle#begin()
 	Plugin 'VundleVim/Vundle.vim'
 
-	Plugin 'ntpeters/vim-better-whitespace'
 	Plugin 'ConradIrwin/vim-bracketed-paste'
+	Plugin 'kawaz/batscheck.vim'
+	Plugin 'myint/syntastic-extras'
+	Plugin 'ntpeters/vim-better-whitespace'
 	Plugin 'reedes/vim-litecorrect'
+	Plugin 'vim-scripts/bats.vim'
 	Plugin 'vim-scripts/wordlist.vim'
 	Plugin 'vim-syntastic/syntastic'
-	Plugin 'myint/syntastic-extras'
 
 	" All of your Plugins must be added before the following line
 	call vundle#end()
@@ -69,35 +71,37 @@ nmap <c-q> :q<CR>
 map <c-f> :%s/<c-r>///gc<Left><left><left>
 
 " Personalise
+set hlsearch
+set incsearch
+set noautoindent
+set nobackup
+set noexpandtab
+set noswapfile
+set nowb
 set number
 set ruler
-set showmatch
 set scrolloff=10
-set smartcase
-set tabstop=4
 set shiftwidth=4
-set textwidth=100
+set showmatch
+set smartcase
 set smarttab
-set noexpandtab
-set incsearch
-set hlsearch
-set nobackup
-set nowb
-set noswapfile
-set noautoindent
 set spell spelllang=en_gb
-autocmd FileType * setlocal formatoptions-=t
-autocmd FileType * setlocal formatoptions-=o
-autocmd FileType * setlocal formatoptions-=r
-autocmd FileType * setlocal formatoptions-=c
-autocmd FileType * setlocal formatoptions-=a
+set tabstop=4
+set textwidth=100
 autocmd FileType * setlocal formatoptions+=n
 autocmd FileType * setlocal formatoptions+=q
+autocmd FileType * setlocal formatoptions-=a
+autocmd FileType * setlocal formatoptions-=c
+autocmd FileType * setlocal formatoptions-=o
+autocmd FileType * setlocal formatoptions-=r
+autocmd FileType * setlocal formatoptions-=t
 
 " Syntastic settings
 let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 0
+" Syntastic checkers
+let g:syntastic_python_checkers = ['flake8']
 
 function! GetBufferList()
 	redir =>buflist
@@ -138,11 +142,11 @@ nnoremap <leader>a :spellrepall<cr>
 " Add word completion, ctrl+P to complete in insert mode
 set complete+=kspell
 
-hi clear SpellLocal
-hi clear SpellCap
-hi clear SpellRare
-hi clear SpellBad
 hi SpellBad cterm=underline
+hi clear SpellBad
+hi clear SpellCap
+hi clear SpellLocal
+hi clear SpellRare
 " No spell-check patterns
 syn match SingleChar '\<\A*\a{1,2}\A*\>' contains=@NoSpell
 " Enable spell check on certain files only.

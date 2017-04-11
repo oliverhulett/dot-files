@@ -25,9 +25,9 @@ function _complete_repo_dirs()
 			return
 		fi
 	fi
-	dirpart="$(echo "${COMP_WORDS[@]:1:$(($COMP_CWORD - 1))}" | tr ' ' '/')"
+	dirpart="$(echo "${COMP_WORDS[@]:1:$((COMP_CWORD - 1))}" | tr ' ' '/')"
 	if [ ! -d "${HOME}/repo/${dirpart}" ]; then
-		new_dirpart="$(cd "${HOME}/repo" && echo */${dirpart})"
+		new_dirpart="$(cd "${HOME}/repo" && echo ./*/${dirpart})"
 		if [ -d "${HOME}/repo/${new_dirpart}" ]; then
 			dirpart="${new_dirpart}"
 		fi
@@ -42,9 +42,9 @@ function _complete_stash()
 	declare -a words
 	prefix="${COMP_WORDS[COMP_CWORD]}"
 	if [ $COMP_CWORD -eq 1 ]; then
-		words=( $(stasher.py) )
+		words=( $(stasher.py -q) )
 	elif [ $COMP_CWORD -eq 2 ]; then
-		words=( $(stasher.py "${COMP_WORDS[1]^^}") )
+		words=( $(stasher.py -q "${COMP_WORDS[1]^^}") )
 	fi
 	COMPREPLY=( $(compgen -W "${words[*],,}" -- $prefix ) )
 }
