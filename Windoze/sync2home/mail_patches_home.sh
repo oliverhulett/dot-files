@@ -64,5 +64,5 @@ echo ${NEXT_HASH} >"${HASH_FILE}"
 git commit .last-mailed-hash -m"Sync2Home autocommit: ${NUM_PATCHES} patches: ${LAST_HASH} to ${NEXT_HASH}" --allow-empty
 git push
 echo
-echo "Done.  Press any key to exit"
+echo "Done.  Zipped and mailed $NUM_PATCHES to oliver.hulett@gmail.com; from ${LAST_HASH} to ${NEXT_HASH}.  Press any key to exit"
 read -r -n1
