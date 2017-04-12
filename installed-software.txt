@@ -364,8 +364,6 @@ gpgme-1.3.2-5.el7.x86_64
 gpg-pubkey-352c64e5-52ae6884
 gpg-pubkey-7fac5991-4615767f
 gpg-pubkey-d38b4796-570c8cd3
-gpm-1.20.7-5.el7.x86_64
-gpm-devel-1.20.7-5.el7.x86_64
 gpm-libs-1.20.7-5.el7.x86_64
 graphite2-1.2.2-5.el7.x86_64
 graphviz-2.30.1-19.el7.x86_64
@@ -810,7 +808,6 @@ libXxf86dga-1.1.4-2.1.el7.x86_64
 libXxf86misc-1.0.3-7.1.el7.x86_64
 libXxf86vm-1.1.3-2.1.el7.x86_64
 libyaml-0.1.4-11.el7_0.x86_64
-linuxconsoletools-1.4.5-3.el7.x86_64
 linux-firmware-20150904-43.git6ebf5d5.el7.noarch
 lklug-fonts-0.6-10.20090803cvs.el7.noarch
 lksctp-tools-1.0.13-3.el7.x86_64
@@ -1469,12 +1466,15 @@ boto==2.38.0
 chardet==2.2.1
 Cheetah==2.4.4
 configobj==4.7.2
+configparser==3.5.0
 coverage==3.6b3
 cupshelpers==1.0
 decorator==3.4.0
 di==0.3
+enum34==1.1.6
 ethtool==0.8
 firstboot==19.5
+flake8==3.3.0
 fros==1.0
 iniparse==0.4
 initial-setup==0.3.9.30
@@ -1487,6 +1487,7 @@ kitchen==1.1.1
 langtable==0.0.31
 lxml==3.2.1
 Markdown==2.4.1
+mccabe==0.6.1
 ntplib==0.3.2
 OpenOnload-utilities==1.0
 packaging==16.8
@@ -1496,8 +1497,10 @@ policycoreutils-default-encoding==0.1
 prettytable==0.7.2
 protobuf==2.5.0
 pyasn1==0.1.6
+pycodestyle==2.3.1
 pycups==1.9.63
 pycurl==7.19.0
+pyflakes==1.5.0
 Pygments==1.4
 pygobject==3.14.0
 pygpgme==0.3
