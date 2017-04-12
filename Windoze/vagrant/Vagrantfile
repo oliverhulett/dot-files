@@ -141,9 +141,6 @@ Vagrant.configure("2") do |config|
 			
 			rm -rf /tmp/.ssh 2>/dev/null
 			
-			echo "Restarting KDE to pick up restored backups..."
-			sudo systemctl restart gdm.service
-			
 			echo "Running disc tweaks..."
 			${HOME}/dot-files/bin/disc-tweaks.sh
 			
