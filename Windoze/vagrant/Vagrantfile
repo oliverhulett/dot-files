@@ -6,9 +6,9 @@ def syscall(cmd)
 	system(cmd)
 end
 
-if !Vagrant.has_plugin?("vagrant-triggers") 
+if !Vagrant.has_plugin?("vagrant-triggers")
 	syscall('vagrant plugin install vagrant-triggers')
-	
+
 	raise("vagrant-triggers installed. Run command again.")
 end
 
@@ -65,17 +65,17 @@ Vagrant.configure("2") do |config|
 		v.gui = true
 		v.customize ["modifyvm", :id, "--draganddrop", "bidirectional"]
 	end
-	
+
 	config.vm.hostname = "3100-centos7dev"
-	
+
 	config.vm.synced_folder 'C:/Repo', '/C_REPO', mount_options: ["fmode=0644,dmode=0755"], owner: "#{ENV['USERNAME']}", group: "users"
 	config.vm.synced_folder 'H:/backups', '/H_DRIVE', mount_options: ["fmode=0644,dmode=0755"], owner: "#{ENV['USERNAME']}", group: "users"
-	
+
 	controller_name = "SATA Controller"
-	controller_portcount = "6"
 	controller_port = "5"
 	controller_device = "0"
-	controller_type = "sata"
+	#controller_type = "sata"
+	#controller_portcount = "6"
 	config.vm.provider "virtualbox" do |v|
 		data_disk = "D:\\VirtualDisks\\olihul-data.vmdk"
 		unless File.exist?(data_disk)
@@ -83,10 +83,10 @@ Vagrant.configure("2") do |config|
 		end
 		## SATA Controller is created by optiver/centos7dev now (as of v2.150)
 		## This magic never worked, I suspect vm_controller() is evaluated at the start, then the upstream provisioning creates the controller and we try to re-create it.
-        # unless vm_controller(controller_name) != ""
-        #     v.customize ["storagectl", :id, "--add", controller_type, "--name", controller_name, "--portcount", controller_portcount]
-        # end
-        v.customize ["storageattach", :id, "--storagectl", controller_name, "--port", controller_port, "--device", controller_device, "--type", "hdd", "--medium", data_disk]
+		#unless vm_controller(controller_name) != ""
+		#v.customize ["storagectl", :id, "--add", controller_type, "--name", controller_name, "--portcount", controller_portcount]
+		#end
+		v.customize ["storageattach", :id, "--storagectl", controller_name, "--port", controller_port, "--device", controller_device, "--type", "hdd", "--medium", data_disk]
 	end
 	config.trigger.before :destroy do
 		case vm_running?
@@ -103,7 +103,7 @@ Vagrant.configure("2") do |config|
 			if [ ! -e "/dev/disk/by-label/data" ]; then
 				echo "Doing initial data disc setup..."
 				dev=
-				for d in /dev/sd[a-z]; do
+				for d in $(ls /dev/sd[a-z] | sort); do
 					dev="$d"
 				done
 				if [ -z "$dev" ]; then
@@ -122,11 +122,11 @@ Vagrant.configure("2") do |config|
 		s.args = "#{ENV['USERNAME']}"
 		s.inline = <<-SHELL
 			HOME="/home/$1"
-			
+
 			echo "Mounting data drive..."
 			mount --label=data ${HOME} -t ext4 -o defaults,noatime,commit=300
 			chown olihul:users ${HOME}
-			
+
 			true
 		SHELL
 	end
@@ -138,16 +138,16 @@ Vagrant.configure("2") do |config|
 		s.args = "#{ENV['USERNAME']}"
 		s.inline = <<-SHELL
 			HOME="/home/$1"
-			
+
 			rm -rf /tmp/.ssh 2>/dev/null
-			
+
 			echo "Running disc tweaks..."
 			${HOME}/dot-files/bin/disc-tweaks.sh
-			
+
 			true
 		SHELL
 	end
-	
+
 	# Triggers, depends on:
 	# vagrant plugin install vagrant-triggers
 	config.trigger.after [:up, :resume, :reload] do

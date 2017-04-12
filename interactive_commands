@@ -8,6 +8,7 @@ dotlogs
 edt
 git diff
 git lg -a
+git lg --all
 git log
 git new
 git resolve

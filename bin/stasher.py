@@ -111,6 +111,7 @@ class Stashy(object):
         if len(self._project_keys) == 0:
             self._pp_from_file()
         if len(self._project_keys) == 0:
+            self.logger.warn("Info=\"Could not read from cache, populating project list from stash\"")
             self._pp_from_stash()
             self._write_stash_file()
 

@@ -6,9 +6,10 @@
 import sys, os
 import re
 
+
 class Colouriser(object):
     def __init__(self, pattern=None):
-        ##  Bash colours.  From: http://www.tldp.org/HOWTO/Bash-Prompt-HOWTO/x329.html
+        #  Bash colours.  From: http://www.tldp.org/HOWTO/Bash-Prompt-HOWTO/x329.html
         self.colours = (
             #('Black',       '0;30'),
             ('Light Blue',  '1;34'),
@@ -29,20 +30,20 @@ class Colouriser(object):
             ('reset',       '0'),
         )
 
-        ##  These are the sequences needed to get coloured output.
+        #  These are the sequences needed to get coloured output.
         self.reset_seq = "\033[0m"
         self.colour_seq_tmpl = "\033[%sm"
         self.bold_seq = "\033[1m"
-        ##  Counters and maps
+        #  Counters and maps
         self.next_colour = 0
         self.colour_map = {}
         self.regex = None
 
         self.fallback_regex = re.compile(r"^[0-9-:,\. ]+ \[?([^\] ]+)\]?.+")
         self.default_regexes = [
-                                re.compile(r"^[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{9}(?: \[ *[0-9\.]+ *[umn]?s\])? \[[^\]]+\] \[([^\]]+)\].+"),
-                                re.compile(r"^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}[\.,][0-9]+ \[[^\]]+\] ([^:]+):.+")
-                                ]
+            re.compile(r"^(?:[0-9]{4}-[0-9]{2}-[0-9]{2} )?[0-9]{2}:[0-9]{2}:[0-9]{2}(?:.[0-9 ]{9})?(?: \[ *[0-9\.]+ *[umn]?s\])? \[[^\]]+\] \[([^\]]+)\].+"),
+            re.compile(r"^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}(?:[\., ][0-9 ]+)? \[[^\]]+\] ([^:]+):.+"),
+        ]
         if pattern is not None:
             self.regex = re.compile(pattern)
 
@@ -78,6 +79,7 @@ class Colouriser(object):
                 print "%s%s%s" % (colour, line.strip(), self.reset_seq)
             except:
                 print line.strip()
+
 
 if __name__ == '__main__':
     consumed = 1

@@ -4,7 +4,11 @@
 
 echo "Setting up user..."
 USER="$1"
-HOME="/home/${USER}"
+if [ -z "$2" ]; then
+	HOME="$2"
+else
+	HOME="/home/${USER}"
+fi
 usermod -g users --append -G users,adm,wheel,vboxsf,root ${USER}
 
 echo "Copying files provisioned into ${HOME} by base image..."
@@ -66,14 +70,14 @@ rsync -rAXog /H_DRIVE/etc ${HOME}/
 find ${HOME}/etc -type f -print0 | xargs -0 chmod -x
 chown -R ${USER}:users ${HOME}/etc
 rsync -rAXog --update ${HOME}/etc/backups/${HOME}/ ${HOME}/
-		
+
+yum install -y yakuake
+
 echo "Restarting KDE to pick up restored backups..."
 sudo systemctl restart gdm.service
 
 echo "Installing some things I don't want to docker all the time..."
 (
-	# Install yakuake first, because I want it there when the provisioning finishes and GDM is restarted
-	yum install -y yakuake
 	yum groupinstall -y "development tools"
 	yum install -y docker which wget curl telnet vagrant iotop nethogs sysstat aspell aspell-en cifs-utils samba samba-client protobuf-vim golang-vim jq \
 		openssl-libs openssl-static java-1.8.0-openjdk-devel java-1.8.0-openjdk \
@@ -106,7 +110,7 @@ echo "Installing some things I don't want to docker all the time..."
 		git clone https://github.com/sstephenson/bats.git . && \
 		./install.sh /usr/local
 	)
-) >&${log_fd} 2>&${log_fd} &
+) &
 disown -h
 disown
 
@@ -116,7 +120,7 @@ echo "Copying cc-env custom files for eclipse indexer and friends..."
 	CC_IMAGE="$(sed -nre 's!.+(docker-registry\.aus\.optiver\.com/[^ ]+/[^ ]+).*!\1!p' "${CC_EXE}" | tail -n1)"
 	mkdir --parents /media/cc-env/opt/ || true
 	${HOME}/dot-files/bin/docker-run.sh -v /media/cc-env:/media/cc-env -u 0 ${CC_IMAGE} rsync -vpPAXrogthlm --delete /opt/optiver/ /media/cc-env/opt/optiver/
-) >&${log_fd} 2>&${log_fd} &
+) &
 disown -h
 disown
 
@@ -129,7 +133,7 @@ echo "Restoring local installs and other backups..."
 		chown -R ${USER}:users ${HOME}/$d
 	done
 	chmod +x ${HOME}/opt/pyvenv/bin/* ${HOME}/opt/eclipse/eclipse ${HOME}/opt/sublime_text_3/sublime_text ${HOME}/opt/subl.sh ${HOME}/opt/clion-2016.3.2/bin/clion.sh
-) >&${log_fd} 2>&${log_fd} &
+) &
 disown -h
 disown
 

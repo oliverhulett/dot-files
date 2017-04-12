@@ -50,6 +50,9 @@
 	resolve-mine = "!f() { : git add ; if [ $# -eq 0 ]; then set -- $(git diff --name-only --diff-filter=U); fi; git checkout --ours \"$@\" && git add \"$@\"; }; cd \"$GIT_PREFIX\" && f"
 	resolve-ours = !git resolve-mine
 	resolve-theirs = "!f() { : git add ; if [ $# -eq 0 ]; then set -- $(git diff --name-only --diff-filter=U); fi; git checkout --theirs \"$@\" && git add \"$@\"; }; cd \"$GIT_PREFIX\" && f"
+
+	search = log -S
+	find = log --all --full-history
 [add]
 	ignoreErrors = true
 [color]

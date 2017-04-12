@@ -44,7 +44,7 @@ function _complete_stash()
 	if [ $COMP_CWORD -eq 1 ]; then
 		words=( $(stasher.py -q) )
 	elif [ $COMP_CWORD -eq 2 ]; then
-		words=( $(stasher.py -q "${COMP_WORDS[1]^^}") )
+		words=( $(stasher.py -q "${COMP_WORDS[1]^^}" | cut -d' ' -f2-) )
 	fi
 	COMPREPLY=( $(compgen -W "${words[*],,}" -- $prefix ) )
 }

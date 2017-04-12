@@ -65,7 +65,7 @@ function _logfile()
 
 function log()
 {
-	echo "$(date '+%Y-%m-%d %H:%M:%S.%N') [$$] [$(basename -- "$0")] [LOG   ] $*" >>"$(_logfile)"
+	echo "$(date '+%H:%M:%S.%N') [$$] [$(basename -- "$0")] [LOG   ] $*" >>"$(_logfile)"
 }
 
 builtin source "${HOME}/dot-files/trap_stack.sh"
@@ -151,14 +151,21 @@ function _tee_totaler()
 		KEYS="${KEYS} "'['"$k"']'
 	done
 
-	tee -i >(awk --assign T="%Y-%m-%d %H:%M:%S${KEYS} " '{ print strftime(T) $0 ; fflush(stdout) }' >>"${LOGFILE}")
+	## That time format is HH:MM:SS followed by 10 spaces to line up with the dot and the 9 nanoseconds printed by log()
+	tee -i >(awk --assign T="%H:%M:%S          ${KEYS} " '{ print strftime(T) $0 ; fflush(stdout) }' >>"${LOGFILE}")
 }
 
 _redirect='{
 	if [ "$0" == "${BASH_SOURCE}" -a -z "$_redirected" ]; then
 		trap -n redirect "unset _redirected" EXIT;
-		_orig_stdout="$(readlink -f /proc/$$/fd/1)";
-		_orig_stderr="$(readlink -f /proc/$$/fd/2)";
+		f="$(readlink -f /proc/$$/fd/1)";
+		if [ -e "$f" ]; then
+			_orig_stdout="$f";
+		fi;
+		f="$(readlink -f /proc/$$/fd/2)";
+		if [ -e "$f" ]; then
+			_orig_stderr="$f";
+		fi;
 		#builtin trap "log \$ \$BASH_COMMAND" DEBUG;
 		exec > >(_tee_totaler "$$" "$(basename -- "$0")" STDOUT 2>/dev/null);
 		exec 2> >(_tee_totaler "$$" "$(basename -- "$0")" STDERR >&2);
