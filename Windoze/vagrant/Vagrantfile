@@ -81,9 +81,11 @@ Vagrant.configure("2") do |config|
 		unless File.exist?(data_disk)
 			v.customize ['createmedium', 'disk', '--filename', data_disk, '--variant', 'Fixed', '--size', 300 * 1024]
 		end
-        unless vm_controller(controller_name) != ""
-            v.customize ["storagectl", :id, "--add", controller_type, "--name", controller_name, "--portcount", controller_portcount]
-        end
+		## SATA Controller is created by optiver/centos7dev now (as of v2.150)
+		## This magic never worked, I suspect vm_controller() is evaluated at the start, then the upstream provisioning creates the controller and we try to re-create it.
+        # unless vm_controller(controller_name) != ""
+        #     v.customize ["storagectl", :id, "--add", controller_type, "--name", controller_name, "--portcount", controller_portcount]
+        # end
         v.customize ["storageattach", :id, "--storagectl", controller_name, "--port", controller_port, "--device", controller_device, "--type", "hdd", "--medium", data_disk]
 	end
 	config.trigger.before :destroy do

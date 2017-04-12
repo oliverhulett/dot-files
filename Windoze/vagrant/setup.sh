@@ -8,7 +8,7 @@ HOME="/home/${USER}"
 usermod -g users --append -G users,adm,wheel,vboxsf,root ${USER}
 
 echo "Copying files provisioned into ${HOME} by base image..."
-mkdir /tmp/home/ 2>/dev/null
+mkdir /tmp/home/
 mount /dev/mapper/vgdata-home.fs /tmp/home
 rsync -rAXog /tmp/${HOME}/ ${HOME}/
 umount /tmp/home/
@@ -18,7 +18,7 @@ echo "Setting up sudo..."
 echo 'Defaults    secure_path = /home/olihul/dot-files/bin:/home/olihul/bin:/home/olihul/sbin:/optiver/bin:/usr/local/bin:/bin:/usr/bin:/sbin:/usr/sbin' >/etc/sudoers.d/99_olihul
 
 echo "Restoring backups..."
-mkdir ${HOME}/etc 2>/dev/null
+mkdir ${HOME}/etc
 for f in passwd release.auth; do
 	cp -v /H_DRIVE/etc/$f ${HOME}/etc/$f
 	chown ${USER}:users ${HOME}/etc/$f
@@ -30,18 +30,18 @@ if [ -e "${HOME}/etc/passwd" ]; then
 	( cat ${HOME}/etc/passwd; cat ${HOME}/etc/passwd; ) | smbpasswd -sa ${USER}
 
 	echo "Bootstrapping GIT SSH keys..."
-	curl -u "${USER}:$(cat ${HOME}/etc/passwd)" -X POST -H "Accept: application/json" -H "Content-Type: application/json" https://git/rest/ssh/1.0/keys -d '{"text": "'"$(cat ${HOME}/.ssh/id_rsa.pub)"'"}' 2>/dev/null
+	curl -u "${USER}:$(cat ${HOME}/etc/passwd)" -X POST -H "Accept: application/json" -H "Content-Type: application/json" https://git/rest/ssh/1.0/keys -d '{"text": "'"$(cat ${HOME}/.ssh/id_rsa.pub)"'"}'
 fi
 
 echo "Cloning dot-files..."
-su -c "git clone --recursive ssh://git@git.comp.optiver.com:7999/~${USER}/dot-files.git ${HOME}/dot-files" ${USER} 2>/dev/null
+su -c "git clone --recursive ssh://git@git.comp.optiver.com:7999/~${USER}/dot-files.git ${HOME}/dot-files" ${USER}
 su -c "cd ${HOME}/dot-files && git commit --allow-empty -aqm "'"Vagrant setup autocommit: $(date -R)\n$(git status --short)"'" && git pull" ${USER}
 
-source "${HOME}/dot-files/bash_common.sh" 2>/dev/null && eval "${capture_output}" || true
+source "${HOME}/dot-files/bash_common.sh" && eval "${capture_output}" || true
 export PATH="$(prepend_path "${HOME}/dot-files/bin")"
 
-if ! echo "${HTTP_PROXY}" | grep -q "${USER}" 2>/dev/null; then
-	source "${HOME}/dot-files/bash_aliases/19-env-proxy.sh" 2>/dev/null
+if ! echo "${HTTP_PROXY}" | grep -q "${USER}"; then
+	source "${HOME}/dot-files/bash_aliases/19-env-proxy.sh"
 	proxy_setup -q ${USER}
 fi
 su -c "${HOME}/dot-files/setup-home.sh" ${USER}
@@ -50,8 +50,8 @@ systemctl link "${HOME}/dot-files/autocommit.service"
 systemctl start autocommit.service
 
 echo "General clean-ups..."
-rm -rf ${HOME}/Desktop 2>/dev/null
-rmdir ${HOME}/{Documents,Downloads,Music,Pictures,Public,Templates,Videos} 2>/dev/null
+rm -rf ${HOME}/Desktop
+rmdir ${HOME}/{Documents,Downloads,Music,Pictures,Public,Templates,Videos}
 systemctl stop collectd.service
 systemctl disable collectd.service
 systemctl stop timekeeper.service
@@ -88,16 +88,16 @@ echo "Installing some things I don't want to docker all the time..."
 		cabal update && \
 		cabal install --global --prefix=/usr/local shellcheck
 	)
-	rm -rf "${TMPDIR}" 2>/dev/null
+	rm -rf "${TMPDIR}"
 
-	mkdir --parents /opt/bats 2>/dev/null || true
+	mkdir --parents /opt/bats || true
 	( cd /opt/bats && \
 		git clone https://github.com/sstephenson/bats.git . && \
 		./install.sh /usr/local
 	)
 ) >&${log_fd} 2>&${log_fd} &
-disown -h 2>/dev/null
-disown 2>/dev/null
+disown -h
+disown
 
 echo "Restoring local installs and other backups..."
 (
@@ -109,17 +109,17 @@ echo "Restoring local installs and other backups..."
 	done
 	chmod +x ${HOME}/opt/pyvenv/bin/* ${HOME}/opt/eclipse/eclipse ${HOME}/opt/sublime_text_3/sublime_text ${HOME}/opt/subl.sh ${HOME}/opt/clion-2016.3.2/bin/clion.sh
 ) >&${log_fd} 2>&${log_fd} &
-disown -h 2>/dev/null
-disown 2>/dev/null
+disown -h
+disown
 
 echo "Copying cc-env custom files for eclipse indexer and friends..."
 (
 	CC_EXE="/usr/local/bin/cc-env"
-	CC_IMAGE="$(sed -nre 's!.+(docker-registry\.aus\.optiver\.com/[^ ]+/[^ ]+).*!\1!p' "${CC_EXE}" 2>/dev/null | tail -n1)"
-	mkdir --parents /media/cc-env/opt/ 2>/dev/null || true
+	CC_IMAGE="$(sed -nre 's!.+(docker-registry\.aus\.optiver\.com/[^ ]+/[^ ]+).*!\1!p' "${CC_EXE}" | tail -n1)"
+	mkdir --parents /media/cc-env/opt/ || true
 	${HOME}/dot-files/bin/docker-run.sh -v /media/cc-env:/media/cc-env -u 0 ${CC_IMAGE} rsync -vpPAXrogthlm --delete /opt/optiver/ /media/cc-env/opt/optiver/
 ) >&${log_fd} 2>&${log_fd} &
-disown -h 2>/dev/null
-disown 2>/dev/null
+disown -h
+disown
 
 true
