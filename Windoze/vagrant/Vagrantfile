@@ -71,25 +71,50 @@ Vagrant.configure("2") do |config|
 	config.vm.synced_folder 'C:/Repo', '/C_REPO', mount_options: ["fmode=0644,dmode=0755"], owner: "#{ENV['USERNAME']}", group: "users"
 	config.vm.synced_folder 'H:/backups', '/H_DRIVE', mount_options: ["fmode=0644,dmode=0755"], owner: "#{ENV['USERNAME']}", group: "users"
 	
+	controller_name = "IDE Controller"
+	controller_port = "0"
+	controller_device = "0"
+	controller_type = "ide"
 	config.vm.provider "virtualbox" do |v|
-        unless vm_controller("SATA Controller") != ""
-            v.customize ["storagectl", :id, "--add", "sata", "--name", "SATA Controller", "--portcount", "1"]
-        end
 		data_disk = "D:\\VirtualDisks\\olihul-data.vmdk"
 		unless File.exist?(data_disk)
 			v.customize ['createmedium', 'disk', '--filename', data_disk, '--variant', 'Fixed', '--size', 300 * 1024]
 		end
-        v.customize ["storageattach", :id, "--storagectl", "SATA Controller", "--port", "0", "--device", "0", "--type", "hdd", "--medium", data_disk]
+        unless vm_controller(controller_name) != ""
+            v.customize ["storagectl", :id, "--add", controller_type, "--name", controller_name, "--portcount", "1"]
+        end
+        v.customize ["storageattach", :id, "--storagectl", controller_name, "--port", controller_port, "--device", controller_device, "--type", "hdd", "--medium", data_disk]
+	end
+	config.trigger.before :destroy do
+		case vm_running?
+		when true
+			syscall(["VBoxManage", "controlvm", vm_uuid, "acpipowerbutton"].join(' '))
+			syscall(["VBoxManage", "controlvm", vm_uuid, "acpipowerbutton"].join(' '))
+			sleep(5)
+			syscall(["VBoxManage", "controlvm", vm_uuid, "poweroff"].join(' '))
+		end
+		vm_exists? ? syscall(["VBoxManage", "storageattach", vm_uuid, "--storagectl", '"' + controller_name + '"', "--port", controller_port, "--device", controller_device, "--type", "hdd", "--medium", "none"].join(' ')) : true
 	end
 	config.vm.provision "shell" do |s|
 		s.inline = <<-SHELL
 			if [ ! -e "/dev/disk/by-label/data" ]; then
 				echo "Doing initial data disc setup..."
 				echo "Creating data partition..."
-				parted -s /dev/sda mklabel msdos
-				parted -s /dev/sda mkpart primary ext4 0% 100%
-				echo "Making data file-system..."
-				mkfs -t ext4 -v -L data /dev/sda1
+				dev=
+				for d in /dev/sd[a-z]; do
+					if [ ! -e "${d}1" ]; then
+						dev="$d"
+						break
+					fi
+				done
+				if [ -z "$dev" ]; then
+					echo "Could not determine data disc device"
+				else
+					parted -s "$dev" mklabel msdos
+					parted -s "$dev" mkpart primary ext4 0% 100%
+					echo "Making data file-system..."
+					mkfs -t ext4 -v -L data "${dev}1"
+				fi
 			fi
 		SHELL
 	end
@@ -133,15 +158,5 @@ Vagrant.configure("2") do |config|
 	end
 	config.trigger.before [:halt, :suspend, :reload, :destroy] do
 		syscall("net use F: /DELETE")
-	end
-	config.trigger.before :destroy do
-		case vm_running?
-		when true
-			syscall(["VBoxManage", "controlvm", vm_uuid, "acpipowerbutton"].join(' '))
-			syscall(["VBoxManage", "controlvm", vm_uuid, "acpipowerbutton"].join(' '))
-			sleep(5)
-			syscall(["VBoxManage", "controlvm", vm_uuid, "poweroff"].join(' '))
-		end
-		vm_exists? ? syscall(["VBoxManage", "storageattach", vm_uuid, "--storagectl", '"SATA Controller"', "--port", "0", "--device", "0", "--type", "hdd", "--medium", "none"].join(' ')) : true
 	end
 end
