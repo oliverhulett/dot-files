@@ -174,16 +174,19 @@ _redirect='{
 }'
 setup_log_fd='{
 	eval "$_hidex" 2>/dev/null;
-	log_fd=3;
-	if [ ! -t "${log_fd}" ]; then
+	if [ -z "${log_fd}" ]; then
 		trap -n log_fd "unset log_fd" EXIT;
 		exec 3> >(_tee_totaler "$$" "$(basename -- "$0")" "DEBUG " >/dev/null 2>/dev/null);
+		log_fd=3;
 	fi;
-	trap -n setup_log_fd "echo '"'"'\$ $0 $*;'"'"' Returned=\$? >&${log_fd}" EXIT;
-	callstack >&${log_fd};
-	echo "$ $0 $@" >&${log_fd};
+	if [ "$0" == "${BASH_SOURCE}" ]; then
+		trap -n setup_log_fd "echo '"'"'\$ $0 $*;'"'"' Returned=\$? >&${log_fd}" EXIT;
+		callstack >&${log_fd};
+		echo "$ $0 $@" >&${log_fd};
+	fi;
 	eval "$_restorex";
 }'
+eval "${setup_log_fd}"
 capture_output='{
 	eval "$_hidex" 2>/dev/null;
 	eval "$setup_log_fd";

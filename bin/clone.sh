@@ -29,11 +29,10 @@ function cleanup()
 	rmdir --parents "${DEST_DIR}" 2>/dev/null || true
 }
 trap cleanup EXIT
-set -e
 
 if [ ! -d "${DEST_DIR}/master" ]; then
 	echo "Cloning ${GIT_URL}"
-	git clone --recursive "${GIT_URL}" master
+	git clone --recursive "${GIT_URL}" master || exit $?
 	( cd master && git update )
 else
 	echo "${DEST_DIR}/master already exists."
