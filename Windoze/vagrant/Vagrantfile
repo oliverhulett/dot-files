@@ -102,9 +102,12 @@ Vagrant.configure("2") do |config|
 		s.inline = <<-SHELL
 			if [ ! -e "/dev/disk/by-label/data" ]; then
 				echo "Doing initial data disc setup..."
+				ls -d /dev/sd[a-z]*
 				dev=
-				for d in $(ls /dev/sd[a-z] | sort); do
-					dev="$d"
+				for d in $(ls -1d /dev/sd[a-z] | sort); do
+					if [ ! -e "${d}1" ]; then
+						dev="$d"
+					fi
 				done
 				if [ -z "$dev" ]; then
 					echo "Could not determine data disc device"
@@ -124,10 +127,7 @@ Vagrant.configure("2") do |config|
 			HOME="/home/$1"
 
 			echo "Mounting data drive..."
-			mount --label=data ${HOME} -t ext4 -o defaults,noatime,commit=300
-			chown olihul:users ${HOME}
-
-			true
+			mount --label=data ${HOME} -t ext4 -o defaults,noatime,commit=300 && chown $1:users ${HOME}
 		SHELL
 	end
 	config.vm.provision "shell" do |s|
