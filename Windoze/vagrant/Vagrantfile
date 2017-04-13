@@ -106,7 +106,10 @@ Vagrant.configure("2") do |config|
 				dev=
 				for d in $(ls -1d /dev/sd[a-z] | sort); do
 					if [ ! -e "${d}1" ]; then
-						dev="$d"
+						if [ -z "$(find /dev/disk/by-id -name 'lvm-pv-*' -lname '*'$(basename -- $d))" ]; then
+							echo "$d could be a candidate to format..."
+							dev="$d"
+						fi
 					fi
 				done
 				if [ -z "$dev" ]; then

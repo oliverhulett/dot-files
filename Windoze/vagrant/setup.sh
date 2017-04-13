@@ -3,7 +3,7 @@
 ## This script runs as the provisioning user.
 
 echo "Setting up user..."
-USER="$1"
+USER="${1:-olihul}"
 if [ -z "$2" ]; then
 	HOME="$2"
 else
@@ -43,7 +43,7 @@ su -c "cd ${HOME} && git config --global user.name 'Oliver Hulett' && git config
 su -c "cd ${HOME} && git clone ssh://git@git.comp.optiver.com:7999/~${USER}/dot-files.git ${HOME}/dot-files" ${USER}
 source "${HOME}/dot-files/bash_aliases/19-env-proxy.sh"
 proxy_setup -q ${USER}
-su -c "cd ${HOME}/dot-files && git submodule update" ${USER}
+su -c "cd ${HOME}/dot-files && git submodule init && git submodule update" ${USER}
 su -c "cd ${HOME}/dot-files && git commit --allow-empty -aqm "'"Vagrant setup autocommit: $(date -R)\n$(git status --short)"'" && git pull" ${USER}
 
 mkdir ${HOME}/.dotlogs 2>/dev/null
