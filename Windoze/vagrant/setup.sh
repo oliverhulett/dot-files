@@ -25,7 +25,8 @@ echo "Restoring backups..."
 mkdir ${HOME}/etc 2>/dev/null
 for f in passwd release.auth; do
 	cp -v /H_DRIVE/etc/$f ${HOME}/etc/$f
-	chown ${USER}:users ${HOME}/etc/$f
+	chown ${USER} ${HOME}/etc/$f
+	chgrp users ${HOME}/etc/$f
 	chmod 0400 ${HOME}/etc/$f
 done
 
@@ -46,7 +47,8 @@ su -c "cd ${HOME}/dot-files && git submodule update" ${USER}
 su -c "cd ${HOME}/dot-files && git commit --allow-empty -aqm "'"Vagrant setup autocommit: $(date -R)\n$(git status --short)"'" && git pull" ${USER}
 
 mkdir ${HOME}/.dotlogs 2>/dev/null
-chown ${USER}:users ${HOME}/.dotlogs
+chown ${USER} ${HOME}/.dotlogs
+chgrp users ${HOME}/.dotlogs
 source "${HOME}/dot-files/bash_common.sh" && eval "${capture_output}" || true
 export PATH="$(prepend_path "${HOME}/dot-files/bin")"
 
@@ -68,7 +70,8 @@ systemctl restart crond.service
 echo "Restoring KDE and other personal configs..."
 rsync -rAXog /H_DRIVE/etc ${HOME}/
 find ${HOME}/etc -type f -print0 | xargs -0 chmod -x
-chown -R ${USER}:users ${HOME}/etc
+chown -R ${USER} ${HOME}/etc
+chgrp -R users ${HOME}/etc
 rsync -rAXog --update ${HOME}/etc/backups/${HOME}/ ${HOME}/
 
 yum install -y yakuake
@@ -130,7 +133,8 @@ echo "Restoring local installs and other backups..."
 		d="$(basename -- $d)"
 		rsync -rAXog /H_DRIVE/$d ${HOME}/
 		find ${HOME}/$d -type f -print0 | xargs -0 chmod -x
-		chown -R ${USER}:users ${HOME}/$d
+		chown -R ${USER} ${HOME}/$d
+		chgrp -R users ${HOME}/$d
 	done
 	chmod +x ${HOME}/opt/pyvenv/bin/* ${HOME}/opt/eclipse/eclipse ${HOME}/opt/sublime_text_3/sublime_text ${HOME}/opt/subl.sh ${HOME}/opt/clion-2016.3.2/bin/clion.sh
 ) &
