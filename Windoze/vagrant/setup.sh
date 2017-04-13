@@ -4,7 +4,7 @@
 
 echo "Setting up user..."
 USER="${1:-olihul}"
-if [ -z "$2" ]; then
+if [ -n "$2" ]; then
 	HOME="$2"
 else
 	HOME="/home/${USER}"
