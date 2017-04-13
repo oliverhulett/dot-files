@@ -1,5 +1,7 @@
 [flake8]
 ignore =
+	# E266: too many leading '#' for block comment
+	E266
 	# E401: one import per line
 	E401
 hang-closing = False
