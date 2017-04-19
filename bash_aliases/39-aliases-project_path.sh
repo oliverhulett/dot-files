@@ -38,7 +38,7 @@ unalias clone 2>/dev/null
 function clone()
 {
 	clone.sh "$@"
-	repo "${@##\~}"
+	repo "$(echo "${@##\~}" | tr [:upper:] [:lower:])"
 }
 alias get-repo-dir=get-repo-dir.sh
 alias repo-dir=get-repo-dir.sh
