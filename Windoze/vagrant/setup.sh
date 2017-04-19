@@ -75,7 +75,8 @@ chgrp -R users ${HOME}/etc
 rsync -rAXog --update ${HOME}/etc/backups/${HOME}/ ${HOME}/
 
 # Some things are needed for the next set of background tasks.  Yakuake is needed for the GUI (autostart)
-yum install -y yakuake jq
+# Docker and jq are needed for docker-run.sh (see below)
+yum install -y yakuake jq docker
 
 echo "Restarting KDE to pick up restored backups..."
 sudo systemctl restart gdm.service
@@ -83,7 +84,7 @@ sudo systemctl restart gdm.service
 echo "Installing some things I don't want to docker all the time..."
 (
 	yum groupinstall -y "development tools"
-	yum install -y docker which wget curl telnet vagrant iotop nethogs sysstat aspell aspell-en cifs-utils samba samba-client protobuf-vim golang-vim \
+	yum install -y which wget curl telnet vagrant iotop nethogs sysstat aspell aspell-en cifs-utils samba samba-client protobuf-vim golang-vim \
 		openssl-libs openssl-static java-1.8.0-openjdk-devel java-1.8.0-openjdk \
 		python-devel python-pip libxml2-devel libxslt-devel gmp-devel \
 		cmake ccache distcc protobuf protobuf-c protobuf-python protobuf-compiler valgrind clang-devel clang clang-analyzer \

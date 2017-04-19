@@ -20,4 +20,4 @@ MAILTO=olihul@optiver.com.au
 @daily command which docker >/dev/null 2>/dev/null && [ $(docker ps -q | wc -l) -gt 0 ] && docker kill $(docker ps -q)
 
 ## Python virtualenv should be refreshed regularly.
-@daily source "${HOME}/dot-files/bash_aliases/09-profile.d-pyvenv.sh" && rm -rf "${PYVENV_HOME}"
+@daily source "${HOME}/.bash_aliases/09-profile.d-pyvenv.sh" && rm -rf "${PYVENV_HOME}" && ${HOME}/dot-files/bin/python_setup.sh
