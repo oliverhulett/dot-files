@@ -83,6 +83,9 @@ sudo systemctl restart gdm.service
 
 echo "Installing some things I don't want to docker all the time..."
 (
+	source "${HOME}/dot-files/bash_common.sh" && eval "${capture_output}" || true
+	export PATH="$(prepend_path "${HOME}/dot-files/bin")"
+
 	yum groupinstall -y "development tools"
 	yum install -y which wget curl telnet vagrant iotop nethogs sysstat aspell aspell-en cifs-utils samba samba-client protobuf-vim golang-vim \
 		openssl-libs openssl-static java-1.8.0-openjdk-devel java-1.8.0-openjdk \
@@ -121,6 +124,9 @@ disown
 
 echo "Copying cc-env custom files for eclipse indexer and friends..."
 (
+	source "${HOME}/dot-files/bash_common.sh" && eval "${capture_output}" || true
+	export PATH="$(prepend_path "${HOME}/dot-files/bin")"
+
 	CC_EXE="/usr/local/bin/cc-env"
 	CC_IMAGE="$(sed -nre 's!.+(docker-registry\.aus\.optiver\.com/[^ ]+/[^ ]+).*!\1!p' "${CC_EXE}" | tail -n1)"
 	mkdir --parents /media/cc-env/opt/ || true
@@ -131,6 +137,9 @@ disown
 
 echo "Restoring local installs and other backups..."
 (
+	source "${HOME}/dot-files/bash_common.sh" && eval "${capture_output}" || true
+	export PATH="$(prepend_path "${HOME}/dot-files/bin")"
+
 	for d in /H_DRIVE/*; do
 		d="$(basename -- $d)"
 		rsync -rAXog /H_DRIVE/$d ${HOME}/

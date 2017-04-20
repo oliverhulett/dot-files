@@ -11,17 +11,17 @@ alias lsnlc='lsnc -l'
 alias lsncl='lsnc -l'
 function lss
 {
-	#	List all with indicators, human readable sizes and no backups
+	# List all with indicators, human readable sizes and no backups
 	command ls -ABhF --color=always "$@"
 }
 function lsn
 {
-	#	No -A, No -B (-B implies -a)
+	# No -A, No -B (-B implies -a)
 	command ls -hF --color=always "$@"
 }
 function lsl
 {
-	#	With -l, No -B
+	# With -l, No -B
 	command ls -AlhF --color=always "$@"
 }
 alias ls='lss '
@@ -40,8 +40,8 @@ alias chmod='chmod -c'
 alias eject='eject -T'
 alias file='file -krz'
 alias top='top -c'
-alias less='less -RFiMx4'
-export LESS='-RFiMx4'
+export LESS='-RFiMNx4'
+alias less="less ${LESS}"
 
 if uname -s | command grep -q 'MINGW' >/dev/null 2>&1 ; then
 	alias ifconfig='ipconfig'
