@@ -68,7 +68,7 @@ function log()
 	echo "$(date '+%H:%M:%S.%N') [$$] [$(basename -- "$0")] [LOG   ] $*" >>"$(_logfile)"
 }
 
-builtin source "${HOME}/dot-files/trap_stack.sh"
+builtin source "$(dirname "$(readlink -f "${BASH_SOURCE}")")/trap_stack.sh"
 
 function _echo_clean_path()
 {
@@ -183,6 +183,7 @@ setup_log_fd='{
 		trap -n setup_log_fd "echo '"'"'\$ $0 $*;'"'"' Returned=\$? >&${log_fd}" EXIT;
 		callstack >&${log_fd};
 		echo "$ $0 $@" >&${log_fd};
+		echo "/bin/bash $-" >&${log_fd};
 	fi;
 	eval "$_restorex";
 }'

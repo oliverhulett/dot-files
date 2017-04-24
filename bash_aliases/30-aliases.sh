@@ -1,5 +1,5 @@
 # Aliases
-source "${HOME}/dot-files/bash_common.sh"
+source "$(dirname "$(readlink -f "${BASH_SOURCE}")")/../bash_common.sh"
 
 alias lssc='lss --color=none'
 alias lsc='lss --color=none'

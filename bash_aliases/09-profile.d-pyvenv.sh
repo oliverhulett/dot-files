@@ -26,7 +26,7 @@ function venv_setup()
 
 	PYVENV_MARKER="${PYVENV_HOME}/.mark"
 	if [ ! -e "${PYVENV_MARKER}" ] || [ "$(command cat "${PYVENV_MARKER}" 2>/dev/null)" != "$(pyvenv_version)" ]; then
-		source "${HOME}/dot-files/bash_common.sh" && eval "${setup_log_fd}" || true
+		source "$(dirname "$(readlink -f "${BASH_SOURCE}")")/../bash_common.sh" && eval "${setup_log_fd}" || true
 		command ${VIRTUALENV} --no-site-packages -p /usr/bin/${PYVERSION} "$PYVENV_HOME" >&${log_fd} 2>&${log_fd}
 		VIRTUAL_ENV_DISABLE_PROMPT=1 source "$PYVENV_HOME/bin/activate"
 
