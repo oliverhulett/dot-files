@@ -1,7 +1,7 @@
 set HERE=%~dp0
 cd /d %HERE%
 
-proxy_setup.bat
+CALL proxy_setup.bat
 echo "STOPPING VM"
 echo
 vagrant halt
