@@ -62,7 +62,11 @@ echo
 if [ "${REPLY}" == "n" -o "${REPLY}" == "N" ]; then
 	exit 0
 fi
-run ssh -t "${SERVER}" "sudo /sbin/shutdown -h +1 'Shutting down to re-flash the FPGA.  You have 1 minute to cancel (sudo /sbin/shutdown -c)'"
+WHEN="now"
+if [ "$(who | cut -d' ' -f1 | grep -v `whoami` | wc -l)" -gt 0 ]; then
+	WHEN="+1"
+fi
+run ssh -t "${SERVER}" "sudo /sbin/shutdown -h $WHEN 'Shutting down to re-flash the FPGA.  You have 1 minute to cancel (sudo /sbin/shutdown -c)'"
 
 echo
 read -n1 -s -p "Do the lights out thing, then press any key to continue..."
