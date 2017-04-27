@@ -30,7 +30,6 @@ bash_aliases/39-aliases-sort_unique.sh .bash_aliases/39-aliases-sort_unique.sh
 bash_aliases/39-aliases-spell.sh .bash_aliases/39-aliases-spell.sh
 bash_aliases/39-aliases-ssh.sh .bash_aliases/39-aliases-ssh.sh
 bash_aliases/49-setup-ccache.sh .bash_aliases/49-setup-ccache.sh
-bash_aliases/49-setup-pyvenv.sh .bash_aliases/49-setup-pyvenv.sh
 bash_aliases/49-setup-ulimit.sh .bash_aliases/49-setup-ulimit.sh
 bash_logout .bash_logout
 bash_profile .bash_profile
