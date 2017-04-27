@@ -1,0 +1,2 @@
+* text=crlf
+vagrant/*.sh text eol=lf

@@ -9,6 +9,7 @@ if [ $# -eq 2 ]; then
 else
 	echo 2>/dev/null "Clone a repo into the repo heirarchy"
 	echo 2>/dev/null "$(basename -- "$0") <PROJECT> <REPOSITORY>"
+	read -r -n1
 	exit 1
 fi
 
@@ -23,11 +24,15 @@ function cleanup()
 	popd 2>/dev/null >/dev/null
 	rmdir --parents "${DEST_DIR}\\master" 2>/dev/null || true
 	rmdir --parents "${DEST_DIR}" 2>/dev/null || true
+	echo
+	echo "Done"
+	read -r -n1
 }
 trap cleanup EXIT
 set -e
 
 if [ ! -d "${DEST_DIR}\\master" ]; then
+	echo "Cloning ${GIT_URL}..."
 	git clone --recursive ${GIT_URL} master
 	( cd master && git update )
 else
