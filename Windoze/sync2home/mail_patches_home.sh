@@ -56,11 +56,13 @@ echo "${MAILER}" -smtp unixmail.comp.optiver.com -f olihul@optiver.com.au -t oli
 "${MAILER}" -smtp unixmail.comp.optiver.com -f olihul@optiver.com.au -t oliver.hulett@gmail.com -sub "${TODAY} dotfiles" -attach "${ZIPFILE}",application/x-7z-compressed,a
 echo
 echo "Removing $PATCHES_ROOT and $ZIPFILE"
-rm -rf "${PATCHES_ROOT}" "${ZIPFILE}" 2>/dev/null
+rm -rf "${PATCHES_ROOT}" "${ZIPFILE}"
+rm -rf "${PATCHES_ROOT}"
 
 echo
 echo "Committing last mailed hash: ${NEXT_HASH}"
 echo ${NEXT_HASH} >"${HASH_FILE}"
+unix2dos "${HASH_FILE}"
 git commit .last-mailed-hash -m"Sync2Home autocommit: ${NUM_PATCHES} patches: ${LAST_HASH} to ${NEXT_HASH}" --allow-empty
 git push
 echo
