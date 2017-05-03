@@ -101,6 +101,14 @@ for log in "$@"; do
 		( trap "kill 0" EXIT; "${ssh_cmd[@]}" "$(echo export GREP="${GREP}" '&&' "${BZCMD[@]}" "$log")" >>"$out"; trap - EXIT; echo "Finished copying '${HOST}:${log}' to '$out'" ) &
 		proclst="${proclst} $!"
 		cnt=$((cnt + 1))
+		if [ $cnt -ge 32 ]; then
+			echo
+			echo "Limiting to 32 concurrent copies, remaining logs will continue when one of the current copies finishes..."
+			while [ $cnt -ge 32 ]; do
+				sleep 1
+				cnt=$(checkprocs ${proclst} | wc -l)
+			done
+		fi
 	else
 		echo "'$out' already exists, not clobbering..."
 	fi

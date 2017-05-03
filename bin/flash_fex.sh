@@ -1,4 +1,5 @@
-#!/bin/bash -e
+#!/bin/bash
+set -e
 
 if [ $# -ne 1 -o "$1" == "-h" -o "$1" == "-?" ]; then
 	echo 1>&2 "$(basename -- "$0") requires a bit-file image to flash."

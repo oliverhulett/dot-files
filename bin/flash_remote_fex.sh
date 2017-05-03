@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash
 
 HERE="$(dirname "$(readlink -f "$0")")"
 DOTFILES="$(dirname "${HERE}")"
