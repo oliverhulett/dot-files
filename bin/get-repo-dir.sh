@@ -1,4 +1,10 @@
 #!/bin/bash
+#
+#	Get the directory in which a given repository is cloned.
+#	$ get-repo-dir [<proj>] <repo> [<branch>] [<dirs...>]
+#	If only one project contains a repository with the name <repo>, <proj> can be inferred.
+#	<branch> defaults to "master"
+#
 
 HERE="$(dirname "$(readlink -f "$0")")"
 DOTFILES="$(dirname "${HERE}")"
@@ -17,9 +23,12 @@ else
 	repo="$1"
 	shift
 fi
-branch="${1:-master}"
-shift
 shopt -s nullglob
+branch="master"
+if [ $# -gt 0 ] && [ -d "$(echo ${HOME}/repo/${proj}/${repo}/$1)" ]; then
+	branch="$1"
+	shift
+fi
 for d in ${HOME}/repo/${proj}/${repo}/${branch}/"$(echo $* | tr ' ' '/')"; do
-	echo "$d"
+	echo "${d%%/}"
 done

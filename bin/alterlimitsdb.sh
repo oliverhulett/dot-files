@@ -1,4 +1,5 @@
-#!/bin/bash -xe
+#!/bin/bash
+set -x
 #
 #	Wrapper for the alterlimitsdb python module.
 #
@@ -8,7 +9,8 @@ DOTFILES="$(dirname "${HERE}")"
 source "${DOTFILES}/bash_common.sh" 2>/dev/null && eval "${capture_output}" || true
 
 if [ -z "$ALTERLIMITSDB_DIR" ]; then
-	export ALTERLIMITSDB_DIR="${HOME}/limits_system/limits_server/alterlimitsdb"
+	clone.sh limits_system limis_server
+	export ALTERLIMITSDB_DIR="$(get-repo-dir.sh limits_system limits_server alterlimitsdb)"
 fi
 if [ -z "$DB_URI" ]; then
 	export DB_URI='postgresql://operat@devenv002:6002/limitsdb_ml'
