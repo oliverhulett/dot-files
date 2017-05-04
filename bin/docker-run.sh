@@ -20,7 +20,7 @@ fi
 # user specific container name
 NAME=`basename -- $IMAGE`-`whoami`-`date "+%s"`
 echo "Starting $NAME ($IMAGE)"
-docker inspect $IMAGE 2>&${log_fd} | jq '.[0].Config.Labels' 2>&${log_fd}
+docker inspect $IMAGE 2>&${log_fd} | jq '.[0].Config.Labels' 2>&${log_fd} || true
 
 # Use a docker container to do things
 TMP="$(mktemp -p "${HOME}" -t ".$(date '+%Y%m%d-%H%M%S').docker.$(basename -- "$1").XXXXXXXXXX")"
