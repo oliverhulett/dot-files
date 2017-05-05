@@ -5,6 +5,8 @@ DOTFILES="$(dirname "${HERE}")"
 source "${DOTFILES}/bash_common.sh" 2>/dev/null && eval "${capture_output}" || true
 source "${DOTFILES}/bash_aliases/39-aliases-opti_dev_aliases.sh"
 
+set +e
+
 IMAGES="$(docker-list.sh | sort -u)"
 DOCKER_RUN_ARGS=()
 while ! echo "$IMAGES" | grep -qE '^'"$1"'$' 2>/dev/null >/dev/null; do

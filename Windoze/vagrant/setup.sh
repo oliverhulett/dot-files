@@ -80,6 +80,7 @@ yum install -y yakuake jq docker
 
 echo "Restarting KDE to pick up restored backups..."
 sudo systemctl restart gdm.service
+sudo systemctl restart docker.service
 
 echo "Installing some things I don't want to docker all the time..."
 (
