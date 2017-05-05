@@ -20,19 +20,19 @@ save_teardown='{
 ## Set ${HOME} to a blank temporary dir incase tests want to mutate it.
 function setup_blank_home()
 {
-	_ORIG_HOME="${HOME}"
-	HOME="$(temp_make --prefix="home")"
-	export HOME
+	export _ORIG_HOME="${HOME}"
+	export HOME="$(temp_make --prefix="home")"
 }
 function teardown_blank_home()
 {
+	# Paranoid about deleting $HOME.  `temp_del` should only delete things it created.
+	# `fail` doesn't actually work here.
 	if [ -z "${_ORIG_HOME}" ]; then
 		fail "_ORIG_HOME not set; can't teardown blank home"
 	elif [ "${HOME#/home}" != "${HOME}" ]; then
 		fail "HOME still contains /home; danger"
 	else
-		echo temp_del "${HOME}" >&2
-		HOME="${_ORIG_HOME}"
-		export HOME
+		temp_del "${HOME}"
 	fi
+	export HOME="${_ORIG_HOME}"
 }
