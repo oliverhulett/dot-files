@@ -6,8 +6,11 @@
 ../../bashrc
 ../../dot-files
 ../../flake8
+../../.gitattributes
 ../../gitconfig
 ../../gitignore
+../../.gitignore
+../../.gitmodules
 ../../git_wrappers
 ../../interactive_commands
 ../../invoke.py
