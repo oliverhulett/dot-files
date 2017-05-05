@@ -47,3 +47,8 @@ if [ -n "${DOTFILES}" ]; then
 else
 	echo "No dot-files file found, not linking anything..."
 fi
+
+GIT_CREDS="${HOME}/.git-credentials"
+rm "${GIT_CREDS}" 2>/dev/null || true
+echo "https://oliverhulett:$(sed -ne '1p' "${HOME}/etc/passwd.github")@github.com" >>"${GIT_CREDS}"
+chmod 0600 "${GIT_CREDS}"

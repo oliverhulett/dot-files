@@ -112,12 +112,6 @@ echo "Installing some things I don't want to docker all the time..."
 		cabal install --global --prefix=/usr/local shellcheck
 	)
 	rm -rf "${TMPDIR}"
-
-	mkdir --parents /opt/bats || true
-	( cd /opt/bats && \
-		git clone https://github.com/sstephenson/bats.git . && \
-		./install.sh /usr/local
-	)
 ) &
 disown -h
 disown
