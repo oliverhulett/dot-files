@@ -1,27 +1,20 @@
 #!/usr/bin/env bats
 
-PROG="get-repo-dir.sh"
-
 DF_TESTS="$(dirname "$(cd "${BATS_TEST_DIRNAME}" && pwd -P)")"
 source "${DF_TESTS}/utils.sh"
 
-eval "${save_setup}"
+PROG="get-repo-dir.sh"
+
 function setup()
 {
-	saved_setup
-	setup_blank_home
+	assert_prog
+	scoped_blank_home
 	REPO_DIR="${HOME}/repo"
 	mkdir --parents ${REPO_DIR}/proj1/repo1/master/folder1/folder2
 	mkdir --parents ${REPO_DIR}/proj1/repo1/branch1/folder1/folder2
 	mkdir --parents ${REPO_DIR}/proj1/repo2/master/folder1
 	mkdir --parents ${REPO_DIR}/proj2/repo2/master/folder2
 	mkdir --parents ${REPO_DIR}/proj2/repo2/branch2/folder2
-}
-eval "${save_teardown}"
-function teardown()
-{
-	teardown_blank_home
-	saved_teardown
 }
 
 @test "$PROG: requires at least one argument" {

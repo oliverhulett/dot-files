@@ -1,22 +1,14 @@
 #!/usr/bin/env bats
 
-PROG="alterlimitsdb.sh"
-
 DF_TESTS="$(dirname "$(cd "${BATS_TEST_DIRNAME}" && pwd -P)")"
 source "${DF_TESTS}/utils.sh"
 
-eval "${save_setup}"
+PROG="alterlimitsdb.sh"
+
 function setup()
 {
-	saved_setup
 	ORIG_DB_URI="postgresql://operat@devenv002:6002/limitsdb_ml"
 	MODULE="Server.DataModel.alterlimitsdb"
-}
-
-eval "${save_teardown}"
-function teardown()
-{
-	saved_teardown
 }
 
 @test "$PROG: clones limits_server if no \$ALTERLIMITSDB_DIR" {
