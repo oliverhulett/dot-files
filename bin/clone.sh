@@ -8,8 +8,8 @@ GIT_URL_BASE="ssh://git@git.comp.optiver.com:7999"
 REPO_DIR="${HOME}/repo"
 
 if [ $# -eq 2 ]; then
-	PROJ="$(echo $1 | tr '[A-Z]' '[a-z]' | tr ' ' -)"
-	REPO="$(echo $2 | tr '[A-Z]' '[a-z]' | tr ' ' -)"
+	PROJ="$(echo $1 | tr '[:upper:]' '[:lower:]' | tr ' ' -)"
+	REPO="$(echo $2 | tr '[:upper:]' '[:lower:]' | tr ' ' -)"
 else
 	echo 2>/dev/null "Clone a repo into the repo heirarchy"
 	echo 2>/dev/null "$(basename -- "$0") <PROJECT> <REPOSITORY>"
@@ -39,7 +39,7 @@ else
 fi
 
 if [ ! -e "${DEST_DIR}/.project" ]; then
-	ECLIPSE_PROJECT_FILES="$(dirname "$(dirname "$(readlink -f "$0")")")/eclipse-project-files"
+	ECLIPSE_PROJECT_FILES="${DOTFILES}/eclipse-project-files"
 	if [ -e "master/CMakeLists.txt" ]; then
 		## C++ project
 		cp -rv "${ECLIPSE_PROJECT_FILES}/cpp/".[a-z]* ./
