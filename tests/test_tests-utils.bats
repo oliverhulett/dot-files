@@ -11,6 +11,9 @@ function setup()
 
 @test "$PROG: finding programs" {
 	source "${DF_TESTS}/utils.sh"
+	run find_prog
+	assert_failure
+
 	run find_prog echo
 	assert_success
 	assert_output "echo"
@@ -24,10 +27,6 @@ function setup()
 	assert_output ""
 
 	run find_prog /dev/null
-	assert_success
-	assert_output ""
-
-	run find_prog
 	assert_success
 	assert_output ""
 
@@ -52,9 +51,7 @@ function setup()
 	EOF
 	run bats -t "${TESTFILE}"
 	assert_success
-	assert_line --index 0 "1..1"
-	assert_line --index 1 "ok 1 test"
-	assert_equal 2 ${#lines[@]}
+	assert_all_lines "1..1" "ok 1 test"
 
 	cat >"${TESTFILE}" <<-EOF
 	. "${DF_TESTS}/utils.sh"
@@ -65,9 +62,7 @@ function setup()
 	EOF
 	run bats -t "${TESTFILE}"
 	assert_success
-	assert_line --index 0 "1..1"
-	assert_line --index 1 "ok 1 # skip (Failed to find program under test) test"
-	assert_equal 2 ${#lines[@]}
+	assert_all_lines "1..1" "ok 1 # skip (Failed to find program under test) test"
 
 	cat >"${TESTFILE}" <<-EOF
 	. "${DF_TESTS}/utils.sh"
@@ -78,9 +73,7 @@ function setup()
 	EOF
 	run bats -t "${TESTFILE}"
 	assert_success
-	assert_line --index 0 "1..1"
-	assert_line --index 1 "ok 1 test"
-	assert_equal 2 ${#lines[@]}
+	assert_all_lines "1..1" "ok 1 test"
 }
 
 @test "$PROG: register teardown functions" {
@@ -97,9 +90,7 @@ function setup()
 	register_teardown_fn echo that
 	run teardown
 	assert_success
-	assert_line --index 0 "this"
-	assert_line --index 1 "that"
-	assert_equal 2 ${#lines[@]}
+	assert_all_lines "this" "that"
 }
 
 @test "$PROG: simple test file" {
@@ -127,11 +118,7 @@ function setup()
 	run bats -t "${TESTFILE}"
 	assert_success
 	run cat $OUTPUT
-	assert_line --index 0 "setup world"
-	assert_line --index 1 "hello world"
-	assert_line --index 2 "registered teardown world"
-	assert_line --index 3 "teardown world"
-	assert_equal 4 ${#lines[@]}
+	assert_all_lines "setup world" "hello world" "registered teardown world" "teardown world"
 }
 
 @test "$PROG: blank \$HOME" {
@@ -164,10 +151,9 @@ function setup()
 	run bats -t "${TESTFILE}"
 	assert_success
 	run cat $OUTPUT
-	assert_line --index 0 "Before: HOME=${HOME} _ORIG_HOME="
-	assert_line --index 1 "During: HOME=${TMPHOME} _ORIG_HOME=${HOME}"
-	assert_line --index 2 "After: HOME=${HOME} _ORIG_HOME=${HOME}"
-	assert_equal 3 ${#lines[@]}
+	assert_all_lines "Before: HOME=${HOME} _ORIG_HOME=" \
+					 "During: HOME=${TMPHOME} _ORIG_HOME=${HOME}" \
+					 "After: HOME=${HOME} _ORIG_HOME=${HOME}"
 	unstub temp_make
 	unstub temp_del
 	unstub fail
@@ -178,10 +164,9 @@ function setup()
 	run bats -t "${TESTFILE}"
 	assert_success
 	run cat $OUTPUT
-	assert_line --index 0 "Before: HOME=${HOME} _ORIG_HOME="
-	assert_line --index 1 "During: HOME=${HOME}${TMPHOME} _ORIG_HOME=${HOME}"
-	assert_line --index 2 "After: HOME=${HOME} _ORIG_HOME=${HOME}"
-	assert_equal 3 ${#lines[@]}
+	assert_all_lines "Before: HOME=${HOME} _ORIG_HOME=" \
+					 "During: HOME=${HOME}${TMPHOME} _ORIG_HOME=${HOME}" \
+					 "After: HOME=${HOME} _ORIG_HOME=${HOME}"
 	unstub temp_make
 	unstub temp_del
 	unstub fail
@@ -192,8 +177,7 @@ function setup()
 	run bats -t "${TESTFILE}"
 	assert_failure
 	run cat $OUTPUT
-	assert_line --index 0 "Before: HOME=${HOME} _ORIG_HOME="
-	assert_equal 1 ${#lines[@]}
+	assert_all_lines "Before: HOME=${HOME} _ORIG_HOME="
 	unstub temp_make
 	unstub temp_del
 	unstub fail
@@ -204,8 +188,7 @@ function setup()
 	run bats -t "${TESTFILE}"
 	assert_failure
 	run cat $OUTPUT
-	assert_line --index 0 "Before: HOME=${HOME} _ORIG_HOME="
-	assert_equal 1 ${#lines[@]}
+	assert_all_lines "Before: HOME=${HOME} _ORIG_HOME="
 	unstub temp_make
 	unstub temp_del
 	unstub fail
@@ -243,10 +226,9 @@ function setup()
 	run bats -t "${TESTFILE}"
 	assert_success
 	run cat $OUTPUT
-	assert_line --index 0 "Before: HOME=${HOME} _ORIG_HOME="
-	assert_line --index 1 "During: HOME=${TMPHOME} _ORIG_HOME=${HOME}"
-	assert_line --index 2 "After: HOME=${HOME} _ORIG_HOME=${HOME}"
-	assert_equal 3 ${#lines[@]}
+	assert_all_lines "Before: HOME=${HOME} _ORIG_HOME=" \
+					 "During: HOME=${TMPHOME} _ORIG_HOME=${HOME}" \
+					 "After: HOME=${HOME} _ORIG_HOME=${HOME}"
 	unstub temp_make
 	unstub temp_del
 	unstub fail
@@ -275,6 +257,60 @@ function setup()
 	run bats -t "${TESTFILE}"
 	assert_failure
 	run cat $OUTPUT
-	assert_equal 0 ${#lines[@]}
+	assert_all_lines
 	unstub fail
+}
+
+@test "$PROG: assert_all_lines" {
+	source "${DF_TESTS}/utils.sh"
+	run echo -e $' line1\nline 2\nline3 '
+
+	# Note that this pattern is required to get the return value but not fail the test when asser_all_lines is expected
+	# to fail.  Unfortunately it screws up the error reporting, so you'll have to manually count the errors and the
+	# expected errors to work out what failed.
+	set +e; assert_all_lines " line1" "line 2" "line3 "; retval=$?; set -e
+	assert_equal $retval 0
+
+	set +e; assert_all_lines "line1" "line 2" "line3 "; retval=$?; set -e
+	assert_equal $retval 1
+
+	set +e; assert_all_lines "line1" "line 2" "line3"; retval=$?; set -e
+	assert_equal $retval 2
+
+	set +e; assert_all_lines "line1" "line 2" "line3" ""; retval=$?; set -e
+	assert_equal $retval 3
+
+	set +e; assert_all_lines " line1" "line 2" "line3 "; retval=$?; set -e
+	assert_equal $retval 0
+
+	set +e; assert_all_lines "line1" "line 2" "line3 "; retval=$?; set -e
+	assert_equal $retval 1
+
+	set +e; assert_all_lines " line1" "line 2" "line3"; retval=$?; set -e
+	assert_equal $retval 1
+
+	set +e; assert_all_lines " line1" "line 2"; retval=$?; set -e
+	assert_equal $retval 1
+
+	set +e; assert_all_lines " line1" "line 2" "line3 " "line4"; retval=$?; set -e
+	assert_equal $retval 2 # "line4" doesn't match empty string and count is wrong.
+
+	set +e; assert_all_lines --regexp "^ line.$" "^li.e 2$" "^li..3 $"; retval=$?; set -e
+	assert_equal $retval 0
+
+	set +e; assert_all_lines --partial "ine" "lin" "ne3"; retval=$?; set -e
+	assert_equal $retval 0
+
+	set +e; assert_all_lines " line1" "--regexp ^line.+$" "--partial ine"; retval=$?; set -e
+	assert_equal $retval 0
+
+	set +e; assert_all_lines "--regexp line1$" "line 2" "line3 "; retval=$?; set -e
+	assert_equal $retval 0
+
+	set +e; assert_all_lines " line1" "line 2" " --partial ine"; retval=$?; set -e
+	assert_equal $retval 1
+
+	run echo -n
+	set +e; assert_all_lines; retval=$?; set -e
+	assert_equal $retval 0
 }

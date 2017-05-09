@@ -8,4 +8,5 @@ Things about bats and bats plugin's that I'd like to fix and/or change...
 * `expect_*` to match all of the `assert_*` functions.  Report the error and fail the test, but don't exit immediately
 * Print (optionally) saved command output on failure.  Alternatively at least give the saved command output file so the user can see it.
 * `fail` (and presumably `assert`?) commands don't fail tests when called from setup/teardown?
-* `assert_output` to take an argument per line and additionally assert number of lines of output is a no-brainer.  (Or maybe a differently named assertion to preserve backwards compatibility.)
+* `assert_output` to take an argument per line and additionally assert number of lines of output is a no-brainer.  (Or maybe a differently named assertion to preserve backwards compatibility.)  (Port `assert_all_lines` and associated tests from utils.sh)
+* Ability to run single test from a bats file.  Maybe `bats file.bats:<test number>`?

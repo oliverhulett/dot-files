@@ -6,24 +6,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/x_helpers/bats-assert/load.bash"
 source "$(dirname "${BASH_SOURCE[0]}")/x_helpers/bats-file/load.bash"
 source "$(dirname "${BASH_SOURCE[0]}")/x_helpers/bats-mock/stub.bash"
 
-function find_prog()
-{
-	basename -- "$(command which "$1" 2>/dev/null || command which "${1%.*}" 2>/dev/null)" 2>/dev/null
-}
-function assert_prog()
-{
-	if [ -n "${PROG}" ]; then
-		PROG="$(find_prog "${PROG}")"
-		if [ -z "${PROG}" ]; then
-			skip "Failed to find program under test"
-		fi
-	fi
-}
-function setup()
-{
-	assert_prog
-}
-
+# Most of these functions only work in setup, teardown, or test functions
 function _check_caller()
 {
 	if ! ( batslib_is_caller --indirect 'setup' \
@@ -31,12 +14,39 @@ function _check_caller()
 			|| batslib_is_caller --indirect 'teardown' )
 	then
 		echo "Must be called from \`setup', \`@test' or \`teardown'" \
-			| batslib_decorate "ERROR: $1" \
+			| batslib_decorate "ERROR: $*" \
 			| fail
 		return $?
 	fi
 }
 
+# Find the program under tests
+function find_prog()
+{
+	if [ $# -ne 1 ]; then
+		fail "find_prog: Requires exactly one argument."
+		return $?
+	fi
+	basename -- "$(command which "$1" 2>/dev/null || command which "${1%.*}" 2>/dev/null)" 2>/dev/null
+}
+# Skip the test if the program under test doesn't exist
+function assert_prog()
+{
+	_check_caller assert_prog || return $?
+	if [ -n "${PROG}" ]; then
+		declare -g PROG="$(find_prog "${PROG}")"
+		if [ -z "${PROG}" ]; then
+			skip "Failed to find program under test"
+		fi
+	fi
+}
+# Default setup() is to skip the test if the program under test doesn't exist
+function setup()
+{
+	assert_prog
+}
+
+# Mechanism for registering clean-up functions
 declare -ga _TEARDOWN_FNS
 function register_teardown_fn()
 {
@@ -52,12 +62,13 @@ function fire_teardown_fns()
 		$fn
 	done
 }
+# Default teardown is to fire all registered clean-up functions
 function teardown()
 {
 	fire_teardown_fns
 }
 
-## Set ${HOME} to a blank temporary dir incase tests want to mutate it.
+# Set ${HOME} to a blank temporary directory in-case tests want to mutate it.
 function setup_blank_home()
 {
 	_check_caller setup_blank_home || return $?
@@ -65,6 +76,7 @@ function setup_blank_home()
 	tmphome="$(temp_make --prefix="home")"
 	if [ -z "$tmphome" ] || [ "$tmphome" == "$HOME" ]; then
 		fail "Failed to setup mock \$HOME"
+		return $?
 	else
 		export HOME="$tmphome"
 	fi
@@ -76,8 +88,10 @@ function teardown_blank_home()
 	# `fail` doesn't actually work here?
 	if [ -z "${_ORIG_HOME}" ]; then
 		fail "\$_ORIG_HOME not set; can't teardown blank home"
+		return $?
 	elif [ "${HOME}" == "${_ORIG_HOME}" ]; then
 		fail "\$HOME wasn't changed; not deleting original \$HOME"
+		return $?
 	else
 		temp_del "${HOME}"
 	fi
@@ -87,4 +101,29 @@ function scoped_blank_home()
 {
 	setup_blank_home
 	register_teardown_fn teardown_blank_home
+}
+
+# A common pattern is to assert all lines of output.  Each argument is a line, in order.  All lines must be specified.
+function assert_all_lines()
+{
+	_check_caller assert_all_lines || return $?
+	local GLOBAL_REGEX_OR_PARTIAL=
+	if [ "$1" == "--regexp" ] || [ "$1" == "--partial" ]; then
+		GLOBAL_REGEX_OR_PARTIAL="$1"
+		shift
+	fi
+	local errs=0
+	local cnt=0
+	for l in "$@"; do
+		local LOCAL_REGEX_OR_PARTIAL="$(echo "$l" | cut -d' ' -f1)"
+		if [ "$LOCAL_REGEX_OR_PARTIAL" == "--regexp" ] || [ "$LOCAL_REGEX_OR_PARTIAL" == "--partial" ]; then
+			l="$(echo "$l" | cut -d' ' -f2-)"
+		else
+			LOCAL_REGEX_OR_PARTIAL=
+		fi
+		assert_line --index $cnt ${GLOBAL_REGEX_OR_PARTIAL} ${LOCAL_REGEX_OR_PARTIAL} "$l" || errs=$((errs + 1))
+		cnt=$((cnt + 1))
+	done
+	assert_equal ${#lines[@]} $# || errs=$((errs + 1))
+	return $errs
 }
