@@ -12,7 +12,7 @@ vagrant destroy -f
 echo
 echo "MAILING PATCHES HOME"
 echo
-..\sync2home\mail_patches_home.sh
+START CMD /C CALL ..\sync2home\mail_patches_home.sh
 echo
 echo "UPDATING BASE IMAGE"
 echo
