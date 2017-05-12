@@ -2,6 +2,7 @@ argparse
 devpi
 docker-compose
 flake8
+git+ssh://git@git.comp.optiver.com:7999/ds/git_utils.git#egg=git_utils
 invoke==0.13.0
 lxml<3.4
 protobuf==2.5.0
