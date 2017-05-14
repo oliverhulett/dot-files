@@ -1,0 +1,2 @@
+HOME=/home/ols
+@daily chmod +x "${HOME}/dot-files/setup-home.sh" && "${HOME}/dot-files/setup-home.sh"

@@ -1,0 +1,24 @@
+bash
+crontab -e
+dotlogs
+edt
+git diff
+git lg -a
+git log
+git new
+git resolve
+iotop
+journalctl -xe
+less
+.+\| *less *$
+man
+more
+nano
+setuplogs
+sh
+ssh
+sudo -e
+sudoedit
+top
+vim
+watch

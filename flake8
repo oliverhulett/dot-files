@@ -1,0 +1,10 @@
+[flake8]
+ignore =
+	# E302: expected 2 black lines
+	E302,
+	# E262: inline comment should start with '# '
+	E262,
+	# E266: too many leading '#' for block comment
+	E266,
+	# E401: one import per line
+	E401,

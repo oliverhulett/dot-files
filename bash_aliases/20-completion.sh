@@ -1,0 +1,9 @@
+set show-all-if-ambiguous on
+set show-all-if-unmodified on
+set mark-directories on
+set mark-symlinked-directories off
+set print-completions-horizontally on
+set menu-complete-display-prefix on
+set show-mode-in-prompt on
+set visible-stats on
+set skip-completed-text on
