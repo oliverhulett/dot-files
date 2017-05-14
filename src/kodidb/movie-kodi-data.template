@@ -1,0 +1,6 @@
+ strContent = 'movies'
+strSettings = '<settings><setting id="RatingS" value="TMDb" /><setting id="TrailerQ" value="1080p" /><setting id="certprefix" value="Rated " /><setting id="fanart" value="true" /><setting id="keeporiginaltitle" value="true" /><setting id="language" value="en" /><setting id="tmdbcertcountry" value="au" /><setting id="trailer" value="true" /></settings>'
+ scanRecursive = 1
+useFolderNames = 0
+      noUpdate = 0
+       exclude = 0

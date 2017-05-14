@@ -1,0 +1,10 @@
+.last_updated
+batscheck.vim
+bats.vim
+syntastic
+syntastic-extras
+vim-better-whitespace
+vim-bracketed-paste
+vim-litecorrect
+Vundle.vim
+wordlist.vim

@@ -1,0 +1,6 @@
+    strContent = ''
+   strSettings = ''
+ scanRecursive = 0
+useFolderNames = 0
+      noUpdate = 1
+       exclude = 1

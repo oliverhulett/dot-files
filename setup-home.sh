@@ -4,8 +4,8 @@ source "${HOME}/dot-files/bash_common.sh" 2>/dev/null && eval "${capture_output}
 HERE="$(cd "$(dirname "$0")" && pwd -P)"
 RELPATH="/usr/local/bin/relpath.sh"
 
-chmod +x "${HOME}/src/install" "${HERE}/setup-home.sh" "${HERE}/lessfilter" "${HERE}/tests/run.sh"
-"${HOME}/src/install" -k ${HOME}/src/*.*
+chmod +x "${HERE}/src/install" "${HERE}/setup-home.sh" "${HERE}/lessfilter" "${HERE}/tests/run.sh"
+"${HERE}/src/install" -k ${HERE}/src/*.*
 
 DOTFILES=
 if [ -f "${HERE}/dot-files.$(hostname -s | tr '[A-Z]' '[a-z]')" ]; then

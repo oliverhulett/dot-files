@@ -1,0 +1,7 @@
+    strContent = 'tvshows'
+    strScraper = 'metadata.tvdb.com'
+   strSettings = '<settings><setting id="absolutenumber" value="false" /><setting id="dvdorder" value="true" /><setting id="fanart" value="true" /><setting id="language" value="en" /></settings>'
+ scanRecursive = 1
+useFolderNames = 1
+      noUpdate = 0
+       exclude = 0
