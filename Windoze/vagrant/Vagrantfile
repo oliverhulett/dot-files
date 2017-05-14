@@ -142,6 +142,7 @@ Vagrant.configure("2") do |config|
 		s.inline = <<-SHELL
 			HOME="/home/$1"
 
+			sudo systemctl restart gdm.service
 			rm -rf /tmp/.ssh 2>/dev/null
 
 			echo "Running disc tweaks..."
