@@ -20,12 +20,6 @@ function setup()
 	mkdir --parents ${REPO_DIR}/proj2/repo2/master/folder2
 	mkdir --parents ${REPO_DIR}/proj2/repo2/branch2/folder2
 }
-eval "${save_teardown}"
-function teardown()
-{
-	teardown_blank_home
-	saved_teardown
-}
 
 @test "$PROG: requires at least one argument" {
 	run ${PROG}
