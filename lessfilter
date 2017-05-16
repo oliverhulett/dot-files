@@ -23,15 +23,15 @@ fi
 #	fi
 #fi
 
-# Apply redirection to the current shell
-exec 2>/dev/null
 
+# Apply redirection to the current shell
 source "${HOME}/dot-files/bash_common.sh"
+exec 2>&${log_fd}
 log "$(callstack)"
 
 exit_status=-1
 case "$1" in
-	*.log|syslog)
+	*.log)
 		colourise.py "$1"
 		exit_status=$?
 		log "Colourised $1 for less: colourise.py $1; Returned: $exit_status"
@@ -42,5 +42,4 @@ case "$1" in
 		log "Pygmentizing $1 for less: pygmentize -f terminal $1; Returned: $exit_status"
 		;;
 esac
-exit $?
 exit $exit_status

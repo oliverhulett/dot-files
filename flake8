@@ -8,3 +8,5 @@ ignore =
 	E266,
 	# E401: one import per line
 	E401,
+hang-closing = False
+max-line-length = 120

@@ -1,10 +1,11 @@
 #!/bin/bash
 
-source "${HOME}/dot-files/bash_common.sh" 2>/dev/null && eval "${capture_output}" || true
+HERE="$(dirname "$(readlink -f "$0")")"
+DOTFILES="$(dirname "${HERE}")"
+source "${DOTFILES}/bash_common.sh" 2>/dev/null && eval "${setup_log_fd}" || true
 
-## Early exit to a generic editor for things that aren't commits.
+## Early exist to a generic editor for things that aren't commits.
 if ! [ $# -eq 1 -a "$1" -ef .git/COMMIT_EDITMSG ]; then
-	eval "${uncapture_output}"
 	$VISUAL "$@" || vim "$@"
 	exit
 fi
@@ -62,7 +63,6 @@ fi
 
 ## If .git/COMMIT_EDITMSG contains a non-branch prefixed message, don't auto-prefix lines.
 if ! sed -re '/^#/! s/^('"${branch}"')?(.+)/'"${branch}"'\2/' .git/COMMIT_EDITMSG -i; then
-	eval "${uncapture_output}"
 	$VISUAL "$@" || vim "$@"
 	exit
 fi
