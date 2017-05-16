@@ -12,6 +12,7 @@ git lg --all
 git log
 git new
 git resolve
+git show
 less
 .+\| *less *$
 man

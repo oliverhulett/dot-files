@@ -7,6 +7,7 @@ PROG="alterlimitsdb.sh"
 
 function setup()
 {
+	assert_prog
 	ORIG_DB_URI="postgresql://operat@devenv002:6002/limitsdb_ml"
 	MODULE="Server.DataModel.alterlimitsdb"
 }

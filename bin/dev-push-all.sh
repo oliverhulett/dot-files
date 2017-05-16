@@ -6,9 +6,7 @@ HERE="$(dirname "$(readlink -f "$0")")"
 DOTFILES="$(dirname "${HERE}")"
 source "${DOTFILES}/bash_common.sh" 2>/dev/null && eval "${capture_output}" || true
 
-declare -a DEV_SRVS=
-
-declare -a DIRS SPLITS
+declare -a DEV_SRVS DIRS SPLITS
 RSYNC_ARG=
 
 function canonicalise()
@@ -56,6 +54,9 @@ for filename in "$@"; do
 	fi
 done
 
+if [ ${#DIRS[@]} -eq 0 ] || [ ${#SPLITS[@]} -eq 0 ]; then
+	exit 0
+fi
 if [ ${#DEV_SRVS[@]} -eq 0 ]; then
 	DEV_SRVS=( $(ssh-ping.sh 2>/dev/null | sort -u) )
 fi
