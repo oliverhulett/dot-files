@@ -54,10 +54,18 @@ function checkprocs()
 if [ $# -eq 0 ]; then
 	set -- $(get_all_tests)
 fi
+
 NUM_TESTS=$(bats --count "$@")
 if [ $# -lt ${PARALLEL} ]; then
 	PARALLEL=$#
 fi
+
+export BATS_TMPDIR="/tmp/bats"
+export BATS_MOCK_TMPDIR="${BATS_TMPDIR}"
+export TMPDIR="${BATS_TMPDIR}"
+rm -rf "${BATS_TMPDIR}"
+mkdir --parents "${BATS_TMPDIR}"
+
 if [ ${PARALLEL} -eq 1 ]; then
 	bats "${ARGS}" "$@"
 else

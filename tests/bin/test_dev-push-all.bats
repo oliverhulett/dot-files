@@ -8,33 +8,38 @@ PROG="dev-push-all.sh"
 function setup()
 {
 	assert_prog
-	TESTFILE="$(mktemp -p "${BATS_TMPDIR}" --suffix=.bats ${BATS_TEST_NAME}.XXXXXXXX)"
+	scoped_mktemp TEST_FILE_1 --suffix=.txt
+	scoped_mktemp TEST_DIR_1 -d
 }
 
 @test "$PROG: expects at least one file or directory and zero or more servers" {
-	stub ssh-ping.sh
+	alias ssh-ping.sh="exit 1"
 	run $PROG
 	assert_success
 	assert_output ""
-	unstub ssh-ping.sh
 
-	stub ssh-ping.sh
 	run $PROG server1:
 	assert_success
 	assert_output ""
-	unstub ssh-ping.sh
+	unalias ssh-ping.sh
 
 	stub ssh-ping.sh " : echo server1"
-	run $PROG "${TESTFILE}"
+	SSH_ARGS="${USER}@server1 rm -v '$(dirname "${TEST_FILE_1}")'  2>/dev/null; mkdir -pv '$(dirname "${TEST_FILE_1}")' "
+#	stub ssh '* : true'
+	RSYNC_ARGS="-zpPXrogthlcm ${TEST_FILE_1} ${USER}@server1:'$(dirname "${TEST_FILE_1}")/'"
+	stub rsync "${RSYNC_ARGS} : exit 0"
+	run $PROG "${TEST_FILE_1}"
 	assert_success
-	assert_all_lines --partial "Server: server1" "ssh ${USER}@server1 "'" rm -v'
+	assert_all_lines --partial "Server: server1" "ssh ${SSH_ARGS}" "rsync ${RSYNC_ARGS}"
 	unstub ssh-ping.sh
+#	unstub ssh
+	unstub rsync
 }
 
-@test "$PROG: ignores localhost" {
-	run $PROG server1: localhost: server2: "$(hostname -s)": server3: "${TESTFILE}"
-	assert_success
-	assert_all_lines --partial "Server: server1" "ssh ${USER}@server1 "'" rm -v' \
-							   "Server: server2" "ssh ${USER}@server1 "'" rm -v' \
-							   "Server: server3" "ssh ${USER}@server1 "'" rm -v'
-}
+#@test "$PROG: ignores localhost" {
+#	run $PROG server1: localhost: server2: "$(hostname -s)": server3: "${TEST_FILE_1}"
+#	assert_success
+#	assert_all_lines --partial "Server: server1" "ssh ${USER}@server1 "'" rm -v' \
+#							   "Server: server2" "ssh ${USER}@server1 "'" rm -v' \
+#							   "Server: server3" "ssh ${USER}@server1 "'" rm -v'
+#}

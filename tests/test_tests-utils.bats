@@ -6,7 +6,47 @@ PROG="utils.sh"
 
 function setup()
 {
-	: ## We specifically don't want the common setup(), since our $PROG is not a real program.
+	unset _TEARDOWN_FNS
+	unset _ORIG_HOME
+}
+
+_assert_all_lines_test_cnt=1
+function _do_assert_all_lines_test()
+{
+	expected_errors=$1
+	shift
+	set +e; output="$(assert_all_lines "$@" 2>&1)"; retval=$?; set -e
+	assert_equal $retval $expected_errors || echo -e "Failed expectation #${_assert_all_lines_test_cnt}:  Test args: $*\n${output}" | fail
+	_assert_all_lines_test_cnt=$((_assert_all_lines_test_cnt + 1))
+}
+@test "$PROG: assert_all_lines" {
+	source "${DF_TESTS}/utils.sh"
+	run echo -e $' line1\nline 2\nline3 '
+	# Note that this pattern is required to get the return value but not fail the test when assert_all_lines is expected to fail.
+	_do_assert_all_lines_test 0 " line1" "line 2" "line3 "
+	_do_assert_all_lines_test 1 "line1" "line 2" "line3 "
+	_do_assert_all_lines_test 1 " line1" "line 2" "line3"
+	_do_assert_all_lines_test 2 "line1" "line 2" "line3"
+	_do_assert_all_lines_test 3 "line1" "line 2" "line3" "line 4"
+	_do_assert_all_lines_test 4 "line1" "line 2" "line3" "line 4" "5"
+	# All the lines are wrong because "line0" throws off the indicies.
+	_do_assert_all_lines_test 4 "line0" " line1" "line 2" "line3 "
+	_do_assert_all_lines_test 0 " line1" "line 2" "line3 "
+	_do_assert_all_lines_test 1 " line1" "line 2"
+	_do_assert_all_lines_test 2 " line1"
+	# All the lines are wrong because the missing " line 1" throws off the indicies.
+	_do_assert_all_lines_test 3 "line 2" "line3 "
+	_do_assert_all_lines_test 1 " line1" "line 2" "line3 " "line4"
+	_do_assert_all_lines_test 0 --regexp "^ line.$" "^li.e 2$" "^li..3 $"
+	_do_assert_all_lines_test 0 --partial "ine" "lin" "ne3"
+	# --partial and --regexp flags have to be ignored for missing expectations (AKA extra lines of output.)
+	_do_assert_all_lines_test 1 --partial " line1" "line 2"
+	_do_assert_all_lines_test 0 " line1" "--regexp ^line.+$" "--partial ine"
+	_do_assert_all_lines_test 0 "--regexp line1$" "line 2" "line3 "
+	# --partial does not start at character 0 of the third arg, so assert_all_lines can't be sure it's not part of the line to match.
+	_do_assert_all_lines_test 1 " line1" "line 2" " --partial ine"
+	run echo -n
+	_do_assert_all_lines_test 0
 }
 
 @test "$PROG: finding programs" {
@@ -39,10 +79,46 @@ function setup()
 	assert_output "echo"
 }
 
+@test "$PROG: register teardown functions" {
+	source "${DF_TESTS}/utils.sh"
+	run teardown
+	assert_success
+	assert_output ""
+
+	register_teardown_fn echo this
+	run teardown
+	assert_success
+	assert_output "this"
+
+	register_teardown_fn echo that
+	run teardown
+	assert_success
+	assert_all_lines "this" "that"
+}
+
+@test "$PROG: scoped temporary files and directories are removed on teardown" {
+	source "${DF_TESTS}/utils.sh"
+	scoped_mktemp tstfile1
+	assert [ -n "$tstfile1" ]
+	assert [ -e "$tstfile1" ]
+	scoped_mktemp tstfile2 -d
+	assert [ -n "$tstfile2" ]
+	assert [ -d "$tstfile2" ]
+	scoped_mktemp tstfile3 --suffix=.txt
+	assert [ -n "$tstfile3" ]
+	assert [ -e "$tstfile3" ]
+	assert [ "${tstfile3%.txt}" != "${tstfile3}" ]
+
+	run teardown
+
+	assert [ ! -e "$tstfile1" ]
+	assert [ ! -e "$tstfile2" ]
+	assert [ ! -e "$tstfile3" ]
+}
+
 @test "$PROG: assert program exists" {
 	source "${DF_TESTS}/utils.sh"
-	TESTFILE="$(mktemp -p "${BATS_TMPDIR}" --suffix=.bats ${BATS_TEST_NAME}.XXXXXXXX)"
-	register_teardown_fn rm $TESTFILE
+	scoped_mktemp TESTFILE --suffix=.bats
 	cat >"${TESTFILE}" <<-EOF
 	. "${DF_TESTS}/utils.sh"
 	@test "test" {
@@ -76,29 +152,10 @@ function setup()
 	assert_all_lines "1..1" "ok 1 test"
 }
 
-@test "$PROG: register teardown functions" {
-	source "${DF_TESTS}/utils.sh"
-	run teardown
-	assert_success
-	assert_output ""
-
-	register_teardown_fn echo this
-	run teardown
-	assert_success
-	assert_output "this"
-
-	register_teardown_fn echo that
-	run teardown
-	assert_success
-	assert_all_lines "this" "that"
-}
-
 @test "$PROG: simple test file" {
 	source "${DF_TESTS}/utils.sh"
-	OUTPUT="$(mktemp -p "${BATS_TMPDIR}" --suffix=.txt ${BATS_TEST_NAME}.XXXXXXXX)"
-	register_teardown_fn rm $OUTPUT
-	TESTFILE="$(mktemp -p "${BATS_TMPDIR}" --suffix=.bats ${BATS_TEST_NAME}.XXXXXXXX)"
-	register_teardown_fn rm $TESTFILE
+	scoped_mktemp OUTPUT --suffix=.txt
+	scoped_mktemp TESTFILE --suffix=.bats
 	cat >"${TESTFILE}" <<-EOF
 	. "${DF_TESTS}/utils.sh"
 	function setup()
@@ -123,10 +180,8 @@ function setup()
 
 @test "$PROG: blank \$HOME" {
 	source "${DF_TESTS}/utils.sh"
-	OUTPUT="$(mktemp -p "${BATS_TMPDIR}" --suffix=.txt ${BATS_TEST_NAME}.XXXXXXXX)"
-	register_teardown_fn rm $OUTPUT
-	TESTFILE="$(mktemp -p "${BATS_TMPDIR}" --suffix=.bats ${BATS_TEST_NAME}.XXXXXXXX)"
-	register_teardown_fn rm $TESTFILE
+	scoped_mktemp OUTPUT --suffix=.txt
+	scoped_mktemp TESTFILE --suffix=.bats
 	TMPHOME="$(mktemp -p "${BATS_TMPDIR}" --suffix=home --dry-run ${BATS_TEST_NAME}.XXXXXXXX)"
 	cat >"${TESTFILE}" <<-EOF
 	. "${DF_TESTS}/utils.sh"
@@ -196,10 +251,8 @@ function setup()
 
 @test "$PROG: scoped blank \$HOME" {
 	source "${DF_TESTS}/utils.sh"
-	OUTPUT="$(mktemp -p "${BATS_TMPDIR}" --suffix=.txt ${BATS_TEST_NAME}.XXXXXXXX)"
-	register_teardown_fn rm $OUTPUT
-	TESTFILE="$(mktemp -p "${BATS_TMPDIR}" --suffix=.bats ${BATS_TEST_NAME}.XXXXXXXX)"
-	register_teardown_fn rm $TESTFILE
+	scoped_mktemp OUTPUT --suffix=.txt
+	scoped_mktemp TESTFILE --suffix=.bats
 	TMPHOME="$(mktemp -p "${BATS_TMPDIR}" --suffix=home --dry-run ${BATS_TEST_NAME}.XXXXXXXX)"
 	stub temp_make '--prefix=home : echo "'${TMPHOME}'"'
 	stub temp_del "${TMPHOME}"
@@ -236,10 +289,8 @@ function setup()
 
 @test "$PROG: teardown blank \$HOME only after setup" {
 	source "${DF_TESTS}/utils.sh"
-	OUTPUT="$(mktemp -p "${BATS_TMPDIR}" --suffix=.txt ${BATS_TEST_NAME}.XXXXXXXX)"
-	register_teardown_fn rm $OUTPUT
-	TESTFILE="$(mktemp -p "${BATS_TMPDIR}" --suffix=.bats ${BATS_TEST_NAME}.XXXXXXXX)"
-	register_teardown_fn rm $TESTFILE
+	scoped_mktemp OUTPUT --suffix=.txt
+	scoped_mktemp TESTFILE --suffix=.bats
 	cat >"${TESTFILE}" <<-EOF
 	. "${DF_TESTS}/utils.sh"
 	@test "test" {
@@ -259,58 +310,4 @@ function setup()
 	run cat $OUTPUT
 	assert_all_lines
 	unstub fail
-}
-
-@test "$PROG: assert_all_lines" {
-	source "${DF_TESTS}/utils.sh"
-	run echo -e $' line1\nline 2\nline3 '
-
-	# Note that this pattern is required to get the return value but not fail the test when asser_all_lines is expected
-	# to fail.  Unfortunately it screws up the error reporting, so you'll have to manually count the errors and the
-	# expected errors to work out what failed.
-	set +e; assert_all_lines " line1" "line 2" "line3 "; retval=$?; set -e
-	assert_equal $retval 0
-
-	set +e; assert_all_lines "line1" "line 2" "line3 "; retval=$?; set -e
-	assert_equal $retval 1
-
-	set +e; assert_all_lines "line1" "line 2" "line3"; retval=$?; set -e
-	assert_equal $retval 2
-
-	set +e; assert_all_lines "line1" "line 2" "line3" ""; retval=$?; set -e
-	assert_equal $retval 3
-
-	set +e; assert_all_lines " line1" "line 2" "line3 "; retval=$?; set -e
-	assert_equal $retval 0
-
-	set +e; assert_all_lines "line1" "line 2" "line3 "; retval=$?; set -e
-	assert_equal $retval 1
-
-	set +e; assert_all_lines " line1" "line 2" "line3"; retval=$?; set -e
-	assert_equal $retval 1
-
-	set +e; assert_all_lines " line1" "line 2"; retval=$?; set -e
-	assert_equal $retval 1
-
-	set +e; assert_all_lines " line1" "line 2" "line3 " "line4"; retval=$?; set -e
-	assert_equal $retval 2 # "line4" doesn't match empty string and count is wrong.
-
-	set +e; assert_all_lines --regexp "^ line.$" "^li.e 2$" "^li..3 $"; retval=$?; set -e
-	assert_equal $retval 0
-
-	set +e; assert_all_lines --partial "ine" "lin" "ne3"; retval=$?; set -e
-	assert_equal $retval 0
-
-	set +e; assert_all_lines " line1" "--regexp ^line.+$" "--partial ine"; retval=$?; set -e
-	assert_equal $retval 0
-
-	set +e; assert_all_lines "--regexp line1$" "line 2" "line3 "; retval=$?; set -e
-	assert_equal $retval 0
-
-	set +e; assert_all_lines " line1" "line 2" " --partial ine"; retval=$?; set -e
-	assert_equal $retval 1
-
-	run echo -n
-	set +e; assert_all_lines; retval=$?; set -e
-	assert_equal $retval 0
 }

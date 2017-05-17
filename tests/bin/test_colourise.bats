@@ -68,8 +68,7 @@ COLOUR2="$(printf '\033\[1;32m')"
 }
 
 @test "$PROG: will colourise a given file" {
-	TESTFILE="$(mktemp -p "${BATS_TMPDIR}" --suffix=.log ${BATS_TEST_NAME}.XXXXXXXX)"
-	register_teardown_fn rm $TESTFILE
+	scoped_mktemp TESTFILE --suffix=.log
 	cat >"${TESTFILE}" <<-EOF
 		Line should not be colourised
 		10:11:12.123456789 [module1] Default regex should pick colour1
@@ -84,15 +83,13 @@ COLOUR2="$(printf '\033\[1;32m')"
 }
 
 @test "$PROG: will colourise multiple given files" {
-	TESTFILE1="$(mktemp -p "${BATS_TMPDIR}" --suffix=.log ${BATS_TEST_NAME}.XXXXXXXX)"
-	register_teardown_fn rm $TESTFILE1
+	scoped_mktemp TESTFILE1 --suffix=.log
 	cat >"${TESTFILE1}" <<-EOF
 		Line should not be colourised
 		10:11:12.123456789 [module1] Default regex should pick colour1
 		10:11:12.123456789 [module2] Default regex should pick colour2
 	EOF
-	TESTFILE2="$(mktemp -p "${BATS_TMPDIR}" --suffix=.log ${BATS_TEST_NAME}.XXXXXXXX)"
-	register_teardown_fn rm $TESTFILE2
+	scoped_mktemp TESTFILE2 --suffix=.log
 	cat >"${TESTFILE2}" <<-EOF
 		Line should not be colourised
 		11:10.13.123456789 [module1] Default regex should pick colour1
@@ -126,8 +123,7 @@ COLOUR2="$(printf '\033\[1;32m')"
 }
 
 @test "$PROG: if first arg is a pattern then still accepts file args" {
-	TESTFILE="$(mktemp -p "${BATS_TMPDIR}" --suffix=.log ${BATS_TEST_NAME}.XXXXXXXX)"
-	register_teardown_fn rm $TESTFILE
+	scoped_mktemp TESTFILE --suffix=.log
 	cat >"${TESTFILE}" <<-EOF
 		Line should be colourised
 		10:11:12.123456789 [module1] Default regex should pick colour1
