@@ -1,5 +1,6 @@
 ackrc
-bash_aliases/09-profile.d-makeflags.sh
+bash_aliases/09-profile.d-makeflags.home.sh
+bash_aliases/09-profile.d-makeflags.optiver.sh
 bash_aliases/19-env-git.sh
 bash_aliases/19-env-shellcheck.sh
 bash_aliases/20-completion.sh
