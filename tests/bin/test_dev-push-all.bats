@@ -3,7 +3,7 @@
 DF_TESTS="$(dirname "$(cd "${BATS_TEST_DIRNAME}" && pwd -P)")"
 source "${DF_TESTS}/utils.sh"
 
-PROG="dev-push-all.sh"
+PROG="bin/dev-push-all.sh"
 
 function setup()
 {
@@ -16,11 +16,11 @@ function setup()
 
 @test "$PROG: expects at least one file or directory and zero or more servers" {
 	alias ssh-ping.sh="exit 1"
-	run $PROG
+	run $EXE
 	assert_success
 	assert_output ""
 
-	run $PROG server1:
+	run $EXE server1:
 	assert_success
 	assert_output ""
 	unalias ssh-ping.sh
@@ -32,7 +32,7 @@ function setup()
 	#stub ssh '*'
 	#stub ssh "${SSH_ARGS}"
 	stub rsync "${RSYNC_ARGS}"
-	run $PROG "${TEST_FILE_1}"
+	run $EXE "${TEST_FILE_1}"
 	assert_success
 	assert_all_lines "--partial Server: server1" "ssh ${SSH_ARGS}" "rsync ${RSYNC_ARGS}"
 	unstub ssh-ping.sh
@@ -46,7 +46,7 @@ function setup()
 	## bats-mock bug?
 	#stub ssh "$(printf -- "${SSH_ARGS_FMT}" 1)" "$(printf -- "${SSH_ARGS_FMT}" 2)" "$(printf -- "${SSH_ARGS_FMT}" 3)"
 	stub rsync "$(printf -- "${RSYNC_ARGS_FMT}" 1)" "$(printf -- "${RSYNC_ARGS_FMT}" 2)" "$(printf -- "${RSYNC_ARGS_FMT}" 3)"
-	run $PROG server1: localhost: server2: "$(hostname -s)": server3: "${TEST_FILE_1}"
+	run $EXE server1: localhost: server2: "$(hostname -s)": server3: "${TEST_FILE_1}"
 	assert_success
 	assert_all_lines "--partial Server: server1" "ssh $(printf -- "${SSH_ARGS_FMT}" 1)" "rsync $(printf -- "${RSYNC_ARGS_FMT}" 1)" \
 					 "--partial Server: server2" "ssh $(printf -- "${SSH_ARGS_FMT}" 2)" "rsync $(printf -- "${RSYNC_ARGS_FMT}" 2)" \
@@ -66,7 +66,7 @@ function setup()
 	stub rsync "$(printf -- "${RSYNC_ARGS_FMT}" "${TEST_FILE_1} ${TEST_FILE_2}" "$(dirname "$TEST_FILE_1")")" \
 			   "$(printf -- "${RSYNC_ARGS_FMT}" "${TEST_DIR_1}/" "$TEST_DIR_1")" \
 			   "$(printf -- "${RSYNC_ARGS_FMT}" "${TEST_DIR_2}/dir2/" "${TEST_DIR_2}/dir2")"
-	run $PROG server1: "${TEST_FILE_1}" "${TEST_FILE_2}" "${TEST_DIR_1}" "${TEST_DIR_2}/dir2/"
+	run $EXE server1: "${TEST_FILE_1}" "${TEST_FILE_2}" "${TEST_DIR_1}" "${TEST_DIR_2}/dir2/"
 	assert_success
 	assert_all_lines "--partial Server: server1" "ssh ${SSH_ARGS}" \
 					 "rsync $(printf -- "${RSYNC_ARGS_FMT}" "${TEST_FILE_1} ${TEST_FILE_2}" "$(dirname "$TEST_FILE_1")")" \
@@ -83,7 +83,7 @@ function setup()
 	## bats-mock bug?
 	#stub ssh "${SSH_ARGS}"
 	stub rsync "${RSYNC_ARGS}"
-	run $PROG --rsync-arg1 server1: "${TEST_FILE_1}" -n
+	run $EXE --rsync-arg1 server1: "${TEST_FILE_1}" -n
 	assert_success
 	assert_all_lines "--partial Server: server1" "ssh ${SSH_ARGS}" "rsync ${RSYNC_ARGS}"
 	#unstub ssh

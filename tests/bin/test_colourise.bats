@@ -3,7 +3,7 @@
 DF_TESTS="$(dirname "$(cd "${BATS_TEST_DIRNAME}" && pwd -P)")"
 source "${DF_TESTS}/utils.sh"
 
-PROG="colourise.py"
+PROG="bin/colourise.py"
 
 COLOUR_PATTERN="$(printf '\033\[.;..m')"
 RESET="$(printf '\033\[0m')"
@@ -11,7 +11,7 @@ COLOUR1="$(printf '\033\[1;34m')"
 COLOUR2="$(printf '\033\[1;32m')"
 
 @test "$PROG: will colourise stdin" {
-	run $PROG <<-EOF
+	run $EXE <<-EOF
 		Line should not be colourised
 		10:11:12.123456789 [module1] Default regex should pick colour1
 		10:11:12.123456789 [module2] Default regex should pick colour2
@@ -24,7 +24,7 @@ COLOUR2="$(printf '\033\[1;32m')"
 }
 
 @test "$PROG: uses first line to detect logging format.  Optiver C++" {
-	run $PROG <<-EOF
+	run $EXE <<-EOF
 		10:11:12.123456789 [LEVEL ] [MODULE1] line one is colourised and picks the C++ pattern
 		10:11:13.123456789 [LEVEL1] [MODULE1] line two has the same colour because it is the same module
 		10:11:14.123456789 [LEVEL ] [MODULE2] line three has a different colour
@@ -45,7 +45,7 @@ COLOUR2="$(printf '\033\[1;32m')"
 }
 
 @test "$PROG: uses first line to detect logging format.  Optiver Python" {
-	run $PROG <<-EOF
+	run $EXE <<-EOF
 		2017-05-04 10:11:12 [LEVEL ] module1:classname: line one is colourised and picks the Python pattern
 		2017-05-04 10:11:13 [LEVEL1] module1:classname: line two has the same colour because it is the same module
 		2017-05-04 10:11:14 [LEVEL ] module2:classname: line three has a different colour
@@ -74,7 +74,7 @@ COLOUR2="$(printf '\033\[1;32m')"
 		10:11:12.123456789 [module1] Default regex should pick colour1
 		10:11:12.123456789 [module2] Default regex should pick colour2
 	EOF
-	run $PROG "${TESTFILE}"
+	run $EXE "${TESTFILE}"
 	assert_success
 	assert_all_lines "Colourising ${TESTFILE}..." \
 					 "Line should not be colourised" \
@@ -95,7 +95,7 @@ COLOUR2="$(printf '\033\[1;32m')"
 		11:10.13.123456789 [module1] Default regex should pick colour1
 		11:10.13.123456789 [module2] Default regex should pick colour2
 	EOF
-	run $PROG "${TESTFILE1}" "${TESTFILE2}"
+	run $EXE "${TESTFILE1}" "${TESTFILE2}"
 	assert_success
 	assert_all_lines "Colourising ${TESTFILE1}..." \
 					 "Line should not be colourised" \
@@ -108,7 +108,7 @@ COLOUR2="$(printf '\033\[1;32m')"
 }
 
 @test "$PROG: first arg can be a pattern" {
-	run $PROG '.+colour([a-zA-Z0-9]+)$' <<-EOF
+	run $EXE '.+colour([a-zA-Z0-9]+)$' <<-EOF
 		Line should be colourised
 		10:11:12.123456789 [module1] Default regex should pick colour1
 		10:11:12.123456789 [module2] Default regex should pick colour2
@@ -130,7 +130,7 @@ COLOUR2="$(printf '\033\[1;32m')"
 		10:11:12.123456789 [module2] Default regex should pick colour2
 		No colours if the regex doesn't match
 	EOF
-	run $PROG '.+colour([a-zA-Z0-9]+)$' "${TESTFILE}"
+	run $EXE '.+colour([a-zA-Z0-9]+)$' "${TESTFILE}"
 	assert_success
 	assert_all_lines "Colourising ${TESTFILE}..." \
 					 "--regexp ${COLOUR_PATTERN}"'Line should be colourised'"${RESET}" \

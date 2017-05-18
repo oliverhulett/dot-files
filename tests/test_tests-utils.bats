@@ -49,36 +49,6 @@ function _do_assert_all_lines_test()
 	_do_assert_all_lines_test 0
 }
 
-@test "$PROG: finding programs" {
-	source "${DF_TESTS}/utils.sh"
-	run find_prog
-	assert_failure
-
-	run find_prog echo
-	assert_success
-	assert_output "echo"
-
-	run find_prog echo.sh
-	assert_success
-	assert_output "echo"
-
-	run find_prog none
-	assert_success
-	assert_output ""
-
-	run find_prog /dev/null
-	assert_success
-	assert_output ""
-
-	run find_prog "$(find_prog echo)"
-	assert_success
-	assert_output "echo"
-
-	run find_prog "$(find_prog echo.sh)"
-	assert_success
-	assert_output "echo"
-}
-
 @test "$PROG: register teardown functions" {
 	source "${DF_TESTS}/utils.sh"
 	run teardown
@@ -94,6 +64,44 @@ function _do_assert_all_lines_test()
 	run teardown
 	assert_success
 	assert_all_lines "this" "that"
+}
+
+function _scoped_environment_inspect_env()
+{
+	env | command grep -E "^$1="
+}
+@test "$PROG: scoped environment" {
+	source "${DF_TESTS}/utils.sh"
+	export THING2="things"
+	run _scoped_environment_inspect_env THING1
+	assert_output ""
+	run _scoped_environment_inspect_env THING2
+	assert_output "THING2=things"
+
+	scoped_env THING1="words" THING2
+	run _scoped_environment_inspect_env THING1
+	assert_output "THING1=words"
+	run _scoped_environment_inspect_env THING2
+	assert_output "THING2=things"
+
+	THING2="other things"
+	run _scoped_environment_inspect_env THING1
+	assert_output "THING1=words"
+	run _scoped_environment_inspect_env THING2
+	assert_output "THING2=other things"
+
+	THING1="more words"
+	run _scoped_environment_inspect_env THING1
+	assert_output "THING1=more words"
+	run _scoped_environment_inspect_env THING2
+	assert_output "THING2=other things"
+
+	teardown
+
+	run _scoped_environment_inspect_env THING1
+	assert_output ""
+	run _scoped_environment_inspect_env THING2
+	assert_output "THING2=things"
 }
 
 @test "$PROG: scoped temporary files and directories are removed on teardown" {
@@ -116,40 +124,54 @@ function _do_assert_all_lines_test()
 	assert [ ! -e "$tstfile3" ]
 }
 
+function _assert_prog_mk_test()
+{
+	unset EXE PROG
+	cat >"${TESTFILE}" <<-EOF
+	. "${DF_TESTS}/utils.sh"
+	PROG="$1"
+	function setup()
+	{
+		:
+	}
+	function skip()
+	{
+		echo "Skipping='\$*' PROG=\$PROG EXE=\$EXE" | tee "${OUTPUT}" | fail
+		exit 1
+	}
+	@test "test" {
+		assert_prog
+		assert [ "\$EXE" == "$2" ]
+	}
+	EOF
+}
 @test "$PROG: assert program exists" {
 	source "${DF_TESTS}/utils.sh"
 	scoped_mktemp TESTFILE --suffix=.bats
-	cat >"${TESTFILE}" <<-EOF
-	. "${DF_TESTS}/utils.sh"
-	@test "test" {
-		true
-	}
-	EOF
+	scoped_mktemp OUTPUT --suffix=.txt
+	_assert_prog_mk_test "" ""
 	run bats -t "${TESTFILE}"
 	assert_success
-	assert_all_lines "1..1" "ok 1 test"
 
-	cat >"${TESTFILE}" <<-EOF
-	. "${DF_TESTS}/utils.sh"
-	PROG=none
-	@test "test" {
-		true
-	}
-	EOF
+	_assert_prog_mk_test "none" ""
 	run bats -t "${TESTFILE}"
-	assert_success
-	assert_all_lines "1..1" "ok 1 # skip (Failed to find program under test) test"
+	assert_failure
+	run cat "${OUTPUT}"
+	assert_all_lines --partial "Skipping='Failed to find program under test'"
 
-	cat >"${TESTFILE}" <<-EOF
-	. "${DF_TESTS}/utils.sh"
-	PROG=echo.sh
-	@test "test" {
-		true
-	}
-	EOF
+	_assert_prog_mk_test "tests/data/executable.sh" "${DF_TESTS}/data/executable.sh"
 	run bats -t "${TESTFILE}"
 	assert_success
-	assert_all_lines "1..1" "ok 1 test"
+
+	_assert_prog_mk_test "tests/data/shebang.sh" "/bin/bash -asdf ${DF_TESTS}/data/shebang.sh"
+	run bats -t "${TESTFILE}"
+	assert_success
+
+	_assert_prog_mk_test "tests/data/no-shebang.sh" ""
+	run bats -t "${TESTFILE}"
+	assert_failure
+	run cat "${OUTPUT}"
+	assert_all_lines --partial "Skipping='Program under test is not executable or has an invalid shebang'"
 }
 
 @test "$PROG: simple test file" {

@@ -20,23 +20,26 @@ function _check_caller()
 	fi
 }
 
-# Find the program under tests
-function find_prog()
-{
-	if [ $# -ne 1 ]; then
-		fail "find_prog: Requires exactly one argument."
-		return $?
-	fi
-	basename -- "$(command which "$1" 2>/dev/null || command which "${1%.*}" 2>/dev/null)" 2>/dev/null
-}
 # Skip the test if the program under test doesn't exist
+# TODO:  What about aliases and functions?
 function assert_prog()
 {
 	_check_caller assert_prog || return $?
 	if [ -n "${PROG}" ]; then
-		declare -g PROG="$(find_prog "${PROG}")"
-		if [ -z "${PROG}" ]; then
+		declare -g EXE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && cd "$(git home)" && echo "$(git home)/$(git ls-files -- "${PROG}")")"
+		if [ ! -f "${EXE}" ]; then
 			skip "Failed to find program under test"
+			return
+		fi
+		if [ ! -x "${EXE}" ]; then
+			local shebang="$(head -n1 "${EXE}")"
+			local interpreter="${shebang:2}"
+			if [ "${shebang:0:2}" != '#!' ] || [ ! -e "${interpreter%% *}" ]; then
+				skip "Program under test is not executable or has an invalid shebang"
+				return
+			else
+				EXE="${interpreter} $EXE"
+			fi
 		fi
 	fi
 }
@@ -64,6 +67,34 @@ function fire_teardown_fns()
 function teardown()
 {
 	fire_teardown_fns
+}
+
+# Set and export an environment variable and register it to be restored in teardown.
+function scoped_env()
+{
+	_check_caller scoped_env || return $?
+	for i in "$@"; do
+		if [ "${i/=//}" == "$i" ]; then
+			local var="$i"
+			local val=
+		else
+			local var="${i%%=*}"
+			local val="${i#*=}"
+		fi
+		if [ -z "${!var}" ]; then
+			register_teardown_fn unset ${var}
+		else
+			register_teardown_fn export ${var}="$(eval echo ${!var})"
+		fi
+		if [ -z "$val" ]; then
+			val="$(eval echo ${!var})"
+		fi
+		eval export ${var}="${val}"
+	done
+}
+function scoped_environment()
+{
+	scoped_env "$@"
 }
 
 # Create a temporary file or directory and register it for removal on teardown.
