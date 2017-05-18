@@ -1,5 +1,5 @@
 [alias]
-	lg = "!f() { if [ $# -eq 0 ]; then set -- 10; fi; count=\"--max-count=$1\"; if [ \"$1\" == \"-a\" -o \"$1\" == \"--all\" ]; then count=; fi; git log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cd)%C(bold blue)<%an>%Creset' --abbrev-commit $count; }; f"
+	lg = "!f() { ~/.git_wrappers/log.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 	alias = config --get-regexp alias
 	which = "!f() { for i in \"$@\"; do echo -n \"$i is: \"; git config alias.$i; done; }; f"
 	env = "!f() { env; }; cd \"$GIT_PREFIX\" && f"
@@ -21,8 +21,14 @@
 
 	cp = "!f() { cp -nv \"$@\"; declare -a toadd; for arg in \"${@:1:$# - 1}\"; do if [ \"${arg:0:1}\" != \"-\" ]; then toadd[${#toadd[@]}]=\"${@:$#}/$(basename -- $arg)\"; fi; done; if [ ${#toadd[@]} -eq 1 -a ! -d \"${toadd[0]}\" ]; then toadd=( \"${@:$#}\" ); fi; git add -v --ignore-removal --ignore-errors \"${toadd[@]}\"; }; cd \"$GIT_PREFIX\" && f"
 	new = "!f() { ~/.git_wrappers/new.sh \"$@\"; }; cd \"$GIT_PREFIX\" && f"
+	update = "!f() { ~/.git_wrappers/update.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 	ignore = "!f() { for i in \"$@\"; do echo \"$i\" >>.gitignore; done; echo \"$(sort -u .gitignore)\" >.gitignore; sed -re '/^$/d' -i .gitignore; git add .gitignore; }; cd \"$GIT_PREFIX\" && f"
 	added = "!f() { : git log ; follow=; if [ $# -le 1 ]; then follow=\"--follow\"; fi; git log $follow --diff-filter=A --find-renames=40% -- \"$@\"; }; cd \"$GIT_PREFIX\" && f"
+
+	pin = "!f() { ~/.git_wrappers/pin_externals.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
+	unpin = "!f() { ~/.git_wrappers/unpin_externals.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
+	upgrade = "!f() { ~/.git_wrappers/update_externals.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
+	externals2tags = "!f() { ~/.git_wrappers/tag_externals.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 
 	unstage = reset HEAD
 	undo-commit = reset HEAD^
@@ -44,6 +50,9 @@
 	resolve-mine = "!f() { : git add ; if [ $# -eq 0 ]; then set -- $(git diff --name-only --diff-filter=U); fi; git checkout --ours \"$@\" && git add \"$@\"; }; cd \"$GIT_PREFIX\" && f"
 	resolve-ours = !git resolve-mine
 	resolve-theirs = "!f() { : git add ; if [ $# -eq 0 ]; then set -- $(git diff --name-only --diff-filter=U); fi; git checkout --theirs \"$@\" && git add \"$@\"; }; cd \"$GIT_PREFIX\" && f"
+
+	search = log -S
+	find = log --all --full-history
 [add]
 	ignoreErrors = true
 [color]
@@ -84,6 +93,6 @@
 	command = /usr/bin/true
 [user]
 	name = Oliver Hulett
-	email = oliver.hulett@gmail.com
-#[credential]
-#	helper = store
+	email = oliver.hulett@optiver.com.au
+[credential]
+	helper = store

@@ -1,2 +1,4 @@
-*.rej
-*~
+*.add.spl
+images/repo
+*.pyc
+vim/bundle/*

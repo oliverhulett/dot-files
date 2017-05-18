@@ -1,0 +1,12 @@
+ - To get output to go to the capture log but not to the terminal, we have to redirect to ${log_fd} rather than the more natural /dev/null.  Is that a bit shit, or is it nice and explicit and the way it should be?
+ - To use capture_output in a bash function, we need to remember to uncapture_output at the end.  Is that a bit shit?  Is there a way to do it automagically?
+ - Thoughts for a better capture_output:
+    - Make my own tty files (character special) for stdout, stderr, and stdlog.  Redirect there (and then back in tee_totaler).  That way applications that determine their output should be fooled.
+    - We would still need to uncapture_output for interactives like vim.  We don't want to log everything we edit.  Can we do this automagically by using the edt alias or the $VISUAL environment variable?  Would those settings be restored after editing?
+    - What's the speed like reading from a character special?  Is it noticeable for the sorts of things we want to capture?
+ - uncapture_output...
+    - Doesn't work, or does it?
+      - Some concerns that colours weren't working, but they appear to be.  It's going to be dependent on how the application determines tty, isn't it?
+        - gtest - yes
+        - jq - no?
+      - Can we better emulate a tty?  Can we try reading from /dev/tty instead of re-directing?

@@ -23,7 +23,6 @@ catch
 	" Vundle not there...
 endtry
 filetype plugin on
-filetype indent on
 " If you've added a plugin, run `:PluginInstall`
 
 " From ntpeters/vim-better-whitespace: Strip white-space on save
@@ -133,40 +132,6 @@ nmap <silent> <leader>k :call ToggleList("Location List", 'l')<cr>
 nmap <leader>kk :lprev<cr>
 nmap <leader>kj :lnext<cr>
 
-" Syntastic settings
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_check_on_open = 1
-let g:syntastic_check_on_wq = 0
-
-function! GetBufferList()
-	redir =>buflist
-	silent! ls!
-	redir END
-	return buflist
-endfunction
-function! ToggleList(bufname, pfx)
-	let buflist = GetBufferList()
-	for bufnum in map(filter(split(buflist, '\n'), 'v:val =~ "'.a:bufname.'"'), 'str2nr(matchstr(v:val, "\\d\\+"))')
-		if bufwinnr(bufnum) != -1
-			exec(a:pfx.'close')
-			return
-		endif
-	endfor
-	if a:pfx == 'l' && len(getloclist(0)) == 0
-			echohl ErrorMsg
-			echo "Location List is Empty."
-			return
-	endif
-	let winnr = winnr()
-	exec(a:pfx.'open')
-	if winnr() != winnr
-		wincmd p
-	endif
-endfunction
-nmap <silent> <leader>k :call ToggleList("Location List", 'l')<cr>
-nmap <leader>kk :lprev<cr>
-nmap <leader>kj :lnext<cr>
-
 " Shortcut keys to turn on spell-checking
 nnoremap <c-l> :setlocal spell! spelllang=en_gb<cr>
 imap <c-l> <c-g>u<Esc>[s
@@ -242,11 +207,6 @@ set statusline+=%#warningmsg#
 set statusline+=%{SyntasticStatuslineFlag()}
 set statusline+=%*
 
-"Syntastic warnings
-set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
-set statusline+=%*
-
 "left/right separator
 set statusline+=%=
 set statusline+=%{StatuslineCurrentHighlight()}\ \ "current highlight
@@ -268,26 +228,23 @@ function! StatuslineCurrentHighlight()
 	endif
 endfunction
 
-"return '[&et]' if &et is set wrong
+"recalculate the trailing whitespace warning when idle, and after saving
+autocmd cursorhold,bufwritepost * unlet! b:statusline_tab_warning
+
+"return '[&expand-tabs]' if &et is set wrong
 "return '[mixed-indenting]' if spaces and tabs are used to indent
 "return an empty string if everything is fine
 function! StatuslineTabWarning()
 	if !exists("b:statusline_tab_warning")
-		let b:statusline_tab_warning = ''
-
-		if !&modifiable
-			return b:statusline_tab_warning
-		endif
-
 		let tabs = search('^\t', 'nw') != 0
-
-		"find spaces that aren't used as alignment in the first indent column
-		let spaces = search('^ \{' . &ts . ',}[^\t]', 'nw') != 0
+		let spaces = search('^ ', 'nw') != 0
 
 		if tabs && spaces
 			let b:statusline_tab_warning = '[mixed-indenting]'
 		elseif (spaces && !&et) || (tabs && &et)
 			let b:statusline_tab_warning = '[&et]'
+		else
+			let b:statusline_tab_warning = ''
 		endif
 	endif
 	return b:statusline_tab_warning
@@ -316,11 +273,10 @@ nmap <S-Enter> O<Esc>
 " Ctrl+j as the opposite of Shift+j
 nnoremap <C-J> a<CR><Esc>k$
 
-" Python, JSON, and Yaml should use spaces instead of tabs
+" Python, JSON, and Yaml should use spaces instead of tabs, as should Python
 autocmd Filetype javascript setlocal expandtab
 autocmd Filetype json setlocal expandtab
 autocmd Filetype modula2 setlocal expandtab tabstop=2
 autocmd Filetype python setlocal expandtab
 autocmd Filetype xml setlocal expandtab tabstop=2
 autocmd Filetype yaml setlocal expandtab tabstop=2
-

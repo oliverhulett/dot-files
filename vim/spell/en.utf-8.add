@@ -15,10 +15,3 @@ Plugins
 plugin
 vim
 automagically
-ctrl
-statusline
-fileformat
-unix
-utf
-TTY
-cmdline

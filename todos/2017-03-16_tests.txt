@@ -1,0 +1,1 @@
+Some of these bash tricks are getting a little complex, and there are a couple of moving parts.  I should really be testing these things.
