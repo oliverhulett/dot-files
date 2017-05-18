@@ -13,6 +13,8 @@ git log
 git new
 git resolve
 git show
+iotop
+journalctl -xe
 less
 .+\| *less *$
 man

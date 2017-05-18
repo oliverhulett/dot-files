@@ -2,31 +2,15 @@
 source "${HOME}/dot-files/bash_common.sh" 2>/dev/null && eval "${capture_output}" || true
 
 HERE="$(cd "$(dirname "$0")" && pwd -P)"
-RELPATH="${HERE}/bin/relpath.sh"
+RELPATH="/usr/local/bin/relpath.sh"
 
-if ! echo "${HTTP_PROXY}" | grep -q "`whoami`" 2>/dev/null; then
-	source "${HERE}/bash_aliases/19-env-proxy.sh" 2>/dev/null
-	proxy_setup -q
-fi
-
-echo "Updating dot-files..."
-# Can't pull here, you risk changing this file
-( cd "${HERE}" && git submodule init && git submodule sync && git submodule update ) >&${log_fd} &
-disown -h 2>/dev/null
-disown 2>/dev/null
-
-if [ -f "${HERE}/crontab.$(hostname -s)" ]; then
-	echo "Installing crontab from ~/dot-files/crontab.$(hostname -s)..."
-	crontab <(head -n -2 "${HERE}/crontab.$(hostname -s)")
-elif [ -f "${HERE}/crontab" ]; then
-	echo "Installing crontab from ~/dot-files/crontab..."
-	crontab "${HERE}/crontab"
-fi
+chmod +x "${HERE}/src/install" "${HERE}/setup-home.sh" "${HERE}/lessfilter" "${HERE}/tests/run.sh"
+"${HERE}/src/install" -k ${HERE}/src/*.*
 
 DOTFILES=
-if [ -f "${HERE}/dot-files.$(hostname -s)" ]; then
-	echo "Linking dot files from ~/dot-files/dot-files.$(hostname -s)..."
-	DOTFILES="${HERE}/dot-files.$(hostname -s)"
+if [ -f "${HERE}/dot-files.$(hostname -s | tr '[A-Z]' '[a-z]')" ]; then
+	echo "Linking dot files from ~/dot-files/dot-files.$(hostname -s | tr '[A-Z]' '[a-z]')..."
+	DOTFILES="${HERE}/dot-files.$(hostname -s | tr '[A-Z]' '[a-z]')"
 elif [ -f "${HERE}/dot-files" ]; then
 	echo "Linking dot files from ~/dot-files/dot-files..."
 	DOTFILES="${HERE}/dot-files"
@@ -48,7 +32,12 @@ else
 	echo "No dot-files file found, not linking anything..."
 fi
 
-GIT_CREDS="${HOME}/.git-credentials"
-rm "${GIT_CREDS}" 2>/dev/null || true
-echo "https://oliverhulett:$(sed -ne '1p' "${HOME}/etc/passwd.github")@github.com" >>"${GIT_CREDS}"
-chmod 0600 "${GIT_CREDS}"
+if [ -f "${HERE}/crontab.$(hostname -s | tr '[A-Z]' '[a-z]')" ]; then
+	echo "Installing crontab from ~/dot-files/crontab.$(hostname -s | tr '[A-Z]' '[a-z]')..."
+	crontab "${HERE}/crontab.$(hostname -s | tr '[A-Z]' '[a-z]')"
+fi
+
+#GIT_CREDS="${HOME}/.git-credentials"
+#rm "${GIT_CREDS}" 2>/dev/null || true
+#echo "https://oliverhulett:$(sed -ne '1p' "${HOME}/etc/passwd.github")@github.com" >>"${GIT_CREDS}"
+#chmod 0600 "${GIT_CREDS}"
