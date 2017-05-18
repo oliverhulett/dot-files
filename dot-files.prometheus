@@ -16,7 +16,7 @@ bash_aliases/39-aliases-ubuntu.sh .bash_aliases/39-aliases-ubuntu.sh
 bash_logout .bash_logout
 bash_profile .bash_profile
 bashrc .bashrc
-gitconfig .gitconfig
+gitconfig.home .gitconfig
 gitignore .gitignore
 git_wrappers .git_wrappers
 interactive_commands .interactive_commands

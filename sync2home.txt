@@ -33,6 +33,8 @@ bin/ssh.sh
 flake8
 .gitattributes
 gitconfig
+gitconfig.home
+gitconfig.optiver
 gitignore
 .gitignore
 .gitmodules
