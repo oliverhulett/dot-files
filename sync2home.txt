@@ -48,8 +48,9 @@ invoke.py
 lessfilter
 profile
 setup-home.sh
+sync2home.oliverhulett
+sync2home.optiver
 sync2home.sh
-sync2home.txt
 tests
 todos
 trap_stack.sh
