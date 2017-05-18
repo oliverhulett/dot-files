@@ -15,18 +15,19 @@ echo "Updating dot-files..."
 disown -h 2>/dev/null
 disown 2>/dev/null
 
-if [ -f "${HERE}/crontab.$(hostname -s)" ]; then
-	echo "Installing crontab from ~/dot-files/crontab.$(hostname -s)..."
-	crontab <(head -n -2 "${HERE}/crontab.$(hostname -s)")
+HOSTNAME="$(hostname -s | tr A-Z a-z)"
+if [ -f "${HERE}/crontab.${HOSTNAME}" ]; then
+	echo "Installing crontab from ~/dot-files/crontab.${HOSTNAME}..."
+	crontab <(head -n -2 "${HERE}/crontab.${HOSTNAME}")
 elif [ -f "${HERE}/crontab" ]; then
 	echo "Installing crontab from ~/dot-files/crontab..."
 	crontab "${HERE}/crontab"
 fi
 
 DOTFILES=
-if [ -f "${HERE}/dot-files.$(hostname -s)" ]; then
-	echo "Linking dot files from ~/dot-files/dot-files.$(hostname -s)..."
-	DOTFILES="${HERE}/dot-files.$(hostname -s)"
+if [ -f "${HERE}/dot-files.${HOSTNAME}" ]; then
+	echo "Linking dot files from ~/dot-files/dot-files.${HOSTNAME}..."
+	DOTFILES="${HERE}/dot-files.${HOSTNAME}"
 elif [ -f "${HERE}/dot-files" ]; then
 	echo "Linking dot files from ~/dot-files/dot-files..."
 	DOTFILES="${HERE}/dot-files"
