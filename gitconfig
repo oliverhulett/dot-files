@@ -3,6 +3,7 @@
 	alias = config --get-regexp alias
 	which = "!f() { for i in \"$@\"; do echo -n \"$i is: \"; git config alias.$i; done; }; f"
 	env = "!f() { env; }; cd \"$GIT_PREFIX\" && f"
+	home = "!f() { pwd -P; }; f" ## Want to execute from the top level, not GIT_PREFIX
 
 	ticket = "!f() { git branch --no-color | sed -nre 's/^\\* //p' | cut -d'_' -f1; }; f"
 	this = "!f() { git branch --no-color | sed -nre 's/^\\* //p'; }; f"
@@ -91,8 +92,3 @@
 	fetch = refs/tags/*:refs/tags/*
 [diff "nodiff"]
 	command = /usr/bin/true
-[user]
-	name = Oliver Hulett
-	email = oliver.hulett@optiver.com.au
-[credential]
-	helper = store
