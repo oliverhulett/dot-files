@@ -1,5 +1,5 @@
 [alias]
-	lg = "!f() { if [ $# -eq 0 ]; then set -- 10; fi; count=\"--max-count=$1\"; if [ \"$1\" == \"-a\" -o \"$1\" == \"--all\" ]; then count=; fi; git log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cd)%C(bold blue)<%an>%Creset' --abbrev-commit $count; }; f"
+	lg = "!f() { ~/.git_wrappers/log.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 	alias = config --get-regexp alias
 	which = "!f() { for i in \"$@\"; do echo -n \"$i is: \"; git config alias.$i; done; }; f"
 	env = "!f() { env; }; cd \"$GIT_PREFIX\" && f"
