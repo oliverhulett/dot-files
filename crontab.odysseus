@@ -21,4 +21,4 @@
 #
 # m h  dom mon dow   command
 HOME=/home/ols
-@daily chmod +x "${HOME}/dot-files/setup-home.sh" && "${HOME}/dot-files/setup-home.sh"
+@daily cd "${HOME}/dot-files" && git pullb && ./setup-home.sh

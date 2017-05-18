@@ -51,8 +51,7 @@ invoke.py
 lessfilter
 profile
 setup-home.sh
-sync2home.oliverhulett
-sync2home.optiver
+sync2home.txt
 sync2home.sh
 tests
 todos

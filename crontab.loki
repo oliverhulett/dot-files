@@ -1,4 +1,4 @@
 HOME=/home/ols
 @reboot insync-headless start >/dev/null 2>&1
 * * * * * for i in /dev/disk/by-label/*; do echo $i; ls -l /media/$(basename $i); done >/dev/null 2>&1
-@daily chmod +x "${HOME}/dot-files/setup-home.sh" && "${HOME}/dot-files/setup-home.sh" >/dev/null 2>&1
+@daily cd "${HOME}/dot-files" && git pullb && ./setup-home.sh >/dev/null 2>&1
