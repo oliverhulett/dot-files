@@ -60,7 +60,7 @@ if [ $# -lt ${PARALLEL} ]; then
 	PARALLEL=$#
 fi
 
-export BATS_TMPDIR="/tmp/bats"
+export BATS_TMPDIR="/tmp/bats/$(date '+%Y%m%d-%H%M%S')"
 export BATS_MOCK_TMPDIR="${BATS_TMPDIR}"
 export TMPDIR="${BATS_TMPDIR}"
 rm -rf "${BATS_TMPDIR}"
