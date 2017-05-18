@@ -41,7 +41,6 @@ bin/kodicall.sh
 bin/kodidb
 bin/limits-perms-prodcopy.sh
 bin/mp32ogg.sh
-bin/mp32ogg.sh
 bin/mp3edit.sh
 bin/mp3fs.sh
 bin/normalise.sh
@@ -70,7 +69,7 @@ dot-files
 dot-files.loki
 dot-files.odysseus
 dot-files.prometheus
-eclipse-project-filesh
+eclipse-project-files
 git_wrappers/pin_externals.sh
 git_wrappers/tag_externals.sh
 git_wrappers/unpin_externals.sh
@@ -82,4 +81,5 @@ pip.conf
 pydistutils.cfg
 pypirc
 python_setup.txt
+.sync2home.last-hash
 Windoze
