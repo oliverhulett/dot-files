@@ -3,16 +3,12 @@
 DF_TESTS="$(dirname "$(cd "${BATS_TEST_DIRNAME}" && pwd -P)")"
 source "${DF_TESTS}/utils.sh"
 
-PROG="$(find_prog "get-repo-dir.sh")"
+PROG="get-repo-dir.sh"
 
-eval "${save_setup}"
 function setup()
 {
-	if [ -z "$PROG" ]; then
-		skip
-	fi
-	saved_setup
-	setup_blank_home
+	assert_prog
+	scoped_blank_home
 	REPO_DIR="${HOME}/repo"
 	mkdir --parents ${REPO_DIR}/proj1/repo1/master/folder1/folder2
 	mkdir --parents ${REPO_DIR}/proj1/repo1/branch1/folder1/folder2

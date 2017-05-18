@@ -6,11 +6,6 @@ source "$(dirname "${BASH_SOURCE[0]}")/x_helpers/bats-assert/load.bash"
 source "$(dirname "${BASH_SOURCE[0]}")/x_helpers/bats-file/load.bash"
 source "$(dirname "${BASH_SOURCE[0]}")/x_helpers/bats-mock/stub.bash"
 
-function find_prog()
-{
-	command which "$1" 2>/dev/null || command which "${1%.*}" 2>/dev/null
-}
-
 # Most of these functions only work in setup, teardown, or test functions
 function _check_caller()
 {
@@ -55,8 +50,6 @@ function setup()
 declare -ga _TEARDOWN_FNS
 function register_teardown_fn()
 {
-	_check_caller register_teardown_fn || return $?
-
 	_TEARDOWN_FNS[${#_TEARDOWN_FNS[@]}]="$*"
 }
 function fire_teardown_fns()
@@ -73,11 +66,24 @@ function teardown()
 	fire_teardown_fns
 }
 
+# Create a temporary file or directory and register it for removal on teardown.
+function scoped_mktemp()
+{
+	_check_caller scoped_mktemp || return $?
+	local var="$1"
+	shift
+	local f="$(mktemp -p "${BATS_TMPDIR}" "$@" ${BATS_TEST_NAME}.XXXXXXXX)"
+	register_teardown_fn unset ${var}
+	register_teardown_fn rm -rf $f
+	eval "${var}"="$f"
+}
+
 # Set ${HOME} to a blank temporary directory in-case tests want to mutate it.
 function setup_blank_home()
 {
 	_check_caller setup_blank_home || return $?
 	declare -g _ORIG_HOME="${HOME}"
+	local tmphome
 	tmphome="$(temp_make --prefix="home")"
 	if [ -z "$tmphome" ] || [ "$tmphome" == "$HOME" ]; then
 		fail "Failed to setup mock \$HOME"
@@ -129,6 +135,14 @@ function assert_all_lines()
 		assert_line --index $cnt ${GLOBAL_REGEX_OR_PARTIAL} ${LOCAL_REGEX_OR_PARTIAL} "$l" || errs=$((errs + 1))
 		cnt=$((cnt + 1))
 	done
-	assert_equal ${#lines[@]} $# || errs=$((errs + 1))
+	if [ $cnt -lt ${#lines[@]} ]; then
+		(
+			echo "Found more lines of output than expected.  Additional lines:"
+			for idx in $(seq $cnt $((${#lines[@]} - 1))); do
+				echo -e "\t> ${lines[$idx]}"
+			done
+		) | fail
+		errs=$((errs + ${#lines[@]} - cnt))
+	fi
 	return $errs
 }
