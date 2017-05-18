@@ -2,7 +2,7 @@ ackrc .ackrc
 bash_aliases/09-profile.d-ca_cert.sh .bash_aliases/09-profile.d-ca_cert.sh
 bash_aliases/09-profile.d-ccache.sh .bash_aliases/09-profile.d-ccache.sh
 bash_aliases/09-profile.d-gcc_4.7.2.sh .bash_aliases/09-profile.d-gcc_4.7.2.sh
-bash_aliases/09-profile.d-makeflags.sh .bash_aliases/09-profile.d-makeflags.sh
+bash_aliases/09-profile.d-makeflags.optiver.sh .bash_aliases/09-profile.d-makeflags.sh
 bash_aliases/09-profile.d-pyvenv.sh .bash_aliases/09-profile.d-pyvenv.sh
 bash_aliases/19-env-git.sh .bash_aliases/19-env-git.sh
 bash_aliases/19-env-proxy.sh .bash_aliases/19-env-proxy.sh
@@ -36,7 +36,7 @@ bash_profile .bash_profile
 bashrc .bashrc
 docker_favourites .docker_favourites
 flake8 .config/flake8
-gitconfig .gitconfig
+gitconfig.optiver .gitconfig
 gitignore .gitignore
 git_wrappers .git_wrappers
 interactive_commands .interactive_commands
