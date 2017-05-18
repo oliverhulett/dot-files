@@ -2,33 +2,33 @@
 # Known to work on Bash 3.x, untested on 4.x.
 
 _complete_invoke() {
-    local candidates
+	local candidates
 
-    # COMP_WORDS contains the entire command string up til now (including
-    # program name).
-    # We hand it to Invoke so it can figure out the current context: spit back
-    # core options, task names, the current task's options, or some combo.
-    candidates=`invoke --complete -- ${COMP_WORDS[*]} 2>/dev/null`
+	# COMP_WORDS contains the entire command string up til now (including
+	# program name).
+	# We hand it to Invoke so it can figure out the current context: spit back
+	# core options, task names, the current task's options, or some combo.
+	candidates=`invoke --complete -- ${COMP_WORDS[*]} 2>/dev/null`
 
-    # `compgen -W` takes list of valid options & a partial word & spits back
-    # possible matches. Necessary for any partial word completions (vs
-    # completions performed when no partial words are present).
-    #
-    # $2 is the current word or token being tabbed on, either empty string or a
-    # partial word, and thus wants to be compgen'd to arrive at some subset of
-    # our candidate list which actually matches.
-    #
-    # COMPREPLY is the list of valid completions handed back to `complete`.
-    COMPREPLY=( $(compgen -W "${candidates}" -- $2) )
+	# `compgen -W` takes list of valid options & a partial word & spits back
+	# possible matches. Necessary for any partial word completions (vs
+	# completions performed when no partial words are present).
+	#
+	# $2 is the current word or token being tabbed on, either empty string or a
+	# partial word, and thus wants to be compgen'd to arrive at some subset of
+	# our candidate list which actually matches.
+	#
+	# COMPREPLY is the list of valid completions handed back to `complete`.
+	COMPREPLY=( $(compgen -W "${candidates}" -- $2) )
 }
 
 _complete_build() {
-    local candidates
-    candidates=`./build.py --bootstrap-no-build --complete -- ${COMP_WORDS[*]} 2>/dev/null`
+	local candidates
+	candidates=`./build.py --bootstrap-no-build --complete -- ${COMP_WORDS[*]} 2>/dev/null`
 	if [ $? -ne 0 ]; then
-    	candidates=`./build.py --complete -- ${COMP_WORDS[*]} 2>/dev/null`
+		candidates=`./build.py --complete -- ${COMP_WORDS[*]} 2>/dev/null`
 	fi
-    COMPREPLY=( $(compgen -W "${candidates}" -- $2) )
+	COMPREPLY=( $(compgen -W "${candidates}" -- $2) )
 }
 
 # Tell shell builtin to use the above for completing 'inv'/'invoke':
