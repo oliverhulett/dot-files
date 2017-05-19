@@ -3,7 +3,7 @@ HOME="$(dirname "$(cd "$(dirname "$0")" && pwd -P)")"
 
 source "${HOME}/dot-files/bash_common.sh" 2>/dev/null && eval "${capture_output}" || true
 
-if ! echo "${HTTP_PROXY}" | grep -q "olihul" 2>/dev/null; then
+if [ -e "${HOME}/.bash_aliases/19-env-proxy.sh" ] && ! echo "${HTTP_PROXY}" | grep -q "olihul" 2>/dev/null; then
 	source "${HOME}/.bash_aliases/19-env-proxy.sh" 2>/dev/null
 	proxy_setup -q olihul
 fi
