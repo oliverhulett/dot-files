@@ -59,17 +59,10 @@ bin/ssh-name.sh
 bin/stasher.py
 bin/vbmanage.sh
 bin/vboxctl.sh
-crontab
-crontab.3100-centos7dev
-crontab.loki
-crontab.odysseus
-crontab.prometheus
+crontab*
 docker_favourites
-dot-files
-dot-files.loki
-dot-files.odysseus
-dot-files.prometheus
-eclipse-project-files
+dot-files*
+eclipse-project-files/*
 git_wrappers/pin_externals.sh
 git_wrappers/tag_externals.sh
 git_wrappers/unpin_externals.sh
@@ -82,4 +75,4 @@ pydistutils.cfg
 pypirc
 python_setup.txt
 .sync2home.last-hash
-Windoze
+Windoze/*

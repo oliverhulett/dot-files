@@ -33,8 +33,10 @@ function edt()
 	VUNDLE_LAST_UPDATED_MARKER="${HOME}/.vim/bundle/.last_updated"
 	if [ -z "$(find "${VUNDLE_LAST_UPDATED_MARKER}" -mtime -1 2>/dev/null)" ] || \
 		[ "$(command grep -E '[ \t]*Plugin ' "${HOME}/.vimrc" | xargs -L1 | sort)" != "$(tail -n +2 "${VUNDLE_LAST_UPDATED_MARKER}")" ]; then
-		source "${HOME}/.bash_aliases/19-env-proxy.sh" 2>/dev/null
-		proxy_setup -q >/dev/null 2>/dev/null
+		if [ -e "${HOME}/.bash_aliases/19-env-proxy.sh" ]; then
+			source "${HOME}/.bash_aliases/19-env-proxy.sh" 2>/dev/null
+			proxy_setup -q >/dev/null 2>/dev/null
+		fi
 		vim +'silent! PluginInstall' +qall
 		date >"${VUNDLE_LAST_UPDATED_MARKER}"
 		command grep -E '[ \t]*Plugin ' "${HOME}/.vimrc" | xargs -L1 | sort >>"${VUNDLE_LAST_UPDATED_MARKER}"
@@ -218,7 +220,7 @@ function _prompt_command()
 }
 export PROMPT_COMMAND=_prompt_command
 
-if ! echo "${HTTP_PROXY}" | grep -q "$(whoami)" 2>/dev/null; then
+if [ -e "${HOME}/.bash_aliases/19-env-proxy.sh" ] && ! echo "${HTTP_PROXY}" | grep -q "$(whoami)" 2>/dev/null; then
 	source "${HOME}/.bash_aliases/19-env-proxy.sh" 2>/dev/null
 	proxy_setup -q >/dev/null 2>/dev/null
 fi
