@@ -1,2 +1,0 @@
-HOME=/home/ols
-@daily cd "${HOME}/dot-files" && git pullb && ./setup-home.sh
