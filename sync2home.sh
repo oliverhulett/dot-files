@@ -31,7 +31,7 @@ git format-patch --stdout -p ${LAST_HASH}..$OTHER_REMOTE/$BRANCH | git apply --v
 echo
 echo "Committing last sync-ed hash: ${NEXT_HASH}"
 echo ${NEXT_HASH} >"${HASH_FILE}"
-git commit "$(basename "$HASH_FILE")" -m"Sync2Home autocommit: ${LAST_HASH} to ${NEXT_HASH}" --allow-empty
-git push
+git commit -a -m"Sync2Home autocommit: ${LAST_HASH} to ${NEXT_HASH}" --allow-empty
+#git push
 echo
 echo "Done.  Sync-ed $OTHER_REMOTE/$BRANCH; from ${LAST_HASH} to ${NEXT_HASH}"
