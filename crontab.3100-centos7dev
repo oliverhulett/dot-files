@@ -35,4 +35,8 @@ MAILTO=olihul@optiver.com.au
 ## Python virtualenv should be refreshed regularly.
 @daily source "${HOME}/.bash_aliases/09-profile.d-pyvenv.sh" && rm -rf "${PYVENV_HOME}" && ${HOME}/dot-files/bin/python_setup.sh
 
-## Backed up at Thu May 18 00:00:06 AEST 2017 by olihul
+## Port dot-files home.
+45 18 * * 1-5 cd ~/repo/oliverhulett/dot-files/master && git pullb && ./sync2home.sh && git push
+30 7 * * 1-5 cd ~/repo/olihul/dot-files/master && git pullb && ./sync2home.sh && git push
+
+## Backed up at Sat May 20 00:00:01 AEST 2017 by olihul
