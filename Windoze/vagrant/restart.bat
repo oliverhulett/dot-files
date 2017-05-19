@@ -7,12 +7,12 @@ echo
 vagrant halt
 echo
 echo "DESTROYING VM"
-echo 
+echo
 vagrant destroy -f
 echo
 echo "MAILING PATCHES HOME"
 echo
-START CMD /C CALL ..\sync2home\mail_patches_home.sh
+REM START CMD /C CALL ..\sync2home\mail_patches_home.sh
 echo
 echo "UPDATING BASE IMAGE"
 echo
