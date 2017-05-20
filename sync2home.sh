@@ -24,6 +24,7 @@ NEXT_HASH="$(git rev-parse "$OTHER_REMOTE/$BRANCH")"
 echo
 echo "Syncing from ${LAST_HASH} to $OTHER_REMOTE/$BRANCH (${NEXT_HASH})"
 
+echo git format-patch --stdout -p ${LAST_HASH}..$OTHER_REMOTE/$BRANCH
 git format-patch --stdout -p ${LAST_HASH}..$OTHER_REMOTE/$BRANCH | git apply --verbose --index --3way $(awk '{print "--exclude=" $0}' "${IGNORE_LIST}")
 
 echo
