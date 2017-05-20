@@ -35,7 +35,6 @@ bin/flash_remote_fex.sh
 bin/get-repo-dir.sh
 bin/goget.sh
 bin/grabber.sh
-bin/install
 bin/install-dot-files.sh
 bin/kodicall.sh
 bin/kodidb
@@ -62,7 +61,7 @@ bin/vboxctl.sh
 crontab*
 docker_favourites
 dot-files*
-eclipse-project-files/*
+eclipse-project-files
 git_wrappers/pin_externals.sh
 git_wrappers/tag_externals.sh
 git_wrappers/unpin_externals.sh
@@ -74,5 +73,4 @@ pip.conf
 pydistutils.cfg
 pypirc
 python_setup.txt
-.sync2home.last-hash
-Windoze/*
+Windoze
