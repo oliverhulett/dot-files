@@ -20,7 +20,7 @@
 	rmtag = "!f() { for t in \"$@\"; do git tag -d $t && git push origin :refs/tags/$t; done; }; f"
 	pushtags = push --tags
 
-	cp = "!f() { cp -nv \"$@\"; declare -a toadd; for arg in \"${@:1:$# - 1}\"; do if [ \"${arg:0:1}\" != \"-\" ]; then toadd[${#toadd[@]}]=\"${@:$#}/$(basename -- $arg)\"; fi; done; if [ ${#toadd[@]} -eq 1 -a ! -d \"${toadd[0]}\" ]; then toadd=( \"${@:$#}\" ); fi; git add -v --ignore-removal --ignore-errors \"${toadd[@]}\"; }; cd \"$GIT_PREFIX\" && f"
+	cp = "!f() { ~/.git_wrappers/cp.sh \"$@\"; }; cd \"$GIT_PREFIX\" && f"
 	new = "!f() { ~/.git_wrappers/new.sh \"$@\"; }; cd \"$GIT_PREFIX\" && f"
 	update = "!f() { ~/.git_wrappers/update.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 	ignore = "!f() { for i in \"$@\"; do echo \"$i\" >>.gitignore; done; echo \"$(sort -u .gitignore)\" >.gitignore; sed -re '/^$/d' -i .gitignore; git add .gitignore; }; cd \"$GIT_PREFIX\" && f"
@@ -38,7 +38,7 @@
 	cleanall = "!f() { ~/.git_wrappers/cleanall.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 
 	pullb = "!f() { git pull --prune --recurse-submodules "$@"; git cleanbranches; }; f" ## Want to execute from top level, not GIT_PREFIX
-	cleanbranches = "!f() { shopt -s nullglob; test -d .git && for h in $(cd .git/refs/heads && find ./ -type f); do set -- .git/refs/remotes/*/\"${h#./}\"; if [ $# -eq 0 -a \"${h#./}\" != \"master\" ]; then git branch -d \"${h#./}\"; fi; done; }; f" ## Want to execute from top level, not GIT_PREFIX
+	cleanbranches = "!f() { ~/.git_wrappers/cleanbranches.sh }; f" ## Want to execute from top level, not GIT_PREFIX
 	mkbranch = "!f() { ~/.git_wrappers/mkbranch.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 	mvbranch = "!f() { : git checkout ; git branch -m \"$1\" \"$2\" && git push origin :\"$1\" && git push --set-upstream origin \"$2\"; }; f"
 	rmbranch = "!f() { : git checkout ; dashd=\"-d\"; if [ \"$1\" == \"-D\" ]; then dashd=\"-D\"; shift; fi; for b in \"$@\"; do git branch $dashd \"$b\"; git push origin --delete \"$b\"; done; git pull --prune; }; f"
