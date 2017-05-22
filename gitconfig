@@ -37,8 +37,8 @@
 	cleanignored  = "!f() { ~/.git_wrappers/cleanignored.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 	cleanall = "!f() { ~/.git_wrappers/cleanall.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 
-	pullb = "!f() { git pull --prune --recurse-submodules "$@"; git cleanbranches; }; f" ## Want to execute from top level, not GIT_PREFIX
-	cleanbranches = "!f() { ~/.git_wrappers/cleanbranches.sh }; f" ## Want to execute from top level, not GIT_PREFIX
+	pullb = "!f() { git pull --prune --recurse-submodules \"$@\"; git cleanbranches; }; f" ## Want to execute from top level, not GIT_PREFIX
+	cleanbranches = "!f() { ~/.git_wrappers/cleanbranches.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 	mkbranch = "!f() { ~/.git_wrappers/mkbranch.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 	mvbranch = "!f() { : git checkout ; git branch -m \"$1\" \"$2\" && git push origin :\"$1\" && git push --set-upstream origin \"$2\"; }; f"
 	rmbranch = "!f() { : git checkout ; dashd=\"-d\"; if [ \"$1\" == \"-D\" ]; then dashd=\"-D\"; shift; fi; for b in \"$@\"; do git branch $dashd \"$b\"; git push origin --delete \"$b\"; done; git pull --prune; }; f"
