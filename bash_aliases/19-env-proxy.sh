@@ -1,7 +1,12 @@
-export HTTP_PROXY='http://sydproxy.comp.optiver.com:8080'
-export HTTPS_PROXY='https://sydproxy.comp.optiver.com:8080'
+PROXY_URL="sydproxy.comp.optiver.com"
+PROXY_URL="sydsquid.aus.optiver.com"
+PROXY_PORT=":8080"
+export HTTP_PROXY="http://${PROXY_URL}${PROXY_PORT}"
+export HTTPS_PROXY="https://${PROXY_URL}${PROXY_PORT}"
 export http_proxy="${HTTP_PROXY}"
 export https_proxy="${HTTPS_PROXY}"
+unset http_proxy_orig
+unset https_proxy_orig
 
 export NO_PROXY='*.comp.optiver.com,*.aus.optiver.com,127.0.0.1,localhost,srcsyd.comp.optiver.com,10.0.2.*,192.168.56.*'
 export no_proxy="${NO_PROXY}"
