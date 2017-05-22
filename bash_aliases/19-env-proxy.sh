@@ -1,6 +1,7 @@
 PROXY_URL="sydproxy.comp.optiver.com"
 PROXY_URL="sydsquid.aus.optiver.com"
 PROXY_PORT=":8080"
+PROXY_PORT=":3128"
 export HTTP_PROXY="http://${PROXY_URL}${PROXY_PORT}"
 export HTTPS_PROXY="https://${PROXY_URL}${PROXY_PORT}"
 export http_proxy="${HTTP_PROXY}"
