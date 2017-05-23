@@ -11,8 +11,6 @@ fi
 
 source "${HOME}/dot-files/bash_common.sh" 2>/dev/null && eval "${capture_output}" || true
 
-[ -e "${HOME}/.bash_aliases/49-setup-proxy.sh" ] && source "${HOME}/.bash_aliases/49-setup-proxy.sh" 2>/dev/null
-
 # Some things are needed for the next set of background tasks.  Yakuake is needed for the GUI (autostart)
 # Docker and jq are needed for docker-run.sh (see below)
 yum install -y yakuake jq docker
@@ -34,6 +32,17 @@ echo "Installing some things I don't want to docker all the time..."
 	PIP_CONFIG_FILE="${HOME}/dot-files/pip.conf" pip install -U pip
 	PIP_CONFIG_FILE="${HOME}/dot-files/pip.conf" pip install -U setuptools wheel
 	PIP_CONFIG_FILE="${HOME}/dot-files/pip.conf" pip install pygments flake8
+) &
+disown -h
+disown
+
+echo "Installing some more things I don't want to docker all the time..."
+(
+	if [ -e "${HOME}/.bash_aliases/19-env-proxy.sh" ]; then
+		source "${HOME}/.bash_aliases/19-env-proxy.sh"
+		proxy_setup -qt ${USER}
+		su -c "source ${HOME}/.bash_aliases/19-env-proxy.sh && proxy_setup -qt ${USER}" ${USER}
+	fi
 
 	( cd /tmp && \
 		curl http://downloads.drone.io/release/linux/amd64/drone.tar.gz | tar zx && \
@@ -50,6 +59,12 @@ echo "Installing some things I don't want to docker all the time..."
 		cabal install --global --prefix=/usr/local shellcheck
 	)
 	rm -rf "${TMPDIR}"
+
+	if [ -e "${HOME}/.bash_aliases/19-env-proxy.sh" ]; then
+		source "${HOME}/.bash_aliases/19-env-proxy.sh"
+		su -c "source ${HOME}/.bash_aliases/19-env-proxy.sh && proxy_setup -q ${USER}" ${USER}
+		proxy_setup -q ${USER}
+	fi
 ) &
 disown -h
 disown
