@@ -55,5 +55,8 @@ if [ -z "$(command which konsole 2>/dev/null)" ]; then
 		exit 1
 	fi
 else
+	## TODO:  SSH-ing to a new server here (e.g. needing to install ssh-keys) poped up a KWallet dialog looking for a password.
+	## Why?  ssh-askpass perhaps?
+	## Also, where has my random background colouring gone?  They're transparrent now, but not coloured :(
 	run konsole --profile "Random-SSH-Server" -e "${CMD[@]}"
 fi
