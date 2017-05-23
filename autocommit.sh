@@ -3,10 +3,7 @@ HOME="$(dirname "$(cd "$(dirname "$0")" && pwd -P)")"
 
 source "${HOME}/dot-files/bash_common.sh" 2>/dev/null && eval "${capture_output}" || true
 
-if [ -e "${HOME}/.bash_aliases/19-env-proxy.sh" ] && ! echo "${HTTP_PROXY}" | grep -q "olihul" 2>/dev/null; then
-	source "${HOME}/.bash_aliases/19-env-proxy.sh" 2>/dev/null
-	proxy_setup -q olihul
-fi
+[ -e "${HOME}/.bash_aliases/49-setup-proxy.sh" ] && source "${HOME}/.bash_aliases/49-setup-proxy.sh" 2>/dev/null
 
 ## Crontabs live in /var/spool/, so take a backup of my crontab on a separate partition.
 crontab -l >${HOME}/dot-files/crontab.$(hostname -s) && echo -e "\n## Backed up at `date` by `whoami`" >>${HOME}/dot-files/crontab.$(hostname -s)

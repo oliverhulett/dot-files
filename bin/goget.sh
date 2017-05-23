@@ -9,10 +9,7 @@ source "${DOTFILES}/bash_common.sh" 2>/dev/null && eval "${capture_output}" || t
 
 export GOPATH="${GOTOOLS}"
 
-if ! echo "${HTTP_PROXY}" | grep -q "`whoami`" 2>/dev/null; then
-	source "${HOME}/.bash_aliases/19-env-proxy.sh" 2>/dev/null
-	proxy_setup
-fi
+[ -e "${HOME}/.bash_aliases/49-setup-proxy.sh" ] && source "${HOME}/.bash_aliases/49-setup-proxy.sh" 2>/dev/null
 
 echo "Setting GOPATH='${GOPATH}'"
 echo "Go-ing and Get-ing packages"

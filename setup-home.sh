@@ -4,10 +4,7 @@ source "${HOME}/dot-files/bash_common.sh" 2>/dev/null && eval "${capture_output}
 HERE="$(cd "$(dirname "$0")" && pwd -P)"
 RELPATH="${HERE}/bin/relpath.sh"
 
-if [ -e "${HERE}/bash_aliases/19-env-proxy.sh" ] && ! echo "${HTTP_PROXY}" | grep -q "`whoami`" 2>/dev/null; then
-	source "${HERE}/bash_aliases/19-env-proxy.sh" 2>/dev/null
-	proxy_setup -q
-fi
+[ -e "${HOME}/.bash_aliases/49-setup-proxy.sh" ] && source "${HOME}/.bash_aliases/49-setup-proxy.sh" 2>/dev/null
 
 echo "Updating dot-files..."
 # Can't pull here, you risk changing this file

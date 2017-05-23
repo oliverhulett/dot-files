@@ -1,19 +1,17 @@
-PROXY_URL="sydsquid.aus.optiver.com"
-PROXY_PORT=":3128"
-export HTTP_PROXY="http://${PROXY_URL}${PROXY_PORT}"
-export HTTPS_PROXY="https://${PROXY_URL}${PROXY_PORT}"
-export http_proxy="${HTTP_PROXY}"
-export https_proxy="${HTTPS_PROXY}"
 unset http_proxy_orig
 unset https_proxy_orig
 
 export NO_PROXY='*.comp.optiver.com,*.aus.optiver.com,127.0.0.1,localhost,git,srcsyd.comp.optiver.com,10.0.2.*,192.168.56.*'
 export no_proxy="${NO_PROXY}"
 
+SQUID_URL="sydsquid.aus.optiver.com"
+SQUID_PORT=":3128"
+
+PROXY_URL="sydproxy.comp.optiver.com"
+PROXY_PORT=":8080"
+
 LOCAL_PROXY_URL="localhost"
 LOCAL_PROXY_PORT=":54321"
-TUNNEL_PROXY_URL="sydproxy.comp.optiver.com"
-TUNNEL_PROXY_PORT=":8080"
 PROXY_CTRL_SOCK="${HOME}/.proxy-tunnel-ctl-sock"
 PROXY_TUNNEL_DEST="${USER}@${USER}.devsrv"
 
@@ -47,7 +45,7 @@ function urldecode()
 
 function proxy_setup()
 {
-	TUNNEL="n"
+	METHOD="squid"
 	QUIET="n"
 	for a in "$@"; do
 		if id $a >/dev/null 2>/dev/null; then
@@ -58,17 +56,30 @@ function proxy_setup()
 		while [ -n "$a" ]; do
 			p="$a"
 			case $a in
+				*h*)
+					echo "proxy_setup [-h] [-q] [-s | -t | -p]"
+					echo -e "\t-q  quit mode.  No questions, minimal output."
+					echo -e "\t-s  Use sydsquid."
+					echo -e "\t-p  Use sydproxy."
+					echo -e "\t-t  Use sydproxy via an SSH tunnel."
+					a="${a//h/}"
+					return 0
+					;;
 				*q*)
 					QUIET="y"
 					a="${a//q/}"
 					;;
+				*s*)
+					METHOD="squid"
+					a="${a//s/}"
+					;;
 				*t*)
-					TUNNEL="y"
+					METHOD="tunnel"
 					a="${a//t/}"
 					;;
-				*d*)
-					TUNNEL="n"
-					a="${a//d/}"
+				*p*)
+					METHOD="proxy"
+					a="${a//p/}"
 					;;
 			esac
 			if [ "$p" == "$a" ]; then
@@ -98,13 +109,16 @@ function proxy_setup()
 	if [ -e "${PROXY_CTRL_SOCK}" ]; then
 		ssh -S "${PROXY_CTRL_SOCK}" -O exit ${PROXY_TUNNEL_DEST} EXIT
 	fi
-	if [ "$TUNNEL" == "n" ]; then
-		HTTP_PROXY="http://${PROXY_URL}${PROXY_PORT}"
-		HTTPS_PROXY="https://${PROXY_URL}${PROXY_PORT}"
-	else
-		ssh -fNM -S "${PROXY_CTRL_SOCK}" -L ${LOCAL_PROXY_URL}${LOCAL_PROXY_PORT}:${TUNNEL_PROXY_URL}${TUNNEL_PROXY_PORT} ${PROXY_TUNNEL_DEST}
+	if [ "$METHOD" == "tunnel" ]; then
+		ssh -fNM -S "${PROXY_CTRL_SOCK}" -L ${LOCAL_PROXY_URL}${LOCAL_PROXY_PORT}:${PROXY_URL}${PROXY_PORT} ${PROXY_TUNNEL_DEST}
 		HTTP_PROXY="http://${LOCAL_PROXY_URL}${LOCAL_PROXY_PORT}"
 		HTTPS_PROXY="https://${LOCAL_PROXY_URL}${LOCAL_PROXY_PORT}"
+	elif [ "$METHOD" == "proxy" ]; then
+		HTTP_PROXY="http://${PROXY_URL}${PROXY_PORT}"
+		HTTPS_PROXY="https://${PROXY_URL}${PROXY_PORT}"
+	else # [ "$METHOD" == "squid" ]
+		HTTP_PROXY="http://${SQUID_URL}${SQUID_PORT}"
+		HTTPS_PROXY="https://${SQUID_URL}${SQUID_PORT}"
 	fi
 	export http_proxy="${HTTP_PROXY/\/\////$(urlencode "$USER"):$(urlencode "$PASSWD")@}"
 	export HTTP_PROXY="${http_proxy}"
