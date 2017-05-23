@@ -4,7 +4,7 @@
 source "$(dirname "${BASH_SOURCE[0]}")/x_helpers/bats-support/load.bash"
 source "$(dirname "${BASH_SOURCE[0]}")/x_helpers/bats-assert/load.bash"
 source "$(dirname "${BASH_SOURCE[0]}")/x_helpers/bats-file/load.bash"
-source "$(dirname "${BASH_SOURCE[0]}")/x_helpers/bats-mock/stub.bash"
+source "$(dirname "${BASH_SOURCE[0]}")/x_helpers/bats-mock/load.bash"
 
 # Most of these functions only work in setup, teardown, or test functions
 function _check_caller()
