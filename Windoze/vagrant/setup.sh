@@ -42,7 +42,7 @@ echo "Cloning dot-files..."
 su -c "cd ${HOME} && git config --global user.name 'Oliver Hulett' && git config --global user.email oliver.hulett@optiver.com.au" ${USER}
 su -c "cd ${HOME} && git clone ssh://git@git.comp.optiver.com:7999/~${USER}/dot-files.git ${HOME}/dot-files" ${USER}
 source "${HOME}/dot-files/bash_aliases/19-env-proxy.sh"
-proxy_setup -q ${USER}
+proxy_setup -qt ${USER}
 su -c "cd ${HOME}/dot-files && git submodule init && git submodule update" ${USER}
 su -c "cd ${HOME}/dot-files && git commit --allow-empty -aqm "'"Vagrant setup autocommit: $(date -R)\n$(git status --short)"'" && git pull" ${USER}
 
@@ -81,6 +81,8 @@ yum install -y yakuake jq docker
 echo "Restarting KDE to pick up restored backups..."
 sudo systemctl restart gdm.service
 sudo systemctl restart docker.service
+
+set +e
 
 echo "Installing some things I don't want to docker all the time..."
 (
