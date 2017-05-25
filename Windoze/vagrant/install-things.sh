@@ -72,7 +72,7 @@ disown
 echo "Copying cc-env custom files for eclipse indexer and friends..."
 (
 	source "${HOME}/dot-files/bash_common.sh" && eval "${capture_output}" || true
-	export PATH="$(prepend_path "${HOME}/dot-files/bin")"
+	export PATH="$(prepend_path "${HOME}/dot-files/bin" "/optiver/bin")"
 
 	CC_EXE="/usr/local/bin/cc-env"
 	CC_IMAGE="$(sed -nre 's!.+(docker-registry\.aus\.optiver\.com/[^ ]+/[^ ]+).*!\1!p' "${CC_EXE}" | tail -n1)"
