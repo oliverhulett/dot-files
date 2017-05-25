@@ -15,7 +15,7 @@ function setup()
 }
 
 @test "$PROG: expects at least one file or directory and zero or more servers" {
-	alias ssh-ping.sh="exit 1"
+	alias ssh-list.sh="exit 1"
 	run $EXE
 	assert_success
 	assert_output ""
@@ -23,11 +23,11 @@ function setup()
 	run $EXE server1:
 	assert_success
 	assert_output ""
-	unalias ssh-ping.sh
+	unalias ssh-list.sh
 
 	SSH_ARGS="${USER}@server1 rm -v '$(dirname "${TEST_FILE_1}")'  2>/dev/null; mkdir -pv '$(dirname "${TEST_FILE_1}")' "
 	RSYNC_ARGS="-zpPXrogthlcm ${TEST_FILE_1} ${USER}@server1:'$(dirname "${TEST_FILE_1}")/'"
-	stub ssh-ping.sh " : echo server1"
+	stub ssh-list.sh " : echo server1"
 	## bats-mock bug?  Args are too complex, perhaps?
 	#stub ssh '*'
 	#stub ssh "${SSH_ARGS}"
@@ -35,7 +35,7 @@ function setup()
 	run $EXE "${TEST_FILE_1}"
 	assert_success
 	assert_all_lines "--partial Server: server1" "ssh ${SSH_ARGS}" "rsync ${RSYNC_ARGS}"
-	unstub ssh-ping.sh
+	unstub ssh-list.sh
 	#unstub ssh
 	unstub rsync
 }

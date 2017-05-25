@@ -58,7 +58,7 @@ if [ ${#DIRS[@]} -eq 0 ] || [ ${#SPLITS[@]} -eq 0 ]; then
 	exit 0
 fi
 if [ ${#DEV_SRVS[@]} -eq 0 ]; then
-	DEV_SRVS=( $(ssh-ping.sh 2>/dev/null | sort -u) )
+	DEV_SRVS=( $(ssh-list.sh 2>/dev/null | sort -u) )
 fi
 
 # echo DEV_SRVS = "${DEV_SRVS[@]}"

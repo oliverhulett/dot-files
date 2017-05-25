@@ -8,7 +8,7 @@ DOTFILES="$(dirname "${HERE}")"
 source "${DOTFILES}/bash_common.sh" 2>/dev/null && eval "${capture_output}" || true
 
 if [ $# -eq 0 ]; then
-	DEV_SRVS=( $(ssh-ping.sh 2>/dev/null | sort -u) )
+	DEV_SRVS=( $(ssh-list.sh 2>/dev/null | sort -u) )
 else
 	DEV_SRVS=( "$@" )
 fi

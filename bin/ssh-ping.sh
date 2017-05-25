@@ -4,42 +4,17 @@ HERE="$(dirname "$(readlink -f "$0")")"
 DOTFILES="$(dirname "${HERE}")"
 source "${DOTFILES}/bash_common.sh" 2>/dev/null && eval "${capture_output}" || true
 
-if [ "$1" == "-h" -o "$1" == "--help" -o "$1" == "-?" ]; then
-	echo "$(basename -- $0) [-v] [host...]"
-	echo "  Ping each of the hosts in ~/.ssh/known_hosts"
+if [ "$1" == "-h" ] || [ "$1" == "--help" ] || [ "$1" == "-?" ] || [ $# -lt 1 ]; then
+	echo "$(basename -- $0) host..."
+	echo "  Ping each of the listed hosts.  Stop when connection succeeds.  Will only work when connection succeeds without a password."
 	echo "  -v  Print failures at the end"
 	exit 0
 fi
 
-VERBOSE="no"
-if [ "$1" == "-v" ]; then
-	VERBOSE="yes"
-	shift
-fi
-
-if [ $# -eq 0 ]; then
-	set -- $(command cat ${HOME}/.ssh/known_hosts | command grep -vE '^\[?git' | cut -d' ' -f1 | cut -d, -f1)
-fi
-
-declare -a FAILURES
 for svr in "$@"; do
-	command ssh -o ConnectTimeout=2 -o PasswordAuthentication=no $svr hostname 2>&${log_fd} || FAILURES[${#FAILURES[@]}]="$svr"
-done
-
-function join()
-{
-	echo -n "$1"
-	shift
-	printf "%s" "${@/#/|}"
-}
-
-if [ "$VERBOSE" == "yes" ]; then
+	echo -n "Pinging $svr  "
+	while ! command ssh -o ConnectTimeout=2 -o PasswordAuthentication=no $svr 'echo; hostname' 2>&${log_fd}; do
+		echo -n "."
+	done
 	echo
-	echo "${#FAILURES[@]} Failure(s)"
-	echo 'Remove failed hosts with `sed -e '"'/^($(join "${FAILURES[@]}"))/d'"' ~/.ssh/known_hosts -i`'
-else
-	log "${#FAILURES[@]} Failure(s)"
-	log 'Remove failed hosts with `sed -e '"'/^($(join "${FAILURES[@]}"))/d'"' ~/.ssh/known_hosts -i`'
-fi
-
-exit ${#FAILURES[@]}
+done
