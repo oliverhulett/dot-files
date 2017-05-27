@@ -39,4 +39,4 @@ MAILTO=olihul@optiver.com.au
 45 18 * * 1-5 cd ~/repo/oliverhulett/dot-files/master && git pullb && ./sync2home.sh && git push
 30 7 * * 1-5 cd ~/repo/olihul/dot-files/master && git pullb && ./sync2home.sh && git push
 
-## Backed up at Sat May 27 00:00:01 AEST 2017 by olihul
+## Backed up at Sun May 28 00:00:01 AEST 2017 by olihul
