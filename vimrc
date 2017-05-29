@@ -22,9 +22,9 @@ try
 catch
 	" Vundle not there...
 endtry
+" If you've added a plugin, run `:PluginInstall`
 filetype plugin on
 filetype indent on
-" If you've added a plugin, run `:PluginInstall`
 
 " From ntpeters/vim-better-whitespace: Strip white-space on save
 autocmd BufEnter * silent! EnableStripWhitespaceOnSave
@@ -103,6 +103,8 @@ let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 0
 " Syntastic checkers
 let g:syntastic_python_checkers = ['flake8']
+" Shellcheck syntastic options
+let g:syntastic_sh_shellcheck_args = '-x'
 
 function! GetBufferList()
 	redir =>buflist
@@ -136,8 +138,8 @@ nmap <leader>kj :lnext<cr>
 " Shortcut keys to turn on spell-checking
 nnoremap <c-l> :setlocal spell! spelllang=en_gb<cr>
 imap <c-l> <c-g>u<Esc>[s
-nmap <leader>l ]s
-nmap <leader>s z=<c-g>u
+nmap <leader>lk ]s
+nmap <leader>sj z=<c-g>u
 nnoremap <leader>a :spellrepall<cr>
 
 " Add word completion, ctrl+P to complete in insert mode
@@ -278,9 +280,7 @@ nmap <M-k> mz:m-2<CR>`z
 vmap <M-j> :m'>+<CR>`<my`>mzgv`yo`z
 vmap <M-k> :m'<-2<CR>`>my`<mzgv`yo`z
 
-" Shift+Enter to insert a new line without entering insert mode
-nmap <S-Enter> O<Esc>
-" Ctrl+j as the opposite of Shift+j
+" Ctrl+j as the opposite of Shift+j;  Insert a new line without entering insert mode
 nnoremap <C-J> a<CR><Esc>k$
 
 " Python, JSON, and Yaml should use spaces instead of tabs
@@ -291,4 +291,3 @@ autocmd Filetype python setlocal expandtab
 autocmd Filetype xml setlocal expandtab tabstop=2
 autocmd Filetype xsd setlocal expandtab tabstop=2
 autocmd Filetype yaml setlocal expandtab tabstop=2
-

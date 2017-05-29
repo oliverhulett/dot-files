@@ -1,11 +1,11 @@
 #!/bin/bash
 
-HERE="$(dirname "$(readlink -f "$0")")"
+HERE="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
 DOTFILES="$(dirname "${HERE}")"
 source "${DOTFILES}/bash_common.sh" 2>/dev/null && eval "${capture_output}" || true
 
-SSH="$(dirname "$0")/ssh.sh"
-SSH_NAME="$(dirname "$0")/ssh-name.sh"
+SSH="${HERE}/ssh.sh"
+SSH_NAME="${HERE}/ssh-name.sh"
 
 WHERE_PROMPT="Where would you like to go today?"
 WHERE=

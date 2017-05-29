@@ -1,6 +1,6 @@
 #!/bin/bash
 
-HERE="$(dirname "$(readlink -f "$0")")"
+HERE="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
 DOTFILES="$(dirname "${HERE}")"
 source "${DOTFILES}/bash_common.sh" 2>/dev/null && eval "${capture_output}" || true
 
@@ -15,7 +15,7 @@ SERVER="$1"
 shift
 
 HW_AU_DIR="${HOME}/repo/fpga/hardware_au"
-FLASH_FEX_SCRIPT="$(dirname "$0")/flash_fex.sh"
+FLASH_FEX_SCRIPT="${HERE}/flash_fex.sh"
 if [ ! -x "${FLASH_FEX_SCRIPT}" ]; then
 	echo 1>&2 "Could not find flash_fex.sh as an executable sibling to this file, terminating..."
 	exit 1
