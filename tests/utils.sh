@@ -27,13 +27,15 @@ function assert_prog()
 {
 	_check_caller assert_prog || return $?
 	if [ -n "${PROG}" ]; then
-		declare -g EXE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && cd "$(git home)" && echo "$(git home)/$(git ls-files -- "${PROG}")")"
+		declare -g EXE
+		EXE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && cd "$(git home)" && echo "$(git home)/$(git ls-files -- "${PROG}")")"
 		if [ ! -f "${EXE}" ]; then
 			skip "Failed to find program under test"
 			return
 		fi
 		if [ ! -x "${EXE}" ]; then
-			local shebang="$(head -n1 "${EXE}")"
+			local shebang
+			shebang="$(head -n1 "${EXE}")"
 			local interpreter="${shebang:2}"
 			if [ "${shebang:0:2}" != '#!' ] || [ ! -e "${interpreter%% *}" ]; then
 				skip "Program under test is not executable or has an invalid shebang"
@@ -83,14 +85,14 @@ function scoped_env()
 			local val="${i#*=}"
 		fi
 		if [ -z "${!var}" ]; then
-			register_teardown_fn unset ${var}
+			register_teardown_fn unset "${var}"
 		else
-			register_teardown_fn export ${var}="$(eval echo ${!var})"
+			register_teardown_fn export "${var}"="$(eval echo "${!var}")"
 		fi
 		if [ -z "$val" ]; then
-			val="$(eval echo ${!var})"
+			val="$(eval echo "${!var}")"
 		fi
-		eval export ${var}="${val}"
+		eval export "${var}"="${val}"
 	done
 }
 function scoped_environment()
@@ -104,9 +106,10 @@ function scoped_mktemp()
 	_check_caller scoped_mktemp || return $?
 	local var="$1"
 	shift
-	local f="$(mktemp -p "${BATS_TMPDIR}" "$@" ${BATS_TEST_NAME}.XXXXXXXX)"
-	register_teardown_fn unset ${var}
-	register_teardown_fn rm -rf $f
+	local f
+	f="$(mktemp -p "${BATS_TMPDIR}" "$@" "${BATS_TEST_NAME}".XXXXXXXX)"
+	register_teardown_fn unset "${var}"
+	register_teardown_fn rm -rf "$f"
 	eval "${var}"="$f"
 }
 
@@ -158,15 +161,20 @@ function assert_all_lines()
 	local errs=0
 	local cnt=0
 	for l in "$@"; do
-		local LOCAL_REGEX_OR_PARTIAL="$(echo "$l" | cut -d' ' -f1)"
+		local LOCAL_REGEX_OR_PARTIAL
+		LOCAL_REGEX_OR_PARTIAL="$(echo "$l" | cut -d' ' -f1)"
 		if [ "$LOCAL_REGEX_OR_PARTIAL" == "--regexp" ] || [ "$LOCAL_REGEX_OR_PARTIAL" == "--partial" ]; then
 			l="$(echo "$l" | cut -d' ' -f2-)"
 		else
 			LOCAL_REGEX_OR_PARTIAL=
 		fi
+		## Can't quote {GLOBAL,LOCAL}_REGEX_OR_PARTIAL because they'll be interpreted as "empty" lines and not match.
+		# shellcheck disable=SC2086
 		assert_line --index $cnt ${GLOBAL_REGEX_OR_PARTIAL} ${LOCAL_REGEX_OR_PARTIAL} "$l" || errs=$((errs + 1))
 		cnt=$((cnt + 1))
 	done
+	## ${lines} is part of bash-support.
+	# shellcheck disable=SC2154
 	if [ $cnt -lt ${#lines[@]} ]; then
 		(
 			echo "Found more lines of output than expected.  Additional lines:"

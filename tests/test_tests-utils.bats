@@ -15,8 +15,9 @@ function _do_assert_all_lines_test()
 {
 	expected_errors=$1
 	shift
+	local output
 	set +e; output="$(assert_all_lines "$@" 2>&1)"; retval=$?; set -e
-	assert_equal $retval $expected_errors || echo -e "Failed expectation #${_assert_all_lines_test_cnt}:  Test args: $*\n${output}" | fail
+	assert_equal $retval "$expected_errors" || echo -e "Failed expectation #${_assert_all_lines_test_cnt}:  Test args: $*\n${output}" | fail
 	_assert_all_lines_test_cnt=$((_assert_all_lines_test_cnt + 1))
 }
 @test "$PROG: assert_all_lines" {
@@ -196,7 +197,7 @@ function _assert_prog_mk_test()
 	EOF
 	run bats -t "${TESTFILE}"
 	assert_success
-	run cat $OUTPUT
+	run cat "$OUTPUT"
 	assert_all_lines "setup world" "hello world" "registered teardown world" "teardown world"
 }
 
@@ -204,7 +205,7 @@ function _assert_prog_mk_test()
 	source "${DF_TESTS}/utils.sh"
 	scoped_mktemp OUTPUT --suffix=.txt
 	scoped_mktemp TESTFILE --suffix=.bats
-	TMPHOME="$(mktemp -p "${BATS_TMPDIR}" --suffix=home --dry-run ${BATS_TEST_NAME}.XXXXXXXX)"
+	TMPHOME="$(mktemp -p "${BATS_TMPDIR}" --suffix=home --dry-run "${BATS_TEST_NAME}".XXXXXXXX)"
 	cat >"${TESTFILE}" <<-EOF
 	. "${DF_TESTS}/utils.sh"
 	@test "test" {
@@ -222,12 +223,12 @@ function _assert_prog_mk_test()
 	}
 	EOF
 
-	stub temp_make '--prefix=home : echo "'${TMPHOME}'"'
+	stub temp_make '--prefix=home : echo "'"${TMPHOME}"'"'
 	stub temp_del "${TMPHOME}"
 	stub fail
 	run bats -t "${TESTFILE}"
 	assert_success
-	run cat $OUTPUT
+	run cat "$OUTPUT"
 	assert_all_lines "Before: HOME=${HOME} _ORIG_HOME=" \
 					 "During: HOME=${TMPHOME} _ORIG_HOME=${HOME}" \
 					 "After: HOME=${HOME} _ORIG_HOME=${HOME}"
@@ -235,12 +236,12 @@ function _assert_prog_mk_test()
 	unstub temp_del
 	unstub fail
 
-	stub temp_make '--prefix=home : echo "'${HOME}${TMPHOME}'"'
+	stub temp_make '--prefix=home : echo "'"${HOME}${TMPHOME}"'"'
 	stub temp_del "${HOME}${TMPHOME}"
 	stub fail
 	run bats -t "${TESTFILE}"
 	assert_success
-	run cat $OUTPUT
+	run cat "$OUTPUT"
 	assert_all_lines "Before: HOME=${HOME} _ORIG_HOME=" \
 					 "During: HOME=${HOME}${TMPHOME} _ORIG_HOME=${HOME}" \
 					 "After: HOME=${HOME} _ORIG_HOME=${HOME}"
@@ -253,18 +254,18 @@ function _assert_prog_mk_test()
 	stub fail '* : false'
 	run bats -t "${TESTFILE}"
 	assert_failure
-	run cat $OUTPUT
+	run cat "$OUTPUT"
 	assert_all_lines "Before: HOME=${HOME} _ORIG_HOME="
 	unstub temp_make
 	unstub temp_del
 	unstub fail
 
-	stub temp_make '--prefix=home : echo "'${HOME}'"'
+	stub temp_make '--prefix=home : echo "'"${HOME}"'"'
 	stub temp_del
 	stub fail '* : false'
 	run bats -t "${TESTFILE}"
 	assert_failure
-	run cat $OUTPUT
+	run cat "$OUTPUT"
 	assert_all_lines "Before: HOME=${HOME} _ORIG_HOME="
 	unstub temp_make
 	unstub temp_del
@@ -275,8 +276,8 @@ function _assert_prog_mk_test()
 	source "${DF_TESTS}/utils.sh"
 	scoped_mktemp OUTPUT --suffix=.txt
 	scoped_mktemp TESTFILE --suffix=.bats
-	TMPHOME="$(mktemp -p "${BATS_TMPDIR}" --suffix=home --dry-run ${BATS_TEST_NAME}.XXXXXXXX)"
-	stub temp_make '--prefix=home : echo "'${TMPHOME}'"'
+	TMPHOME="$(mktemp -p "${BATS_TMPDIR}" --suffix=home --dry-run "${BATS_TEST_NAME}".XXXXXXXX)"
+	stub temp_make '--prefix=home : echo "'"${TMPHOME}"'"'
 	stub temp_del "${TMPHOME}"
 	stub fail
 	cat >"${TESTFILE}" <<-EOF
@@ -300,7 +301,7 @@ function _assert_prog_mk_test()
 	EOF
 	run bats -t "${TESTFILE}"
 	assert_success
-	run cat $OUTPUT
+	run cat "$OUTPUT"
 	assert_all_lines "Before: HOME=${HOME} _ORIG_HOME=" \
 					 "During: HOME=${TMPHOME} _ORIG_HOME=${HOME}" \
 					 "After: HOME=${HOME} _ORIG_HOME=${HOME}"
@@ -329,7 +330,7 @@ function _assert_prog_mk_test()
 	stub fail '* : false'
 	run bats -t "${TESTFILE}"
 	assert_failure
-	run cat $OUTPUT
+	run cat "$OUTPUT"
 	assert_all_lines
 	unstub fail
 }
