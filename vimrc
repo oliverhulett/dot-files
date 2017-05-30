@@ -155,73 +155,73 @@ syn match SingleChar '\<\A*\a{1,2}\A*\>' contains=@NoSpell
 " Enable spell check on certain files only.
 "autocmd FileType markdown setlocal spell
 
-"make cmdline tab completion similar to bash
+" make cmdline tab completion similar to bash
 set wildmode=list:longest
-"enable ctrl-n and ctrl-p to scroll through matches
+" enable ctrl-n and ctrl-p to scroll through matches
 set wildmenu
-"stuff to ignore when tab completing
+" stuff to ignore when tab completing
 set wildignore=*.o,*.obj,*~
 
-"statusline setup
+" statusline setup
 set statusline =%#identifier#
-"tail of the filename
+" tail of the filename
 set statusline+=[%f]
 set statusline+=%*
 
-"display a warning if fileformat isn't unix
+" display a warning if fileformat isn't unix
 set statusline+=%#warningmsg#
 set statusline+=%{&ff!='unix'?'['.&ff.']':''}
 set statusline+=%*
 
-"display a warning if file encoding isn't utf-8
+" display a warning if file encoding isn't utf-8
 set statusline+=%#warningmsg#
 set statusline+=%{(&fenc!='utf-8'&&&fenc!='')?'['.&fenc.']':''}
 set statusline+=%*
 
-"help file flag
+" help file flag
 set statusline+=%h
-"file format
+" file format
 set statusline+=%5*%{&ff}%*
-"file type
+" file type
 set statusline+=%3*%y%*
 
-"read only flag
+" read only flag
 set statusline+=%#identifier#
 set statusline+=%r
 set statusline+=%*
 
-"modified flag
+" modified flag
 set statusline+=%#warningmsg#
 set statusline+=%m
 set statusline+=%*
 
-"display a warning if &et is wrong, or we have mixed-indenting
+" display a warning if &et is wrong, or we have mixed-indenting
 set statusline+=%#error#
 set statusline+=%{StatuslineTabWarning()}
 set statusline+=%*
 
-"display a warning if &paste is set
+" display a warning if &paste is set
 set statusline+=%#error#
 set statusline+=%{&paste?'[paste]':''}
 set statusline+=%*
 
-"Syntastic warnings
+" Syntastic warnings
 set statusline+=%#warningmsg#
 set statusline+=%{SyntasticStatuslineFlag()}
 set statusline+=%*
 
-"left/right separator
+" left/right separator
 set statusline+=%=
 set statusline+=%{StatuslineCurrentHighlight()}\ \ "current highlight
-"cursor column
+" cursor column
 set statusline+=%c,
-"cursor line/total lines
+" cursor line/total lines
 set statusline+=%l/%L
-"percent through file
+" percent through file
 set statusline+=\ %P
 set laststatus=2
 
-"return the syntax highlight group under the cursor ''
+" return the syntax highlight group under the cursor ''
 function! StatuslineCurrentHighlight()
 	let name = synIDattr(synID(line('.'),col('.'),1),'name')
 	if name == ''
@@ -231,12 +231,12 @@ function! StatuslineCurrentHighlight()
 	endif
 endfunction
 
-"recalculate the trailing whitespace warning when idle, and after saving
+" recalculate the trailing whitespace warning when idle, and after saving
 autocmd cursorhold,bufwritepost * unlet! b:statusline_tab_warning
 
-"return '[expand-tabs]' if &et is set wrong
-"return '[mixed-indenting]' if spaces and tabs are used to indent
-"return an empty string if everything is fine
+" return '[expand-tabs]' if &et is set wrong
+" return '[mixed-indenting]' if spaces and tabs are used to indent
+" return an empty string if everything is fine
 function! StatuslineTabWarning()
 	if !exists("b:statusline_tab_warning")
 		let b:statusline_tab_warning = ''
@@ -282,6 +282,9 @@ vmap <M-k> :m'<-2<CR>`>my`<mzgv`yo`z
 
 " Ctrl+j as the opposite of Shift+j;  Insert a new line without entering insert mode
 nnoremap <C-J> a<CR><Esc>k$
+
+" Paste-mode toggle
+set pastetoggle=<F2>
 
 " Python, JSON, and Yaml should use spaces instead of tabs
 autocmd Filetype javascript setlocal expandtab
