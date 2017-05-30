@@ -1,4 +1,5 @@
 ## A collection of utils to help testing with BATS
+# shellcheck shell=bash
 
 ## Load bats libraries
 source "$(dirname "${BASH_SOURCE[0]}")/x_helpers/bats-support/load.bash"
