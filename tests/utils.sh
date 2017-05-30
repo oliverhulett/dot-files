@@ -8,7 +8,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/x_helpers/bats-file/load.bash"
 source "$(dirname "${BASH_SOURCE[0]}")/x_helpers/bats-mock/load.bash"
 
 # Most of these functions only work in setup, teardown, or test functions
-function _check_caller()
+function _check_caller_is_test()
 {
 	if ! ( batslib_is_caller --indirect 'setup' \
 			|| batslib_is_caller --indirect "$BATS_TEST_NAME" \
@@ -22,24 +22,30 @@ function _check_caller()
 }
 
 # Skip the test if the program under test doesn't exist
-# TODO:  What about aliases and functions?
+# TODO:  What about aliases and functions?  May need to rename some things and re-work some messages.
+function find_file_to_test()
+{
+	_check_caller_is_test find_file_to_test || return $?
+	declare -g TEST_FILE_PATH
+	TEST_FILE_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && cd "$(git home)" && echo "$(git home)/$(git ls-files -- "${TEST_FILE}")")"
+	if [ ! -f "${TEST_FILE_PATH}" ]; then
+		skip "Failed to find file under test"
+		return 1
+	fi
+}
 function assert_prog()
 {
-	_check_caller assert_prog || return $?
-	if [ -n "${PROG}" ]; then
-		declare -g EXE
-		EXE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && cd "$(git home)" && echo "$(git home)/$(git ls-files -- "${PROG}")")"
-		if [ ! -f "${EXE}" ]; then
-			skip "Failed to find program under test"
-			return
-		fi
+	_check_caller_is_test assert_prog || return $?
+	if [ -n "${TEST_FILE}" ]; then
+		find_file_to_test || return $?
+		declare -g EXE="${TEST_FILE_PATH}"
 		if [ ! -x "${EXE}" ]; then
 			local shebang
 			shebang="$(head -n1 "${EXE}")"
 			local interpreter="${shebang:2}"
 			if [ "${shebang:0:2}" != '#!' ] || [ ! -e "${interpreter%% *}" ]; then
 				skip "Program under test is not executable or has an invalid shebang"
-				return
+				return 1
 			else
 				EXE="${interpreter} $EXE"
 			fi
@@ -60,7 +66,7 @@ function register_teardown_fn()
 }
 function fire_teardown_fns()
 {
-	_check_caller fire_teardown_fns || return $?
+	_check_caller_is_test fire_teardown_fns || return $?
 
 	for fn in "${_TEARDOWN_FNS[@]}"; do
 		$fn
@@ -75,7 +81,7 @@ function teardown()
 # Set and export an environment variable and register it to be restored in teardown.
 function scoped_env()
 {
-	_check_caller scoped_env || return $?
+	_check_caller_is_test scoped_env || return $?
 	for i in "$@"; do
 		if [ "${i/=//}" == "$i" ]; then
 			local var="$i"
@@ -103,7 +109,7 @@ function scoped_environment()
 # Create a temporary file or directory and register it for removal on teardown.
 function scoped_mktemp()
 {
-	_check_caller scoped_mktemp || return $?
+	_check_caller_is_test scoped_mktemp || return $?
 	local var="$1"
 	shift
 	local f
@@ -116,7 +122,7 @@ function scoped_mktemp()
 # Set ${HOME} to a blank temporary directory in-case tests want to mutate it.
 function setup_blank_home()
 {
-	_check_caller setup_blank_home || return $?
+	_check_caller_is_test setup_blank_home || return $?
 	declare -g _ORIG_HOME="${HOME}"
 	local tmphome
 	tmphome="$(temp_make --prefix="home")"
@@ -129,7 +135,7 @@ function setup_blank_home()
 }
 function teardown_blank_home()
 {
-	_check_caller teardown_blank_home || return $?
+	_check_caller_is_test teardown_blank_home || return $?
 	# Paranoid about deleting $HOME.  `temp_del` should only delete things it created.
 	# `fail` doesn't actually work here?
 	if [ -z "${_ORIG_HOME}" ]; then
@@ -152,7 +158,7 @@ function scoped_blank_home()
 # A common pattern is to assert all lines of output.  Each argument is a line, in order.  All lines must be specified.
 function assert_all_lines()
 {
-	_check_caller assert_all_lines || return $?
+	_check_caller_is_test assert_all_lines || return $?
 	local GLOBAL_REGEX_OR_PARTIAL=
 	if [ "$1" == "--regexp" ] || [ "$1" == "--partial" ]; then
 		GLOBAL_REGEX_OR_PARTIAL="$1"

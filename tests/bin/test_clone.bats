@@ -3,7 +3,7 @@
 DF_TESTS="$(dirname "$(cd "${BATS_TEST_DIRNAME}" && pwd -P)")"
 source "${DF_TESTS}/utils.sh"
 
-PROG="bin/clone.sh"
+TEST_FILE="bin/clone.sh"
 
 function setup()
 {
@@ -13,7 +13,7 @@ function setup()
 	REPO_DIR="${HOME}/repo"
 }
 
-@test "$PROG: requires two arguments" {
+@test "$TEST_FILE: requires two arguments" {
 	run "${EXE}"
 	assert_failure
 	run "${EXE}" arg1
@@ -22,7 +22,7 @@ function setup()
 	assert_failure
 }
 
-@test "$PROG: clones master and copies Eclipse project files" {
+@test "$TEST_FILE: clones master and copies Eclipse project files" {
 	stub git "clone --recursive ${GIT_URL_BASE}/repo1/proj1.git master : mkdir master" "update"
 	run "${EXE}" repo1 proj1
 	assert_success
@@ -31,7 +31,7 @@ function setup()
 	assert [ -e "${REPO_DIR}/repo1/proj1/master/.project" ]
 }
 
-@test "$PROG: doesn't clone existing checkouts" {
+@test "$TEST_FILE: doesn't clone existing checkouts" {
 	mkdir --parents "${REPO_DIR}/repo1/proj1/master"
 	touch "${REPO_DIR}/repo1/proj1/master/.project"
 	stub git
@@ -40,7 +40,7 @@ function setup()
 	unstub git
 }
 
-@test "$PROG: failes if clone fails" {
+@test "$TEST_FILE: failes if clone fails" {
 	stub git "clone --recursive ${GIT_URL_BASE}/repo1/proj1.git master : false"
 	run "${EXE}" repo1 proj1
 	assert_failure
@@ -51,7 +51,7 @@ function setup()
 	assert [ ! -e "${REPO_DIR}/repo1" ]
 }
 
-@test "$PROG: detects C++ projects" {
+@test "$TEST_FILE: detects C++ projects" {
 	mkdir --parents "${REPO_DIR}/repo1/proj1/master"
 	touch "${REPO_DIR}/repo1/proj1/master/CMakeLists.txt"
 	run "${EXE}" repo1 proj1
@@ -60,7 +60,7 @@ function setup()
 	assert [ -e "${REPO_DIR}/repo1/proj1/master/.cproject" ]
 }
 
-@test "$PROG: detects GOLANG projects" {
+@test "$TEST_FILE: detects GOLANG projects" {
 	mkdir --parents "${REPO_DIR}/repo1/proj1/master/src"
 	run "${EXE}" repo1 proj1
 	assert_success
@@ -68,7 +68,7 @@ function setup()
 	assert [ -e "${REPO_DIR}/repo1/proj1/master/.settings/com.googlecode.goclipse.core.prefs" ]
 }
 
-@test "$PROG: falls-back to Python project" {
+@test "$TEST_FILE: falls-back to Python project" {
 	mkdir --parents "${REPO_DIR}/repo1/proj1/master"
 	run "${EXE}" repo1 proj1
 	assert_success

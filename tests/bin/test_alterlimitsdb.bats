@@ -3,7 +3,7 @@
 DF_TESTS="$(dirname "$(cd "${BATS_TEST_DIRNAME}" && pwd -P)")"
 source "${DF_TESTS}/utils.sh"
 
-PROG="bin/alterlimitsdb.sh"
+TEST_FILE="bin/alterlimitsdb.sh"
 
 function setup()
 {
@@ -12,7 +12,7 @@ function setup()
 	MODULE="Server.DataModel.alterlimitsdb"
 }
 
-@test "$PROG: clones limits_server if no \$ALTERLIMITSDB_DIR" {
+@test "$TEST_FILE: clones limits_server if no \$ALTERLIMITSDB_DIR" {
 	stub clone.sh "limits_system limits_server"
 	stub get-repo-dir.sh "limits_system limits_server alterlimitsdb : echo $BATS_TMPDIR"
 	stub python26 "-m $MODULE --db=$ORIG_DB_URI arg1 arg2"
@@ -24,7 +24,7 @@ function setup()
 	unstub python26
 }
 
-@test "$PROG: uses given \$ALTERLIMITSDB_DIR" {
+@test "$TEST_FILE: uses given \$ALTERLIMITSDB_DIR" {
 	stub clone.sh
 	stub get-repo-dir.sh
 	stub python26 "-m $MODULE --db=$ORIG_DB_URI arg1 arg2"
@@ -37,7 +37,7 @@ function setup()
 	unstub python26
 }
 
-@test "$PROG: fails if \$ALTERLIMITSDB_DIR doesn't exist" {
+@test "$TEST_FILE: fails if \$ALTERLIMITSDB_DIR doesn't exist" {
 	stub clone.sh
 	stub get-repo-dir.sh
 	stub python26
@@ -50,7 +50,7 @@ function setup()
 	unstub python26
 }
 
-@test "$PROG: failes if clone fails" {
+@test "$TEST_FILE: failes if clone fails" {
 	stub clone.sh "limits_system limits_server"
 	stub get-repo-dir.sh "limits_system limits_server alterlimitsdb"
 	stub python26
@@ -61,7 +61,7 @@ function setup()
 	unstub python26
 }
 
-@test "$PROG: uses given \$DB_URI" {
+@test "$TEST_FILE: uses given \$DB_URI" {
 	stub clone.sh
 	stub get-repo-dir.sh
 	stub python26 "-m $MODULE --db=another_uri arg1 arg2"

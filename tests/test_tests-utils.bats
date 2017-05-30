@@ -2,10 +2,12 @@
 
 DF_TESTS="$(cd "${BATS_TEST_DIRNAME}" && pwd -P)"
 
-PROG="utils.sh"
+TEST_FILE="tests/utils.sh"
 
 function setup()
 {
+	source "${DF_TESTS}/utils.sh"
+	find_file_to_test
 	unset _TEARDOWN_FNS
 	unset _ORIG_HOME
 }
@@ -20,8 +22,7 @@ function _do_assert_all_lines_test()
 	assert_equal $retval "$expected_errors" || echo -e "Failed expectation #${_assert_all_lines_test_cnt}:  Test args: $*\n${output}" | fail
 	_assert_all_lines_test_cnt=$((_assert_all_lines_test_cnt + 1))
 }
-@test "$PROG: assert_all_lines" {
-	source "${DF_TESTS}/utils.sh"
+@test "$TEST_FILE: assert_all_lines" {
 	run echo -e $' line1\nline 2\nline3 '
 	# Note that this pattern is required to get the return value but not fail the test when assert_all_lines is expected to fail.
 	_do_assert_all_lines_test 0 " line1" "line 2" "line3 "
@@ -50,8 +51,7 @@ function _do_assert_all_lines_test()
 	_do_assert_all_lines_test 0
 }
 
-@test "$PROG: register teardown functions" {
-	source "${DF_TESTS}/utils.sh"
+@test "$TEST_FILE: register teardown functions" {
 	run teardown
 	assert_success
 	assert_output ""
@@ -71,8 +71,7 @@ function _scoped_environment_inspect_env()
 {
 	env | command grep -E "^$1="
 }
-@test "$PROG: scoped environment" {
-	source "${DF_TESTS}/utils.sh"
+@test "$TEST_FILE: scoped environment" {
 	export THING2="things"
 	run _scoped_environment_inspect_env THING1
 	assert_output ""
@@ -105,8 +104,7 @@ function _scoped_environment_inspect_env()
 	assert_output "THING2=things"
 }
 
-@test "$PROG: scoped temporary files and directories are removed on teardown" {
-	source "${DF_TESTS}/utils.sh"
+@test "$TEST_FILE: scoped temporary files and directories are removed on teardown" {
 	scoped_mktemp tstfile1
 	assert [ -n "$tstfile1" ]
 	assert [ -e "$tstfile1" ]
@@ -127,18 +125,20 @@ function _scoped_environment_inspect_env()
 
 function _assert_prog_mk_test()
 {
-	unset EXE PROG
+	unset EXE TEST_FILE
 	cat >"${TESTFILE}" <<-EOF
 	. "${DF_TESTS}/utils.sh"
-	PROG="$1"
+	TEST_FILE="$1"
 	function setup()
 	{
 		:
 	}
+	eval "__original_\$(declare -f skip)"
 	function skip()
 	{
-		echo "Skipping='\$*' PROG=\$PROG EXE=\$EXE" | tee "${OUTPUT}" | fail
-		exit 1
+		echo "Skipping='\$*' TEST_FILE=\$TEST_FILE EXE=\$EXE" >"${OUTPUT}"
+		__original_skip "assert_prog failed"
+		return 1
 	}
 	@test "test" {
 		assert_prog
@@ -146,37 +146,40 @@ function _assert_prog_mk_test()
 	}
 	EOF
 }
-@test "$PROG: assert program exists" {
-	source "${DF_TESTS}/utils.sh"
+@test "$TEST_FILE: assert program exists" {
 	scoped_mktemp TESTFILE --suffix=.bats
 	scoped_mktemp OUTPUT --suffix=.txt
 	_assert_prog_mk_test "" ""
 	run bats -t "${TESTFILE}"
 	assert_success
+	assert_all_lines "1..1" "ok 1 test"
 
 	_assert_prog_mk_test "none" ""
 	run bats -t "${TESTFILE}"
-	assert_failure
+	assert_success
+	assert_all_lines "1..1" "ok 1 # skip (assert_prog failed) test"
 	run cat "${OUTPUT}"
-	assert_all_lines --partial "Skipping='Failed to find program under test'"
+	assert_all_lines --partial "Skipping='Failed to find file under test'"
 
 	_assert_prog_mk_test "tests/data/executable.sh" "${DF_TESTS}/data/executable.sh"
 	run bats -t "${TESTFILE}"
 	assert_success
+	assert_all_lines "1..1" "ok 1 test"
 
 	_assert_prog_mk_test "tests/data/shebang.sh" "/bin/bash -asdf ${DF_TESTS}/data/shebang.sh"
 	run bats -t "${TESTFILE}"
 	assert_success
+	assert_all_lines "1..1" "ok 1 test"
 
 	_assert_prog_mk_test "tests/data/no-shebang.sh" ""
 	run bats -t "${TESTFILE}"
-	assert_failure
+	assert_success
+	assert_all_lines "1..1" "ok 1 # skip (assert_prog failed) test"
 	run cat "${OUTPUT}"
 	assert_all_lines --partial "Skipping='Program under test is not executable or has an invalid shebang'"
 }
 
-@test "$PROG: simple test file" {
-	source "${DF_TESTS}/utils.sh"
+@test "$TEST_FILE: simple test file" {
 	scoped_mktemp OUTPUT --suffix=.txt
 	scoped_mktemp TESTFILE --suffix=.bats
 	cat >"${TESTFILE}" <<-EOF
@@ -201,8 +204,7 @@ function _assert_prog_mk_test()
 	assert_all_lines "setup world" "hello world" "registered teardown world" "teardown world"
 }
 
-@test "$PROG: blank \$HOME" {
-	source "${DF_TESTS}/utils.sh"
+@test "$TEST_FILE: blank \$HOME" {
 	scoped_mktemp OUTPUT --suffix=.txt
 	scoped_mktemp TESTFILE --suffix=.bats
 	TMPHOME="$(mktemp -p "${BATS_TMPDIR}" --suffix=home --dry-run "${BATS_TEST_NAME}".XXXXXXXX)"
@@ -272,8 +274,7 @@ function _assert_prog_mk_test()
 	unstub fail
 }
 
-@test "$PROG: scoped blank \$HOME" {
-	source "${DF_TESTS}/utils.sh"
+@test "$TEST_FILE: scoped blank \$HOME" {
 	scoped_mktemp OUTPUT --suffix=.txt
 	scoped_mktemp TESTFILE --suffix=.bats
 	TMPHOME="$(mktemp -p "${BATS_TMPDIR}" --suffix=home --dry-run "${BATS_TEST_NAME}".XXXXXXXX)"
@@ -310,8 +311,7 @@ function _assert_prog_mk_test()
 	unstub fail
 }
 
-@test "$PROG: teardown blank \$HOME only after setup" {
-	source "${DF_TESTS}/utils.sh"
+@test "$TEST_FILE: teardown blank \$HOME only after setup" {
 	scoped_mktemp OUTPUT --suffix=.txt
 	scoped_mktemp TESTFILE --suffix=.bats
 	cat >"${TESTFILE}" <<-EOF
