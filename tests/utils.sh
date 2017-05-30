@@ -23,21 +23,21 @@ function _check_caller_is_test()
 
 # Skip the test if the program under test doesn't exist
 # TODO:  What about aliases and functions?  May need to rename some things and re-work some messages.
-function find_file_to_test()
+function assert_fut()
 {
-	_check_caller_is_test find_file_to_test || return $?
+	_check_caller_is_test assert_fut || return $?
 	declare -g TEST_FILE_PATH
-	TEST_FILE_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && cd "$(git home)" && echo "$(git home)/$(git ls-files -- "${TEST_FILE}")")"
+	TEST_FILE_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && cd "$(git home)" && echo "$(git home)/$(git ls-files -- "${FUT}")")"
 	if [ ! -f "${TEST_FILE_PATH}" ]; then
 		skip "Failed to find file under test"
 		return 1
 	fi
 }
-function assert_prog()
+function assert_fut_exe()
 {
-	_check_caller_is_test assert_prog || return $?
-	if [ -n "${TEST_FILE}" ]; then
-		find_file_to_test || return $?
+	_check_caller_is_test assert_fut_exe || return $?
+	if [ -n "${FUT}" ]; then
+		assert_fut || return $?
 		declare -g EXE="${TEST_FILE_PATH}"
 		if [ ! -x "${EXE}" ]; then
 			local shebang
@@ -55,7 +55,7 @@ function assert_prog()
 # Default setup() is to skip the test if the program under test doesn't exist
 function setup()
 {
-	assert_prog
+	assert_fut_exe
 }
 
 # Mechanism for registering clean-up functions
