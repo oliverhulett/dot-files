@@ -1,7 +1,11 @@
+" vim:foldmethod=marker:foldlevel=0
+
 set nocompatible
 syntax enable
 
-" Vundle stuff, see https://github.com/VundleVim/Vundle.vim
+" Vundle stuff {{{
+
+" See https://github.com/VundleVim/Vundle.vim
 filetype off
 try
 	set rtp+=~/.vim/bundle/Vundle.vim
@@ -9,6 +13,7 @@ try
 	Plugin 'VundleVim/Vundle.vim'
 
 	Plugin 'ConradIrwin/vim-bracketed-paste'
+	Plugin 'altercation/vim-colors-solarized'
 	Plugin 'kawaz/batscheck.vim'
 	Plugin 'myint/syntastic-extras'
 	Plugin 'ntpeters/vim-better-whitespace'
@@ -23,8 +28,27 @@ catch
 	" Vundle not there...
 endtry
 " If you've added a plugin, run `:PluginInstall`
+
+" }}}
+
 filetype plugin on
 filetype indent on
+
+" Colour scheme {{{
+
+if has('gui_running')
+	set background=light
+else
+	set background=dark
+endif
+"#colorscheme solarized
+"#let g:solarized_termcolors=256
+"#let g:solarized_termtrans=1
+"#let g:solarized_visibility="low"
+
+" }}}
+
+" Plugin setup {{{
 
 " From ntpeters/vim-better-whitespace: Strip white-space on save.
 autocmd BufEnter * silent! EnableStripWhitespaceOnSave
@@ -32,19 +56,33 @@ autocmd BufEnter * silent! EnableStripWhitespaceOnSave
 " From reeds/vim-litecorrect: Lightweight auto-cow-wrecks.
 autocmd FileType * silent! call litecorrect#init()
 
-" Show tabs as well
-set listchars=tab:»·,trail:·,extends:»,precedes:«
-set list
+" }}}
+
+" Terminal and local setup {{{
+
+let g:netrw_home=$HOME.'.cache/vim'
+
+" No TTY flow control <CTRL>+S/<CTRL>+Q
+execute ':silent ! stty -ixoff'
+execute ':silent ! stty -ixon'
 
 " Stop vim locking up on write because of your disc-tweaks.
 set nofsync
 set swapsync=
 
-let g:netrw_home=$HOME.'.cache/vim'
+" Don't remember highlighting.
+set viminfo^=h
+
+" Don't restore cursor position.
+:autocmd BufRead * exe "normal! gg"
+
+" }}}
 
 " Use space as command leader.
 let mapleader = " "
 let g:mapleader = " "
+
+" Shortcuts and re-mappings - saving, quitting, and changing mode {{{
 
 " Shortcut for write and exit.
 map <leader>w :w<CR>
@@ -53,10 +91,6 @@ map <leader>n :n<CR>
 
 " Leave insert mode without all that pesky wrist movement...
 imap <c-d> <Esc>
-
-" No TTY flow control <CTRL>+S/<CTRL>+Q
-execute ':silent ! stty -ixoff'
-execute ':silent ! stty -ixon'
 
 " Shortcut to save from anywhere.
 nmap <c-s> :w<CR>
@@ -68,19 +102,53 @@ imap <c-s> <Esc><c-s>
 " Shortcut to quit with <CTRL>+Q
 nmap <c-q> :q<CR>
 
+" }}}
+
+" Shortcuts and re-mappings - movement {{{
+
+" Move vertically by "visual" line (respect wrapping.)  N.B. these have to be non-recursive mappings as the contain the mapped key.
+nnoremap j gj
+nnoremap k gk
+
+" Ctrl+j as the opposite of Shift+j;  Insert a new line without entering insert mode.
+nmap <C-J> i<CR><Esc>k$
+
+" Ctrl+o to replicate o without entering insert mode.
+nmap <C-O> o<Esc>
+nmap <C-I> O<Esc>j
+
+" }}}
+
+" Shortcuts and re-mappings - highlighting {{{
+
 " Shortcut to substitute.  In visual mode yank selection first.
 map <c-f> :%s/<c-r>///gc<Left><left><left>
 vmap <c-f> y:%s/<c-r>///gc<Left><left><left>
 
-" Personalise
+" Clear search highlighting on space+enter.
+map <silent> <leader><CR> :nohl<CR>
+
+" Highlight last inserted text.
+nmap gV `[v`]
+
+" Sort lines in visual mode.
+vmap s :sort<cr>
+vmap u :sort -u<cr>
+
+" }}}
+
+" Personalise {{{
+
 set hlsearch
 set incsearch
+set modelines=1
 set noautoindent
 set nobackup
 set noexpandtab
 set noswapfile
 set nowb
 set number
+set pastetoggle=<F2>	" Paste-mode toggle
 set ruler
 set scrolloff=10
 set shiftwidth=4
@@ -90,6 +158,9 @@ set smarttab
 set spell spelllang=en_gb
 set tabstop=4
 set textwidth=100
+set wildignore=*.o,*.obj,*~	" stuff to ignore when tab completing
+set wildmenu	" enable ctrl-n and ctrl-p to scroll through matches
+set wildmode=list:longest	" make cmdline tab completion similar to bash
 autocmd FileType * setlocal formatoptions+=n
 autocmd FileType * setlocal formatoptions+=q
 autocmd FileType * setlocal formatoptions-=a
@@ -97,6 +168,12 @@ autocmd FileType * setlocal formatoptions-=c
 autocmd FileType * setlocal formatoptions-=o
 autocmd FileType * setlocal formatoptions-=r
 autocmd FileType * setlocal formatoptions-=t
+
+" Show tabs as well
+set listchars=tab:»·,trail:·,extends:»,precedes:«
+set list
+
+" }}}
 
 " Syntastic settings
 let g:syntastic_always_populate_loc_list = 1
@@ -155,13 +232,6 @@ hi clear SpellRare
 syn match SingleChar '\<\A*\a{1,2}\A*\>' contains=@NoSpell
 " Enable spell check on certain files only.
 "autocmd FileType markdown setlocal spell
-
-" make cmdline tab completion similar to bash
-set wildmode=list:longest
-" enable ctrl-n and ctrl-p to scroll through matches
-set wildmenu
-" stuff to ignore when tab completing
-set wildignore=*.o,*.obj,*~
 
 " statusline setup
 set statusline =%#identifier#
@@ -262,24 +332,6 @@ function! StatuslineTabWarning()
 	endif
 	return b:statusline_tab_warning
 endfunction
-
-" Don't remember highlighting.
-set viminfo^=h
-
-" Don't restore cursor position.
-:autocmd BufRead * exe "normal! gg"
-
-" Clear search highlighting on space+enter.
-map <silent> <leader><CR> :nohl<CR>
-
-" Ctrl+j as the opposite of Shift+j;  Insert a new line without entering insert mode.
-nmap <C-J> a<CR><Esc>k$
-
-" Ctrl+o to replicate o without entering insert mode.
-nmap <C-O> o<Esc>
-
-" Paste-mode toggle
-set pastetoggle=<F2>
 
 " Python, JSON, and Yaml should use spaces instead of tabs.
 autocmd Filetype javascript setlocal expandtab

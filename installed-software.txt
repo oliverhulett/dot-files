@@ -131,6 +131,7 @@ createrepo-0.9.9-23.el7.noarch
 cronie-1.4.11-14.el7.x86_64
 cronie-anacron-1.4.11-14.el7.x86_64
 crontabs-1.11-6.20121102git.el7.noarch
+crudini-0.7-1.el7.noarch
 cryptsetup-1.6.7-1.el7.x86_64
 cryptsetup-libs-1.6.7-1.el7.x86_64
 cryptsetup-python-1.6.7-1.el7.x86_64
