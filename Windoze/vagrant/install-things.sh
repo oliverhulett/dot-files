@@ -23,7 +23,7 @@ echo "Installing some things I don't want to docker all the time..."
 	export PATH="$(prepend_path "${HOME}/dot-files/bin")"
 
 	yum groupinstall -y "development tools"
-	yum install -y which wget curl telnet vagrant iotop nethogs sysstat aspell aspell-en cifs-utils samba samba-client protobuf-vim golang-vim \
+	yum install -y which wget curl telnet vagrant iotop nethogs sysstat aspell aspell-en cifs-utils samba samba-client protobuf-vim golang-vim crudini \
 		openssl-libs openssl-static java-1.8.0-openjdk-devel java-1.8.0-openjdk \
 		python-devel python-pip libxml2-devel libxslt-devel gmp-devel \
 		cmake ccache distcc protobuf protobuf-c protobuf-python protobuf-compiler valgrind clang-devel clang clang-analyzer \

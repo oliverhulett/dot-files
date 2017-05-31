@@ -1,7 +1,24 @@
 [include]
-	path = ~/dot-files/gitconfig
+path = ~/dot-files/gitconfig
 [user]
-	name = Oliver Hulett
-	email = oliver.hulett@optiver.com.au
+name = Oliver Hulett
+email = oliver.hulett@optiver.com.au
 [credential]
-	helper = store
+helper = store
+[core]
+whitespace = trailing-space,space-before-tab
+[diff]
+renames = copies
+mnemonicprefix = true
+interHunkContext = 10
+submodule = log
+indentHeuristic = true
+[branch]
+autosetupmerge = true
+[rerere]
+enabled = true
+[merge]
+stat = true
+[filter "ini-file-leading-space"]
+smudge = sed -re 's/^[\\t ]+([a-zA-Z0-9]+ = )/\\1/'
+clean = sed -re 's/^[\\t ]+([a-zA-Z0-9]+ = )/\\1/'
