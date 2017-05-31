@@ -1,5 +1,5 @@
 [include]
-	path = ~/dot-files/gitconfig
+path = ~/dot-files/gitconfig
 [user]
-	name = Oliver Hulett
-	email = oliver.hulett@gmail.com
+name = Oliver Hulett
+email = oliver.hulett@gmail.com
