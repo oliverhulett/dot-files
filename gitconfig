@@ -73,16 +73,19 @@ patternType = extended
 default = upstream
 [merge]
 conflictstyle = diff3
+stat = true
 [core]
 pager = less -RFiMx4 -+S
 editor = ~/.git_wrappers/commit.sh
 excludesfile = ~/.gitignore
 safecrlf = true
 abbrev = 11
+whitespace = trailing-space,space-before-tab
 [log]
 date = local
 [branch]
 autosetuprebase = always
+autosetupmerge = true
 [pull]
 rebase = true
 [help]
@@ -92,3 +95,21 @@ fetch = refs/heads/*:refs/remotes/origin/*
 fetch = refs/tags/*:refs/tags/*
 [diff "nodiff"]
 command = /usr/bin/true
+
+
+[credential]
+helper = store
+
+[diff]
+renames = copies
+mnemonicprefix = true
+interHunkContext = 10
+submodule = log
+indentHeuristic = true
+
+[rerere]
+enabled = true
+
+[filter "ini-file-leading-space"]
+smudge = sed -re 's/^[\\t ]+([a-zA-Z0-9]+ = )/\\1/'
+clean = sed -re 's/^[\\t ]+([a-zA-Z0-9]+ = )/\\1/'
