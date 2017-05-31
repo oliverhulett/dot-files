@@ -32,9 +32,9 @@ upgrade = "!f() { ~/.git_wrappers/update_externals.sh \"$@\"; }; f" ## Want to e
 externals2tags = "!f() { ~/.git_wrappers/tag_externals.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 
 unstage = reset HEAD
-	undo-commit = reset HEAD^
+undo-commit = reset HEAD^
 discard = reset --hard HEAD
-	cleanignored  = "!f() { ~/.git_wrappers/cleanignored.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
+cleanignored = "!f() { ~/.git_wrappers/cleanignored.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 cleanall = "!f() { ~/.git_wrappers/cleanall.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 
 pullb = "!f() { git pull --prune --recurse-submodules \"$@\"; git cleanbranches; }; f" ## Want to execute from top level, not GIT_PREFIX
@@ -48,14 +48,16 @@ gresolve = "!f() { : git mergetool ; git mergetool --tool=kdiff3 -y \"$@\" && ec
 resolved = "!f() { : git add ; if [ $# -eq 0 ]; then set -- $(git diff --name-only --diff-filter=U); fi; git add \"$@\"; }; cd \"$GIT_PREFIX\" && f"
 
 resolve = "!f() { : git add ; if [ $# -eq 0 ]; then set -- $(git diff --name-only --diff-filter=U); fi; ~/.git_wrappers/resolve.sh \"$@\"; read -n1 -p\"Resolved? [y/N]: \"; echo; if [ \"$(echo $REPLY | tr '[A-Z]' '[a-z]')\" == \"y\" ]; then git add \"$@\"; fi; }; cd \"$GIT_PREFIX\" && f"
-	resolve-mine = "!f() { : git add ; if [ $# -eq 0 ]; then set -- $(git diff --name-only --diff-filter=U); fi; git checkout --ours \"$@\" && git add \"$@\"; }; cd \"$GIT_PREFIX\" && f"
-	resolve-ours = !git resolve-mine
-	resolve-theirs = "!f() { : git add ; if [ $# -eq 0 ]; then set -- $(git diff --name-only --diff-filter=U); fi; git checkout --theirs \"$@\" && git add \"$@\"; }; cd \"$GIT_PREFIX\" && f"
+resolve-mine = "!f() { : git add ; if [ $# -eq 0 ]; then set -- $(git diff --name-only --diff-filter=U); fi; git checkout --ours \"$@\" && git add \"$@\"; }; cd \"$GIT_PREFIX\" && f"
+resolve-ours = !git resolve-mine
+resolve-theirs = "!f() { : git add ; if [ $# -eq 0 ]; then set -- $(git diff --name-only --diff-filter=U); fi; git checkout --theirs \"$@\" && git add \"$@\"; }; cd \"$GIT_PREFIX\" && f"
 
 search = log -S
 find = log --all --full-history
+
 [add]
 ignoreErrors = true
+
 [color]
 branch = auto
 diff = auto
@@ -64,16 +66,21 @@ interactive = auto
 pager = false
 status = auto
 ui = true
+
 [column]
 ui = never
+
 [grep]
 lineNumber = true
 patternType = extended
+
 [push]
 default = upstream
+
 [merge]
 conflictstyle = diff3
 stat = true
+
 [core]
 pager = less -RFiMx4 -+S
 editor = ~/.git_wrappers/commit.sh
@@ -81,24 +88,26 @@ excludesfile = ~/.gitignore
 safecrlf = true
 abbrev = 11
 whitespace = trailing-space,space-before-tab
+
 [log]
 date = local
+
 [branch]
 autosetuprebase = always
 autosetupmerge = true
+
 [pull]
 rebase = true
+
 [help]
 autocorrect = 5
+
 [remote "origin"]
 fetch = refs/heads/*:refs/remotes/origin/*
 fetch = refs/tags/*:refs/tags/*
+
 [diff "nodiff"]
 command = /usr/bin/true
-
-
-[credential]
-helper = store
 
 [diff]
 renames = copies
@@ -111,5 +120,5 @@ indentHeuristic = true
 enabled = true
 
 [filter "ini-file-leading-space"]
-smudge = sed -re 's/^[\\t ]+([a-zA-Z0-9]+ = )/\\1/'
-clean = sed -re 's/^[\\t ]+([a-zA-Z0-9]+ = )/\\1/'
+smudge = sed -re 's/^[\\t ]+([a-zA-Z0-9_-]+) += +/\\1 = /'
+clean = sed -re 's/^[\\t ]+([a-zA-Z0-9_-]+) += +/\\1 = /'

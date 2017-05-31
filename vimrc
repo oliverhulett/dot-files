@@ -17,7 +17,7 @@ try
 	Plugin 'vim-scripts/wordlist.vim'
 	Plugin 'vim-syntastic/syntastic'
 
-	" All of your Plugins must be added before the following line
+	" All of your Plugins must be added before the following line.
 	call vundle#end()
 catch
 	" Vundle not there...
@@ -26,17 +26,17 @@ endtry
 filetype plugin on
 filetype indent on
 
-" From ntpeters/vim-better-whitespace: Strip white-space on save
+" From ntpeters/vim-better-whitespace: Strip white-space on save.
 autocmd BufEnter * silent! EnableStripWhitespaceOnSave
 
-" From reeds/vim-litecorrect: Lightweight auto-cow-wrecks
+" From reeds/vim-litecorrect: Lightweight auto-cow-wrecks.
 autocmd FileType * silent! call litecorrect#init()
 
 " Show tabs as well
 set listchars=tab:»·,trail:·,extends:»,precedes:«
 set list
 
-" Stop vim locking up on write because of your disc-tweaks
+" Stop vim locking up on write because of your disc-tweaks.
 set nofsync
 set swapsync=
 
@@ -46,7 +46,7 @@ let g:netrw_home=$HOME.'.cache/vim'
 let mapleader = " "
 let g:mapleader = " "
 
-" Shortcut for write and exit
+" Shortcut for write and exit.
 map <leader>w :w<CR>
 map <leader>q :q<CR>
 map <leader>n :n<CR>
@@ -58,18 +58,19 @@ imap <c-d> <Esc>
 execute ':silent ! stty -ixoff'
 execute ':silent ! stty -ixon'
 
-" Shortcut to save from anywhere
+" Shortcut to save from anywhere.
 nmap <c-s> :w<CR>
-" From visual mode, restore selection
+" From visual mode, restore selection.
 vmap <c-s> <Esc><c-s>gv
-" But from insert mode, don't return to insert mode
+" But from insert mode, don't return to insert mode.
 imap <c-s> <Esc><c-s>
 
 " Shortcut to quit with <CTRL>+Q
 nmap <c-q> :q<CR>
 
-" Shortcut to substitute
+" Shortcut to substitute.  In visual mode yank selection first.
 map <c-f> :%s/<c-r>///gc<Left><left><left>
+vmap <c-f> y:%s/<c-r>///gc<Left><left><left>
 
 " Personalise
 set hlsearch
@@ -135,12 +136,12 @@ nmap <silent> <leader>k :call ToggleList("Location List", 'l')<cr>
 nmap <leader>kk :lprev<cr>
 nmap <leader>kj :lnext<cr>
 
-" Shortcut keys to turn on spell-checking
-nnoremap <c-l> :setlocal spell! spelllang=en_gb<cr>
+" Shortcut keys to turn on spell-checking.
+nmap <c-l> :setlocal spell! spelllang=en_gb<cr>
 imap <c-l> <c-g>u<Esc>[s
 nmap <leader>lk ]s
 nmap <leader>sj z=<c-g>u
-nnoremap <leader>a :spellrepall<cr>
+nmap <leader>a :spellrepall<cr>
 
 " Add word completion, ctrl+P to complete in insert mode
 set complete+=kspell
@@ -268,25 +269,19 @@ set viminfo^=h
 " Don't restore cursor position.
 :autocmd BufRead * exe "normal! gg"
 
-" Shortcut keys to search for visual selection
-" vnoremap <silent> * :call VisualSelection('f')<CR>
-" vnoremap <silent> # :call VisualSelection('b')<CR>
-" Clear search highlighting on space+enter
+" Clear search highlighting on space+enter.
 map <silent> <leader><CR> :nohl<CR>
 
-" Map ALT+[jk] to move line of text.
-nmap <M-j> mz:m+<CR>`z
-nmap <M-k> mz:m-2<CR>`z
-vmap <M-j> :m'>+<CR>`<my`>mzgv`yo`z
-vmap <M-k> :m'<-2<CR>`>my`<mzgv`yo`z
+" Ctrl+j as the opposite of Shift+j;  Insert a new line without entering insert mode.
+nmap <C-J> a<CR><Esc>k$
 
-" Ctrl+j as the opposite of Shift+j;  Insert a new line without entering insert mode
-nnoremap <C-J> a<CR><Esc>k$
+" Ctrl+o to replicate o without entering insert mode.
+nmap <C-O> o<Esc>
 
 " Paste-mode toggle
 set pastetoggle=<F2>
 
-" Python, JSON, and Yaml should use spaces instead of tabs
+" Python, JSON, and Yaml should use spaces instead of tabs.
 autocmd Filetype javascript setlocal expandtab
 autocmd Filetype json setlocal expandtab
 autocmd Filetype modula2 setlocal expandtab tabstop=2
