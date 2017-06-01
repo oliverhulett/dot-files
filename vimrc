@@ -15,6 +15,7 @@ try
 	Plugin 'ConradIrwin/vim-bracketed-paste'
 	Plugin 'altercation/vim-colors-solarized'
 	Plugin 'kawaz/batscheck.vim'
+	Plugin 'lifepillar/vim-cheat40'
 	Plugin 'myint/syntastic-extras'
 	Plugin 'ntpeters/vim-better-whitespace'
 	Plugin 'reedes/vim-litecorrect'
@@ -56,6 +57,15 @@ autocmd BufEnter * silent! EnableStripWhitespaceOnSave
 " From reeds/vim-litecorrect: Lightweight auto-cow-wrecks.
 autocmd FileType * silent! call litecorrect#init()
 
+" Syntastic settings
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+" Syntastic checkers
+let g:syntastic_python_checkers = ['flake8']
+" Shellcheck syntastic options
+let g:syntastic_sh_shellcheck_args = '-x'
+
 " }}}
 
 " Terminal and local setup {{{
@@ -76,11 +86,18 @@ set viminfo^=h
 " Don't restore cursor position.
 :autocmd BufRead * exe "normal! gg"
 
-" }}}
+" Auto-reload vimrc on write.
+autocmd bufwritepost .vimrc source $MYVIMRC
+autocmd bufwritepost vimrc source $MYVIMRC
+
+" Add word completion, ctrl+P to complete in insert mode.
+set complete+=kspell
 
 " Use space as command leader.
 let mapleader = " "
 let g:mapleader = " "
+
+" }}}
 
 " Shortcuts and re-mappings - saving, quitting, and changing mode {{{
 
@@ -133,7 +150,8 @@ nmap gV `[v`]
 
 " Sort lines in visual mode.
 vmap s :sort<cr>
-vmap u :sort -u<cr>
+vnoremap u :sort -u<cr>
+vnoremap u :sort -u<cr>
 
 " }}}
 
@@ -175,14 +193,7 @@ set list
 
 " }}}
 
-" Syntastic settings
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_check_on_open = 1
-let g:syntastic_check_on_wq = 0
-" Syntastic checkers
-let g:syntastic_python_checkers = ['flake8']
-" Shellcheck syntastic options
-let g:syntastic_sh_shellcheck_args = '-x'
+" Toggle buffer lists functions {{{
 
 function! GetBufferList()
 	redir =>buflist
@@ -209,9 +220,14 @@ function! ToggleList(bufname, pfx)
 		wincmd p
 	endif
 endfunction
+
 nmap <silent> <leader>k :call ToggleList("Location List", 'l')<cr>
 nmap <leader>kk :lprev<cr>
 nmap <leader>kj :lnext<cr>
+
+" }}}
+
+" Spelling {{{
 
 " Shortcut keys to turn on spell-checking.
 nmap <c-l> :setlocal spell! spelllang=en_gb<cr>
@@ -219,9 +235,6 @@ imap <c-l> <c-g>u<Esc>[s
 nmap <leader>lk ]s
 nmap <leader>sj z=<c-g>u
 nmap <leader>a :spellrepall<cr>
-
-" Add word completion, ctrl+P to complete in insert mode
-set complete+=kspell
 
 hi SpellBad cterm=underline
 hi clear SpellBad
@@ -232,6 +245,10 @@ hi clear SpellRare
 syn match SingleChar '\<\A*\a{1,2}\A*\>' contains=@NoSpell
 " Enable spell check on certain files only.
 "autocmd FileType markdown setlocal spell
+
+" }}}
+
+" Statusline {{{
 
 " statusline setup
 set statusline =%#identifier#
@@ -333,6 +350,10 @@ function! StatuslineTabWarning()
 	return b:statusline_tab_warning
 endfunction
 
+" }}}
+
+" Per filetype indenting {{{
+
 " Python, JSON, and Yaml should use spaces instead of tabs.
 autocmd Filetype javascript setlocal expandtab
 autocmd Filetype json setlocal expandtab
@@ -341,3 +362,5 @@ autocmd Filetype python setlocal expandtab
 autocmd Filetype xml setlocal expandtab tabstop=2
 autocmd Filetype xsd setlocal expandtab tabstop=2
 autocmd Filetype yaml setlocal expandtab tabstop=2
+
+" }}}
