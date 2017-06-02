@@ -14,10 +14,12 @@ try
 
 	Plugin 'ConradIrwin/vim-bracketed-paste'
 	Plugin 'altercation/vim-colors-solarized'
+	Plugin 'godlygeek/tabular'
 	Plugin 'kawaz/batscheck.vim'
 	Plugin 'lifepillar/vim-cheat40'
 	Plugin 'myint/syntastic-extras'
 	Plugin 'ntpeters/vim-better-whitespace'
+	Plugin 'plasticboy/vim-markdown'
 	Plugin 'reedes/vim-litecorrect'
 	Plugin 'vim-scripts/bats.vim'
 	Plugin 'vim-scripts/wordlist.vim'
@@ -83,6 +85,10 @@ set swapsync=
 " Don't remember highlighting.
 set viminfo^=h
 
+" Split window below and right by default.
+set splitbelow
+set splitright
+
 " Don't restore cursor position.
 :autocmd BufRead * exe "normal! gg"
 
@@ -97,27 +103,30 @@ set complete+=kspell
 let mapleader = " "
 let g:mapleader = " "
 
+" Use semi-colon instead of colon for entering comands.
+nnoremap ; :
+
 " }}}
 
 " Shortcuts and re-mappings - saving, quitting, and changing mode {{{
 
 " Shortcut for write and exit.
-map <leader>w :w<CR>
-map <leader>q :q<CR>
-map <leader>n :n<CR>
+noremap <leader>w :w<CR>
+noremap <leader>q :q<CR>
+noremap <leader>n :n<CR>
 
 " Leave insert mode without all that pesky wrist movement...
-imap <c-d> <Esc>
+inoremap <c-d> <Esc>
 
 " Shortcut to save from anywhere.
-nmap <c-s> :w<CR>
+nnoremap <c-s> :w<CR>
 " From visual mode, restore selection.
-vmap <c-s> <Esc><c-s>gv
+vnoremap <c-s> <Esc><c-s>gv
 " But from insert mode, don't return to insert mode.
-imap <c-s> <Esc><c-s>
+inoremap <c-s> <Esc><c-s>
 
 " Shortcut to quit with <CTRL>+Q
-nmap <c-q> :q<CR>
+nnoremap <c-q> :q<CR>
 
 " }}}
 
@@ -128,35 +137,42 @@ nnoremap j gj
 nnoremap k gk
 
 " Ctrl+j as the opposite of Shift+j;  Insert a new line without entering insert mode.
-nmap <C-J> i<CR><Esc>k$
+nnoremap J mzJ`z
+nnoremap <C-J> mzi<CR><Esc>`z$
 
 " Ctrl+o to replicate o without entering insert mode.
-nmap <C-O> o<Esc>
-nmap <C-I> O<Esc>j
+nnoremap <C-O> mzo<Esc>`z
+nnoremap <C-I> mzO<Esc>`z
 
 " }}}
 
 " Shortcuts and re-mappings - highlighting {{{
 
 " Shortcut to substitute.  In visual mode yank selection first.
-map <c-f> :%s/<c-r>///gc<Left><left><left>
-vmap <c-f> y:%s/<c-r>///gc<Left><left><left>
+noremap <c-h> :%s/
+noremap <c-f> :%s/<c-r>///gc<Left><left><left>
+vnoremap <c-f> y:%s/<c-r>///gc<Left><left><left>
 
 " Clear search highlighting on space+enter.
-map <silent> <leader><CR> :nohl<CR>
+noremap <silent> <leader><CR> :nohl<CR>
 
 " Highlight last inserted text.
-nmap gV `[v`]
+nnoremap gV `[v`]
 
 " Sort lines in visual mode.
-vmap s :sort<cr>
-vnoremap u :sort -u<cr>
-vnoremap u :sort -u<cr>
+vnoremap si :sort i<cr>
+vnoremap ss :sort<cr>
+vnoremap su :sort u<cr>
+
+" Use Q for formatting the current paragraph (or selection)
+vnoremap Q gq
+nnoremap Q gqap
 
 " }}}
 
 " Personalise {{{
 
+set copyindent
 set hlsearch
 set incsearch
 set modelines=1
@@ -221,20 +237,20 @@ function! ToggleList(bufname, pfx)
 	endif
 endfunction
 
-nmap <silent> <leader>k :call ToggleList("Location List", 'l')<cr>
-nmap <leader>kk :lprev<cr>
-nmap <leader>kj :lnext<cr>
+nnoremap <silent> <leader>k :call ToggleList("Location List", 'l')<cr>
+nnoremap <leader>kk :lprev<cr>
+nnoremap <leader>kj :lnext<cr>
 
 " }}}
 
 " Spelling {{{
 
 " Shortcut keys to turn on spell-checking.
-nmap <c-l> :setlocal spell! spelllang=en_gb<cr>
-imap <c-l> <c-g>u<Esc>[s
-nmap <leader>lk ]s
-nmap <leader>sj z=<c-g>u
-nmap <leader>a :spellrepall<cr>
+nnoremap <c-l> :setlocal spell! spelllang=en_gb<cr>
+inoremap <c-l> <c-g>u<Esc>[s
+nnoremap <leader>lk ]s
+nnoremap <leader>sj z=<c-g>u
+nnoremap <leader>a :spellrepall<cr>
 
 hi SpellBad cterm=underline
 hi clear SpellBad
