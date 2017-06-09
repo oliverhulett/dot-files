@@ -17,6 +17,7 @@ This is just a random assortment of TODO thoughts.  For more detailed TODOs, see
 * TODO cmd to add to this ad-hoc todo list.
 * Vim: Command/shortcut to add to help/`Cheat40` list.  Helps, prompts, or automates formatting and fields.
 * less: Stay in less on short files, but also keep short files on screen after exit?  Do I still want that one?
+* Colourise (pygmentise) `cat`, `head`, and `tail` output.  Need flag to disable?  detect output?
 * Fix less at home, grr
 * Fix less follow with `lessfilter` (or is it just `colourise.py`?)
 * `stasher.py` force cache refresh with cmdline flag.  (Or are we happy to just find and remove temp file?)
