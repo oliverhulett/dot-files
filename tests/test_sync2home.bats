@@ -57,6 +57,36 @@ function status()
 	echo
 }
 
+## Tests to write
+# fail if no other remote
+# fail? if more than one other remote
+# adding a file locally
+# adding a file remotely
+# adding the same file both
+# adding conflicting file both
+# adding ignored file locally
+# adding ignored file remotely
+# adding ignored file both
+# changing existing file locally
+# changing existing file remotely
+# changing ignored file locally
+# changing ignored file remotely
+# changing existing file both (same change)
+# changing existing file both (conflicting change)
+# changing existing file both (non-conflicting change)
+# deleting file locally
+# deleting file remotely
+# deleting file both
+# deleting ignored file locally
+# deleting ignored file remotely
+# deleting ignored file both
+
+## assertions
+# file lists (sort)
+# file contents
+# no un-committed files
+# git logs?  Find commits from other remote?
+
 @test "$FUT: initial commits and merges" {
 	cd "${CHECKOUT_1}/repo1" || fail "Failed to change into directory for checkout 1"
 	echo "text 1" >file1.txt
