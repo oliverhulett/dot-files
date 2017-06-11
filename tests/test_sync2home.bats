@@ -23,143 +23,82 @@ function setup()
 	( cd "${CHECKOUT_2}/repo2" && git remote add other "${BARE_REPO_1}" )
 }
 
+function s2h()
+{
+	SKIP_LIST="not-synced.txt\nfile1.txt\nfile2.txt"
+
+	echo
+	echo "SYNCHING"
+	echo "$*"
+	echo
+	git push
+	git pull
+	git fetch other master
+	git merge --allow-unrelated-histories --no-ff --no-commit FETCH_HEAD || true
+	git reset -- $(echo -e "$SKIP_LIST")
+	git checkout --ours --ignore-skip-worktree-bits -- $( (echo -e "$SKIP_LIST"; git ls-files) | sort | uniq -d )
+	git clean -fd
+	git status
+	git commit --allow-empty -am"$*"
+}
+
+function status()
+{
+	echo
+	echo "$@"
+	echo
+	git lg
+	echo
+	git status
+	echo
+	pwd
+	ls -l
+	cat *
+	echo
+}
+
 @test "$FUT: initial commits and merges" {
 	cd "${CHECKOUT_1}/repo1" || fail "Failed to change into directory for checkout 1"
 	echo "text 1" >file1.txt
 	echo "same text" >shared-file.txt
 	echo "confict 1" >not-synced.txt
-	run git add -A
-	run git commit -m"Added file1"
-	run git push
-	echo
-	git lg
-	echo
-	git status
-	echo ONE one
-	pwd
-	ls -l
-	cat *
+	git add -A
+	git commit -m"Added file1"
+	git push
+	status ONE one
 
 	cd "${CHECKOUT_2}/repo2" || fail "Failed to change into directory for checkout 2"
 	echo "text 2" >file2.txt
 	echo "same text" >shared-file.txt
 	echo "confict 2" >not-synced.txt
-	run git add -A
-	run git commit -m"Added file2"
-	run git push
-	echo
-	git lg
-	echo
-	git pull
-	echo
-	git fetch other master
-	echo
-	git merge --no-ff --no-commit FETCH_HEAD || true
-	echo
-	git reset -- not-synced.txt file1.txt file2.txt
-	echo
-	git checkout --ours --ignore-skip-worktree-bits -- $( (echo -e 'not-synced.txt\nfile1.txt\nfile2.txt'; git ls-files) | sort | uniq -d)
-	echo
-	git clean -fd
-	echo
-	git status
-	echo
-	git commit --allow-empty -am"sync r1 -> r2"
-	git lg
-	echo
+	git add -A
+	git commit -m"Added file2"
 	git push
-	echo
-	git status
-	echo TWO one
-	pwd
-	ls -l
-	cat *
+	status TWO one b4
+	s2h "sync r1 -> r2 1"
+	status TWO one after
 
 	cd "${CHECKOUT_1}/repo1" || fail "Failed to change into directory for checkout 1"
-	echo
-	git lg
-	echo
-	git pull
-	echo
-	git fetch other master
-	echo
-	git merge --no-ff --no-commit FETCH_HEAD || true
-	echo
-	git reset -- not-synced.txt file1.txt file2.txt
-	echo
-	git checkout --ours --ignore-skip-worktree-bits -- $( (echo -e 'not-synced.txt\nfile1.txt\nfile2.txt'; git ls-files) | sort | uniq -d)
-	echo
-	git clean -fd
-	echo
-	git status
-	echo
-	git commit --allow-empty -am"sync r2 -> r1"
-	echo
-	git lg
-	echo
-	git push
-	echo
-	git status
-	echo ONE two
-	pwd
-	ls -l
-	cat *
+	status ONE two b4
+	s2h "sync r2 -> r1 1"
+	status ONE two after
 
 	cd "${CHECKOUT_2}/repo2" || fail "Failed to change into directory for checkout 2"
-	echo
-	git lg
-	echo
-	git pull
-	echo
-	git fetch other master
-	echo
-	git merge --no-ff --no-commit FETCH_HEAD || true
-	echo
-	git reset -- not-synced.txt file1.txt file2.txt
-	echo
-	git checkout --ours --ignore-skip-worktree-bits -- $( (echo -e 'not-synced.txt\nfile1.txt\nfile2.txt'; git ls-files) | sort | uniq -d)
-	echo
-	git clean -fd
-	echo
-	git status
-	echo
-	git commit --allow-empty -am"sync r1 -> r2 again"
-	echo
-	git lg
-	echo
-	git status
-	echo TWO two
-	pwd
-	ls -l
-	cat *
+	status TWO two b4
+	s2h "sync r1 -> r2 2"
+	status TWO two during
+	echo "addition" >>shared-file.txt
+	echo "conflict" >>not-synced.txt
+	git commit -am"Changes at 2"
+	git push
+	status TWO two after
 
 	cd "${CHECKOUT_1}/repo1" || fail "Failed to change into directory for checkout 1"
-	echo
-	git lg
-	echo
-	git pull
-	echo
-	git fetch other master
-	echo
-	git merge --no-ff --no-commit FETCH_HEAD || true
-	echo
-	git reset -- not-synced.txt file1.txt file2.txt
-	echo
-	git checkout --ours --ignore-skip-worktree-bits -- $( (echo -e 'not-synced.txt\nfile1.txt\nfile2.txt'; git ls-files) | sort | uniq -d)
-	echo
-	git clean -fd
-	echo
-	git status
-	echo
-	git commit --allow-empty -am"sync r2 -> r1 again"
-	echo
-	git lg
-	echo
-	git status
-	echo ONE three
-	pwd
-	ls -l
-	cat *
+	status ONE three b4
+	s2h "sync r2 -> r1 2"
+	status ONE three during
+	s2h "sync r2 -> r1 3"
+	status ONE three after
 
 	fail "test"
 }
