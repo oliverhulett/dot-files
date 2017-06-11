@@ -5,6 +5,11 @@ source "${DF_TESTS}/utils.sh"
 
 TEST_FILE="sync2home.sh"
 
+function md5()
+{
+	md5sum "$1" | cut -d' ' -f1
+}
+
 function setup()
 {
 	assert_fut_exe
@@ -21,7 +26,47 @@ function setup()
 	# Cross link the repos
 	( cd "${CHECKOUT_1}/repo1" && git remote add other "${BARE_REPO_2}" )
 	( cd "${CHECKOUT_2}/repo2" && git remote add other "${BARE_REPO_1}" )
+
+	IGNORE_LIST=( "not-synced.txt" "file1.txt" "file2.txt" )
+	printf "%s\n" "${IGNORE_LIST[@]}" >"${CHECKOUT_1}/repo1/sync2home.ignore.txt"
+	printf "%s\n" "${IGNORE_LIST[@]}" >"${CHECKOUT_2}/repo2/sync2home.ignore.txt"
+	cp "${EXE}" "${CHECKOUT_1}/repo1/"
+	cp "${EXE}" "${CHECKOUT_2}/repo2/"
+
+	cd "${CHECKOUT_1}/repo1" || fail "Failed to change into directory for checkout 1"
+	echo "text 1" >file1.txt
+	echo "same text" >shared-file.txt
+	echo "conflict 1" >not-synced.txt
+	git add -A
+	git commit -m"Initial commit on repo 1"
+	git push
+
+	cd "${CHECKOUT_2}/repo2" || fail "Failed to change into directory for checkout 2"
+	echo "text 2" >file2.txt
+	echo "same text" >shared-file.txt
+	echo "conflict 2" >not-synced.txt
+	git add -A
+	git commit -m"Initial commit on repo 2"
+	git push
+
+	SYNC2HOME_SH_MD5="$(md5 "${EXE}")"
 }
+
+## assertions
+# file lists (sort)
+# file contents
+# no un-committed files
+# git logs?  Find commits from other remote?
+function assert_files()
+{
+	run ls -1 --color=never
+	assert_lines $(printf "%s\n" "sync2home.sh" "sync2home.ignore.txt" "shared-file.txt" "$@" | sort)
+	assert_equals "$(md5 "${CHECKOUT_1}/repo1/sync2home.sh")" "${SYNC2HOME_SH_MD5}"
+	assert_equals "$(md5 "${CHECKOUT_2}/repo2/sync2home.sh")" "${SYNC2HOME_SH_MD5}"
+	assert_equals "$(cat "${CHECKOUT_1}/repo1/sync2home.ignore.txt")" "$(printf "%s\n" "${IGNORE_LIST[@]}")"
+	assert_equals "$(cat "${CHECKOUT_2}/repo2/sync2home.ignore.txt")" "$(printf "%s\n" "${IGNORE_LIST[@]}")"
+}
+
 
 function s2h()
 {
@@ -40,21 +85,6 @@ function s2h()
 	git clean -fd
 	git status
 	git commit --allow-empty -am"$*"
-}
-
-function status()
-{
-	echo
-	echo "$@"
-	echo
-	git lg
-	echo
-	git status
-	echo
-	pwd
-	ls -l
-	cat *
-	echo
 }
 
 ## Tests to write
@@ -80,55 +110,3 @@ function status()
 # deleting ignored file locally
 # deleting ignored file remotely
 # deleting ignored file both
-
-## assertions
-# file lists (sort)
-# file contents
-# no un-committed files
-# git logs?  Find commits from other remote?
-
-@test "$FUT: initial commits and merges" {
-	cd "${CHECKOUT_1}/repo1" || fail "Failed to change into directory for checkout 1"
-	echo "text 1" >file1.txt
-	echo "same text" >shared-file.txt
-	echo "confict 1" >not-synced.txt
-	git add -A
-	git commit -m"Added file1"
-	git push
-	status ONE one
-
-	cd "${CHECKOUT_2}/repo2" || fail "Failed to change into directory for checkout 2"
-	echo "text 2" >file2.txt
-	echo "same text" >shared-file.txt
-	echo "confict 2" >not-synced.txt
-	git add -A
-	git commit -m"Added file2"
-	git push
-	status TWO one b4
-	s2h "sync r1 -> r2 1"
-	status TWO one after
-
-	cd "${CHECKOUT_1}/repo1" || fail "Failed to change into directory for checkout 1"
-	status ONE two b4
-	s2h "sync r2 -> r1 1"
-	status ONE two after
-
-	cd "${CHECKOUT_2}/repo2" || fail "Failed to change into directory for checkout 2"
-	status TWO two b4
-	s2h "sync r1 -> r2 2"
-	status TWO two during
-	echo "addition" >>shared-file.txt
-	echo "conflict" >>not-synced.txt
-	git commit -am"Changes at 2"
-	git push
-	status TWO two after
-
-	cd "${CHECKOUT_1}/repo1" || fail "Failed to change into directory for checkout 1"
-	status ONE three b4
-	s2h "sync r2 -> r1 2"
-	status ONE three during
-	s2h "sync r2 -> r1 3"
-	status ONE three after
-
-	fail "test"
-}
