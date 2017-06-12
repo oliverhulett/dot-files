@@ -26,9 +26,9 @@ function _check_caller_is_test()
 function assert_fut()
 {
 	_check_caller_is_test assert_fut || return $?
-	declare -g TEST_FILE_PATH
-	TEST_FILE_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && cd "$(git home)" && echo "$(git home)/$(git ls-files -- "${FUT}")")"
-	if [ ! -f "${TEST_FILE_PATH}" ]; then
+	declare -g FUT_PATH
+	FUT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && cd "$(git home)" && echo "$(git home)/$(git ls-files -- "${FUT}")")"
+	if [ ! -f "${FUT_PATH}" ]; then
 		skip "Failed to find file under test"
 		return 1
 	fi
@@ -38,7 +38,7 @@ function assert_fut_exe()
 	_check_caller_is_test assert_fut_exe || return $?
 	if [ -n "${FUT}" ]; then
 		assert_fut || return $?
-		declare -g EXE="${TEST_FILE_PATH}"
+		declare -g EXE="${FUT_PATH}"
 		if [ ! -x "${EXE}" ]; then
 			local shebang
 			shebang="$(head -n1 "${EXE}")"

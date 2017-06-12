@@ -3,11 +3,11 @@
 DF_TESTS="$(cd "${BATS_TEST_DIRNAME}" && pwd -P)"
 source "${DF_TESTS}/utils.sh"
 
-TEST_FILE="sync2home.sh"
+FUT="sync2home.sh"
 
 function md5()
 {
-	md5sum "$1" | cut -d' ' -f1
+	md5sum "$@" | cut -d' ' -f1
 }
 
 function setup()
@@ -37,60 +37,104 @@ function setup()
 	echo "text 1" >file1.txt
 	echo "same text" >shared-file.txt
 	echo "conflict 1" >not-synced.txt
-	git add -A
-	git commit -m"Initial commit on repo 1"
-	git push
+	git add -A >/dev/null 2>/dev/null
+	git commit -m"Initial commit on repo 1" >/dev/null 2>/dev/null
+	git push >/dev/null 2>/dev/null
 
 	cd "${CHECKOUT_2}/repo2" || fail "Failed to change into directory for checkout 2"
 	echo "text 2" >file2.txt
 	echo "same text" >shared-file.txt
 	echo "conflict 2" >not-synced.txt
-	git add -A
-	git commit -m"Initial commit on repo 2"
-	git push
+	git add -A >/dev/null 2>/dev/null
+	git commit -m"Initial commit on repo 2" >/dev/null 2>/dev/null
+	git push >/dev/null 2>/dev/null
 
 	SYNC2HOME_SH_MD5="$(md5 "${EXE}")"
 }
 
-## assertions
-# file lists (sort)
-# file contents
-# no un-committed files
-# git logs?  Find commits from other remote?
 function assert_files()
 {
+	cd "$1" || fail "Failed to change into directory: $1"
+	shift
 	run ls -1 --color=never
-	assert_lines $(printf "%s\n" "sync2home.sh" "sync2home.ignore.txt" "shared-file.txt" "$@" | sort)
-	assert_equals "$(md5 "${CHECKOUT_1}/repo1/sync2home.sh")" "${SYNC2HOME_SH_MD5}"
-	assert_equals "$(md5 "${CHECKOUT_2}/repo2/sync2home.sh")" "${SYNC2HOME_SH_MD5}"
-	assert_equals "$(cat "${CHECKOUT_1}/repo1/sync2home.ignore.txt")" "$(printf "%s\n" "${IGNORE_LIST[@]}")"
-	assert_equals "$(cat "${CHECKOUT_2}/repo2/sync2home.ignore.txt")" "$(printf "%s\n" "${IGNORE_LIST[@]}")"
+	assert_all_lines $(printf "%s\n" "sync2home.sh" "sync2home.ignore.txt" "shared-file.txt" "not-synced.txt" "$@" | sort)
+	assert_equal "$(md5 "${CHECKOUT_1}/repo1/sync2home.sh")" "${SYNC2HOME_SH_MD5}"
+	assert_equal "$(md5 "${CHECKOUT_2}/repo2/sync2home.sh")" "${SYNC2HOME_SH_MD5}"
+	assert_equal "$(cat "${CHECKOUT_1}/repo1/sync2home.ignore.txt")" "$(printf "%s\n" "${IGNORE_LIST[@]}")"
+	assert_equal "$(cat "${CHECKOUT_2}/repo2/sync2home.ignore.txt")" "$(printf "%s\n" "${IGNORE_LIST[@]}")"
 }
 
-
-function s2h()
+function assert_contents()
 {
-	SKIP_LIST="not-synced.txt\nfile1.txt\nfile2.txt"
-
-	echo
-	echo "SYNCHING"
-	echo "$*"
-	echo
-	git push
-	git pull
-	git fetch other master
-	git merge --allow-unrelated-histories --no-ff --no-commit FETCH_HEAD || true
-	git reset -- $(echo -e "$SKIP_LIST")
-	git checkout --ours --ignore-skip-worktree-bits -- $( (echo -e "$SKIP_LIST"; git ls-files) | sort | uniq -d )
-	git clean -fd
-	git status
-	git commit --allow-empty -am"$*"
+	run cat "$1"
+	shift
+	assert_all_lines "$@"
 }
 
-## Tests to write
-# fail if no other remote
+function assert_checkout_clean()
+{
+	cd "$1" || fail "Failed to change into directory: $1"
+	shift
+	run git status -s
+	assert_output ""
+}
+
+@test "$FUT: fail if no other remotes" {
+	scoped_mktemp CHECKOUT -d
+	( cd "${CHECKOUT}" && git clone "${BARE_REPO_1}" repo )
+	cd "${CHECKOUT}/repo" || fail "Failed to change into directory: ${CHECKOUT}/repo"
+
+	run s2h
+	assert_failure
+	assert_checkout_clean "${CHECKOUT}/repo"
+}
 # fail? if more than one other remote
-# adding a file locally
+
+@test "$FUT: fail if working copy is not clean" {
+	skip "Stub version doesn't check"
+	cd "${CHECKOUT_1}/repo1" || fail "Failed to change into directory: ${CHECKOUT_1}/repo1"
+	echo "new file" >new-file.txt
+
+	run s2h
+	assert_failure
+
+	rm new-file.txt
+	echo "addition" >>file1.txt
+
+	run s2h
+	assert_failure
+}
+
+@test "$FUT: adding a file" {
+	cd "${CHECKOUT_1}/repo1" || fail "Faled to change in directory: ${CHECKOUT_1}/repo1"
+	echo "new file" >new-file.txt
+	git add new-file.txt
+	git commit -m"New file"
+
+	run s2h
+	assert_success
+	assert_checkout_clean "${CHECKOUT_1}/repo1"
+	assert_files "${CHECKOUT_1}/repo1" file1.txt new-file.txt
+
+	cd "${CHECKOUT_2}/repo2" || fail "Faled to change in directory: ${CHECKOUT_2}/repo2"
+
+	run s2h
+	assert_success
+	assert_checkout_clean "${CHECKOUT_2}/repo2"
+	assert_files "${CHECKOUT_2}/repo2" file2.txt new-file.txt
+
+	run s2h
+	assert_success
+	assert_checkout_clean "${CHECKOUT_2}/repo2"
+	assert_files "${CHECKOUT_2}/repo2" file2.txt new-file.txt
+
+	cd "${CHECKOUT_1}/repo1" || fail "Faled to change in directory: ${CHECKOUT_1}/repo1"
+	run s2h
+	assert_success
+	assert_checkout_clean "${CHECKOUT_1}/repo1"
+	assert_files "${CHECKOUT_1}/repo1" file1.txt new-file.txt
+}
+
 # adding a file remotely
 # adding the same file both
 # adding conflicting file both
@@ -110,3 +154,19 @@ function s2h()
 # deleting ignored file locally
 # deleting ignored file remotely
 # deleting ignored file both
+
+function s2h()
+{
+	set -e
+	echo
+	echo "SYNCHING: `pwd`"
+	echo
+	git pull --all
+	git fetch other master
+	git merge --allow-unrelated-histories --no-ff --no-commit FETCH_HEAD || true
+	git reset -- $(cat sync2home.ignore.txt)
+	git checkout --ours --ignore-skip-worktree-bits -- $( (cat sync2home.ignore.txt; git ls-files) | sort | uniq -d )
+	git clean -fd
+	git status
+	git commit --allow-empty -am"Synching from other at `pwd`"
+}
