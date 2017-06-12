@@ -57,7 +57,7 @@ function assert_files()
 	cd "$1" || fail "Failed to change into directory: $1"
 	shift
 	run ls -1 --color=never
-	assert_all_lines $(printf "%s\n" "sync2home.sh" "sync2home.ignore.txt" "shared-file.txt" "not-synced.txt" "$@" | sort)
+	assert_all_lines $(printf "%s\n" "sync2home.sh" "sync2home.ignore.txt" "shared-file.txt" "not-synced.txt" "$@" | sort -u)
 	assert_equal "$(md5 "${CHECKOUT_1}/repo1/sync2home.sh")" "${SYNC2HOME_SH_MD5}"
 	assert_equal "$(md5 "${CHECKOUT_2}/repo2/sync2home.sh")" "${SYNC2HOME_SH_MD5}"
 	assert_equal "$(cat "${CHECKOUT_1}/repo1/sync2home.ignore.txt")" "$(printf "%s\n" "${IGNORE_LIST[@]}")"
@@ -115,6 +115,7 @@ function assert_checkout_clean()
 	assert_success
 	assert_checkout_clean "${CHECKOUT_1}/repo1"
 	assert_files "${CHECKOUT_1}/repo1" file1.txt new-file.txt
+	git push
 
 	cd "${CHECKOUT_2}/repo2" || fail "Faled to change in directory: ${CHECKOUT_2}/repo2"
 
@@ -122,22 +123,57 @@ function assert_checkout_clean()
 	assert_success
 	assert_checkout_clean "${CHECKOUT_2}/repo2"
 	assert_files "${CHECKOUT_2}/repo2" file2.txt new-file.txt
+	git push
 
 	run s2h
 	assert_success
 	assert_checkout_clean "${CHECKOUT_2}/repo2"
 	assert_files "${CHECKOUT_2}/repo2" file2.txt new-file.txt
+	git push
 
 	cd "${CHECKOUT_1}/repo1" || fail "Faled to change in directory: ${CHECKOUT_1}/repo1"
 	run s2h
 	assert_success
 	assert_checkout_clean "${CHECKOUT_1}/repo1"
 	assert_files "${CHECKOUT_1}/repo1" file1.txt new-file.txt
+	git push
 }
 
-# adding a file remotely
-# adding the same file both
-# adding conflicting file both
+@test "$FUT: adding a conflicting file" {
+	cd "${CHECKOUT_1}/repo1" || fail "Faled to change in directory: ${CHECKOUT_1}/repo1"
+	echo "new file 1" >new-file.txt
+	git add new-file.txt
+	git commit -m"New file"
+	git push
+
+	cd "${CHECKOUT_2}/repo2" || fail "Faled to change in directory: ${CHECKOUT_2}/repo2"
+	echo "new file 1" >new-file.txt
+	git add new-file.txt
+	git commit -m"New file"
+	git push
+
+	run s2h
+	assert_success
+	assert_checkout_clean "${CHECKOUT_2}/repo2"
+	assert_files "${CHECKOUT_2}/repo2" file2.txt new-file.txt
+
+	echo "addition" >>new-file.txt
+	git commit -am"addition"
+	git push
+
+	cd "${CHECKOUT_1}/repo1" || fail "Faled to change in directory: ${CHECKOUT_1}/repo1"
+	echo "conflict" >>new-file.txt
+	git commit -am"conflict"
+	git push
+
+	run s2h
+	assert_success
+	! assert_checkout_clean "${CHECKOUT_1}/repo1"
+
+	assert_files "${CHECKOUT_1}/repo1" file1.txt new-file.txt
+	assert_files "${CHECKOUT_2}/repo2" file2.txt new-file.txt
+}
+
 # adding ignored file locally
 # adding ignored file remotely
 # adding ignored file both
@@ -161,6 +197,7 @@ function s2h()
 	echo
 	echo "SYNCHING: `pwd`"
 	echo
+	set -x
 	git pull --all
 	git fetch other master
 	git merge --allow-unrelated-histories --no-ff --no-commit FETCH_HEAD || true
@@ -169,4 +206,5 @@ function s2h()
 	git clean -fd
 	git status
 	git commit --allow-empty -am"Synching from other at `pwd`"
+	set +x
 }
