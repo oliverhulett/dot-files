@@ -14,6 +14,8 @@ source "${HOME}/dot-files/bash_common.sh" 2>/dev/null && eval "${capture_output}
 # Some things are needed for the next set of background tasks.  Yakuake is needed for the GUI (autostart)
 # Docker and jq are needed for docker-run.sh (see below)
 yum install -y yakuake jq docker
+sudo systemctl restart docker.service
+sleep 2
 
 set +e
 

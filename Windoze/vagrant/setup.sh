@@ -78,11 +78,11 @@ rsync -rAXog --update ${HOME}/etc/backups/${HOME}/ ${HOME}/
 # Some things are needed for the next set of background tasks.  Yakuake is needed for the GUI (autostart)
 # Docker and jq are needed for docker-run.sh (see below)
 yum install -y yakuake jq docker
+sudo systemctl restart docker.service
 
 ${HOME}/dot-files/Windoze/vagrant/install-things.sh
 
 echo "Restarting KDE to pick up restored backups..."
 sudo systemctl restart gdm.service
-sudo systemctl restart docker.service
 
 true

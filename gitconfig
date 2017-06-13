@@ -8,7 +8,7 @@ home = "!f() { pwd -P; }; f" ## Want to execute from the top level, not GIT_PREF
 ticket = "!f() { git branch --no-color | sed -nre 's/^\\* //p' | cut -d'_' -f1; }; f"
 this = "!f() { git branch --no-color | sed -nre 's/^\\* //p'; }; f"
 
-upstream = "!f() { git push --set-upstream origin $(git this); }; f"
+upstream = "!f() { remote=\"origin\"; if [ -n \"$1\" ]; then remote=\"$1\"; fi; git push --set-upstream \"$remote\" $(git this); }; f"
 branches = branch -avv
 remotes = remote -v
 refs = for-each-ref refs/remotes/origin
