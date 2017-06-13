@@ -409,17 +409,11 @@ function assert_checkout_clean()
 
 @test "$FUT: synchronises branches" {
 	cd "${CHECKOUT_1}/repo1" || fail "Failed to change into directory: ${CHECKOUT_1}/repo1"
-	set -x
 	git checkout -b test_branch
 	echo "branch changes" >branch-file.txt
 	git add branch-file.txt
 	git commit -am"made branch"
-	git push --set-upstream origin test_branch
-	git branch --set-upstream-to=origin/test_branch
-	git lg
-	git this
-	git pull
-	set +x
+	git upstream
 
 	run "$(pwd)/${FUT}"
 	assert_failure

@@ -28,8 +28,7 @@ echo "Synchronising branch ${BRANCH} from remote ${OTHER_REMOTE} ($(git config -
 set -x
 
 echo
-echo "Pulling and fetching latest from remotes..."
-git pull
+echo "Fetching latest from remotes..."
 git fetch "${OTHER_REMOTE}" "${BRANCH}"
 
 echo
