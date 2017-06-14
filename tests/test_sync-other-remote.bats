@@ -25,8 +25,8 @@ function setup()
 	( cd "${CHECKOUT_1}" && git clone "${BARE_REPO_1}" repo1 )
 	( cd "${CHECKOUT_2}" && git clone "${BARE_REPO_2}" repo2 )
 	# Cross link the repos
-	( cd "${CHECKOUT_1}/repo1" && git remote add other "${BARE_REPO_2}" )
-	( cd "${CHECKOUT_2}/repo2" && git remote add other "${BARE_REPO_1}" )
+	( cd "${CHECKOUT_1}/repo1" && git remote add repo2 "${BARE_REPO_2}" )
+	( cd "${CHECKOUT_2}/repo2" && git remote add repo1 "${BARE_REPO_1}" )
 
 	IGNORE_LIST=( "ignored.one" "ignored" "shared-dir" "dir1/file1.txt" "dir2/file2.txt" )
 	printf "%s\n" "${IGNORE_LIST[@]}" >"${CHECKOUT_1}/repo1/sync-other-remote.ignore.txt"
@@ -442,4 +442,36 @@ function assert_checkout_clean()
 
 	assert_files "${CHECKOUT_1}/repo1" ignored.one shared-file.txt shared-dir/not-synced.txt dir1/file1.txt branch-file.txt
 	assert_files "${CHECKOUT_2}/repo2" ignored shared-file.txt shared-dir/not-synced.txt dir2/file2.txt branch-file.txt
+}
+
+@test "$FUT: avoid sync bounce" {
+	# I haven't actually worked out how, we would need to push the merge commit hash to the other remote without changing any files?
+	skip "Not Done"
+	cd "${CHECKOUT_1}/repo1" || fail "Failed to change into directory: ${CHECKOUT_1}/repo1"
+	run "$(pwd)/${FUT}"
+	assert_success
+	assert_checkout_clean
+	git push
+	HASH_1="$(git rev-parse HEAD)"
+
+	cd "${CHECKOUT_2}/repo2" || fail "Failed to change into directory: ${CHECKOUT_2}/repo2"
+	run "$(pwd)/${FUT}"
+	assert_success
+	assert_checkout_clean
+	git push
+	HASH_2="$(git rev-parse HEAD)"
+
+	cd "${CHECKOUT_1}/repo1" || fail "Failed to change into directory: ${CHECKOUT_1}/repo1"
+	run "$(pwd)/${FUT}"
+	assert_success
+	assert_checkout_clean
+	git lg
+	assert_equal "$(git rev-parse HEAD)" "${HASH_1}"
+
+	cd "${CHECKOUT_2}/repo2" || fail "Failed to change into directory: ${CHECKOUT_2}/repo2"
+	run "$(pwd)/${FUT}"
+	assert_success
+	assert_checkout_clean
+	git lg
+	assert_equal "$(git rev-parse HEAD)" "${HASH_2}"
 }
