@@ -28,7 +28,7 @@ function setup()
 	( cd "${CHECKOUT_1}/repo1" && git remote add other "${BARE_REPO_2}" )
 	( cd "${CHECKOUT_2}/repo2" && git remote add other "${BARE_REPO_1}" )
 
-	IGNORE_LIST=( "shared-dir" "dir1/file1.txt" "dir2/file2.txt" )
+	IGNORE_LIST=( "ignored.one" "ignored" "shared-dir" "dir1/file1.txt" "dir2/file2.txt" )
 	printf "%s\n" "${IGNORE_LIST[@]}" >"${CHECKOUT_1}/repo1/sync-other-remote.ignore.txt"
 	printf "%s\n" "${IGNORE_LIST[@]}" >"${CHECKOUT_2}/repo2/sync-other-remote.ignore.txt"
 	cp "${EXE}" "${CHECKOUT_1}/repo1/"
@@ -44,6 +44,7 @@ function setup()
 	done
 	cd "${CHECKOUT_1}/repo1" || fail "Failed to change into directory for checkout 1"
 	mkdir dir1 shared-dir
+	echo "ignored common stuff" >ignored.one
 	echo "text 1" >dir1/file1.txt
 	echo "conflict 1" >shared-dir/not-synced.txt
 	git add -A
@@ -52,6 +53,7 @@ function setup()
 
 	cd "${CHECKOUT_2}/repo2" || fail "Failed to change into directory for checkout 2"
 	mkdir dir2 shared-dir
+	echo "ignored specific stuff" >ignored
 	echo "text 2" >dir2/file2.txt
 	echo "conflict 2" >shared-dir/not-synced.txt
 	git add -A
@@ -148,7 +150,7 @@ function assert_checkout_clean()
 
 	run "$(pwd)/${FUT}"
 	assert_success
-	assert_files "${CHECKOUT_1}/repo1" shared-file.txt shared-dir/not-synced.txt dir1/file1.txt new-file.txt
+	assert_files "${CHECKOUT_1}/repo1" ignored.one shared-file.txt shared-dir/not-synced.txt dir1/file1.txt new-file.txt
 	assert_checkout_clean
 	git push
 
@@ -156,20 +158,20 @@ function assert_checkout_clean()
 
 	run "$(pwd)/${FUT}"
 	assert_success
-	assert_files "${CHECKOUT_2}/repo2" shared-file.txt shared-dir/not-synced.txt dir2/file2.txt new-file.txt
+	assert_files "${CHECKOUT_2}/repo2" ignored shared-file.txt shared-dir/not-synced.txt dir2/file2.txt new-file.txt
 	assert_checkout_clean
 	git push
 
 	run "$(pwd)/${FUT}"
 	assert_success
-	assert_files "${CHECKOUT_2}/repo2" shared-file.txt shared-dir/not-synced.txt dir2/file2.txt new-file.txt
+	assert_files "${CHECKOUT_2}/repo2" ignored shared-file.txt shared-dir/not-synced.txt dir2/file2.txt new-file.txt
 	assert_checkout_clean
 	git push
 
 	cd "${CHECKOUT_1}/repo1" || fail "Failed to change into directory: ${CHECKOUT_1}/repo1"
 	run "$(pwd)/${FUT}"
 	assert_success
-	assert_files "${CHECKOUT_1}/repo1" shared-file.txt shared-dir/not-synced.txt dir1/file1.txt new-file.txt
+	assert_files "${CHECKOUT_1}/repo1" ignored.one shared-file.txt shared-dir/not-synced.txt dir1/file1.txt new-file.txt
 	assert_checkout_clean
 	git push
 }
@@ -189,7 +191,7 @@ function assert_checkout_clean()
 
 	run "$(pwd)/${FUT}"
 	assert_success
-	assert_files "${CHECKOUT_2}/repo2" shared-file.txt shared-dir/not-synced.txt dir2/file2.txt new-file.txt
+	assert_files "${CHECKOUT_2}/repo2" ignored shared-file.txt shared-dir/not-synced.txt dir2/file2.txt new-file.txt
 	assert_checkout_clean
 
 	echo "addition" >>new-file.txt
@@ -205,8 +207,8 @@ function assert_checkout_clean()
 	assert_success
 	! assert_checkout_clean
 
-	assert_files "${CHECKOUT_1}/repo1" shared-file.txt shared-dir/not-synced.txt dir1/file1.txt new-file.txt
-	assert_files "${CHECKOUT_2}/repo2" shared-file.txt shared-dir/not-synced.txt dir2/file2.txt new-file.txt
+	assert_files "${CHECKOUT_1}/repo1" ignored.one shared-file.txt shared-dir/not-synced.txt dir1/file1.txt new-file.txt
+	assert_files "${CHECKOUT_2}/repo2" ignored shared-file.txt shared-dir/not-synced.txt dir2/file2.txt new-file.txt
 }
 
 @test "$FUT: adding ignored files" {
@@ -224,8 +226,8 @@ function assert_checkout_clean()
 	assert_success
 	assert_checkout_clean
 
-	assert_files "${CHECKOUT_1}/repo1" shared-file.txt shared-dir/not-synced.txt dir1/file1.txt new-file.txt
-	assert_files "${CHECKOUT_2}/repo2" shared-file.txt shared-dir/not-synced.txt dir2/file2.txt
+	assert_files "${CHECKOUT_1}/repo1" ignored.one shared-file.txt shared-dir/not-synced.txt dir1/file1.txt new-file.txt
+	assert_files "${CHECKOUT_2}/repo2" ignored shared-file.txt shared-dir/not-synced.txt dir2/file2.txt
 
 	echo "new file 2" >new-file.txt
 	git add new-file.txt
@@ -236,8 +238,8 @@ function assert_checkout_clean()
 	assert_success
 	assert_checkout_clean
 
-	assert_files "${CHECKOUT_1}/repo1" shared-file.txt shared-dir/not-synced.txt dir1/file1.txt new-file.txt
-	assert_files "${CHECKOUT_2}/repo2" shared-file.txt shared-dir/not-synced.txt dir2/file2.txt new-file.txt
+	assert_files "${CHECKOUT_1}/repo1" ignored.one shared-file.txt shared-dir/not-synced.txt dir1/file1.txt new-file.txt
+	assert_files "${CHECKOUT_2}/repo2" ignored shared-file.txt shared-dir/not-synced.txt dir2/file2.txt new-file.txt
 
 	echo "addition" >>new-file.txt
 	git commit -am"addition"
@@ -252,8 +254,8 @@ function assert_checkout_clean()
 	assert_success
 	assert_checkout_clean
 
-	assert_files "${CHECKOUT_1}/repo1" shared-file.txt shared-dir/not-synced.txt dir1/file1.txt new-file.txt
-	assert_files "${CHECKOUT_2}/repo2" shared-file.txt shared-dir/not-synced.txt dir2/file2.txt new-file.txt
+	assert_files "${CHECKOUT_1}/repo1" ignored.one shared-file.txt shared-dir/not-synced.txt dir1/file1.txt new-file.txt
+	assert_files "${CHECKOUT_2}/repo2" ignored shared-file.txt shared-dir/not-synced.txt dir2/file2.txt new-file.txt
 
 	assert_contents "${CHECKOUT_1}/repo1/new-file.txt" "new file 1" "conflict"
 	assert_contents "${CHECKOUT_2}/repo2/new-file.txt" "new file 2" "addition"
@@ -279,8 +281,8 @@ function assert_checkout_clean()
 	assert_success
 	assert_checkout_clean
 
-	assert_files "${CHECKOUT_1}/repo1" shared-file.txt shared-dir/not-synced.txt dir1/file1.txt
-	assert_files "${CHECKOUT_2}/repo2" shared-file.txt shared-dir/not-synced.txt dir2/file2.txt
+	assert_files "${CHECKOUT_1}/repo1" ignored.one shared-file.txt shared-dir/not-synced.txt dir1/file1.txt
+	assert_files "${CHECKOUT_2}/repo2" ignored shared-file.txt shared-dir/not-synced.txt dir2/file2.txt
 
 	assert_contents "${CHECKOUT_1}/repo1/shared-file.txt" "some more text" "last line" "additional line"
 	assert_contents "${CHECKOUT_2}/repo2/shared-file.txt" "some more text" "last line" "additional line"
@@ -312,8 +314,8 @@ function assert_checkout_clean()
 	assert_success
 	! assert_checkout_clean
 
-	assert_files "${CHECKOUT_1}/repo1" shared-file.txt shared-dir/not-synced.txt dir1/file1.txt
-	assert_files "${CHECKOUT_2}/repo2" shared-file.txt shared-dir/not-synced.txt dir2/file2.txt
+	assert_files "${CHECKOUT_1}/repo1" ignored.one shared-file.txt shared-dir/not-synced.txt dir1/file1.txt
+	assert_files "${CHECKOUT_2}/repo2" ignored shared-file.txt shared-dir/not-synced.txt dir2/file2.txt
 }
 
 @test "$FUT: deleting files" {
@@ -330,8 +332,8 @@ function assert_checkout_clean()
 	assert_success
 	assert_checkout_clean
 
-	assert_files "${CHECKOUT_1}/repo1" shared-file.txt shared-dir/not-synced.txt
-	assert_files "${CHECKOUT_2}/repo2" shared-file.txt shared-dir/not-synced.txt
+	assert_files "${CHECKOUT_1}/repo1" ignored.one shared-file.txt shared-dir/not-synced.txt
+	assert_files "${CHECKOUT_2}/repo2" ignored shared-file.txt shared-dir/not-synced.txt
 
 	git rm shared-dir/not-synced.txt
 	git commit -am"removed not-synced file"
@@ -343,8 +345,8 @@ function assert_checkout_clean()
 	assert_success
 	assert_checkout_clean
 
-	assert_files "${CHECKOUT_1}/repo1" shared-file.txt shared-dir/not-synced.txt
-	assert_files "${CHECKOUT_2}/repo2" shared-file.txt
+	assert_files "${CHECKOUT_1}/repo1" ignored.one shared-file.txt shared-dir/not-synced.txt
+	assert_files "${CHECKOUT_2}/repo2" ignored shared-file.txt
 
 	git rm shared-file.txt
 	git commit -am"removed shared file"
@@ -356,8 +358,8 @@ function assert_checkout_clean()
 	assert_success
 	assert_checkout_clean
 
-	assert_files "${CHECKOUT_1}/repo1" shared-dir/not-synced.txt
-	assert_files "${CHECKOUT_2}/repo2"
+	assert_files "${CHECKOUT_1}/repo1" ignored.one shared-dir/not-synced.txt
+	assert_files "${CHECKOUT_2}/repo2" ignored
 }
 
 @test "$FUT: deleting files on both sides" {
@@ -374,8 +376,8 @@ function assert_checkout_clean()
 	assert_success
 	assert_checkout_clean
 
-	assert_files "${CHECKOUT_1}/repo1" shared-file.txt dir1/file1.txt
-	assert_files "${CHECKOUT_2}/repo2" shared-file.txt dir2/file2.txt
+	assert_files "${CHECKOUT_1}/repo1" ignored.one shared-file.txt dir1/file1.txt
+	assert_files "${CHECKOUT_2}/repo2" ignored shared-file.txt dir2/file2.txt
 
 	git rm shared-file.txt
 	git commit -am"removed shared file"
@@ -389,8 +391,8 @@ function assert_checkout_clean()
 	assert_success
 	assert_checkout_clean
 
-	assert_files "${CHECKOUT_1}/repo1" dir1/file1.txt
-	assert_files "${CHECKOUT_2}/repo2" dir2/file2.txt
+	assert_files "${CHECKOUT_1}/repo1" ignored.one dir1/file1.txt
+	assert_files "${CHECKOUT_2}/repo2" ignored dir2/file2.txt
 }
 
 @test "$FUT: remove and ignore file" {
@@ -407,8 +409,8 @@ function assert_checkout_clean()
 	assert_success
 	assert_checkout_clean
 
-	assert_files "${CHECKOUT_1}/repo1" shared-dir/not-synced.txt dir1/file1.txt
-	assert_files "${CHECKOUT_2}/repo2" shared-file.txt shared-dir/not-synced.txt dir2/file2.txt
+	assert_files "${CHECKOUT_1}/repo1" ignored.one shared-dir/not-synced.txt dir1/file1.txt
+	assert_files "${CHECKOUT_2}/repo2" ignored shared-file.txt shared-dir/not-synced.txt dir2/file2.txt
 }
 
 @test "$FUT: synchronises branches" {
@@ -431,14 +433,14 @@ function assert_checkout_clean()
 	assert_checkout_clean
 
 	# checks working tree
-	assert_files "${CHECKOUT_1}/repo1" shared-file.txt shared-dir/not-synced.txt dir1/file1.txt branch-file.txt
-	assert_files "${CHECKOUT_2}/repo2" shared-file.txt shared-dir/not-synced.txt dir2/file2.txt
+	assert_files "${CHECKOUT_1}/repo1" ignored.one shared-file.txt shared-dir/not-synced.txt dir1/file1.txt branch-file.txt
+	assert_files "${CHECKOUT_2}/repo2" ignored shared-file.txt shared-dir/not-synced.txt dir2/file2.txt
 
 	git checkout -b test_branch
 	run "$(pwd)/${FUT}"
 	assert_success
 	assert_checkout_clean
 
-	assert_files "${CHECKOUT_1}/repo1" shared-file.txt shared-dir/not-synced.txt dir1/file1.txt branch-file.txt
-	assert_files "${CHECKOUT_2}/repo2" shared-file.txt shared-dir/not-synced.txt dir2/file2.txt branch-file.txt
+	assert_files "${CHECKOUT_1}/repo1" ignored.one shared-file.txt shared-dir/not-synced.txt dir1/file1.txt branch-file.txt
+	assert_files "${CHECKOUT_2}/repo2" ignored shared-file.txt shared-dir/not-synced.txt dir2/file2.txt branch-file.txt
 }

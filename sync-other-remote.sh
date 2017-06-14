@@ -50,7 +50,7 @@ function git()
 git merge ${ALLOW_UNRELATED_HISTORIES} --no-ff --no-commit FETCH_HEAD || true
 
 command git resolve-ours "${IGNORE_LIST}"
-IGNORED_FILES="$(while read -r; do ( echo "${LOCAL_FILES}" | command grep -E '^'"$REPLY" 2>/dev/null ) || echo "$REPLY"; done <"${IGNORE_LIST}")"
+IGNORED_FILES="$(while read -r; do ( echo "${LOCAL_FILES}" | command grep -E '^'"$REPLY/" 2>/dev/null ) || echo "$REPLY"; done <"${IGNORE_LIST}" | sort -u)"
 
 echo
 echo "Restoring ignored files..."
@@ -64,8 +64,9 @@ if [ -n "${IGNORED_FILES}" ]; then
 		git checkout --ours --ignore-skip-worktree-bits -- ${IGNORED_LOCAL}
 	fi
 
+	set -x
 	if [ -n "${IGNORED_LOCAL}" ]; then
-		IGNORED_REMOTE="$(echo "${IGNORED_FILES}" | command grep -vF "${IGNORED_LOCAL}")"
+		IGNORED_REMOTE="$(echo "${IGNORED_FILES}" | command grep -vwE "$(echo "${IGNORED_LOCAL}" | sed -re 's/^/^/;s/$/$/' | paste -sd'|')")"
 	else
 		IGNORED_REMOTE="${IGNORED_FILES}"
 	fi
@@ -74,6 +75,7 @@ if [ -n "${IGNORED_FILES}" ]; then
 		# Remove any ignored files added by the merge...
 		rm --verbose -rf --dir --one-file-system -- ${IGNORED_REMOTE}
 	fi
+	set +x
 fi
 
 unset -f git

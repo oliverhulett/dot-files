@@ -139,6 +139,10 @@ DF_LISTS_GITHUB=(
 	done <"${DOT_FILES}/sync-other-remote.ignore.txt"
 }
 
+@test "Validate: ignored file list is not in ignored file list" {
+	refute command grep -wqE '^sync-other-remote.ignore.txt$' "${DOT_FILES}/sync-other-remote.ignore.txt"
+}
+
 @test "Validate: dot-files exist" {
 	declare -a FILES
 	if [ "$(git config --get remote.origin.url)" == "ssh://git@git.comp.optiver.com:7999/~olihul/dot-files.git" ]; then
