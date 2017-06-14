@@ -8,15 +8,19 @@ MAILTO=olihul@optiver.com.au
 ## Only force sync if CPU % Idle time is more than 75% over the last 10 seconds.
 @hourly [ $(mpstat 1 10 | tail -n1 | awk '{print int($10)}') -gt 75 ] && sync >/dev/null 2>/dev/null
 
+## Port dot-files home.
+45 18 * * 1-5 cd ${HOME}/repo/oliverhulett/dot-files/master && git pullb && ./sync2home.sh && git push
+@daily cd ${HOME}/repo/olihul/dot-files/master && git pullb && ./sync2home.sh && git push
+
 ## Run backups
-@daily ${HOME}/dot-files/backup.sh
+@daily sleep 10 && ${HOME}/dot-files/backup.sh
 ## Install dot-files to development machines.  Sleep for 10 so that the backup script has had a chance to commit the latest dot-files.
-@daily sleep 10 && PATH="${HOME}/dot-files/bin:${PATH}" ${HOME}/dot-files/bin/install-dot-files.sh >/dev/null 2>/dev/null
+@daily sleep 20 && PATH="${HOME}/dot-files/bin:${PATH}" ${HOME}/dot-files/bin/install-dot-files.sh >/dev/null 2>/dev/null
 ## Install my personal docker image (which I should use more.)  Sleep for 10 so that the backup script has had a chance to commit the latest dot-files.
-@daily sleep 10 && cd "${HOME}/dot-files/images/c7" && make release
+@daily sleep 20 && cd "${HOME}/dot-files/images/c7" && make release
 
 ## Keep ~/repo up-to-date.
-@daily find ${HOME}/repo/ -type d -exec test -d "{}/.git" \; -prune -print | while read; do ( cd "$REPLY" && git pullb -q >/dev/null 2>/dev/null && git update >/dev/null 2>/dev/null && ( [ ! -f pins.json ] || git checkout pins.json >/dev/null ) ) || echo -e "\n${REPLY} Update Failed\n\n"; done
+@daily sleep 300 && find ${HOME}/repo/ -type d -exec test -d "{}/.git" \; -prune -print | while read; do ( cd "$REPLY" && git pullb -q >/dev/null 2>/dev/null && git update >/dev/null 2>/dev/null && ( [ ! -f pins.json ] || git checkout pins.json >/dev/null ) ) || echo -e "\n${REPLY} Update Failed\n\n"; done
 
 ## Clean builds every now and then.
 @weekly find ${HOME}/repo/ -name .git -prune | while read; do ( cd "$(dirname "$REPLY")" && [ -e build.py ] && ( ./build.py -c -t all || echo -e "\n${REPLY} Clean Failed\n\n" ) ); done
@@ -35,8 +39,4 @@ MAILTO=olihul@optiver.com.au
 ## Python virtualenv should be refreshed regularly.
 @daily source "${HOME}/.bash_aliases/09-profile.d-pyvenv.sh" && rm -rf "${PYVENV_HOME}" && ${HOME}/dot-files/bin/python_setup.sh
 
-## Port dot-files home.
-45 18 * * 1-5 cd ${HOME}/repo/oliverhulett/dot-files/master && git pullb && ./sync2home.sh && git push
-30 7 * * 1-5 cd ${HOME}/repo/olihul/dot-files/master && git pullb && ./sync2home.sh && git push
-
-## Backed up at Wed Jun 14 16:16:29 AEST 2017 by olihul
+## Backed up at Thu Jun 15 00:00:17 AEST 2017 by olihul
