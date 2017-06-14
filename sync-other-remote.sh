@@ -22,11 +22,10 @@ set -e
 
 BRANCH="$(git this)"
 IGNORE_LIST="${HERE}/sync-other-remote.ignore.txt"
-LOCAL_FILES="$(git ls-files)"
 
 echo "Synchronising branch ${BRANCH} from remote ${OTHER_REMOTE} ($(git config --get "remote.${OTHER_REMOTE}.url")) to origin ($(git config --get remote.origin.url))"
 
-set -x
+LOCAL_FILES="$(git ls-files)"
 
 echo
 echo "Fetching latest from remotes..."
@@ -42,10 +41,7 @@ fi
 
 function git()
 {
-	echo
-	command git status
-	echo
-	echo git "$@"
+	echo '$' git "$@"
 	command git "$@"
 	echo
 	command git status
@@ -53,22 +49,25 @@ function git()
 }
 git merge ${ALLOW_UNRELATED_HISTORIES} --no-ff --no-commit FETCH_HEAD || true
 
+command git resolve-ours "${IGNORE_LIST}"
+IGNORED_FILES="$(while read -r; do ( echo "${LOCAL_FILES}" | command grep -E '^'"$REPLY" 2>/dev/null ) || echo "$REPLY"; done <"${IGNORE_LIST}")"
+
 echo
 echo "Restoring ignored files..."
-if [ -s "${IGNORE_LIST}" ]; then
+if [ -n "${IGNORED_FILES}" ]; then
 	# Reset files that should not be synced...
-	git reset -- $(command cat "${IGNORE_LIST}")
+	git reset -- ${IGNORED_FILES}
 
-	IGNORED_LOCAL="$( ( command cat "${IGNORE_LIST}"; echo "${LOCAL_FILES}" ) | sort | uniq -d )"
+	IGNORED_LOCAL="$( ( echo "${IGNORED_FILES}"; echo "${LOCAL_FILES}" ) | sort | uniq -d )"
 	if [ -n "${IGNORED_LOCAL}" ]; then
 		# Check-out any local files removed by the merge...
 		git checkout --ours --ignore-skip-worktree-bits -- ${IGNORED_LOCAL}
 	fi
 
 	if [ -n "${IGNORED_LOCAL}" ]; then
-		IGNORED_REMOTE="$(command grep -vF "${IGNORED_LOCAL}" "${IGNORE_LIST}")"
+		IGNORED_REMOTE="$(echo "${IGNORED_FILES}" | command grep -vF "${IGNORED_LOCAL}")"
 	else
-		IGNORED_REMOTE="$(command cat "${IGNORE_LIST}")"
+		IGNORED_REMOTE="${IGNORED_FILES}"
 	fi
 
 	if [ -n "${IGNORED_REMOTE}" ]; then

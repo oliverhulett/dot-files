@@ -28,7 +28,7 @@ function setup()
 	( cd "${CHECKOUT_1}/repo1" && git remote add other "${BARE_REPO_2}" )
 	( cd "${CHECKOUT_2}/repo2" && git remote add other "${BARE_REPO_1}" )
 
-	IGNORE_LIST=( "shared-dir/not-synced.txt" "dir1/file1.txt" "dir2/file2.txt" )
+	IGNORE_LIST=( "shared-dir" "dir1/file1.txt" "dir2/file2.txt" )
 	printf "%s\n" "${IGNORE_LIST[@]}" >"${CHECKOUT_1}/repo1/sync-other-remote.ignore.txt"
 	printf "%s\n" "${IGNORE_LIST[@]}" >"${CHECKOUT_2}/repo2/sync-other-remote.ignore.txt"
 	cp "${EXE}" "${CHECKOUT_1}/repo1/"
