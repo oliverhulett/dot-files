@@ -52,9 +52,36 @@ function assert_fut_exe()
 		fi
 	fi
 }
-# Default setup() is to skip the test if the program under test doesn't exist
+
+# Skip the test if the user has specified a SKIP list or to ONLY run one test
+function should_run()
+{
+	_check_caller_is_test should_run || return $?
+	if [ -n "$ONLY" ]; then
+		SUFFIX="$(echo "$ONLY" | sed -re 's/ /_/g')"
+		if [ "${BATS_TEST_NAME}" == "${BATS_TEST_NAME%%$SUFFIX}" ]; then
+			skip "Single test requested: $ONLY"
+			return 1
+		fi
+	fi
+	if [ -n "$SKIP" ]; then
+		for t in "${SKIP[@]}"; do
+			SUFFIX="$(echo "$t" | sed -re 's/ /_/g')"
+			if [ "${BATS_TEST_NAME}" != "${BATS_TEST_NAME%%$SUFFIX}" ]; then
+				skip "Skip requested by skip list: $t"
+				return 1
+			fi
+		done
+	fi
+	return 0
+}
+
+# Default setup() is to skip the test if the program under test doesn't exist or if only one test has been requested
 function setup()
 {
+	if ! should_run; then
+		return
+	fi
 	assert_fut_exe
 }
 

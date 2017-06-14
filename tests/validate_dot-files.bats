@@ -133,8 +133,7 @@ DF_LISTS_GITHUB=(
 
 	shopt -s nullglob
 	while read -r; do
-		if [ -z "$(find "${DOT_FILES}" -wholename "${DOT_FILES}/${REPLY}" -print -quit)" ] && \
-			[ -z "$(find "${CHECKOUT}" -wholename "${CHECKOUT}/${REPLY}" -print -quit)" ]; then
+		if [ ! -e "${DOT_FILES}/${REPLY}" ] && [ ! -e "${CHECKOUT}/${REPLY}" ]; then
 			fail "Ignored file does not exist in either remote: $REPLY"
 		fi
 	done <"${DOT_FILES}/sync-other-remote.ignore.txt"

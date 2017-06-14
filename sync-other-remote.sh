@@ -22,6 +22,7 @@ set -e
 
 BRANCH="$(git this)"
 IGNORE_LIST="${HERE}/sync-other-remote.ignore.txt"
+LOCAL_FILES="$(git ls-files)"
 
 echo "Synchronising branch ${BRANCH} from remote ${OTHER_REMOTE} ($(git config --get "remote.${OTHER_REMOTE}.url")) to origin ($(git config --get remote.origin.url))"
 
@@ -38,32 +39,55 @@ if [ "$( ( git --version | cut -d' ' -f3; echo "2.9" ) | sort -V | head -n1)" ==
 else
 	ALLOW_UNRELATED_HISTORIES=
 fi
+
+function git()
+{
+	echo
+	command git status
+	echo
+	echo git "$@"
+	command git "$@"
+	echo
+	command git status
+	echo
+}
 git merge ${ALLOW_UNRELATED_HISTORIES} --no-ff --no-commit FETCH_HEAD || true
 
 echo
 echo "Restoring ignored files..."
 if [ -s "${IGNORE_LIST}" ]; then
+	# Reset files that should not be synced...
 	git reset -- $(command cat "${IGNORE_LIST}")
-	LOCAL_FILES="$( ( command cat "${IGNORE_LIST}"; git ls-files ) | sort | uniq -d )"
-	if [ -n "${LOCAL_FILES}" ]; then
-		git checkout --ours --ignore-skip-worktree-bits -- ${LOCAL_FILES}
+
+	IGNORED_LOCAL="$( ( command cat "${IGNORE_LIST}"; echo "${LOCAL_FILES}" ) | sort | uniq -d )"
+	if [ -n "${IGNORED_LOCAL}" ]; then
+		# Check-out any local files removed by the merge...
+		git checkout --ours --ignore-skip-worktree-bits -- ${IGNORED_LOCAL}
 	fi
-	if [ -n "${LOCAL_FILES}" ]; then
-		REMOTE_FILES="$(command cat "${IGNORE_LIST}" | grep -vF "${LOCAL_FILES}")"
+
+	if [ -n "${IGNORED_LOCAL}" ]; then
+		IGNORED_REMOTE="$(command grep -vF "${IGNORED_LOCAL}" "${IGNORE_LIST}")"
 	else
-		REMOTE_FILES="$(command cat "${IGNORE_LIST}")"
+		IGNORED_REMOTE="$(command cat "${IGNORE_LIST}")"
 	fi
-	if [ -n "${REMOTE_FILES}" ]; then
-		rm --verbose -f --dir --one-file-system -- ${REMOTE_FILES}
+
+	if [ -n "${IGNORED_REMOTE}" ]; then
+		# Remove any ignored files added by the merge...
+		rm --verbose -rf --dir --one-file-system -- ${IGNORED_REMOTE}
 	fi
 fi
-echo "Skipping \`git clean -fd'; run manually to clean superfluous files"
+
+unset -f git
 
 echo
-echo "Committing changes..."
-git status
-git commit -a -m"Autocommit: sync-other-remote from ${OTHER_REMOTE}/${BRANCH}: $(git status -s)" --allow-empty
+echo "Writing commit message..."
+echo "Autocommit: sync-other-remote from ${OTHER_REMOTE}/${BRANCH} at $(date) by $(whoami)" >"$(git home)/.git/COMMIT_EDITMSG"
+git status -s >>"$(git home)/.git/COMMIT_EDITMSG"
 
 echo
 echo "Done.  Sync-ed ${OTHER_REMOTE}/${BRANCH}"
+git status
 git lg
+echo
+echo "Skipping \`git clean -fd'; run manually to clean superfluous files"
+echo "Run \`git commit' to save the merge..."
