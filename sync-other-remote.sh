@@ -89,10 +89,11 @@ unset -f git
 
 echo
 echo "Done.  Sync-ed ${OTHER_REMOTE}/${BRANCH}"
+echo
 git status
+echo
 git lg
 
-set -x
 if [ -n "$(git status -s)" ] || [ -e "$(git home)/.git/MERGE_HEAD" ]; then
 	echo "Autocommit: sync-other-remote from ${OTHER_REMOTE}/${BRANCH} at $(date) by $(whoami)" >"$(git home)/.git/COMMIT_EDITMSG"
 	git status -s >>"$(git home)/.git/COMMIT_EDITMSG"
