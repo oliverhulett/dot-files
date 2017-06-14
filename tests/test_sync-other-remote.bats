@@ -97,7 +97,6 @@ function assert_contents()
 
 function assert_checkout_clean()
 {
-	git commit -F .git/COMMIT_EDITMSG --allow-empty
 	run git status -s
 	assert_output ""
 }
