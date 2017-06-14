@@ -4,7 +4,6 @@ DF_TESTS="$(cd "${BATS_TEST_DIRNAME}" && pwd -P)"
 source "${DF_TESTS}/utils.sh"
 
 DOT_FILES="$(dirname "${DF_TESTS}")"
-IGNORE_LIST="sync-other-remote.ignore.txt"
 
 DF_FILES=(
 	bash_common.sh
@@ -39,10 +38,10 @@ DF_EXES_OPTIVER=(
 DF_EXES_GITHUB=()
 
 DF_LISTS=(
-	${IGNORE_LIST}
 	.gitignore
 	gitignore
 	interactive_commands
+	sync-other-remote.ignore.txt
 )
 DF_LISTS_OPTIVER=(
 	backups.txt
@@ -86,10 +85,17 @@ DF_LISTS_GITHUB=(
 		fail "Unexpected git remote url"
 	fi
 	for f in "${FILES[@]}"; do
-		assert test -e "${DOT_FILES}/$f" -a ! -x "${DOT_FILES}/$f"
+		if [ ! -e "${DOT_FILES}/$f" ]; then
+			fail "Expected file does not exist: $f"
+		fi
+		if [ -x "${DOT_FILES}/$f" ]; then
+			fail "File should not be executable: $f"
+		fi
 	done
 	for f in "${EXES[@]}"; do
-		assert test -x "${DOT_FILES}/$f"
+		if [ ! -x "${DOT_FILES}/$f" ]; then
+			fail "Expected executable does not exist: $f"
+		fi
 	done
 }
 
@@ -109,9 +115,9 @@ DF_LISTS_GITHUB=(
 		fail "Unexpected git remote url"
 	fi
 	for f in "${LISTS[@]}"; do
-		assert_equal \
-			"$(command cat "${DOT_FILES}/$f")" \
-			"$(command cat "${DOT_FILES}/$f" | sort -u)"
+		if [ "$(command cat "${DOT_FILES}/$f")" != "$(command cat "${DOT_FILES}/$f" | sort -u)" ]; then
+			fail "List file is not sorted or not unique: $f"
+		fi
 	done
 }
 
@@ -127,27 +133,31 @@ DF_LISTS_GITHUB=(
 
 	shopt -s nullglob
 	while read -r; do
-		assert find "${DOT_FILES}" "${CHECKOUT}" -wholename "${REPLY}" -print -quit
-	done <"${DOT_FILES}/${IGNORE_LIST}"
+		if [ -z "$(find "${DOT_FILES}" -wholename "${DOT_FILES}/${REPLY}" -print -quit)" ] && \
+			[ -z "$(find "${CHECKOUT}" -wholename "${CHECKOUT}/${REPLY}" -print -quit)" ]; then
+			fail "Ignored file does not exist in either remote: $REPLY"
+		fi
+	done <"${DOT_FILES}/sync-other-remote.ignore.txt"
 }
 
 @test "Validate: dot-files exist" {
-	shopt -s nullglob
+	declare -a FILES
 	if [ "$(git config --get remote.origin.url)" == "ssh://git@git.comp.optiver.com:7999/~olihul/dot-files.git" ]; then
-		for l in dot-files dot-files.3100-centos7dev; do
-			while read -r f _; do
-				assert test -e "${DOT_FILES}/$f"
-			done <"${DOT_FILES}/$l"
-		done
+		FILES=( dot-files dot-files.3100-centos7dev )
 	elif [ "$(git config --get remote.origin.url)" == "https://github.com/oliverhulett/dot-files.git" ]; then
-		for l in dot-files.loki dot-files.odysseus dot-files.prometheus; do
-			while read -r f _; do
-				assert test -e "${DOT_FILES}/$f"
-			done <"${DOT_FILES}/$l"
-		done
+		FILES=( dot-files.loki dot-files.odysseus dot-files.prometheus )
 	else
 		fail "Unexpected git remote url"
 	fi
+
+	shopt -s nullglob
+	for l in "${FILES[@]}"; do
+		while read -r f _; do
+			if [ ! -e "${DOT_FILES}/$f" ]; then
+				fail "Expected dot-file does not exist: $f (from $l)"
+			fi
+		done <"${DOT_FILES}/$l"
+	done
 }
 
 @test "Validate: files to backup exist" {
@@ -156,6 +166,8 @@ DF_LISTS_GITHUB=(
 		return
 	fi
 	while read -r; do
-		assert test -e "${DOT_FILES}/$REPLY"
+		if [ ! -e "/$REPLY" ]; then
+			fail "File to backup does not exist: $REPLY"
+		fi
 	done <"${DOT_FILES}/backups.txt"
 }
