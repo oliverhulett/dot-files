@@ -5,12 +5,12 @@ DOTFILES="$(dirname "${HERE}")"
 source "${DOTFILES}/bash_common.sh" 2>/dev/null && eval "${setup_log_fd}" || true
 
 ## Early exist to a generic editor for things that aren't commits.
-if ! [ $# -eq 1 -a "$1" -ef .git/COMMIT_EDITMSG ]; then
+if ! [ $# -eq 1 ] || ! [ "$1" -ef .git/COMMIT_EDITMSG ]; then
 	$VISUAL "$@" || vim "$@"
 	exit
 fi
 
-existing_msg="$(cat .git/COMMIT_EDITMSG | sed -re '/^#/d;/^$/d')"
+existing_msg="$(sed -re '/^#/d;/^$/d' .git/COMMIT_EDITMSG)"
 
 echo "$existing_msg"
 echo
@@ -22,35 +22,35 @@ if [ "$branch" == "master" ]; then
 	branch=
 	read -p "Prepend a ticket to commit message? [y/N/q] " -n1 -r
 	echo
-	if [ "`echo $REPLY | tr [A-Z] [a-z]`" == "y" ]; then
+	if [ "$(echo $REPLY | tr '[:upper:]' '[:lower:]')" == "y" ]; then
 		echo -n "$(tput bold)Ticket:$(tput sgr0)  "
-		read
+		read -r
 		branch="$REPLY:  "
 		REPLY=
-	elif [ "`echo $REPLY | tr [A-Z] [a-z]`" == "q" ]; then
+	elif [ "$(echo $REPLY | tr '[:upper:]' '[:lower:]')" == "q" ]; then
 		exit
 	else
 		branch=
-		if [ "`echo $REPLY | tr [A-Z] [a-z]`" == "n" ]; then
+		if [ "$(echo $REPLY | tr '[:upper:]' '[:lower:]')" == "n" ]; then
 			REPLY=
 		fi
 	fi
 else
 	read -p "Prepend ticket ($branch) to commit message? [Y/n/o/q] " -n1 -r
 	echo
-	if [ "`echo $REPLY | tr [A-Z] [a-z]`" == "n" ]; then
+	if [ "$(echo $REPLY | tr '[:upper:]' '[:lower:]')" == "n" ]; then
 		branch=
 		REPLY=
-	elif [ "`echo $REPLY | tr [A-Z] [a-z]`" == "o" ]; then
+	elif [ "$(echo $REPLY | tr '[:upper:]' '[:lower:]')" == "o" ]; then
 		echo -n "$(tput bold)Ticket:$(tput sgr0)  "
-		read
+		read -r
 		branch="$REPLY:  "
 		REPLY=
-	elif [ "`echo $REPLY | tr [A-Z] [a-z]`" == "q" ]; then
+	elif [ "$(echo $REPLY | tr '[:upper:]' '[:lower:]')" == "q" ]; then
 		exit
 	else
 		branch="$branch:  "
-		if [ "`echo $REPLY | tr [A-Z] [a-z]`" == "y" ]; then
+		if [ "$(echo $REPLY | tr '[:upper:]' '[:lower:]')" == "y" ]; then
 			REPLY=
 		fi
 	fi
@@ -62,7 +62,7 @@ if grep -qE '^[^#].*$' .git/COMMIT_EDITMSG 2>/dev/null >/dev/null; then
 fi
 
 ## If .git/COMMIT_EDITMSG contains a non-branch prefixed message, don't auto-prefix lines.
-if ! sed -re '/^#/! s/^('"${branch}"')?(.+)/'"${branch}"'\2/' .git/COMMIT_EDITMSG -i; then
+if ! sed -re '/^#/! s!^('"${branch}"')?(.+)!'"${branch}"'\2!' .git/COMMIT_EDITMSG -i; then
 	$VISUAL "$@" || vim "$@"
 	exit
 fi
@@ -70,17 +70,17 @@ fi
 function special_vim()
 {
 	eval "${uncapture_output}"
-	vim -c "autocmd InsertLeave <buffer> let [c, l] = [getpos('.'), strlen(getline('.'))]" -c "autocmd InsertLeave <buffer> 1,!sed -re 's/^(${branch})?(.+)/${branch}\2/'" -c "autocmd InsertLeave <buffer> call setpos('.', c) | if l < strlen(getline('.')) | call setpos('.', [c[0], c[1], c[2] + ${#branch}, c[3]])" $startmode "$@"
+	vim -c "autocmd InsertLeave <buffer> let [c, l] = [getpos('.'), strlen(getline('.'))]" -c "autocmd InsertLeave <buffer> 1,!sed -re 's!^(${branch})?(.+)!${branch}\2!'" -c "autocmd InsertLeave <buffer> call setpos('.', c) | if l < strlen(getline('.')) | call setpos('.', [c[0], c[1], c[2] + ${#branch}, c[3]])" $startmode "$@"
 }
 
 echo "Type a simple, single line, commit message that will be prefixed with the ticket name; or press 'e' or type 'edit' to launch ${VISUAL:-vim}"
 msg="${REPLY}"
 read -r -n1 -s
-if [ "${REPLY}" == "e" -o "${REPLY}" == "E" ]; then
+if [ "${REPLY}" == "e" ] || [ "${REPLY}" == "E" ]; then
 	special_vim "$@"
 elif [ -n "${REPLY}" ]; then
-	read -ei ${msg}${REPLY}
-	if [ "$(echo ${REPLY} | tr '[A-Z]' '[a-z]')" == "edit" -o "${REPLY}" == "e" -o "${REPLY}" == "E" ]; then
+	read -rei ${msg}${REPLY}
+	if [ "$(echo ${REPLY} | tr '[:upper:]' '[:lower:]')" == "edit" ] || [ "${REPLY}" == "e" ] || [ "${REPLY}" == "E" ]; then
 		special_vim "$@"
 	else
 		if [ -n "${REPLY}" ]; then

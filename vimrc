@@ -1,7 +1,11 @@
+" vim:foldmethod=marker:foldlevel=0
+
 set nocompatible
 syntax enable
 
-" Vundle stuff, see https://github.com/VundleVim/Vundle.vim
+" Vundle stuff {{{
+
+" See https://github.com/VundleVim/Vundle.vim
 filetype off
 try
 	set rtp+=~/.vim/bundle/Vundle.vim
@@ -9,77 +13,176 @@ try
 	Plugin 'VundleVim/Vundle.vim'
 
 	Plugin 'ConradIrwin/vim-bracketed-paste'
+	Plugin 'altercation/vim-colors-solarized'
+	Plugin 'godlygeek/tabular'
 	Plugin 'kawaz/batscheck.vim'
+	Plugin 'lifepillar/vim-cheat40'
 	Plugin 'myint/syntastic-extras'
 	Plugin 'ntpeters/vim-better-whitespace'
+	Plugin 'plasticboy/vim-markdown'
 	Plugin 'reedes/vim-litecorrect'
 	Plugin 'vim-scripts/bats.vim'
 	Plugin 'vim-scripts/wordlist.vim'
 	Plugin 'vim-syntastic/syntastic'
 
-	" All of your Plugins must be added before the following line
+	" All of your Plugins must be added before the following line.
 	call vundle#end()
 catch
 	" Vundle not there...
 endtry
-filetype plugin on
-filetype indent on
 " If you've added a plugin, run `:PluginInstall`
 
-" From ntpeters/vim-better-whitespace: Strip white-space on save
+" }}}
+
+filetype plugin on
+filetype indent on
+
+" Colour scheme {{{
+
+if has('gui_running')
+	set background=light
+else
+	set background=dark
+endif
+"#colorscheme solarized
+"#let g:solarized_termcolors=256
+"#let g:solarized_termtrans=1
+"#let g:solarized_visibility="low"
+
+" }}}
+
+" Plugin setup {{{
+
+" From ntpeters/vim-better-whitespace: Strip white-space on save.
 autocmd BufEnter * silent! EnableStripWhitespaceOnSave
 
-" From reeds/vim-litecorrect: Lightweight auto-cow-wrecks
+" From reeds/vim-litecorrect: Lightweight auto-cow-wrecks.
 autocmd FileType * silent! call litecorrect#init()
 
-" Show tabs as well
-set listchars=tab:»·,trail:·,extends:»,precedes:«
-set list
+" Syntastic settings
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+" Syntastic checkers
+let g:syntastic_python_checkers = ['flake8']
+" Shellcheck syntastic options
+let g:syntastic_sh_shellcheck_args = '-x'
 
-" Stop vim locking up on write because of your disc-tweaks
-set nofsync
-set swapsync=
+" }}}
+
+" Terminal and local setup {{{
 
 let g:netrw_home=$HOME.'.cache/vim'
-
-" Use space as command leader.
-let mapleader = " "
-let g:mapleader = " "
-
-" Shortcut for write and exit
-map <leader>w :w<CR>
-map <leader>q :q<CR>
-map <leader>n :n<CR>
-
-" Leave insert mode without all that pesky wrist movement...
-imap <c-d> <Esc>
 
 " No TTY flow control <CTRL>+S/<CTRL>+Q
 execute ':silent ! stty -ixoff'
 execute ':silent ! stty -ixon'
 
-" Shortcut to save from anywhere
-nmap <c-s> :w<CR>
-" From visual mode, restore selection
-vmap <c-s> <Esc><c-s>gv
-" But from insert mode, don't return to insert mode
-imap <c-s> <Esc><c-s>
+" Stop vim locking up on write because of your disc-tweaks.
+set nofsync
+set swapsync=
+
+" Don't remember highlighting.
+set viminfo^=h
+
+" Split window below and right by default.
+set splitbelow
+set splitright
+
+" Don't restore cursor position.
+:autocmd BufRead * exe "normal! gg"
+
+" Auto-reload vimrc on write.
+autocmd bufwritepost .vimrc source $MYVIMRC
+autocmd bufwritepost vimrc source $MYVIMRC
+
+" Add word completion, ctrl+P to complete in insert mode.
+set complete+=kspell
+
+" Use space as command leader.
+let mapleader = " "
+let g:mapleader = " "
+
+" Use semi-colon instead of colon for entering comands.
+nnoremap ; :
+
+" }}}
+
+" Shortcuts and re-mappings - saving, quitting, and changing mode {{{
+
+" Shortcut for write and exit.
+noremap <leader>w :w<CR>
+noremap <leader>q :q<CR>
+noremap <leader>n :n<CR>
+
+" Leave insert mode without all that pesky wrist movement...
+inoremap <c-d> <Esc>
+
+" Shortcut to save from anywhere.
+nnoremap <c-s> :w<CR>
+" From visual mode, restore selection.
+vnoremap <c-s> <Esc><c-s>gv
+" But from insert mode, don't return to insert mode.
+inoremap <c-s> <Esc><c-s>
 
 " Shortcut to quit with <CTRL>+Q
-nmap <c-q> :q<CR>
+nnoremap <c-q> :q<CR>
 
-" Shortcut to substitute
-map <c-f> :%s/<c-r>///gc<Left><left><left>
+" }}}
 
-" Personalise
+" Shortcuts and re-mappings - movement {{{
+
+" Move vertically by "visual" line (respect wrapping.)  N.B. these have to be non-recursive mappings as the contain the mapped key.
+nnoremap j gj
+nnoremap k gk
+
+" Ctrl+j as the opposite of Shift+j;  Insert a new line without entering insert mode.
+nnoremap J mzJ`z
+nnoremap <C-J> mzi<CR><Esc>`z$
+
+" Ctrl+o to replicate o without entering insert mode.
+nnoremap <C-O> mzo<Esc>`z
+nnoremap <C-I> mzO<Esc>`z
+
+" }}}
+
+" Shortcuts and re-mappings - highlighting {{{
+
+" Shortcut to substitute.  In visual mode yank selection first.
+noremap <c-h> :%s/
+noremap <c-f> :%s/<c-r>///gc<Left><left><left>
+vnoremap <c-f> y:%s/<c-r>///gc<Left><left><left>
+
+" Clear search highlighting on space+enter.
+noremap <silent> <leader><CR> :nohl<CR>
+
+" Highlight last inserted text.
+nnoremap gV `[v`]
+
+" Sort lines in visual mode.
+vnoremap si :sort i<cr>
+vnoremap ss :sort<cr>
+vnoremap su :sort u<cr>
+
+" Use Q for formatting the current paragraph (or selection)
+vnoremap Q gq
+nnoremap Q gqap
+
+" }}}
+
+" Personalise {{{
+
+set copyindent
 set hlsearch
 set incsearch
+set modelines=1
 set noautoindent
 set nobackup
 set noexpandtab
 set noswapfile
 set nowb
 set number
+set pastetoggle=<F2>	" Paste-mode toggle
 set ruler
 set scrolloff=10
 set shiftwidth=4
@@ -89,6 +192,9 @@ set smarttab
 set spell spelllang=en_gb
 set tabstop=4
 set textwidth=100
+set wildignore=*.o,*.obj,*~	" stuff to ignore when tab completing
+set wildmenu	" enable ctrl-n and ctrl-p to scroll through matches
+set wildmode=list:longest	" make cmdline tab completion similar to bash
 autocmd FileType * setlocal formatoptions+=n
 autocmd FileType * setlocal formatoptions+=q
 autocmd FileType * setlocal formatoptions-=a
@@ -97,12 +203,13 @@ autocmd FileType * setlocal formatoptions-=o
 autocmd FileType * setlocal formatoptions-=r
 autocmd FileType * setlocal formatoptions-=t
 
-" Syntastic settings
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_check_on_open = 1
-let g:syntastic_check_on_wq = 0
-" Syntastic checkers
-let g:syntastic_python_checkers = ['flake8']
+" Show tabs as well
+set listchars=tab:»·,trail:·,extends:»,precedes:«
+set list
+
+" }}}
+
+" Toggle buffer lists functions {{{
 
 function! GetBufferList()
 	redir =>buflist
@@ -129,19 +236,21 @@ function! ToggleList(bufname, pfx)
 		wincmd p
 	endif
 endfunction
-nmap <silent> <leader>k :call ToggleList("Location List", 'l')<cr>
-nmap <leader>kk :lprev<cr>
-nmap <leader>kj :lnext<cr>
 
-" Shortcut keys to turn on spell-checking
+nnoremap <silent> <leader>k :call ToggleList("Location List", 'l')<cr>
+nnoremap <leader>kk :lprev<cr>
+nnoremap <leader>kj :lnext<cr>
+
+" }}}
+
+" Spelling {{{
+
+" Shortcut keys to turn on spell-checking.
 nnoremap <c-l> :setlocal spell! spelllang=en_gb<cr>
-imap <c-l> <c-g>u<Esc>[s
-nmap <leader>l ]s
-nmap <leader>s z=<c-g>u
+inoremap <c-l> <c-g>u<Esc>[s
+nnoremap <leader>lk ]s
+nnoremap <leader>sj z=<c-g>u
 nnoremap <leader>a :spellrepall<cr>
-
-" Add word completion, ctrl+P to complete in insert mode
-set complete+=kspell
 
 hi SpellBad cterm=underline
 hi clear SpellBad
@@ -153,73 +262,70 @@ syn match SingleChar '\<\A*\a{1,2}\A*\>' contains=@NoSpell
 " Enable spell check on certain files only.
 "autocmd FileType markdown setlocal spell
 
-"make cmdline tab completion similar to bash
-set wildmode=list:longest
-"enable ctrl-n and ctrl-p to scroll through matches
-set wildmenu
-"stuff to ignore when tab completing
-set wildignore=*.o,*.obj,*~
+" }}}
 
-"statusline setup
+" Statusline {{{
+
+" statusline setup
 set statusline =%#identifier#
-"tail of the filename
+" tail of the filename
 set statusline+=[%f]
 set statusline+=%*
 
-"display a warning if fileformat isn't unix
+" display a warning if fileformat isn't unix
 set statusline+=%#warningmsg#
 set statusline+=%{&ff!='unix'?'['.&ff.']':''}
 set statusline+=%*
 
-"display a warning if file encoding isn't utf-8
+" display a warning if file encoding isn't utf-8
 set statusline+=%#warningmsg#
 set statusline+=%{(&fenc!='utf-8'&&&fenc!='')?'['.&fenc.']':''}
 set statusline+=%*
 
-"help file flag
+" help file flag
 set statusline+=%h
-"file format
+" file format
 set statusline+=%5*%{&ff}%*
-"file type
+" file type
 set statusline+=%3*%y%*
 
-"read only flag
+" read only flag
 set statusline+=%#identifier#
 set statusline+=%r
 set statusline+=%*
 
-"modified flag
+" modified flag
 set statusline+=%#warningmsg#
 set statusline+=%m
 set statusline+=%*
 
-"display a warning if &et is wrong, or we have mixed-indenting
+" display a warning if &et is wrong, or we have mixed-indenting
 set statusline+=%#error#
 set statusline+=%{StatuslineTabWarning()}
 set statusline+=%*
 
-"display a warning if &paste is set
+" display a warning if &paste is set
 set statusline+=%#error#
 set statusline+=%{&paste?'[paste]':''}
 set statusline+=%*
 
-"Syntastic warnings
+" Syntastic warnings
 set statusline+=%#warningmsg#
 set statusline+=%{SyntasticStatuslineFlag()}
 set statusline+=%*
 
-"left/right separator
+" left/right separator
 set statusline+=%=
 set statusline+=%{StatuslineCurrentHighlight()}\ \ "current highlight
-"cursor column
+" cursor column
 set statusline+=%c,
-"cursor line/total lines
+" cursor line/total lines
 set statusline+=%l/%L
-"percent through file
+" percent through file
 set statusline+=\ %P
 set laststatus=2
 
-"return the syntax highlight group under the cursor ''
+" return the syntax highlight group under the cursor ''
 function! StatuslineCurrentHighlight()
 	let name = synIDattr(synID(line('.'),col('.'),1),'name')
 	if name == ''
@@ -229,12 +335,12 @@ function! StatuslineCurrentHighlight()
 	endif
 endfunction
 
-"recalculate the trailing whitespace warning when idle, and after saving
+" recalculate the trailing whitespace warning when idle, and after saving
 autocmd cursorhold,bufwritepost * unlet! b:statusline_tab_warning
 
-"return '[expand-tabs]' if &et is set wrong
-"return '[mixed-indenting]' if spaces and tabs are used to indent
-"return an empty string if everything is fine
+" return '[expand-tabs]' if &et is set wrong
+" return '[mixed-indenting]' if spaces and tabs are used to indent
+" return an empty string if everything is fine
 function! StatuslineTabWarning()
 	if !exists("b:statusline_tab_warning")
 		let b:statusline_tab_warning = ''
@@ -260,30 +366,11 @@ function! StatuslineTabWarning()
 	return b:statusline_tab_warning
 endfunction
 
-" Don't remember highlighting.
-set viminfo^=h
+" }}}
 
-" Don't restore cursor position.
-:autocmd BufRead * exe "normal! gg"
+" Per filetype indenting {{{
 
-" Shortcut keys to search for visual selection
-" vnoremap <silent> * :call VisualSelection('f')<CR>
-" vnoremap <silent> # :call VisualSelection('b')<CR>
-" Clear search highlighting on space+enter
-map <silent> <leader><CR> :nohl<CR>
-
-" Map ALT+[jk] to move line of text.
-nmap <M-j> mz:m+<CR>`z
-nmap <M-k> mz:m-2<CR>`z
-vmap <M-j> :m'>+<CR>`<my`>mzgv`yo`z
-vmap <M-k> :m'<-2<CR>`>my`<mzgv`yo`z
-
-" Shift+Enter to insert a new line without entering insert mode
-nmap <S-Enter> O<Esc>
-" Ctrl+j as the opposite of Shift+j
-nnoremap <C-J> a<CR><Esc>k$
-
-" Python, JSON, and Yaml should use spaces instead of tabs
+" Python, JSON, and Yaml should use spaces instead of tabs.
 autocmd Filetype javascript setlocal expandtab
 autocmd Filetype json setlocal expandtab
 autocmd Filetype modula2 setlocal expandtab tabstop=2
@@ -292,3 +379,4 @@ autocmd Filetype xml setlocal expandtab tabstop=2
 autocmd Filetype xsd setlocal expandtab tabstop=2
 autocmd Filetype yaml setlocal expandtab tabstop=2
 
+" }}}

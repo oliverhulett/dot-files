@@ -41,11 +41,19 @@ fi
 
 function git()
 {
-	echo '$' git "$@"
+	#echo '$' git "$@"
+	echo -n '$' git
+	for a in "$@"; do
+		if [ "$a" == "--" ]; then
+			break
+		fi
+		echo -n " $a"
+	done
+	echo " -- ..."
 	command git "$@"
-	echo
-	command git status
-	echo
+	#echo
+	#command git status
+	#echo
 }
 git merge ${ALLOW_UNRELATED_HISTORIES} --no-ff --no-commit FETCH_HEAD || true
 
@@ -64,7 +72,6 @@ if [ -n "${IGNORED_FILES}" ]; then
 		git checkout --ours --ignore-skip-worktree-bits -- ${IGNORED_LOCAL}
 	fi
 
-	set -x
 	if [ -n "${IGNORED_LOCAL}" ]; then
 		IGNORED_REMOTE="$(echo "${IGNORED_FILES}" | command grep -vwE "$(echo "${IGNORED_LOCAL}" | sed -re 's/^/^/;s/$/$/' | paste -sd'|')")"
 	else
@@ -73,9 +80,9 @@ if [ -n "${IGNORED_FILES}" ]; then
 
 	if [ -n "${IGNORED_REMOTE}" ]; then
 		# Remove any ignored files added by the merge...
+		echo '$ rm --verbose -rf --dir --one-file-system -- ...'
 		rm --verbose -rf --dir --one-file-system -- ${IGNORED_REMOTE}
 	fi
-	set +x
 fi
 
 unset -f git
