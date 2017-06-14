@@ -48,7 +48,6 @@ DF_LISTS_OPTIVER=(
 	docker_favourites
 	dot-files
 	dot-files.3100-centos7dev
-	installed-software.txt
 	python_setup.txt
 )
 DF_LISTS_GITHUB=(
