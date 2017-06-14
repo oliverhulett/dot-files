@@ -92,14 +92,17 @@ echo "Done.  Sync-ed ${OTHER_REMOTE}/${BRANCH}"
 git status
 git lg
 
-echo "Autocommit: sync-other-remote from ${OTHER_REMOTE}/${BRANCH} at $(date) by $(whoami)" >"$(git home)/.git/COMMIT_EDITMSG"
-git status -s >>"$(git home)/.git/COMMIT_EDITMSG"
+set -x
+if [ -n "$(git status -s)" ] || [ -e "$(git home)/.git/MERGE_HEAD" ]; then
+	echo "Autocommit: sync-other-remote from ${OTHER_REMOTE}/${BRANCH} at $(date) by $(whoami)" >"$(git home)/.git/COMMIT_EDITMSG"
+	git status -s >>"$(git home)/.git/COMMIT_EDITMSG"
 
-if [ -z "$(git status -s | command grep -E '^.[^ ]')" ]; then
-	echo
-	echo "Committing merge..."
-	git commit -F "$(git home)/.git/COMMIT_EDITMSG" --allow-empty
-else
-	echo
-	echo "Conflicts detected; Resolve them and then run \`git commit' to save the merge..."
+	if [ -z "$(git status -s | command grep -E '^.[^ ]')" ]; then
+		echo
+		echo "Committing merge..."
+		git commit -F "$(git home)/.git/COMMIT_EDITMSG"
+	else
+		echo
+		echo "Conflicts detected; Resolve them and then run \`git commit' to save the merge..."
+	fi
 fi
