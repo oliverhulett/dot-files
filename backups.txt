@@ -30,7 +30,6 @@
 /etc/rc.local
 /etc/rsyncd.conf
 /etc/samba/smb.conf
-/etc/sensu
 /etc/shadow
 /etc/sudoers
 /etc/sudoers.d
