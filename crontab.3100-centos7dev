@@ -36,7 +36,7 @@ MAILTO=olihul@optiver.com.au
 @daily source "${HOME}/.bash_aliases/09-profile.d-pyvenv.sh" && rm -rf "${PYVENV_HOME}" && ${HOME}/dot-files/bin/python_setup.sh
 
 ## Port dot-files home.
-#45 18 * * 1-5 cd ${HOME}/repo/oliverhulett/dot-files/master && git pullb && ./sync2home.sh && git push
-#30 7 * * 1-5 cd ${HOME}/repo/olihul/dot-files/master && git pullb && ./sync2home.sh && git push
+45 18 * * 1-5 cd ${HOME}/repo/oliverhulett/dot-files/master && git pullb && ./sync2home.sh && git push
+30 7 * * 1-5 cd ${HOME}/repo/olihul/dot-files/master && git pullb && ./sync2home.sh && git push
 
-## Backed up at Wed Jun 14 00:00:01 AEST 2017 by olihul
+## Backed up at Wed Jun 14 16:16:29 AEST 2017 by olihul
