@@ -44,6 +44,7 @@ mvbranch = "!f() { : git checkout ; git branch -m \"$1\" \"$2\" && git push orig
 rmbranch = "!f() { : git checkout ; dashd=\"-d\"; if [ \"$1\" == \"-D\" ]; then dashd=\"-D\"; shift; fi; for b in \"$@\"; do git branch $dashd \"$b\"; git push origin --delete \"$b\"; done; git pull --prune; }; f" ## Want to execute from top level, not GIT_PREFIX
 
 mergeflict = "!f() { : git checkout ; git push; git pull --all && git fetch origin $1 && git merge FETCH_HEAD; }; f" ## Want to execut from top level, not GIT_PREFIX
+#gresolve = "!f() { : git mergetool ; git mergetool --tool=kdiff3 -y \"$@\" && echo \"Removing kdiff3 original files.\" && find ./ \( -name '*.BASE.*' -or -name '*.BACKUP.*' -or -name '*.LOCAL.*' -or -name '*.REMOTE.*' -or -name '*.orig' -delete -print; }; cd \"$GIT_PREFIX\" && f"
 resolved = "!f() { : git add ; if [ $# -eq 0 ]; then set -- $(git diff --name-only --diff-filter=U); fi; git add \"$@\"; }; cd \"$GIT_PREFIX\" && f"
 resolve = "!f() { : git add ; if [ $# -eq 0 ]; then set -- $(git diff --name-only --diff-filter=U); fi; ~/.git_wrappers/resolve.sh \"$@\"; read -n1 -p\"Resolved? [y/N]: \"; echo; if [ \"$(echo $REPLY | tr '[A-Z]' '[a-z]')\" == \"y\" ]; then git add \"$@\"; fi; }; cd \"$GIT_PREFIX\" && f"
 resolve-mine = "!f() { : git add ; if [ $# -eq 0 ]; then set -- $(git diff --name-only --diff-filter=U); fi; git checkout --ours \"$@\" && git add \"$@\"; }; cd \"$GIT_PREFIX\" && f"
