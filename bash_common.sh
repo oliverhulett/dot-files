@@ -161,10 +161,14 @@ _redirect='{
 		f="$(readlink -f /proc/$$/fd/1)";
 		if [ -e "$f" ]; then
 			_orig_stdout="$f";
+		else
+			_orig_stdout="/dev/tty";
 		fi;
 		f="$(readlink -f /proc/$$/fd/2)";
 		if [ -e "$f" ]; then
 			_orig_stderr="$f";
+		else
+			_orig_stderr="/dev/tty";
 		fi;
 		#builtin trap "log \$ \$BASH_COMMAND" DEBUG;
 		exec > >(_tee_totaler "$$" "$(basename -- "$0")" STDOUT 2>/dev/null);

@@ -1,7 +1,7 @@
 [include]
-	path = ~/dot-files/gitconfig
+path = ~/dot-files/gitconfig
 [user]
-	name = Oliver Hulett
-	email = oliver.hulett@optiver.com.au
+name = Oliver Hulett
+email = oliver.hulett@optiver.com.au
 [credential]
-	helper = store
+helper = store

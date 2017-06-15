@@ -1,1 +1,2 @@
 --ignore-file=match:/^.tags/
+--follow

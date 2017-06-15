@@ -123,6 +123,56 @@ function _scoped_environment_inspect_env()
 	assert [ ! -e "$tstfile3" ]
 }
 
+function _should_run_mk_test()
+{
+	unset ONLY SKIP
+	rm "${OUTPUT}" || true
+	cat >"${TESTFILE}" <<-EOF
+	. "${DF_TESTS}/utils.sh"
+	eval "__original_\$(declare -f skip)"
+	function skip()
+	{
+		echo "Skipping='\$*' ONLY=\$ONLY SKIP=\$SKIP" >>"${OUTPUT}"
+		__original_skip "should_run said no"
+		return 1
+	}
+	function setup()
+	{
+		should_run
+	}
+	ONLY=$1
+	SKIP=$2
+	@test "test 1" {
+		true
+	}
+	@test "test 2" {
+		true
+	}
+	EOF
+}
+@test "$FUT: skip tests on request" {
+	scoped_mktemp TESTFILE --suffix=.bats
+	scoped_mktemp OUTPUT --suffix=.txt
+	_should_run_mk_test "" ""
+	run bats -t "${TESTFILE}"
+	assert_success
+	assert_all_lines "1..2" "ok 1 test 1" "ok 2 test 2"
+
+	_should_run_mk_test '"test 2"' ""
+	run bats -t "${TESTFILE}"
+	assert_success
+	assert_all_lines "1..2" "ok 1 # skip (should_run said no) test 1" "ok 2 test 2"
+	run cat "${OUTPUT}"
+	assert_all_lines --partial "Skipping='Single test requested: test 2'"
+
+	_should_run_mk_test "" '( "test 1" "test 2" )'
+	run bats -t "${TESTFILE}"
+	assert_success
+	assert_all_lines "1..2" "ok 1 # skip (should_run said no) test 1" "ok 2 # skip (should_run said no) test 2"
+	run cat "${OUTPUT}"
+	assert_all_lines --partial "Skipping='Skip requested by skip list: test 1'" "Skipping='Skip requested by skip list: test 2'"
+}
+
 function _assert_fut_exe_mk_test()
 {
 	unset EXE FUT

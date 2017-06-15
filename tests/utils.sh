@@ -26,9 +26,9 @@ function _check_caller_is_test()
 function assert_fut()
 {
 	_check_caller_is_test assert_fut || return $?
-	declare -g TEST_FILE_PATH
-	TEST_FILE_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && cd "$(git home)" && echo "$(git home)/$(git ls-files -- "${FUT}")")"
-	if [ ! -f "${TEST_FILE_PATH}" ]; then
+	declare -g FUT_PATH
+	FUT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && cd "$(git home)" && echo "$(git home)/$(git ls-files -- "${FUT}")")"
+	if [ ! -f "${FUT_PATH}" ]; then
 		skip "Failed to find file under test"
 		return 1
 	fi
@@ -38,7 +38,7 @@ function assert_fut_exe()
 	_check_caller_is_test assert_fut_exe || return $?
 	if [ -n "${FUT}" ]; then
 		assert_fut || return $?
-		declare -g EXE="${TEST_FILE_PATH}"
+		declare -g EXE="${FUT_PATH}"
 		if [ ! -x "${EXE}" ]; then
 			local shebang
 			shebang="$(head -n1 "${EXE}")"
@@ -52,9 +52,36 @@ function assert_fut_exe()
 		fi
 	fi
 }
-# Default setup() is to skip the test if the program under test doesn't exist
+
+# Skip the test if the user has specified a SKIP list or to ONLY run one test
+function should_run()
+{
+	_check_caller_is_test should_run || return $?
+	if [ -n "$ONLY" ]; then
+		SUFFIX="$(echo "$ONLY" | sed -re 's/ /_/g')"
+		if [ "${BATS_TEST_NAME}" == "${BATS_TEST_NAME%%$SUFFIX}" ]; then
+			skip "Single test requested: $ONLY"
+			return 1
+		fi
+	fi
+	if [ -n "$SKIP" ]; then
+		for t in "${SKIP[@]}"; do
+			SUFFIX="$(echo "$t" | sed -re 's/ /_/g')"
+			if [ "${BATS_TEST_NAME}" != "${BATS_TEST_NAME%%$SUFFIX}" ]; then
+				skip "Skip requested by skip list: $t"
+				return 1
+			fi
+		done
+	fi
+	return 0
+}
+
+# Default setup() is to skip the test if the program under test doesn't exist or if only one test has been requested
 function setup()
 {
+	if ! should_run; then
+		return
+	fi
 	assert_fut_exe
 }
 

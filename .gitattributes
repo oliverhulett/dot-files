@@ -1,2 +1,5 @@
-* text=auto
 *.bat text eol=crlf
+*.conf text filter=ini-file-leading-space
+gitconfig* text filter=ini-file-leading-space
+*.ini text filter=ini-file-leading-space
+* text=auto
