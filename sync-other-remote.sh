@@ -28,7 +28,7 @@ echo "Synchronising branch ${BRANCH} from remote ${OTHER_REMOTE} ($(git config -
 LOCAL_FILES="$(git ls-files)"
 
 echo
-echo "Fetching latest from remotes..."
+echo "Pulling and fetching latest from remotes..."
 git fetch "${OTHER_REMOTE}" "${BRANCH}"
 
 echo
@@ -43,13 +43,17 @@ function git()
 {
 	#echo '$' git "$@"
 	echo -n '$' git
+	cnt=0
 	for a in "$@"; do
 		if [ "$a" == "--" ]; then
 			break
 		fi
 		echo -n " $a"
+		cnt=$((cnt + 1))
 	done
-	echo " -- ..."
+	if [ $cnt -lt $# ]; then
+		echo " -- ..."
+	fi
 	command git "$@"
 	#echo
 	#command git status
@@ -85,25 +89,28 @@ if [ -n "${IGNORED_FILES}" ]; then
 	fi
 fi
 
+if [ -n "$(command git status -s)" ] || [ -e "$(command git home)/.git/MERGE_HEAD" ]; then
+	echo "Autocommit: sync-other-remote from ${OTHER_REMOTE}/${BRANCH} at $(date) by $(whoami)" >"$(command git home)/.git/COMMIT_EDITMSG"
+	command git status -s >>"$(command git home)/.git/COMMIT_EDITMSG"
+
+	if [ -z "$(command git status -s | command grep -E '^.[^ ]')" ]; then
+		echo
+		echo "Committing merge..."
+		git commit -F "$(command git home)/.git/COMMIT_EDITMSG"
+
+		MSG="Done.  Sync-ed ${OTHER_REMOTE}/${BRANCH}"
+	else
+		MSG="Conflicts detected; Resolve them and then run \`git commit' to save the merge..."
+	fi
+else
+	MSG="Done.  No changes to sync from ${OTHER_REMOTE}/${BRANCH}"
+fi
+
 unset -f git
 
-echo
-echo "Done.  Sync-ed ${OTHER_REMOTE}/${BRANCH}"
 echo
 git status
 echo
 git lg
-
-if [ -n "$(git status -s)" ] || [ -e "$(git home)/.git/MERGE_HEAD" ]; then
-	echo "Autocommit: sync-other-remote from ${OTHER_REMOTE}/${BRANCH} at $(date) by $(whoami)" >"$(git home)/.git/COMMIT_EDITMSG"
-	git status -s >>"$(git home)/.git/COMMIT_EDITMSG"
-
-	if [ -z "$(git status -s | command grep -E '^.[^ ]')" ]; then
-		echo
-		echo "Committing merge..."
-		git commit -F "$(git home)/.git/COMMIT_EDITMSG"
-	else
-		echo
-		echo "Conflicts detected; Resolve them and then run \`git commit' to save the merge..."
-	fi
-fi
+echo
+echo "$MSG"

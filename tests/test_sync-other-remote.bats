@@ -418,11 +418,11 @@ function assert_checkout_clean()
 	echo "branch changes" >branch-file.txt
 	git add branch-file.txt
 	git commit -am"made branch"
-	git upstream
 
 	run "$(pwd)/${FUT}"
 	assert_failure
 	assert_checkout_clean
+	git upstream
 
 	cd "${CHECKOUT_2}/repo2" || fail "Failed to change into directory: ${CHECKOUT_2}/repo2"
 
@@ -430,6 +430,7 @@ function assert_checkout_clean()
 	run "$(pwd)/${FUT}"
 	assert_success
 	assert_checkout_clean
+	git push
 
 	# checks working tree
 	assert_files "${CHECKOUT_1}/repo1" ignored.one shared-file.txt shared-dir/not-synced.txt dir1/file1.txt branch-file.txt
@@ -439,9 +440,39 @@ function assert_checkout_clean()
 	run "$(pwd)/${FUT}"
 	assert_success
 	assert_checkout_clean
+	git upstream
 
 	assert_files "${CHECKOUT_1}/repo1" ignored.one shared-file.txt shared-dir/not-synced.txt dir1/file1.txt branch-file.txt
 	assert_files "${CHECKOUT_2}/repo2" ignored shared-file.txt shared-dir/not-synced.txt dir2/file2.txt branch-file.txt
+
+	git checkout master
+	run git merge --no-ff test_branch
+	assert_success
+
+	run "$(pwd)/${FUT}"
+	assert_success
+	assert_checkout_clean
+	git push
+
+	assert_files "${CHECKOUT_1}/repo1" ignored.one shared-file.txt shared-dir/not-synced.txt dir1/file1.txt branch-file.txt
+	assert_files "${CHECKOUT_2}/repo2" ignored shared-file.txt shared-dir/not-synced.txt dir2/file2.txt branch-file.txt
+
+	cd "${CHECKOUT_1}/repo1" || fail "Failed to change into directory: ${CHECKOUT_1}/repo1"
+	git checkout master
+
+	run "$(pwd)/${FUT}"
+	assert_success
+	assert_checkout_clean
+	HASH="$(git rev-parse HEAD)"
+
+	assert_files "${CHECKOUT_1}/repo1" ignored.one shared-file.txt shared-dir/not-synced.txt dir1/file1.txt branch-file.txt
+	assert_files "${CHECKOUT_2}/repo2" ignored shared-file.txt shared-dir/not-synced.txt dir2/file2.txt branch-file.txt
+
+	run git merge --no-ff test_branch
+	assert_success
+	assert_checkout_clean
+	# sync should include the merge, so merge should not have done anything...
+	assert_equal "$(git rev-parse HEAD)" "${HASH}"
 }
 
 @test "$FUT: avoid sync bounce" {
@@ -455,7 +486,10 @@ function assert_checkout_clean()
 	HASH_1="$(git rev-parse HEAD)"
 
 	cd "${CHECKOUT_2}/repo2" || fail "Failed to change into directory: ${CHECKOUT_2}/repo2"
-	run "$(pwd)/${FUT}"
+	git lg
+	"$(pwd)/${FUT}"
+	git lg
+	fail this
 	assert_success
 	assert_checkout_clean
 	git push
