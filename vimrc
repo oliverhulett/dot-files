@@ -116,17 +116,17 @@ noremap <leader>q :q<CR>
 noremap <leader>n :n<CR>
 
 " Leave insert mode without all that pesky wrist movement...
-inoremap <c-d> <Esc>
+inoremap <C-d> <ESC>
 
 " Shortcut to save from anywhere.
-nnoremap <c-s> :w<CR>
+nnoremap <C-s> :w<CR>
 " From visual mode, restore selection.
-vnoremap <c-s> <Esc><c-s>gv
+vnoremap <C-s> <ESC>:w<CR>gv
 " But from insert mode, don't return to insert mode.
-inoremap <c-s> <Esc><c-s>
+inoremap <C-s> <ESC>:w<CR>
 
 " Shortcut to quit with <CTRL>+Q
-nnoremap <c-q> :q<CR>
+nnoremap <C-q> :q<CR>
 
 " }}}
 
@@ -138,20 +138,20 @@ nnoremap k gk
 
 " Ctrl+j as the opposite of Shift+j;  Insert a new line without entering insert mode.
 nnoremap J mzJ`z
-nnoremap <C-J> mzi<CR><Esc>`z$
+nnoremap <C-J> mzi<CR><ESC>`z$
 
 " Ctrl+o to replicate o without entering insert mode.
-nnoremap <C-O> mzo<Esc>`z
-nnoremap <C-I> mzO<Esc>`z
+nnoremap <C-O> mzo<ESC>`z
+nnoremap <C-I> mzO<ESC>`z
 
 " }}}
 
 " Shortcuts and re-mappings - highlighting {{{
 
 " Shortcut to substitute.  In visual mode yank selection first.
-noremap <c-h> :%s/
-noremap <c-f> :%s/<c-r>///gc<Left><left><left>
-vnoremap <c-f> y:%s/<c-r>///gc<Left><left><left>
+noremap <C-h> :%s/
+noremap <C-f> :%s/<C-r>///gc<left><left><left>
+vnoremap <C-f> y:%s/<C-r>///gc<left><left><left>
 
 " Clear search highlighting on space+enter.
 noremap <silent> <leader><CR> :nohl<CR>
@@ -160,9 +160,9 @@ noremap <silent> <leader><CR> :nohl<CR>
 nnoremap gV `[v`]
 
 " Sort lines in visual mode.
-vnoremap si :sort i<cr>
-vnoremap ss :sort<cr>
-vnoremap su :sort u<cr>
+vnoremap si :sort i<CR>
+vnoremap ss :sort<CR>
+vnoremap su :sort u<CR>
 
 " Use Q for formatting the current paragraph (or selection)
 vnoremap Q gq
@@ -237,20 +237,20 @@ function! ToggleList(bufname, pfx)
 	endif
 endfunction
 
-nnoremap <silent> <leader>k :call ToggleList("Location List", 'l')<cr>
-nnoremap <leader>kk :lprev<cr>
-nnoremap <leader>kj :lnext<cr>
+nnoremap <silent> <leader>k :call ToggleList("Location List", 'l')<CR>
+nnoremap <leader>kk :lprev<CR>
+nnoremap <leader>kj :lnext<CR>
 
 " }}}
 
 " Spelling {{{
 
 " Shortcut keys to turn on spell-checking.
-nnoremap <c-l> :setlocal spell! spelllang=en_gb<cr>
-inoremap <c-l> <c-g>u<Esc>[s
+nnoremap <C-l> :setlocal spell! spelllang=en_gb<CR>
+inoremap <C-l> <C-g>u<ESC>[s
 nnoremap <leader>lk ]s
-nnoremap <leader>sj z=<c-g>u
-nnoremap <leader>a :spellrepall<cr>
+nnoremap <leader>sj z=<C-g>u
+nnoremap <leader>a :spellrepall<CR>
 
 hi SpellBad cterm=underline
 hi clear SpellBad
