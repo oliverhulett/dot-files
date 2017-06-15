@@ -10,7 +10,8 @@ venv_setup
 
 function pip_version()
 {
-	${PYVENV_HOME}/bin/pip --version 2>&1
+	"${PYVENV_HOME}"/bin/pip --version 2>&1
+	md5sum "${DOTFILES}/python_setup.txt"
 }
 
 PYSETUP_MARKER="${PYVENV_HOME}/.setup"
