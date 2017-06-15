@@ -3,18 +3,18 @@
 DF_TESTS="$(dirname "$(cd "${BATS_TEST_DIRNAME}" && pwd -P)")"
 source "${DF_TESTS}/utils.sh"
 
-PROG="bin/dev-push-all.sh"
+FUT="bin/dev-push-all.sh"
 
 function setup()
 {
-	assert_prog
+	assert_fut_exe
 	scoped_mktemp TEST_FILE_1 --suffix=.txt
 	scoped_mktemp TEST_FILE_2 --suffix=.txt
 	scoped_mktemp TEST_DIR_1 -d
 	scoped_mktemp TEST_DIR_2 -d
 }
 
-@test "$PROG: expects at least one file or directory and zero or more servers" {
+@test "$FUT: expects at least one file or directory and zero or more servers" {
 	alias ssh-list.sh="exit 1"
 	run $EXE
 	assert_success
@@ -40,7 +40,7 @@ function setup()
 	unstub rsync
 }
 
-@test "$PROG: ignores localhost" {
+@test "$FUT: ignores localhost" {
 	SSH_ARGS_FMT="${USER}@server%d rm -v '$(dirname "${TEST_FILE_1}")'  2>/dev/null; mkdir -pv '$(dirname "${TEST_FILE_1}")' "
 	RSYNC_ARGS_FMT="-zpPXrogthlcm ${TEST_FILE_1} ${USER}@server%d:'$(dirname "${TEST_FILE_1}")/'"
 	## bats-mock bug?
@@ -55,7 +55,7 @@ function setup()
 	unstub rsync
 }
 
-@test "$PROG: groups input files and directories for shipping" {
+@test "$FUT: groups input files and directories for shipping" {
 	mkdir "${TEST_DIR_1}/dir1" "${TEST_DIR_2}/dir2"
 	touch "${TEST_DIR_1}/file1" "${TEST_DIR_2}/file2" "${TEST_DIR_1}/dir1/file11" "${TEST_DIR_2}/dir2/file22"
 
@@ -76,7 +76,7 @@ function setup()
 	unstub rsync
 }
 
-@test "$PROG: additional rsync arguments" {
+@test "$FUT: additional rsync arguments" {
 	SSH_ARGS="${USER}@server1 rm -v '$(dirname "${TEST_FILE_1}")'  2>/dev/null; mkdir -pv '$(dirname "${TEST_FILE_1}")' "
 	RSYNC_ARGS="-zpPXrogthlcm --rsync-arg1 -n ${TEST_FILE_1} ${USER}@server1:'$(dirname "${TEST_FILE_1}")/'"
 

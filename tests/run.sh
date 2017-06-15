@@ -28,7 +28,7 @@ while true; do
 			shift
 			;;
 		-l | --parallel )
-			if [ -z "$2" ] || ! echo "$2" | command grep -vqE '[0-9]+' 2>/dev/null || [ $2 -le 0 ]; then
+			if [ -z "$2" ] || ! echo "$2" | command grep -vqE '[0-9]+' 2>/dev/null || [ "$2" -le 0 ]; then
 				PARALLEL=1
 			else
 				PARALLEL=$2
@@ -52,21 +52,23 @@ function checkprocs()
 }
 
 if [ $# -eq 0 ]; then
+	# shellcheck disable=SC2046
 	set -- $(get_all_tests)
 fi
 
 NUM_TESTS=$(bats --count "$@")
-if [ $# -lt ${PARALLEL} ]; then
+if [ "$#" -lt "${PARALLEL}" ]; then
 	PARALLEL=$#
 fi
 
-export BATS_TMPDIR="/tmp/bats/$(date '+%Y%m%d-%H%M%S')"
+BATS_TMPDIR="/tmp/bats/$(date '+%Y%m%d-%H%M%S')"
+export BATS_TMPDIR
 export BATS_MOCK_TMPDIR="${BATS_TMPDIR}"
 export TMPDIR="${BATS_TMPDIR}"
 rm -rf "${BATS_TMPDIR}"
 mkdir --parents "${BATS_TMPDIR}"
 
-if [ ${PARALLEL} -eq 1 ]; then
+if [ "${PARALLEL}" -eq 1 ]; then
 	bats "${ARGS}" "$@"
 else
 	echo "1..${NUM_TESTS}"
@@ -78,5 +80,6 @@ else
 		proclst="${proclst} $!"
 		testnum_offset=$((testnum_offset + numtests))
 	done
+	# shellcheck disable=SC2086
 	wait ${proclst}
 fi
