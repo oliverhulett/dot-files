@@ -1,10 +1,15 @@
 argparse
 devpi
+docker
 docker-compose
 flake8
 git+ssh://git@git.comp.optiver.com:7999/ds/git_utils.git#egg=git_utils
+invoke
 invoke==0.13.0
+ipython<6
+jupyter
 lxml<3.4
+pandas==0.19.2
 protobuf==2.5.0
 pygments
 pylint
