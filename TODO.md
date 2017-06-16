@@ -21,3 +21,6 @@ This is just a random assortment of TODO thoughts.  For more detailed TODOs, see
 * Fix less at home, grr
 * Fix less follow with `lessfilter` (or is it just `colourise.py`?)
 * `stasher.py` force cache refresh with cmdline flag.  (Or are we happy to just find and remove temp file?)
+* Git:  Organise wrapper better and test them
+    * Instead of wrappers called from aliases, make them commands (`git-*` style) and wrap git to add them to the path.
+    * Group things better:  branch management, externals management, resolution helpers, cleaning, pulling, refs and discovery?

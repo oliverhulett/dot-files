@@ -1,7 +1,11 @@
+# vim:filetype=gitconfig
+
 [include]
 path = ~/dot-files/gitconfig
+
 [user]
 name = Oliver Hulett
 email = oliver.hulett@optiver.com.au
+
 [credential]
 helper = store
