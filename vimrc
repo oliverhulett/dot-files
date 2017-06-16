@@ -371,9 +371,12 @@ endfunction
 " Per filetype indenting {{{
 
 " Python, JSON, and Yaml should use spaces instead of tabs.
+autocmd Filetype dosini setlocal noautoindent
+autocmd Filetype gitconfig setlocal noautoindent
 autocmd Filetype javascript setlocal expandtab
 autocmd Filetype json setlocal expandtab
-autocmd Filetype modula2 setlocal expandtab tabstop=2
+autocmd Filetype markdown setlocal expandtab
+autocmd Filetype modula2 setlocal expandtab
 autocmd Filetype python setlocal expandtab
 autocmd Filetype xml setlocal expandtab tabstop=2
 autocmd Filetype xsd setlocal expandtab tabstop=2
