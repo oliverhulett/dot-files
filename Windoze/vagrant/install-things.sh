@@ -29,7 +29,7 @@ echo "Installing some things I don't want to docker all the time..."
 		openssl-libs openssl-static java-1.8.0-openjdk-devel java-1.8.0-openjdk \
 		python-devel python-pip libxml2-devel libxslt-devel gmp-devel \
 		cmake ccache distcc protobuf protobuf-c protobuf-python protobuf-compiler valgrind clang-devel clang clang-analyzer \
-		wireshark cabal-install
+		wireshark cabal-install pandoc
 
 	# Install global things only; i.e. Things that other programs (e.g. vim) will use.
 	PIP_CONFIG_FILE="${HOME}/dot-files/pip.conf" pip install -U pip
