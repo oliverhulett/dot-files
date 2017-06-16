@@ -98,19 +98,22 @@ if [ -n "$(command git status -s)" ] || [ -e "$(command git home)/.git/MERGE_HEA
 		echo "Committing merge..."
 		git commit -F "$(command git home)/.git/COMMIT_EDITMSG"
 
+		SHOW=show
 		MSG="Done.  Sync-ed ${OTHER_REMOTE}/${BRANCH}"
 	else
+		SHOW=status
 		MSG="Conflicts detected; Resolve them and then run \`git commit' to save the merge..."
 	fi
 else
+	SHOW=show
 	MSG="Done.  No changes to sync from ${OTHER_REMOTE}/${BRANCH}"
 fi
 
 unset -f git
 
 echo
-git status
-echo
 git lg
+echo
+git $SHOW
 echo
 echo "$MSG"
