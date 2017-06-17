@@ -1,7 +1,6 @@
 # vim:filetype=gitconfig
 
 [alias]
-when-added = "!f() { : git log ; follow=; if [ $# -le 1 ]; then follow=\"--follow\"; fi; git log $follow --diff-filter=A --find-renames=40% -- \"$@\"; }; cd \"$GIT_PREFIX\" && f"
 alias = config --get-regexp alias
 branches = branch -avv
 cleanall = "!f() { ~/.git_wrappers/cleanall.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
@@ -16,13 +15,13 @@ gresolve = "!f() { : git mergetool ; git mergetool --tool=kdiff3 -y \"$@\" && ec
 home = "!f() { pwd -P; }; f" ## Want to execute from the top level, not GIT_PREFIX
 ignore = "!f() { for i in \"$@\"; do echo \"$i\" >>.gitignore; done; echo \"$(sort -u .gitignore)\" >.gitignore; sed -re '/^$/d' -i .gitignore; git add .gitignore; }; cd \"$GIT_PREFIX\" && f"
 lg = "!f() { ~/.git_wrappers/log.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
-mergeflict = "!f() { : git checkout ; git push; git pull --all && git fetch origin $1 && git merge FETCH_HEAD; }; f" ## Want to execut from top level, not GIT_PREFIX
+mergeflict = "!f() { : git checkout ; git push; git pull --all && git fetch origin $1 && git merge FETCH_HEAD; }; f" ## Want to execute from top level, not GIT_PREFIX
 mine = "!f() { : git for-each-ref; git branch -vv; git for-each-ref --sort=-committerdate --format='#%(committerdate)#%(refname)#%(subject)' refs/remotes/origin/$(whoami) \"$@\" | column -ts'#'; }; f"
 mkbranch = "!f() { ~/.git_wrappers/mkbranch.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
-mvbranch = "!f() { : git checkout ; git branch -m \"$1\" \"$2\" && git push origin :\"$1\" && git push --set-upstream origin \"$2\"; }; f" ## Want to execut from top level, not GIT_PREFIX
+mvbranch = "!f() { : git checkout ; git branch -m \"$1\" \"$2\" && git push origin :\"$1\" && git push --set-upstream origin \"$2\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 new = "!f() { ~/.git_wrappers/new.sh \"$@\"; }; cd \"$GIT_PREFIX\" && f"
 pin = "!f() { ~/.git_wrappers/pin_externals.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
-pullb = "!f() { : git pull; git fetch --all --prune --recurse-submodules; git pull --prune --recurse-submodules \"$@\"; git cleanbranches; }; f" ## Want to execute from top level, not GIT_PREFIX
+pullb = "!f() { : git pull; git fetch --all; git pull --prune --recurse-submodules \"$@\"; git cleanbranches; }; f" ## Want to execute from top level, not GIT_PREFIX
 pushtags = push --tags
 refs = for-each-ref refs/remotes/origin
 remotes = remote -v
@@ -44,6 +43,7 @@ update = "!f() { ~/.git_wrappers/update.sh \"$@\"; }; f" ## Want to execute from
 upgrade = "!f() { ~/.git_wrappers/update_externals.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 upstream = "!f() { remote=\"origin\"; if [ -n \"$1\" ]; then remote=\"$1\"; fi; git push --set-upstream \"$remote\" $(git this); }; f"
 when = "!f() { git for-each-ref --sort=-committerdate --format='%(authorname)#%(committerdate)#%(refname)#%(subject)' refs/remotes/origin/ \"$@\" | column -ts'#'; }; f"
+when-added = "!f() { : git log ; follow=; if [ $# -le 1 ]; then follow=\"--follow\"; fi; git log $follow --diff-filter=A --find-renames=40% -- \"$@\"; }; cd \"$GIT_PREFIX\" && f"
 which = "!f() { for i in \"$@\"; do echo -n \"$i is: \"; git config alias.$i; done; }; f"
 who = "!f() { git for-each-ref --sort=-authorname --format='%(authorname)#%(committerdate)#%(refname)#%(subject)' refs/remotes/origin/ \"$@\" | column -ts'#'; }; f"
 

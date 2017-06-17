@@ -97,7 +97,7 @@ EOF
 		 "	continued"
 }
 
-@test "$FUT: git ctrl+Z; discard, unstage, undo-commit" {
+@test "$FUT: git ctrl+z; discard, unstage, undo-commit" {
 	cd "${CHECKOUT}/repo" || fail "Failed to change into directory: ${CHECKOUT}/repo"
 
 	echo "text" >file
@@ -108,7 +108,7 @@ EOF
 	echo "more text" >>file
 	git commit -am"new commit"
 	assert_status ""
-	assert test "$(git rev-parse HEAD)" !=  "${HASH}"
+	assert test "$(git rev-parse HEAD)" != "${HASH}"
 
 	git undo-commit
 	assert_status " M file"
@@ -136,8 +136,14 @@ EOF
 }
 
 @test "$FUT: git ignore" {
+	if command which git-ignore >/dev/null 2>/dev/null; then
+		skip "\`git ignore' points to an executable, so my alias won't work."
+		return
+	fi
 	cd "${CHECKOUT}/repo" || fail "Failed to change into directory: ${CHECKOUT}/repo"
 
+	git which ignore
+	echo git ignore '*.txt'
 	git ignore '*.txt'
 	assert_status "A  .gitignore"
 	assert_contents .gitignore '*.txt'
