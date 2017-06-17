@@ -1,11 +1,17 @@
 This is just a random assortment of TODO thoughts.  For more detailed TODOs, see the files in the `todo/` directory.
 
 * Add README.md and CHANGELOG.md.
+* The F is wrong with my colours on Ubuntu?
+* Docker/drone the tests to run on a Centos7 image, a Centos5 image, and a few Ubuntu images.
 * Organise all the files better.
+* Create TODO format and helpers for adding TODOs in that format.
 * Vim tip-of-the-day style thing.  Use the `<leader>/` `Cheat40` plugin to help me learn Vim.
     * Start with `Cheat40` open (but not focussed, change the focus/dismiss helper message at the top to indicate how to get rid of it when it's not focussed.).
     * Dynamically assign a random hint or tip to be shown at the top of the help window.
     * Add the shortcut (`<leader>/`) as a hint in the status bar.
+    * Add cheat40 lists and custom help
+    * Create hint of the day plugin.  Turn into context aware hint plugin.
+    * Maybe add help helpers to cheat40 plugin.
 * Where has my spelling highlighting gone in Vim?
 * Vim: last command persists in the command line, can I make it decay or change colour or something when the command finishes?
 * Vim: Sort out custom mappings.  Window navigation, quick-list and location-list usage and navigation, spelling and syntax error navigation...
@@ -23,4 +29,10 @@ This is just a random assortment of TODO thoughts.  For more detailed TODOs, see
 * `stasher.py` force cache refresh with cmdline flag.  (Or are we happy to just find and remove temp file?)
 * Git:  Organise wrapper better and test them
     * Instead of wrappers called from aliases, make them commands (`git-*` style) and wrap git to add them to the path.
+    	* Git executable becomes wrapper in bin/ that sets PATH and calls git.
+    	* Executables for git functionality in bin/git-bin.
+    	* Git "aliases" become symlinks or (wrappers with default args/arg handling and help) to executables in git-bin/.
+    	* How to do command line completion?
+    	* How to do man pages?
     * Group things better:  branch management, externals management, resolution helpers, cleaning, pulling, refs and discovery?
+    * merge and branch help, don't merge til changelog is updated.
