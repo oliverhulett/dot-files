@@ -9,7 +9,7 @@ CURR_DIR="$(basename -- "$(pwd)")"
 
 function print_help()
 {
-	echo "git mkbranch <NEW_TICKET> [<NEW_DESCR>]"
+	echo "git mkbranch [-f] <NEW_TICKET> [<NEW_DESCR>]"
 	exit 1
 }
 
@@ -17,16 +17,26 @@ if [ "$1" == "-h" -o "$1" == "--help" -o "$1" == "-?" ]; then
 	print_help
 fi
 
-NEW_TICKET="$(echo $1 | cut -d_ -f1)"
+FEATURE="false"
+if [ "$1" == "-f" ]; then
+	FEATURE="true"
+	shift
+fi
+
+NEW_TICKET="$(echo "$1" | cut -d_ -f1)"
 if [ "$NEW_TICKET" != "$1" ]; then
-	NEW_DESCR="$(echo $1 | cut -d_ -f2-)"
+	NEW_DESCR="$(echo "$1" | cut -d_ -f2-)"
 else
 	NEW_DESCR="$2"
 	shift
 fi
 shift
 
-NEW_BRANCH="$USER/$NEW_TICKET"
+if [ "$FEATURE" == "true" ]; then
+	NEW_BRANCH="feature/$NEW_TICKET"
+else
+	NEW_BRANCH="$USER/$NEW_TICKET"
+fi
 if [ -n "$NEW_DESCR" ]; then
 	NEW_BRANCH="${NEW_BRANCH}_${NEW_DESCR}"
 fi
@@ -66,7 +76,7 @@ else
 	sleep 1
 fi
 
-git pull --all
+git pullb
 git fetch origin ${CURR_BRANCH}
 
 ( cd .. && git new-workdir "${MASTER_DIR}" "${NEW_DIR}" "${CURR_BRANCH}" )
@@ -89,7 +99,9 @@ if [ "$#" -gt 0 ]; then
 	ln -sv ../.[a-z]* ./ 2>/dev/null
 fi
 rm .project 2>/dev/null
-cp ../.project ./ 2>/dev/null || cp ../master/.project ./ 2>/dev/null
+if [ -f ../.project ] || [ -f ../master/.project ]; then
+	cp ../.project ./ 2>/dev/null || cp ../master/.project ./ 2>/dev/null
+fi
 if [ -f .project ]; then
 	sed -re 's!@master</name>!@'"${NEW_TICKET}_${NEW_DESCR}"'</name>!' .project -i 2>/dev/null
 fi
