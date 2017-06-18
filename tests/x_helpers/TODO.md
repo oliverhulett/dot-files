@@ -19,6 +19,7 @@ Things about bats and bats plugin's that I'd like to fix and/or change...
 
 * Ability to run single test from a bats file.  Maybe `bats file.bats:<test number>`?  Might also need a --list feature to determine the test numbers.
 * Ability to run tests in random order (to ensure no state is carried over.)  Can this work with the above feature?  If so how?
+* Report summary of tests passed, failed, and skipped.  Also report per fixture/file.  Maybe needs a --verbose flag (or a few --verbose flag levels.)
 * Report timing results and per suite timing results.
 * `fail` (via `batslib_err`) don't handle escape characters in arguments, should print with `echo -e`.
 * `assert_output` and `assert_line` should quote expected and actual output when printing so we can see whitespace differences.

@@ -1,5 +1,10 @@
 #!/bin/bash
 
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+DOTFILES="$(dirname "${HERE}")"
+PATH="${DOTFILES}/bin:$PATH"
+export HERE DOTFILES PATH
+
 OPTS=$(getopt -o "chptvl:" --long "count,help,pretty,tap,version,parallel:" -n "$(basename -- "$0")" -- "$@")
 es=$?
 if [ $es != 0 ]; then

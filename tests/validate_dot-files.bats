@@ -58,31 +58,36 @@ DF_LISTS_GITHUB=(
 
 @test "Validate: required files exist" {
 	declare -a FILES EXES
-	if [ "$(git config --get remote.origin.url)" == "ssh://git@git.comp.optiver.com:7999/~olihul/dot-files.git" ]; then
-		FILES=(
-			"${DF_LISTS[@]}"
-			"${DF_FILES[@]}"
-			"${DF_LISTS_OPTIVER[@]}"
-			"${DF_FILES_OPTIVER[@]}"
-		)
-		EXES=(
-			"${DF_EXES[@]}"
-			"${DF_EXES_OPTIVER[@]}"
-		)
-	elif [ "$(git config --get remote.origin.url)" == "https://github.com/oliverhulett/dot-files.git" ]; then
-		FILES=(
-			"${DF_LISTS[@]}"
-			"${DF_FILES[@]}"
-			"${DF_LISTS_GITHUB[@]}"
-			"${DF_FILES_GITHUB[@]}"
-		)
-		EXES=(
-			"${DF_EXES[@]}"
-			"${DF_EXES_GITHUB[@]}"
-		)
-	else
-		fail "Unexpected git remote url"
-	fi
+	case "$(git config --get remote.origin.url)" in
+		"ssh://git@git.comp.optiver.com:7999/~olihul/dot-files.git" )
+			FILES=(
+				"${DF_LISTS[@]}"
+				"${DF_FILES[@]}"
+				"${DF_LISTS_OPTIVER[@]}"
+				"${DF_FILES_OPTIVER[@]}"
+			)
+			EXES=(
+				"${DF_EXES[@]}"
+				"${DF_EXES_OPTIVER[@]}"
+			)
+			;;
+		"https://github.com/oliverhulett/dot-files.git" | \
+		"git@github.com:oliverhulett/dot-files.git" )
+			FILES=(
+				"${DF_LISTS[@]}"
+				"${DF_FILES[@]}"
+				"${DF_LISTS_GITHUB[@]}"
+				"${DF_FILES_GITHUB[@]}"
+			)
+			EXES=(
+				"${DF_EXES[@]}"
+				"${DF_EXES_GITHUB[@]}"
+			)
+			;;
+		* )
+			fail "Unexpected git remote url"
+			;;
+	esac
 	for f in "${FILES[@]}"; do
 		if [ ! -e "${DOT_FILES}/$f" ]; then
 			fail "Expected file does not exist: $f"
@@ -100,19 +105,24 @@ DF_LISTS_GITHUB=(
 
 @test "Validate: lists are sorted and unique" {
 	declare -a LISTS
-	if [ "$(git config --get remote.origin.url)" == "ssh://git@git.comp.optiver.com:7999/~olihul/dot-files.git" ]; then
-		LISTS=(
-			"${DF_LISTS[@]}"
-			"${DF_LISTS_OPTIVER[@]}"
-		)
-	elif [ "$(git config --get remote.origin.url)" == "https://github.com/oliverhulett/dot-files.git" ]; then
-		LISTS=(
-			"${DF_LISTS[@]}"
-			"${DF_LISTS_GITHUB[@]}"
-		)
-	else
-		fail "Unexpected git remote url"
-	fi
+	case "$(git config --get remote.origin.url)" in
+		"ssh://git@git.comp.optiver.com:7999/~olihul/dot-files.git" )
+			LISTS=(
+				"${DF_LISTS[@]}"
+				"${DF_LISTS_OPTIVER[@]}"
+			)
+			;;
+		"https://github.com/oliverhulett/dot-files.git" | \
+		"git@github.com:oliverhulett/dot-files.git" )
+			LISTS=(
+				"${DF_LISTS[@]}"
+				"${DF_LISTS_GITHUB[@]}"
+			)
+			;;
+		* )
+			fail "Unexpected git remote url"
+			;;
+	esac
 	for f in "${LISTS[@]}"; do
 		if [ "$(command cat "${DOT_FILES}/$f")" != "$(command cat "${DOT_FILES}/$f" | sort -u)" ]; then
 			fail "List file is not sorted or not unique: $f"
@@ -144,13 +154,18 @@ DF_LISTS_GITHUB=(
 
 @test "Validate: dot-files exist" {
 	declare -a FILES
-	if [ "$(git config --get remote.origin.url)" == "ssh://git@git.comp.optiver.com:7999/~olihul/dot-files.git" ]; then
-		FILES=( dot-files dot-files.3100-centos7dev )
-	elif [ "$(git config --get remote.origin.url)" == "https://github.com/oliverhulett/dot-files.git" ]; then
-		FILES=( dot-files.loki dot-files.odysseus dot-files.prometheus )
-	else
-		fail "Unexpected git remote url"
-	fi
+	case "$(git config --get remote.origin.url)" in
+		"ssh://git@git.comp.optiver.com:7999/~olihul/dot-files.git" )
+			FILES=( dot-files dot-files.3100-centos7dev )
+			;;
+		"https://github.com/oliverhulett/dot-files.git" | \
+		"git@github.com:oliverhulett/dot-files.git" )
+			FILES=( dot-files.loki dot-files.odysseus dot-files.prometheus )
+			;;
+		* )
+			fail "Unexpected git remote url"
+			;;
+	esac
 
 	shopt -s nullglob
 	for l in "${FILES[@]}"; do
