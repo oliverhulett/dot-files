@@ -19,6 +19,9 @@ This is just a random assortment of TODO thoughts.  For more detailed TODOs, see
 * Vim: Change auto-complete shortcut from `<C-P>` to `<leader><Tab>` or something easy like that.
 * Vim: Flash new cursor position on jump.
 * Vim: Highlight focussed window.
+* Crontab tests and better organisation of those tasks.
+	* Setup as discussed in notes
+	* How to have dependent/ordered tasks?
 * General: Is it possible to have core files named to include their timestamp, rather than just process ID?
 * TODO cmd to add to this ad-hoc todo list.
 * Vim: Command/shortcut to add to help/`Cheat40` list.  Helps, prompts, or automates formatting and fields.
