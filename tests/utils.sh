@@ -27,7 +27,7 @@ function assert_fut()
 {
 	_check_caller_is_test assert_fut || return $?
 	declare -g FUT_PATH
-	FUT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && cd "$(git home)" && echo "$(git home)/$(git ls-files -- "${FUT}")")"
+	FUT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && cd "$(command git home)" && echo "$(command git home)/$(command git ls-files -- "${FUT}")")"
 	if [ ! -f "${FUT_PATH}" ]; then
 		skip "Failed to find file under test"
 		return 1

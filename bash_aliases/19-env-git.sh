@@ -41,3 +41,10 @@ if type -t __git_ps1 >/dev/null 2>&1; then
 		export PROMPT_FOO="${PROMPT_FOO}"'\[$(tput bold)\]\[$(tput setaf 4)\]$(__custom_git_ps1 2>/dev/null)\[$(tput sgr0)\]\[$(tput dim)\]'
 	fi
 fi
+
+function git()
+{
+	HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+	DOTFILES="$(dirname "${HERE}")"
+	PATH="${DOTFILES}/bin/git-bin:${PATH}" "$@"
+}
