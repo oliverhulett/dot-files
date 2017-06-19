@@ -1,10 +1,26 @@
 This is just a random assortment of TODO thoughts.  For more detailed TODOs, see the files in the `todo/` directory.
 
 * Add README.md and CHANGELOG.md.
-* The F is wrong with my colours on Ubuntu?
-* Docker/drone the tests to run on a Centos7 image, a Centos5 image, and a few Ubuntu images.
-* Organise all the files better.
+* I had an idea about creating git feature branches...  Create a todo/task list for the feature branch that gets turned into changelog details.  Wrap feature branch creation and merging to create todo/task list and merge into changelog.  Basically enforce/helpers for git workflow built into the branch/merge commands.
 * Create TODO format and helpers for adding TODOs in that format.
+* TODO cmd to add to this ad-hoc todo list.
+* Consolidate all of the TODOs, they're too hard to keep track of when distributed.
+    * Also, organise them in some way.
+* What is wrong with my colours on Ubuntu?
+* Docker/drone the tests to run on a Centos7 image, a Centos5 image, and a few Ubuntu images.
+    * Make sure tests run against working directory of dot-files, not against installed version.
+* Organise all the files better.
+* Git pull with sync-other-remote.  Pull does a merge that has conflicts as it replays sync-other-remote commits.  Is the answer just to push first?  So we should push from the sync-other-remote script?
+* Git:  Organise wrapper better and test them
+    * Instead of wrappers called from aliases, make them commands (`git-*` style) and wrap git to add them to the path.
+        * Git executable becomes wrapper in bin/ that sets PATH and calls git.
+        * Executables for git functionality in bin/git-bin.
+        * Git "aliases" become symlinks or (wrappers with default args/arg handling and help) to executables in git-bin/.
+        * How to do command line completion?
+        * How to do man pages?
+    * Group things better:  branch management, externals management, resolution helpers, cleaning, pulling, refs and discovery?
+    * merge and branch help, don't merge til changelog is updated.
+* Plan vim plugin
 * Vim tip-of-the-day style thing.  Use the `<leader>/` `Cheat40` plugin to help me learn Vim.
     * Start with `Cheat40` open (but not focussed, change the focus/dismiss helper message at the top to indicate how to get rid of it when it's not focussed.).
     * Dynamically assign a random hint or tip to be shown at the top of the help window.
@@ -13,6 +29,7 @@ This is just a random assortment of TODO thoughts.  For more detailed TODOs, see
     * Create hint of the day plugin.  Turn into context aware hint plugin.
     * Maybe add help helpers to cheat40 plugin.
 * Where has my spelling highlighting gone in Vim?
+* Why aren't vimrc changes synced from work to home?
 * Vim: last command persists in the command line, can I make it decay or change colour or something when the command finishes?
 * Vim: Sort out custom mappings.  Window navigation, quick-list and location-list usage and navigation, spelling and syntax error navigation...
 * Vim: Markdown syntax nests lists by default, very annoying.
@@ -20,22 +37,12 @@ This is just a random assortment of TODO thoughts.  For more detailed TODOs, see
 * Vim: Flash new cursor position on jump.
 * Vim: Highlight focussed window.
 * Crontab tests and better organisation of those tasks.
-	* Setup as discussed in notes
-	* How to have dependent/ordered tasks?
+    * Setup as discussed in notes
+    * How to have dependent/ordered tasks?
 * General: Is it possible to have core files named to include their timestamp, rather than just process ID?
-* TODO cmd to add to this ad-hoc todo list.
 * Vim: Command/shortcut to add to help/`Cheat40` list.  Helps, prompts, or automates formatting and fields.
 * less: Stay in less on short files, but also keep short files on screen after exit?  Do I still want that one?
 * Colourise (pygmentise) `cat`, `head`, and `tail` output.  Need flag to disable?  detect output?
 * Fix less at home, grr
 * Fix less follow with `lessfilter` (or is it just `colourise.py`?)
 * `stasher.py` force cache refresh with cmdline flag.  (Or are we happy to just find and remove temp file?)
-* Git:  Organise wrapper better and test them
-    * Instead of wrappers called from aliases, make them commands (`git-*` style) and wrap git to add them to the path.
-    	* Git executable becomes wrapper in bin/ that sets PATH and calls git.
-    	* Executables for git functionality in bin/git-bin.
-    	* Git "aliases" become symlinks or (wrappers with default args/arg handling and help) to executables in git-bin/.
-    	* How to do command line completion?
-    	* How to do man pages?
-    * Group things better:  branch management, externals management, resolution helpers, cleaning, pulling, refs and discovery?
-    * merge and branch help, don't merge til changelog is updated.
