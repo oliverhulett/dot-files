@@ -1,7 +1,6 @@
 This is just a random assortment of TODO thoughts.  For more detailed TODOs, see the files in the `todo/` directory.
 
 * Add README.md and CHANGELOG.md.
-* I had an idea about creating git feature branches...  Create a todo/task list for the feature branch that gets turned into changelog details.  Wrap feature branch creation and merging to create todo/task list and merge into changelog.  Basically enforce/helpers for git workflow built into the branch/merge commands.
 * Create TODO format and helpers for adding TODOs in that format.
 * TODO cmd to add to this ad-hoc todo list.
 * Consolidate all of the TODOs, they're too hard to keep track of when distributed.
@@ -10,7 +9,7 @@ This is just a random assortment of TODO thoughts.  For more detailed TODOs, see
 * Docker/drone the tests to run on a Centos7 image, a Centos5 image, and a few Ubuntu images.
     * Make sure tests run against working directory of dot-files, not against installed version.
 * Organise all the files better.
-* Git pull with sync-other-remote.  Pull does a merge that has conflicts as it replays sync-other-remote commits.  Is the answer just to push first?  So we should push from the sync-other-remote script?
+
 * Git:  Organise wrapper better and test them
     * Instead of wrappers called from aliases, make them commands (`git-*` style) and wrap git to add them to the path.
         * Git executable becomes wrapper in bin/ that sets PATH and calls git.
@@ -20,6 +19,12 @@ This is just a random assortment of TODO thoughts.  For more detailed TODOs, see
         * How to do man pages?
     * Group things better:  branch management, externals management, resolution helpers, cleaning, pulling, refs and discovery?
     * merge and branch help, don't merge til changelog is updated.
+    * Add a command to rebase all from master.
+    * Update git-which to work with git-bin.
+    * Fix following two things also, with tests.
+* Git pull with sync-other-remote.  Pull does a merge that has conflicts as it replays sync-other-remote commits.  Is the answer just to push first?  So we should push from the sync-other-remote script?
+* I had an idea about creating git feature branches...  Create a todo/task list for the feature branch that gets turned into changelog details.  Wrap feature branch creation and merging to create todo/task list and merge into changelog.  Basically enforce/helpers for git workflow built into the branch/merge commands.
+
 * Plan vim plugin
 * Vim tip-of-the-day style thing.  Use the `<leader>/` `Cheat40` plugin to help me learn Vim.
     * Start with `Cheat40` open (but not focussed, change the focus/dismiss helper message at the top to indicate how to get rid of it when it's not focussed.).
@@ -36,11 +41,12 @@ This is just a random assortment of TODO thoughts.  For more detailed TODOs, see
 * Vim: Change auto-complete shortcut from `<C-P>` to `<leader><Tab>` or something easy like that.
 * Vim: Flash new cursor position on jump.
 * Vim: Highlight focussed window.
+* Vim: Command/shortcut to add to help/`Cheat40` list.  Helps, prompts, or automates formatting and fields.
+
 * Crontab tests and better organisation of those tasks.
     * Setup as discussed in notes
     * How to have dependent/ordered tasks?
 * General: Is it possible to have core files named to include their timestamp, rather than just process ID?
-* Vim: Command/shortcut to add to help/`Cheat40` list.  Helps, prompts, or automates formatting and fields.
 * less: Stay in less on short files, but also keep short files on screen after exit?  Do I still want that one?
 * Colourise (pygmentise) `cat`, `head`, and `tail` output.  Need flag to disable?  detect output?
 * Fix less at home, grr
