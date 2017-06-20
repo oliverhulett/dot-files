@@ -1210,7 +1210,6 @@ pyliblzma-0.5.3-11.el7.x86_64
 pyparsing-1.5.6-9.el7.noarch
 pyparted-3.9-13.el7.x86_64
 PyQt4-4.10.1-13.el7.x86_64
-pyside-tools-0.2.13-9.el7.x86_64
 pytalloc-2.1.2-1.el7.x86_64
 python-2.7.5-34.el7.x86_64
 python2-rsa-3.3-2.el7.noarch
@@ -1255,7 +1254,6 @@ python-pyasn1-0.1.6-2.el7.noarch
 python-pyblock-0.53-6.el7.x86_64
 python-pycurl-7.19.0-17.el7.x86_64
 python-pygments-1.4-9.el7.noarch
-python-pyside-1.2.2-4.el7.x86_64
 python-pyudev-0.15-7.el7.noarch
 python-requests-2.6.0-1.el7_1.noarch
 python-scapy-2.3.3-1.noarch
@@ -1279,7 +1277,6 @@ qt3-3.3.8b-51.el7.x86_64
 qt-4.8.5-11.el7.x86_64
 qt-mysql-4.8.5-11.el7.x86_64
 qt-settings-19-23.5.el7.centos.noarch
-qtwebkit-2.3.4-6.el7.x86_64
 qt-x11-4.8.5-11.el7.x86_64
 quota-4.01-11.el7.x86_64
 quota-nls-4.01-11.el7.noarch
@@ -1358,7 +1355,6 @@ sgpio-1.2.0.10-13.el7.x86_64
 shadow-utils-4.1.5.1-18.el7.x86_64
 shared-desktop-ontologies-0.11.0-2.el7.noarch
 shared-mime-info-1.1-9.el7.x86_64
-shiboken-libs-1.2.2-3.el7.x86_64
 sil-abyssinica-fonts-1.200-6.el7.noarch
 sil-nuosu-fonts-2.1.1-5.el7.noarch
 sil-padauk-fonts-2.8-5.el7.noarch
