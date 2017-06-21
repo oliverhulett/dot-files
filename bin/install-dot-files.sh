@@ -17,7 +17,7 @@ function run()
 	"$@"
 }
 
-run dev-push-all.sh --delete "${SERVERS[@]/%/:}" "${FILES[@]}"
+run dev-push-all.sh --delete --exclude='backups/' "${SERVERS[@]/%/:}" "${FILES[@]}"
 
 for server in "${SERVERS[@]}"; do
 	command ssh ${server} 'git clone ssh://git@git.comp.optiver.com:7999/~olihul/dot-files.git ${HOME}/dot-files 2>/dev/null; cd ${HOME}/dot-files && git pull 2>/dev/null'

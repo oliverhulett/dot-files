@@ -1,9 +1,0 @@
-../../bin/bats
-../../bin/colourise.py
-../../bin/docker-list.sh
-../../bin/relpath.sh
-../../bin/sedrename.sh
-../../bin/setperms.sh
-../../bin/ssh-list.sh
-../../bin/ssh-ping.sh
-../../bin/ssh.sh

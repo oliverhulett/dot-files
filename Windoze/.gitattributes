@@ -1,4 +1,2 @@
 * text=crlf
 vagrant/*.sh text eol=lf
-sync2home/*.sh text eol=lf
-sync2home/files.* text eol=lf

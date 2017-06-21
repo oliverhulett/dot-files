@@ -12,5 +12,8 @@ pandas==0.19.2
 protobuf==2.5.0
 pygments
 pylint
+pyomd
+pyomd_numpy
+sphinx
 stashy
 twisted
