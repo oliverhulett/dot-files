@@ -20,7 +20,7 @@ function expand_swd_job()
 	PROD_REPO="/home/`whoami`/StagingCentralizedRepo"
 	if [ -e ${PROD_REPO} ]; then
 		prefix="${COMP_WORDS[COMP_CWORD]}"
-		colos=`ls ${PROD_REPO} | command grep -v -E "(bin|conf|test)"`
+		colos=`command ls ${PROD_REPO} | command grep -v -E '(bin|conf|test)'`
 		COMPREPLY=( $(compgen -W "${colos}" -- ${prefix}) )
 	fi
 }
