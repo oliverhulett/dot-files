@@ -11,8 +11,9 @@ MAILTO=olihul@optiver.com.au
 ## Run backups
 50 18 * * * ${HOME}/dot-files/backup.sh
 ## Port dot-files home.
-00 19 * * 1-5 cd ${HOME}/repo/oliverhulett/dot-files/master && git pullb && ./sync-other-remote.sh && git push
-00 08 * * 1-5 cd ${HOME}/repo/olihul/dot-files/master && git pullb && ./sync-other-remote.sh && git push
+00 19 * * 1-5 cd ${HOME}/repo/oliverhulett/dot-files/master && git commit --allow-empty -aqm "Autocommit: $(date -R)\n$(git status --short)" && git pullb && git push --quiet --all
+05 19 * * 1-5 cd ${HOME}/repo/oliverhulett/dot-files/master && git pullb && ./sync-other-remote.sh && git push --quiet --all
+00 08 * * 1-5 cd ${HOME}/repo/olihul/dot-files/master && git pullb && ./sync-other-remote.sh && git push --quiet --all
 
 ## Install dot-files to development machines.  Sleep for 10 so that the backup script has had a chance to commit the latest dot-files.
 @daily PATH="${HOME}/dot-files/bin:${PATH}" ${HOME}/dot-files/bin/install-dot-files.sh >/dev/null 2>/dev/null
@@ -39,4 +40,4 @@ MAILTO=olihul@optiver.com.au
 ## Python virtualenv should be refreshed regularly.
 @daily source "${HOME}/.bash_aliases/09-profile.d-pyvenv.sh" && rm -rf "${PYVENV_HOME}" && ${HOME}/dot-files/bin/python_setup.sh
 
-## Backed up at Wed Jun 21 18:50:02 AEST 2017 by olihul
+## Backed up at Thu Jun 22 18:50:06 AEST 2017 by olihul

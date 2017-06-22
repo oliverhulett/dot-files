@@ -60,7 +60,7 @@ else
 	GREP_ARGS="--exclude='.svn' --exclude='.git' --color=always"
 	GREP_ARGS_NC="--exclude='.svn' --exclude='.git' --color=never"
 fi
-alias grep="command grep ${GREP_ARGS} -n"
+alias grep="command grep ${GREP_ARGS} -nT"
 alias ngrep="command grep ${GREP_ARGS_NC}"
 
 alias rsync-a='rsync -zvpPAXrogthlm'
