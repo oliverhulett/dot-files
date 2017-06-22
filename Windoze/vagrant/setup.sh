@@ -80,7 +80,9 @@ rsync -rAXog --update ${HOME}/etc/backups/${HOME}/ ${HOME}/
 yum install -y yakuake jq docker
 sudo systemctl restart docker.service
 
-${HOME}/dot-files/Windoze/vagrant/install-things.sh
+su -c "${HOME}/dot-files/Windoze/vagrant/install-things.sh" ${USER} &
+disown -h
+disown
 
 echo "Restarting KDE to pick up restored backups..."
 sudo systemctl restart gdm.service
