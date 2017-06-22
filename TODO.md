@@ -13,9 +13,14 @@ This is just a random assortment of TODO thoughts.  For more detailed TODOs, see
 * Want to be able to add to TODOs from any checkout and sync them so they can be read from any checkout (and any remote).
 
 * What is wrong with my colours on Ubuntu?
+* ssh.sh hard-codes cloning from optiver repo, be smarter about that.  Since ssh.sh is checked in, can we discover and use 'origin'?  What if we're SSH-ing from a machine where ssh.sh is a copy not a checkout (but to a machine where we could clone dot-files?)
 * Docker/drone the tests to run on a Centos7 image, a Centos5 image, and a few Ubuntu images.
     * Make sure tests run against working directory of dot-files, not against installed version.
 * Organise all the files better.
+* Discovery mechanism for including environment setups.
+    * Sourcing .../09-env-proxy.sh is a common pattern in scripts that need to fetch stuff from the internet.  But they don't all do it in the same way (e.g. some source ${HOME}/.bash_aliases/... and some source $(dirname "${BASH_SOURCE[0]}")/bash_aliases)  Is there a "correct" way (testability) or should it depend on what they're doing?
+    * Is there an easier way of including these bits that will provide a central place to update if we move the files?  Or should be just be testing file location?
+    * Whatever it is has to work for scripts launched by a fully setup bash prompt and from a "clean" environment.
 
 * Test/Task/CI idea
     * Start with a directory hierarcy.
@@ -73,3 +78,12 @@ This is just a random assortment of TODO thoughts.  For more detailed TODOs, see
 * Fix less at home, grr
 * Fix less follow with `lessfilter` (or is it just `colourise.py`?)
 * `stasher.py` force cache refresh with cmdline flag.  (Or are we happy to just find and remove temp file?)
+
+* Bash mechanism of one-shot commands and idempotent commands.
+    * Want something in the bash prompt, or similar, that provides a way to set some machine state.  It'll need to be idempontent, i.e. check for state, perform action of state is not correct.  The check for state has to be super fast if its going to happen on every prompt.  Alternatively, remove the command after successful execution.
+    * Should be useful for (among others):
+        * python_setup
+        * "Vagrant" installs
+        * Tab completion/Program specific environment magic
+            * I'm thinking of a way to "automagically" install tab-completion and other program specific environment magic on first use of a program.  Basically, on first execution, look for some program specific setup in .bash_something and execute/source it.
+            * Tab completion, at least, may best be hooked into the global tab completion mechanism, if that is possible.
