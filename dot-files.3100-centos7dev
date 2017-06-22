@@ -15,7 +15,6 @@ bash_aliases/29-completion-docker_custom.sh .bash_aliases/29-completion-docker_c
 bash_aliases/29-completion-optitest.sh .bash_aliases/29-completion-optitest.sh
 bash_aliases/29-completion-project_path.sh .bash_aliases/29-completion-project_path.sh
 bash_aliases/29-completion-pyinvoke.sh .bash_aliases/29-completion-pyinvoke.sh
-bash_aliases/29-completion-rcon.sh .bash_aliases/29-completion-rcon.sh
 bash_aliases/29-completion-xless.sh .bash_aliases/29-completion-xless.sh
 bash_aliases/30-aliases.sh .bash_aliases/30-aliases.sh
 bash_aliases/39-aliases-emptydir.sh .bash_aliases/39-aliases-emptydir.sh
