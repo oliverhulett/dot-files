@@ -86,10 +86,15 @@ date = local
 
 [branch]
 autosetuprebase = always
-autosetupmerge = true
+autosetupmerge = always
 
 [pull]
-rebase = true
+rebase = preserve
+ff = only
+
+[rebase]
+stat = true
+autoStash = true
 
 [help]
 autocorrect = 5
