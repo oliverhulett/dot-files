@@ -28,16 +28,15 @@ function yamlcheck()
 	source "$(dirname "$(readlink -f "${BASH_SOURCE}")")/../bash_common.sh" 2>/dev/null && eval "${setup_log_fd}" || true
 	for f in "$@"; do
 		echo -n "Validating '$f': "
-		python >&${log_fd} <<EOF
-import sys
-import yaml
+		python >&${log_fd} <<-EOF
+			import sys
+			import yaml
 
-try:
-    print yaml.load(open("$f", 'r').read())
-except:
-    sys.exit(1)
-sys.exit(0)
-EOF
+			try: print yaml.load(open("$f", 'r').read())
+			except: sys.exit(1)
+
+			sys.exit(0)
+		EOF
 		if [ 0 -eq $? ]; then
 			echo "Good"
 		else
@@ -52,9 +51,12 @@ function yamlpretty()
 	source "$(dirname "$(readlink -f "${BASH_SOURCE}")")/../bash_common.sh" 2>/dev/null && eval "${setup_log_fd}" || true
 	for f in "$@"; do
 		python >&${log_fd} <<-EOF
-			import yaml
-			s = yaml.dump(yaml.load(open("$f", 'r').read()), default_flow_style=False)
-			open("$f", 'w').write(s)
+			from ruamel.yaml import YAML
+			yaml = YAML(typ='rt')
+			yaml.top_level_colon_align = True
+			yaml.preserve_quotes = True
+			doc = yaml.load(open("$f", 'r').read())
+			yaml.dump(doc, open("$f", 'w'))
 		EOF
 	done
 }

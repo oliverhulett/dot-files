@@ -20,9 +20,9 @@ if [ $# == 0 ]; then
 fi
 
 # user specific container name
-NAME=`basename -- $IMAGE`-`whoami`-`date "+%s"`
+NAME="$(basename -- "$IMAGE")-$(whoami)-$(date "+%s")"
 echo "Starting $NAME ($IMAGE)"
-docker inspect $IMAGE 2>&${log_fd} | jq '.[0].Config.Labels' 2>&${log_fd} || true
+docker inspect "$IMAGE" 2>&${log_fd} | jq '.[0].Config.Labels' 2>&${log_fd} || true
 
 # Use a docker container to do things
 TMP="$(mktemp -p "${HOME}" -t ".$(date '+%Y%m%d-%H%M%S').docker.$(basename -- "$1").XXXXXXXXXX")"
@@ -41,15 +41,16 @@ proxy_exe "/optiver/bin/dockerme" "e377e9746adfa1f2d28b394e31e5f6e5"
 function run()
 {
 	echo "$@"
+	echo
 	"$@" >"${_orig_stdout}" 2>"${_orig_stderr}"
 	es=$?
 	echo
 	return $es
 }
-run dockerme -h `hostname` --cpu-shares=`nproc` --privileged --name=${NAME} \
+run dockerme -h "$(hostname)" --cpu-shares="$(nproc)" --privileged --name="${NAME}" \
 	-v /etc/sudo.conf:/etc/sudo.conf:ro -v /etc/sudoers:/etc/sudoers:ro -v /etc/sudoers.d:/etc/sudoers.d:ro -v /etc/pam.d:/etc/pam.d:ro -v /etc/localtime:/etc/localtime:ro \
-	--env-file=<(/usr/bin/env) -v "$TMP":"$TMP" --entrypoint="$TMP" -v "${NODIR}":"${HOME}/opt" \
-	"${DOCKER_RUN_ARGS[@]}" $IMAGE "$@"
+	--env-file=<(/usr/bin/env) -v "${TMP}:${TMP}" --entrypoint="$TMP" -v "${NODIR}:${HOME}/opt" \
+	"${DOCKER_RUN_ARGS[@]}" "$IMAGE" "$@"
 es=$?
 
 proxy_exe "/optiver/bin/dockerme" "e377e9746adfa1f2d28b394e31e5f6e5"
