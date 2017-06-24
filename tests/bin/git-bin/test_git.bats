@@ -1,46 +1,37 @@
 #!/usr/bin/env bats
 
-DF_TESTS="$(cd "${BATS_TEST_DIRNAME}" && pwd -P)"
+HERE="$(cd "${BATS_TEST_DIRNAME}" && pwd -P)"
+DF_TESTS="$(dirname "$(dirname "${HERE}")")"
 DOTFILES="$(dirname "${DF_TESTS}")"
-source "${DF_TESTS}/utils.sh"
+source "${HERE}/fixture.sh"
 
-FUT="gitconfig"
+FUT="git"
 
 function setup()
 {
-	should_run
-	scoped_blank_home
-	cp "${DOTFILES}/gitconfig" "${DOTFILES}/gitconfig.home" "${DOTFILES}/gitconfig.optiver" "${HOME}/"
-	crudini --inplace --set "${HOME}/gitconfig.home" include path "${HOME}/gitconfig"
-	crudini --inplace --set "${HOME}/gitconfig.optiver" include path "${HOME}/gitconfig"
-	ln -vfs gitconfig.home "${HOME}/.gitconfig"
-	ln -vfs "${DOTFILES}/gitignore" "${HOME}/.gitignore"
-	ln -vfs "${DOTFILES}/git_wrappers" "${HOME}/.git_wrappers"
-
-	scoped_mktemp BARE_REPO -d
-	scoped_mktemp CHECKOUT -d
-	( cd "${BARE_REPO}" && git init --bare )
-	( cd "${CHECKOUT}" && git clone "${BARE_REPO}" repo )
-	( cd "${CHECKOUT}/repo" && touch nothing && git add nothing && git commit -m"nothing" )
+	fixture_setup
 }
 
-function assert_files()
+function _gitenv()
 {
-	assert_equal "$(find ./ -xdev -not -name '.' -not \( -name '.git' -prune \) -print | sort)" \
-				 "$(printf "./%s\n" "nothing" "$@" | sort -u)"
+	git env | command grep "$@"
 }
+@test "$FUT: is a function that adds git-bin to path" {
+	run type -t git
+	assert_success
+	assert_output "function"
 
-function assert_contents()
-{
-	run command cat "$1"
-	shift
-	assert_all_lines "$@"
-}
+	run _gitenv -E '^PATH='
+	# git prepends to the path.
+	assert_all_lines --partial ":${DOTFILES}/bin/git-bin:"
 
-function assert_status()
-{
-	run git status -s
-	assert_all_lines "$@"
+	run git which which
+	assert_all_lines "\`git which' is: ${DOTFILES}/bin/git-bin/git-which"
+
+	git config --global --add alias.which "!echo not my command"
+
+	run git which which
+	assert_all_lines "\`git which' is: ${DOTFILES}/bin/git-bin/git-which"
 }
 
 @test "$FUT: home and Optiver username and e-mail are correct" {

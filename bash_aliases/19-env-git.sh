@@ -46,5 +46,5 @@ function git()
 {
 	HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 	DOTFILES="$(dirname "${HERE}")"
-	PATH="${DOTFILES}/bin/git-bin:${PATH}" "$@"
+	PATH="${DOTFILES}/bin/git-bin:${PATH}" command git "$@"
 }
