@@ -63,10 +63,10 @@ fi
 alias grep="command grep ${GREP_ARGS} -nT"
 alias ngrep="command grep ${GREP_ARGS_NC}"
 
-alias rsync-a='rsync -zvpPAXrogthlm'
-alias sursync-a='sudo rsync -zvpPAXrogthlm'
-alias rsync-ca='rsync -zvpPAXrogthlcm'
-alias sursync-ca='sudo rsync -zvpPAXrogthlcm'
+alias rsync-a='rsync -zvvpPAXrogthlm'
+alias sursync-a='sudo rsync -zvvpPAXrogthlm'
+alias rsync-ca='rsync -zvvpPAXrogthlcm'
+alias sursync-ca='sudo rsync -zvvpPAXrogthlcm'
 
 alias iotop='sudo iotop'
 
