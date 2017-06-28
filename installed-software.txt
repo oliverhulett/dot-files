@@ -576,7 +576,6 @@ kde-settings-ksplash-19-23.5.el7.centos.noarch
 kde-settings-plasma-19-23.5.el7.centos.noarch
 kde-settings-pulseaudio-19-23.5.el7.centos.noarch
 kde-style-oxygen-4.11.19-7.el7.x86_64
-kdeutils-minimal-4.10.5-3.el7.noarch
 kde-wallpapers-4.10.5-2.el7.noarch
 kde-workspace-4.11.19-7.el7.x86_64
 kde-workspace-libs-4.11.19-7.el7.x86_64
@@ -613,12 +612,10 @@ kruler-4.10.5-3.el7.x86_64
 ksaneplugin-4.10.5-3.el7.x86_64
 kscreen-1.0.1-9.el7.x86_64
 ksnapshot-4.10.5-3.el7.x86_64
-ksshaskpass-0.5.3-7.el7.x86_64
 ksysguard-4.11.19-7.el7.x86_64
 ksysguardd-4.11.19-7.el7.x86_64
 ksysguard-libs-4.11.19-7.el7.x86_64
 ktimer-4.10.5-3.el7.x86_64
-kwallet-4.10.5-3.el7.x86_64
 kwin-4.11.19-7.el7.x86_64
 kwin-libs-4.11.19-7.el7.x86_64
 kwrite-4.10.5-3.el7.x86_64
