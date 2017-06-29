@@ -87,3 +87,33 @@ This is just a random assortment of TODO thoughts.  For more detailed TODOs, see
         * Tab completion/Program specific environment magic
             * I'm thinking of a way to "automagically" install tab-completion and other program specific environment magic on first use of a program.  Basically, on first execution, look for some program specific setup in .bash_something and execute/source it.
             * Tab completion, at least, may best be hooked into the global tab completion mechanism, if that is possible.
+
+* Data conceptualisation idea
+    * Define "data types" (loosely, just a name/index and a version)
+    * Each "data type" has:
+        * Add(data) which adds/merges data into an index.  This either finds a matching instance to which it should add data or creates a new one.
+        * Delete(data) which deletes the instances in the index with matching fields.
+        * Fetch(data) which returns the instances in the index that have matching fields.
+    * Processors use Add() and Delete(), consumers use Fetch()
+    * All the functions on "data types" must be idempotent.
+        * Want to be able to replay data from any point without breaking data quality of "derived" "data types"
+        * Want to be able to replay data from any point with relatively low overhead.
+        * Want to be able to push Updates/Additions(/Deletions?) of "data types" back into processors without creating infinate loops. (Will need good reporting on that sort of thing)
+        * Want to be able to artificially play a "data type" through the processors when we've added new "data types" or processors
+            * Create a new "data type" by (setting up "data type" and processor and) having processors send data to it.
+            * Updating a schema (version) is a special case of this?
+    * Data is just key/value pairs (nested? basically that'd be JSON)
+    * Incoming data is given to a set of processors, which use above functions to add it to an index.
+    * Updates/Additions to existing indicies ("data type" instances) are fed back into the set of processors.  If Add()/Delete() doesn't make a change, nothing is routed back to the processors.
+    * Add()/Detele() functions on "data types" should be quick to drop data in which they're not interested.
+    * The idea is that processors are basically routers from incoming data to "data types"
+    * Conflict resolution...?
+        * What if a "data type" can't handle incoming data?
+        * What if a "data type" can't find a match for incoming data?
+        * What if Add()/Delete() reports an error?
+        * Need some mechanism for reporting these.
+        * Want ability to install conflict handlers?  Are these just processors?  Conflicts are another form of "incoming" data?
+* Which of Logstash/MongoDB/Splunk/other? best fits this model, can be massaged into this model with some simple wrapping?
+* Should be a stand alone project
+* Try to test the idea with dotlogs data
+    * For Optiver purposes, incoming data would be log files and/or ticks.
