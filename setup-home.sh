@@ -1,24 +1,26 @@
 #!/bin/bash
-source "${HOME}/dot-files/bash_common.sh" 2>/dev/null && eval "${capture_output}" || true
 
 HERE="$(cd "$(dirname "$0")" && pwd -P)"
+source "${HERE}/bash_common.sh" 2>/dev/null && eval "${capture_output}" || true
 RELPATH="${HERE}/bin/relpath.sh"
 
-[ -e "${HOME}/.bash_aliases/49-setup-proxy.sh" ] && source "${HOME}/.bash_aliases/49-setup-proxy.sh" 2>/dev/null
+if ! [ "$1" == "-q" ]; then
+	[ -e "${HOME}/.bash_aliases/49-setup-proxy.sh" ] && source "${HOME}/.bash_aliases/49-setup-proxy.sh" 2>/dev/null
 
-echo "Updating dot-files..."
-# Can't pull here, you risk changing this file
-( cd "${HERE}" && git submodule init && git submodule sync && git submodule update ) >&${log_fd} &
-disown -h 2>/dev/null
-disown 2>/dev/null
+	echo "Updating dot-files..."
+	# Can't pull here, you risk changing this file
+	( cd "${HERE}" && git submodule init && git submodule sync && git submodule update ) >&${log_fd} &
+	disown -h 2>/dev/null
+	disown 2>/dev/null
 
-HOSTNAME="$(hostname -s | tr A-Z a-z)"
-if [ -f "${HERE}/crontab.${HOSTNAME}" ]; then
-	echo "Installing crontab from ~/dot-files/crontab.${HOSTNAME}..."
-	crontab <(head -n -2 "${HERE}/crontab.${HOSTNAME}")
-elif [ -f "${HERE}/crontab" ]; then
-	echo "Installing crontab from ~/dot-files/crontab..."
-	crontab "${HERE}/crontab"
+	HOSTNAME="$(hostname -s | tr A-Z a-z)"
+	if [ -f "${HERE}/crontab.${HOSTNAME}" ]; then
+		echo "Installing crontab from ~/dot-files/crontab.${HOSTNAME}..."
+		crontab <(head -n -2 "${HERE}/crontab.${HOSTNAME}")
+	elif [ -f "${HERE}/crontab" ]; then
+		echo "Installing crontab from ~/dot-files/crontab..."
+		crontab "${HERE}/crontab"
+	fi
 fi
 
 DOTFILES=

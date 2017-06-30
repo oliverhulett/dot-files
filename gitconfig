@@ -86,7 +86,7 @@ date = local
 
 [branch]
 autosetuprebase = always
-autosetupmerge = always
+autosetupmerge = false
 
 [pull]
 rebase = preserve

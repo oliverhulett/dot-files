@@ -1,6 +1,7 @@
 #!/usr/bin/env bats
 
 DF_TESTS="$(cd "${BATS_TEST_DIRNAME}" && pwd -P)"
+DOTFILES="$(dirname "${DF_TESTS}")"
 source "${DF_TESTS}/utils.sh"
 
 FUT="sync-other-remote.sh"
@@ -14,6 +15,10 @@ function setup()
 {
 	should_run
 	assert_fut_exe
+	scoped_blank_home
+	"${DOTFILES}/setup-home.sh" -q
+	ln -s "${DOTFILES}" "${HOME}/dot-files"
+	scoped_env PATH="${DOTFILES}/bin:${PATH}"
 	scoped_mktemp BARE_REPO_1 -d
 	scoped_mktemp BARE_REPO_2 -d
 	scoped_mktemp CHECKOUT_1 -d
