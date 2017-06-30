@@ -1,14 +1,13 @@
 #!/usr/bin/env bats
 
 DF_TESTS="$(cd "${BATS_TEST_DIRNAME}" && pwd -P)"
-DOTFILES="$(dirname "${DF_TESTS}")"
 source "${DF_TESTS}/utils.sh"
 
 FUT="gitconfig"
+IS_EXE="no"
 
-function setup()
+function setup_gitconfig()
 {
-	should_run
 	scoped_blank_home
 	cp "${DOTFILES}/gitconfig" "${DOTFILES}/gitconfig.home" "${DOTFILES}/gitconfig.optiver" "${HOME}/"
 	crudini --inplace --set "${HOME}/gitconfig.home" include path "${HOME}/gitconfig"
@@ -22,6 +21,10 @@ function setup()
 	( cd "${BARE_REPO}" && git init --bare )
 	( cd "${CHECKOUT}" && git clone "${BARE_REPO}" repo )
 	( cd "${CHECKOUT}/repo" && touch nothing && git add nothing && git commit -m"nothing" )
+}
+function teardown_gitconfig()
+{
+	assert false
 }
 
 function assert_files()

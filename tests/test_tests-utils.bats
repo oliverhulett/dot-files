@@ -254,6 +254,47 @@ function _assert_fut_exe_mk_test()
 	assert_all_lines "setup world" "hello world" "registered teardown world" "teardown world"
 }
 
+ONLY="setup and teardown inheritance"
+@test "$FUT: setup and teardown inheritance" {
+	scoped_mktemp OUTPUT --suffix=.txt
+	scoped_mktemp DIR -d
+	mkdir --parents "${DIR}/tests/dir"
+	cat >"${DIR}/tests/dir/fixture.sh" <<-EOF
+		. "${DF_TESTS}/utils.sh"
+		DOTFILES=${DIR}
+		function setup_dir()
+		{
+			echo "setup dir/fixture.sh" >>${OUTPUT}
+		}
+		function teardown_dir()
+		{
+			echo "teardown dir/fixture.sh" >>${OUTPUT}
+		}
+	EOF
+	cat >"${DIR}/tests/dir/file.bats" <<-EOF
+		. "${DIR}/tests/dir/fixture.sh"
+		function setup_file()
+		{
+			echo "setup dir/file.bats" >>${OUTPUT}
+		}
+		function teardown_file()
+		{
+			echo "teardown dir/file.bats" >>${OUTPUT}
+		}
+		@test "test" {
+			echo "hello world" >>${OUTPUT}
+		}
+	EOF
+	run bats -t "${DIR}/tests/dir/file.bats"
+	assert_success
+	run cat "$OUTPUT"
+	assert_all_lines "setup dir/fixture.sh"
+					 "setup dir/file.bats"
+					 "hello world"
+					 "teardown dir/file.bats"
+					 "teardown dir/fixture.sh"
+}
+
 @test "$FUT: blank \$HOME" {
 	scoped_mktemp OUTPUT --suffix=.txt
 	scoped_mktemp TESTFILE --suffix=.bats

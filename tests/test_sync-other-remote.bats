@@ -11,10 +11,8 @@ function md5()
 	md5sum "$@" | cut -d' ' -f1
 }
 
-function setup()
+function setup_sync_other_remote()
 {
-	should_run
-	assert_fut_exe
 	scoped_blank_home
 	"${DOTFILES}/setup-home.sh" -q
 	ln -s "${DOTFILES}" "${HOME}/dot-files"
