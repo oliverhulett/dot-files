@@ -117,3 +117,10 @@ This is just a random assortment of TODO thoughts.  For more detailed TODOs, see
 * Should be a stand alone project
 * Try to test the idea with dotlogs data
     * For Optiver purposes, incoming data would be log files and/or ticks.
+* Additional concept:
+    * Ability (dockerised?) to setup a stack, pull a filtered section of the data from the cluster, work with it, optionally sync changes back.
+    * Can build the feature by making standard tasks easy:
+        * Stack setup, dockerised version plus easy setup.  Seperate from connecting a stack to a cluster and adding data.
+        * Pulling filtered sections of data into a stack.  Make that a input type, so just give it to the processors.
+        * Pushing data to a cluster.  Is that just the reverse of the above?  Is it valueable or do we just install new processors into the cluster and let them recreate the new data?
+        * Connecting a stack to an existing cluster.  Rules for handling data duplication and additions/deletions/changes to data and reindexing.
