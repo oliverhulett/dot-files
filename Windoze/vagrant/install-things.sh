@@ -8,7 +8,8 @@ else
 	HOME="/home/${USER}"
 fi
 
-source "${HOME}/dot-files/bash_common.sh" 2>/dev/null && eval "${capture_output}" || true
+#source "${HOME}/dot-files/bash_common.sh" 2>/dev/null && eval "${capture_output}" || true
+export PATH="$(prepend_path "${HOME}/dot-files/bin")"
 
 # Some things are needed for the next set of background tasks.  Yakuake is needed for the GUI (autostart)
 # Docker and jq are needed for docker-run.sh (see below)
@@ -20,9 +21,6 @@ set +e
 
 echo
 echo "Restoring local installs and other backups..."
-
-source "${HOME}/dot-files/bash_common.sh" && eval "${capture_output}" || true
-export PATH="$(prepend_path "${HOME}/dot-files/bin")"
 
 for d in /H_DRIVE/*; do
 	d="$(basename -- $d)"
