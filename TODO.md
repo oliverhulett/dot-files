@@ -26,12 +26,15 @@ This is just a random assortment of TODO thoughts.  For more detailed TODOs, see
     * Start with a directory hierarcy.
     * Sibling directories are run in parallel.
     * Each directory is run before its children.
-    * All execution happens in a sandboxed temporary directory.  Handle marshalling and copying.)
+    * All execution happens in a sandboxed temporary directory.  Handle marshalling and copying.
     * Child directory tasks inherit context/artifacts from parent tasks/directories.
-    * A task is a Dockerfile that is built and run.
-        * We want some way to inherit the parent's docker image so we can build off it and run in the same context.
-        * A task is also a Makefile (following a contract) that builds the Dockerfile/image.  In that case why not just have the Makefile run the task?
-        * Or, a task is just an executable to run (a known name?) users can docker if they want, or whatever.
+    * A task is a *.m4 file that is parsed and output into the run dir
+        * Help by defining macros that create a small DSL and handle pathing...
+        * Enforce order of steps to guarantee scoping.
+        * Hooks for various steps:
+            * init, stage, setup, run, teardown, validate...
+            * By function name or file name
+    *
 * Maybe try/test the idea with the dotfiles tests?
 * Should be a stand alone project (can test itself with itself)
 
@@ -113,6 +116,8 @@ This is just a random assortment of TODO thoughts.  For more detailed TODOs, see
         * What if Add()/Delete() reports an error?
         * Need some mechanism for reporting these.
         * Want ability to install conflict handlers?  Are these just processors?  Conflicts are another form of "incoming" data?
+    * Processors should be able to drop their inputs.
+    * Processors get all new data type instances, so they should be able to alert external systems and then drop the new instances.
 * Which of Logstash/MongoDB/Splunk/other? best fits this model, can be massaged into this model with some simple wrapping?
 * Should be a stand alone project
 * Try to test the idea with dotlogs data
