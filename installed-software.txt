@@ -1532,12 +1532,15 @@ boto==2.38.0
 chardet==2.2.1
 Cheetah==2.4.4
 configobj==4.7.2
+configparser==3.5.0
 coverage==3.6b3
 cupshelpers==1.0
 decorator==3.4.0
 di==0.3
+enum34==1.1.6
 ethtool==0.8
 firstboot==19.5
+flake8==3.3.0
 fros==1.0
 iniparse==0.4
 initial-setup==0.3.9.30
@@ -1550,6 +1553,7 @@ kitchen==1.1.1
 langtable==0.0.31
 lxml==3.2.1
 Markdown==2.4.1
+mccabe==0.6.1
 ntplib==0.3.2
 OpenOnload-utilities==1.0
 perf==0.1
@@ -1558,8 +1562,10 @@ policycoreutils-default-encoding==0.1
 prettytable==0.7.2
 protobuf==2.5.0
 pyasn1==0.1.6
+pycodestyle==2.3.1
 pycups==1.9.63
 pycurl==7.19.0
+pyflakes==1.5.0
 Pygments==1.4
 pygobject==3.14.0
 pygpgme==0.3

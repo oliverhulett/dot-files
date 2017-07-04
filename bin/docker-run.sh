@@ -31,7 +31,7 @@ trap 'ec=$?; echo && echo "Leaving $NAME (${IMAGE})" && echo "Ran: $@" && echo "
 command cat >"$TMP" <<-EOF
 	#!/bin/bash -i
 	source ~/.bashrc
-	export PS1="(docker:$(basename -- $IMAGE)) $PS1"
+	export PS1="(docker:$(basename -- "$IMAGE")) $PS1"
 	"\$@"
 EOF
 chmod u+x "$TMP"
@@ -56,7 +56,7 @@ function run()
 			_orig_stderr=/dev/null
 		fi
 	fi
-	"$@" >"${_orig_stdout}" 2>"${_orig_stderr}"
+	"$@" >>"${_orig_stdout}" 2>>"${_orig_stderr}"
 	es=$?
 	echo
 	return $es
