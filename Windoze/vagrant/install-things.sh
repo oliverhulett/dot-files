@@ -9,6 +9,7 @@ else
 fi
 
 #source "${HOME}/dot-files/bash_common.sh" 2>/dev/null && eval "${capture_output}" || true
+source "${HOME}/dot-files/bash_common.sh"
 export PATH="$(prepend_path "${HOME}/dot-files/bin")"
 
 # Some things are needed for the next set of background tasks.  Yakuake is needed for the GUI (autostart)
