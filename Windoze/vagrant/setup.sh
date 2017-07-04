@@ -80,7 +80,8 @@ rsync -rAXog --update ${HOME}/etc/backups/${HOME}/ ${HOME}/
 yum install -y yakuake jq docker
 sudo systemctl restart docker.service
 
-su -c "${HOME}/dot-files/Windoze/vagrant/install-things.sh" ${USER} &
+NOHUP_FILE="${HOME}/.dotlogs/$(date '+%Y%m%d-%H%M%S')_vagrant-restart.log"
+su -c "nohup ${HOME}/dot-files/Windoze/vagrant/install-things.sh >>${NOHUP_FILE} 2>>${NOHUP_FILE}" ${USER} &
 disown -h
 disown
 

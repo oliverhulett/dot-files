@@ -12,6 +12,8 @@ fi
 source "${HOME}/dot-files/bash_common.sh"
 export PATH="$(prepend_path "${HOME}/dot-files/bin")"
 
+trap "" HUP
+
 # Some things are needed for the next set of background tasks.  Yakuake is needed for the GUI (autostart)
 # Docker and jq are needed for docker-run.sh (see below)
 sudo yum install -y yakuake jq docker
