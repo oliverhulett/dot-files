@@ -1,7 +1,12 @@
 set HERE=%~dp0
 cd /d %HERE%
 
-REM CALL proxy_setup.bat
+REM Vagrant needs to explicitly not go through a proxy...
+set http_proxy=
+set https_proxy=
+set HTTP_PROXY=
+set HTTPS_PROXY=
+
 echo "STOPPING VM"
 echo
 vagrant halt
@@ -9,10 +14,6 @@ echo
 echo "DESTROYING VM"
 echo
 vagrant destroy -f
-echo
-echo "MAILING PATCHES HOME"
-echo
-REM START CMD /C CALL ..\sync2home\mail_patches_home.sh
 echo
 echo "UPDATING BASE IMAGE"
 echo
@@ -23,6 +24,3 @@ echo
 vagrant up
 echo
 echo "DONE"
-
-REM pause
-REM vagrant halt
