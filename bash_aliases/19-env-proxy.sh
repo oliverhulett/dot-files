@@ -58,7 +58,7 @@ function proxy_setup()
 			case $a in
 				*h*)
 					echo "proxy_setup [-h] [-q] [-s | -t | -p]"
-					echo -e "\t-q  quit mode.  No questions, minimal output."
+					echo -e "\t-q  Quiet mode.  No questions, minimal output."
 					echo -e "\t-s  Use sydsquid."
 					echo -e "\t-p  Use sydproxy."
 					echo -e "\t-t  Use sydproxy via an SSH tunnel."
@@ -87,6 +87,7 @@ function proxy_setup()
 			fi
 		done
 	done
+	echo "HTTP Proxy Method  : $METHOD"
 	echo "HTTP Proxy Username: $USER"
 	unset PASSWD
 	if [ -r "${HOME}/etc/passwd" ]; then

@@ -42,6 +42,20 @@ function run()
 {
 	echo "$@"
 	echo
+	if [ ! -f "${_orig_stdout}" ]; then
+		if [ -f /dev/tty ]; then
+			_orig_stdout=/dev/tty
+		else
+			_orig_stdout=/dev/null
+		fi
+	fi
+	if [ ! -f "${_orig_stderr}" ]; then
+		if [ -f /dev/tty ]; then
+			_orig_stderr=/dev/tty
+		else
+			_orig_stderr=/dev/null
+		fi
+	fi
 	"$@" >"${_orig_stdout}" 2>"${_orig_stderr}"
 	es=$?
 	echo
