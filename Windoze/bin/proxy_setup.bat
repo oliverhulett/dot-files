@@ -1,4 +1,10 @@
 @echo off
 set /p passwd=<C:\Users\olihul\passwd
-set HTTP_PROXY=http://olihul:%passwd%@sydsquid.aus.optiver.com:3128
-set HTTPS_PROXY=http://olihul:%passwd%@sydsquid.aus.optiver.com:3128
+
+REM Some URLs use this...
+set http_proxy=http://olihul:%passwd%@sydsquid.aus.optiver.com:3128
+set https_proxy=https://olihul:%passwd%@sydsquid.aus.optiver.com:3128
+
+REM ...when they can't use this.
+set http_proxy=http://olihul:%passwd%@safeweb-au.aus.optiver.com:3129
+set https_proxy=https://olihul:%passwd%@safeweb-au.aus.optiver.com:3129
