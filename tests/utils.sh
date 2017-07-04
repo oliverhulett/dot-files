@@ -37,7 +37,7 @@ function _call_hierarchy()
 	fqtn="$(cd "$(dirname "${BATS_TEST_FILENAME}")" && pwd -P)/$(basename -- "${BATS_TEST_FILENAME%.*}")"
 	fqtn="${fqtn#$DF_TESTS}"
 	fqtn="${fqtn#/}"
-	fqtn="$(echo "${fqtn}" | sed -re 's/[^a-zA-Z0-9]+/_/g')"
+	fqtn="$(echo "${fqtn}" | sed -re 's![^a-zA-Z0-9/]+!_!g')"
 	while [ -n "${fqtn}" ]; do
 		fqtn="${fqtn#test_}"
 		component[${#component[@]}]="${fqtn%%/*}"
