@@ -17,6 +17,7 @@ trap "" HUP
 # Some things are needed for the next set of background tasks.  Yakuake is needed for the GUI (autostart)
 # Docker and jq are needed for docker-run.sh (see below)
 sudo yum install -y yakuake jq docker
+sudo yum remove -y libgnome-keyring-devel python-keyring subversion-gnome pam-kwallet ksshaskpass kwallet subversion-kde
 sudo systemctl restart docker.service
 sleep 2
 

@@ -406,6 +406,7 @@ gnome-python2-2.28.1-14.el7.x86_64
 gnome-python2-canvas-2.28.1-14.el7.x86_64
 gnome-session-3.14.0-4.el7.x86_64
 gnome-settings-daemon-3.14.4-9.el7.x86_64
+gnome-shell-3.14.4-37.el7.x86_64
 gnome-themes-standard-3.14.2.2-2.el7.x86_64
 gnome-vfs2-2.24.4-14.el7.x86_64
 gnu-free-fonts-common-20120503-8.el7.noarch
@@ -575,7 +576,6 @@ kde-settings-ksplash-19-23.5.el7.centos.noarch
 kde-settings-plasma-19-23.5.el7.centos.noarch
 kde-settings-pulseaudio-19-23.5.el7.centos.noarch
 kde-style-oxygen-4.11.19-7.el7.x86_64
-kdeutils-minimal-4.10.5-3.el7.noarch
 kde-wallpapers-4.10.5-2.el7.noarch
 kde-workspace-4.11.19-7.el7.x86_64
 kde-workspace-libs-4.11.19-7.el7.x86_64
@@ -612,12 +612,10 @@ kruler-4.10.5-3.el7.x86_64
 ksaneplugin-4.10.5-3.el7.x86_64
 kscreen-1.0.1-9.el7.x86_64
 ksnapshot-4.10.5-3.el7.x86_64
-ksshaskpass-0.5.3-7.el7.x86_64
 ksysguard-4.11.19-7.el7.x86_64
 ksysguardd-4.11.19-7.el7.x86_64
 ksysguard-libs-4.11.19-7.el7.x86_64
 ktimer-4.10.5-3.el7.x86_64
-kwallet-4.10.5-3.el7.x86_64
 kwin-4.11.19-7.el7.x86_64
 kwin-libs-4.11.19-7.el7.x86_64
 kwrite-4.10.5-3.el7.x86_64
@@ -1188,6 +1186,7 @@ psacct-6.6.1-9.el7.x86_64
 psmisc-22.20-9.el7.x86_64
 pth-2.0.7-23.el7.x86_64
 pulseaudio-6.0-7.el7.x86_64
+pulseaudio-gdm-hooks-6.0-7.el7.x86_64
 pulseaudio-libs-6.0-7.el7.x86_64
 pulseaudio-libs-glib2-6.0-7.el7.x86_64
 pulseaudio-module-bluetooth-6.0-7.el7.x86_64
