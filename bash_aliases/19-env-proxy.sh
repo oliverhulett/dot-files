@@ -62,12 +62,17 @@ function proxy_setup()
 					echo -e "\t-s  Use sydsquid."
 					echo -e "\t-p  Use sydproxy."
 					echo -e "\t-t  Use sydproxy via an SSH tunnel."
+					echo -e "\t-n  Unset proxy environment variables."
 					a="${a//h/}"
 					return 0
 					;;
 				*q*)
 					QUIET="y"
 					a="${a//q/}"
+					;;
+				*n*)
+					METHOD="none"
+					a="${a//n/}"
 					;;
 				*s*)
 					METHOD="squid"
@@ -88,18 +93,20 @@ function proxy_setup()
 		done
 	done
 	echo "HTTP Proxy Method  : $METHOD"
-	echo "HTTP Proxy Username: $USER"
-	unset PASSWD
-	if [ -r "${HOME}/etc/passwd" ]; then
-		PASSWD="$(sed -ne '1p' "${HOME}/etc/passwd")"
-		echo "HTTP Proxy Password: <from file: ${HOME}/etc/passwd>"
-	elif [ "$QUIET" == "n" ]; then
-		read -rs -p "HTTP Proxy Password: " PASSWD
-		echo
-	fi
-	if [ -z "$PASSWD" -o -z "$USER" ]; then
-		echo "Not setting proxy password, could not find from ${HOME}/etc/passwd and you told me not to ask"
-		return 1
+	if [ "$METHOD" != "none" ]; then
+		echo "HTTP Proxy Username: $USER"
+		unset PASSWD
+		if [ -r "${HOME}/etc/passwd" ]; then
+			PASSWD="$(sed -ne '1p' "${HOME}/etc/passwd")"
+			echo "HTTP Proxy Password: <from file: ${HOME}/etc/passwd>"
+		elif [ "$QUIET" == "n" ]; then
+			read -rs -p "HTTP Proxy Password: " PASSWD
+			echo
+		fi
+		if [ -z "$PASSWD" -o -z "$USER" ]; then
+			echo "Not setting proxy password, could not find from ${HOME}/etc/passwd and you told me not to ask"
+			return 1
+		fi
 	fi
 	if [ -z "${http_proxy_orig}" ]; then
 		export http_proxy_orig="${http_proxy}"
@@ -117,38 +124,20 @@ function proxy_setup()
 	elif [ "$METHOD" == "proxy" ]; then
 		HTTP_PROXY="http://${PROXY_URL}${PROXY_PORT}"
 		HTTPS_PROXY="https://${PROXY_URL}${PROXY_PORT}"
-	else # [ "$METHOD" == "squid" ]
+	elif [ "$METHOD" == "squid" ]; then
 		HTTP_PROXY="http://${SQUID_URL}${SQUID_PORT}"
 		HTTPS_PROXY="https://${SQUID_URL}${SQUID_PORT}"
 	fi
-	export http_proxy="${HTTP_PROXY/\/\////$(urlencode "$USER"):$(urlencode "$PASSWD")@}"
-	export HTTP_PROXY="${http_proxy}"
-	export https_proxy="${HTTPS_PROXY/\/\////$(urlencode "$USER"):$(urlencode "$PASSWD")@}"
-	export HTTPS_PROXY="${https_proxy}"
-	if [ "$QUIET" == "n" ]; then
-		update_config=""
-		for f in /etc/sysconfig/docker; do
-			if [ -e "$f" ]; then
-				if grep -qE "^HTTPS?_PROXY=" "$f"; then
-					if ! grep -qF "HTTP_PROXY=$HTTP_PROXY" "$f" || ! grep -qF "HTTPS_PROXY=$HTTPS_PROXY" "$f"; then
-						update_config="$update_config $f"
-					fi
-				fi
-			fi
-		done
-		if [ -n "$update_config" ]; then
-			read -n1 -r -p "Found configuration files to update with new proxy.  Update $update_config? [Y/n] "
-			echo
-			if [ $(echo $REPLY | tr '[a-z]' '[A-Z]') != "N" ]; then
-				for f in $update_config; do
-					sudo -E sed -re 's!^HTTP_PROXY=.+$!HTTP_PROXY='"$HTTP_PROXY"'!' "$f" -i
-					sudo -E sed -re 's!^HTTPS_PROXY=.+$!HTTPS_PROXY='"$HTTPS_PROXY"'!' "$f" -i
-				done
-
-				echo "System configuration updated for new proxy, you may want to restart daemons.  Try:"
-				echo "$ sudo systemctl reload <services>"
-			fi
-		fi
+	if [ "$METHOD" != "none" ]; then
+		export http_proxy="${HTTP_PROXY/\/\////$(urlencode "$USER"):$(urlencode "$PASSWD")@}"
+		export HTTP_PROXY="${http_proxy}"
+		export https_proxy="${HTTPS_PROXY/\/\////$(urlencode "$USER"):$(urlencode "$PASSWD")@}"
+		export HTTPS_PROXY="${https_proxy}"
+	else
+		unset http_proxy
+		unset HTTP_PROXY
+		unset https_proxy
+		unset HTTPS_PROXY
 	fi
 	unset PASSWD
 	return 0
