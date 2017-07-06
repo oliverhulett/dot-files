@@ -2,10 +2,13 @@
 # shellcheck shell=bash
 
 ## Load bats libraries
-source "$(dirname "${BASH_SOURCE[0]}")/x_helpers/bats-support/load.bash"
-source "$(dirname "${BASH_SOURCE[0]}")/x_helpers/bats-assert/load.bash"
-source "$(dirname "${BASH_SOURCE[0]}")/x_helpers/bats-file/load.bash"
-source "$(dirname "${BASH_SOURCE[0]}")/x_helpers/bats-mock/load.bash"
+DF_TESTS="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+DOTFILES="$(dirname "${DF_TESTS}")"
+export DF_TESTS DOTFILES
+source "${DF_TESTS}/x_helpers/bats-support/load.bash"
+source "${DF_TESTS}/x_helpers/bats-assert/load.bash"
+source "${DF_TESTS}/x_helpers/bats-file/load.bash"
+source "${DF_TESTS}/x_helpers/bats-mock/load.bash"
 
 # Most of these functions only work in setup, teardown, or test functions
 function _check_caller_is_test()
@@ -21,16 +24,91 @@ function _check_caller_is_test()
 	fi
 }
 
+# The pattern for setup and teardown inheritance is that only one setup() and teardown() function should be defined,
+# namely these here.  Test files and test's fixture files should define setup_*() and teardown_* functions, where
+# * will be replaced by each element in turn in the test's fully-qualified name.
+# A test's fully-qualified name is: ${DF_TESTS}/<path>/<to>/test_<file>.bats:<name>
+function _call_hierarchy()
+{
+	local s_or_t="$1"
+	shift
+	local fqtn
+	local -a component
+	fqtn="$(cd "$(dirname "${BATS_TEST_FILENAME}")" && pwd -P)/$(basename -- "${BATS_TEST_FILENAME%.*}")"
+	fqtn="${fqtn#$DF_TESTS}"
+	fqtn="${fqtn#/}"
+	fqtn="$(echo "${fqtn}" | sed -re 's![^a-zA-Z0-9/]+!_!g')"
+	while [ -n "${fqtn}" ]; do
+		fqtn="${fqtn#test_}"
+		component[${#component[@]}]="${fqtn%%/*}"
+
+		i=${#component[@]}
+		i=$((i - 1))
+		fqtn="${fqtn#${component[$i]}}"
+		fqtn="${fqtn#/}"
+	done
+
+	if [ "${s_or_t}" == "teardown" ]; then
+		component=( $(echo "${component[@]}" | rev) )
+	fi
+	for f in "${component[@]}"; do
+		if [ "${s_or_t}" == "teardown" ]; then
+			f="$(echo "$f" | rev)"
+		fi
+		if [ "$(type -t "${s_or_t}_${f}" 2>/dev/null)" == "function" ]; then
+			eval "${s_or_t}_${f}" "$@"
+		fi
+	done
+}
+function setup()
+{
+	if ! should_run; then
+		return
+	fi
+	# Default setup() is to skip the test if the program under test doesn't exist or if only one test has been requested
+	if [ "${IS_EXE}" == "no" ] || [ "${IS_EXE}" == "false" ]; then
+		assert_fut
+	else
+		assert_fut_exe
+	fi
+
+	_call_hierarchy setup "$@"
+}
+function teardown()
+{
+	_call_hierarchy teardown "$@"
+
+	# Default teardown() is to fire all registered clean-up functions
+	fire_teardown_fns
+}
+
+# Mechanism for registering clean-up functions
+declare -ga _TEARDOWN_FNS
+function register_teardown_fn()
+{
+	_TEARDOWN_FNS[${#_TEARDOWN_FNS[@]}]="$*"
+}
+function fire_teardown_fns()
+{
+	_check_caller_is_test fire_teardown_fns || return $?
+
+	for fn in "${_TEARDOWN_FNS[@]}"; do
+		$fn
+	done
+}
+
 # Skip the test if the program under test doesn't exist
 # TODO:  What about aliases and functions?  May need to rename some things and re-work some messages.
 function assert_fut()
 {
 	_check_caller_is_test assert_fut || return $?
-	declare -g FUT_PATH
-	FUT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && cd "$(git home)" && echo "$(git home)/$(git ls-files -- "${FUT}")")"
-	if [ ! -f "${FUT_PATH}" ]; then
-		skip "Failed to find file under test"
-		return 1
+	if [ -n "${FUT}" ]; then
+		declare -g FUT_PATH
+		FUT_PATH="${DOTFILES}/$(cd "${DOTFILES}" && git ls-files -- "${FUT}")"
+		if [ ! -f "${FUT_PATH}" ]; then
+			skip "Failed to find file under test"
+			return 1
+		fi
 	fi
 }
 function assert_fut_exe()
@@ -74,35 +152,6 @@ function should_run()
 		done
 	fi
 	return 0
-}
-
-# Default setup() is to skip the test if the program under test doesn't exist or if only one test has been requested
-function setup()
-{
-	if ! should_run; then
-		return
-	fi
-	assert_fut_exe
-}
-
-# Mechanism for registering clean-up functions
-declare -ga _TEARDOWN_FNS
-function register_teardown_fn()
-{
-	_TEARDOWN_FNS[${#_TEARDOWN_FNS[@]}]="$*"
-}
-function fire_teardown_fns()
-{
-	_check_caller_is_test fire_teardown_fns || return $?
-
-	for fn in "${_TEARDOWN_FNS[@]}"; do
-		$fn
-	done
-}
-# Default teardown is to fire all registered clean-up functions
-function teardown()
-{
-	fire_teardown_fns
 }
 
 # Set and export an environment variable and register it to be restored in teardown.

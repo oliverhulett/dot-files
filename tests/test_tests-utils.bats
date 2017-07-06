@@ -127,27 +127,27 @@ function _should_run_mk_test()
 {
 	unset ONLY SKIP
 	rm "${OUTPUT}" || true
-	cat >"${TESTFILE}" <<-EOF
-	. "${DF_TESTS}/utils.sh"
-	eval "__original_\$(declare -f skip)"
-	function skip()
-	{
-		echo "Skipping='\$*' ONLY=\$ONLY SKIP=\$SKIP" >>"${OUTPUT}"
-		__original_skip "should_run said no"
-		return 1
-	}
-	function setup()
-	{
-		should_run
-	}
-	ONLY=$1
-	SKIP=$2
-	@test "test 1" {
-		true
-	}
-	@test "test 2" {
-		true
-	}
+	cat - >"${TESTFILE}" <<-EOF
+		. "${DF_TESTS}/utils.sh"
+		eval "__original_\$(declare -f skip)"
+		function skip()
+		{
+			echo "Skipping='\$*' ONLY=\$ONLY SKIP=\$SKIP" >>"${OUTPUT}"
+			__original_skip "should_run said no"
+			return 1
+		}
+		function setup()
+		{
+			should_run
+		}
+		ONLY=$1
+		SKIP=$2
+		@test "test 1" {
+			true
+		}
+		@test "test 2" {
+			true
+		}
 	EOF
 }
 @test "$FUT: skip tests on request" {
@@ -176,24 +176,24 @@ function _should_run_mk_test()
 function _assert_fut_exe_mk_test()
 {
 	unset EXE FUT
-	cat >"${TESTFILE}" <<-EOF
-	. "${DF_TESTS}/utils.sh"
-	FUT="$1"
-	function setup()
-	{
-		:
-	}
-	eval "__original_\$(declare -f skip)"
-	function skip()
-	{
-		echo "Skipping='\$*' FUT=\$FUT EXE=\$EXE" >"${OUTPUT}"
-		__original_skip "assert_fut_exe failed"
-		return 1
-	}
-	@test "test" {
-		assert_fut_exe
-		assert [ "\$EXE" == "$2" ]
-	}
+	cat - >"${TESTFILE}" <<-EOF
+		. "${DF_TESTS}/utils.sh"
+		FUT="$1"
+		function setup()
+		{
+			:
+		}
+		eval "__original_\$(declare -f skip)"
+		function skip()
+		{
+			echo "Skipping='\$*' FUT=\$FUT EXE=\$EXE" >"${OUTPUT}"
+			__original_skip "assert_fut_exe failed"
+			return 1
+		}
+		@test "test" {
+			assert_fut_exe
+			assert [ "\$EXE" == "$2" ]
+		}
 	EOF
 }
 @test "$FUT: assert program exists" {
@@ -232,21 +232,21 @@ function _assert_fut_exe_mk_test()
 @test "$FUT: simple test file" {
 	scoped_mktemp OUTPUT --suffix=.txt
 	scoped_mktemp TESTFILE --suffix=.bats
-	cat >"${TESTFILE}" <<-EOF
-	. "${DF_TESTS}/utils.sh"
-	function setup()
-	{
-		echo "setup world" >>${OUTPUT}
-		register_teardown_fn echo "registered teardown world"
-	}
-	function teardown()
-	{
-		fire_teardown_fns >>${OUTPUT}
-		echo "teardown world" >>${OUTPUT}
-	}
-	@test "test" {
-		echo "hello world" >>${OUTPUT}
-	}
+	cat - >"${TESTFILE}" <<-EOF
+		. "${DF_TESTS}/utils.sh"
+		function setup()
+		{
+			echo "setup world" >>${OUTPUT}
+			register_teardown_fn echo "registered teardown world"
+		}
+		function teardown()
+		{
+			fire_teardown_fns >>${OUTPUT}
+			echo "teardown world" >>${OUTPUT}
+		}
+		@test "test" {
+			echo "hello world" >>${OUTPUT}
+		}
 	EOF
 	run bats -t "${TESTFILE}"
 	assert_success
@@ -254,25 +254,66 @@ function _assert_fut_exe_mk_test()
 	assert_all_lines "setup world" "hello world" "registered teardown world" "teardown world"
 }
 
+@test "$FUT: setup and teardown inheritance" {
+	scoped_mktemp OUTPUT --suffix=.txt
+	scoped_mktemp DIR -d
+	mkdir --parents "${DIR}/tests/dir"
+	cat - >"${DIR}/tests/dir/fixture.sh" <<-EOF
+		source "${DF_TESTS}/utils.sh"
+		DOTFILES=${DIR}
+		DF_TESTS=${DIR}/tests
+		function setup_dir()
+		{
+			echo "setup dir/fixture.sh" >>${OUTPUT}
+		}
+		function teardown_dir()
+		{
+			echo "teardown dir/fixture.sh" >>${OUTPUT}
+		}
+	EOF
+	cat - >"${DIR}/tests/dir/file.bats" <<-EOF
+		source "${DIR}/tests/dir/fixture.sh"
+		function setup_file()
+		{
+			echo "setup dir/file.bats" >>${OUTPUT}
+		}
+		function teardown_file()
+		{
+			echo "teardown dir/file.bats" >>${OUTPUT}
+		}
+		@test "test" {
+			echo "hello world" >>${OUTPUT}
+		}
+	EOF
+	run bats -t "${DIR}/tests/dir/file.bats"
+	assert_success
+	run cat "$OUTPUT"
+	assert_all_lines "setup dir/fixture.sh" \
+					 "setup dir/file.bats" \
+					 "hello world" \
+					 "teardown dir/file.bats" \
+					 "teardown dir/fixture.sh"
+}
+
 @test "$FUT: blank \$HOME" {
 	scoped_mktemp OUTPUT --suffix=.txt
 	scoped_mktemp TESTFILE --suffix=.bats
 	TMPHOME="$(mktemp -p "${BATS_TMPDIR}" --suffix=home --dry-run "${BATS_TEST_NAME}".XXXXXXXX)"
-	cat >"${TESTFILE}" <<-EOF
-	. "${DF_TESTS}/utils.sh"
-	@test "test" {
-		rm ${OUTPUT} || true
-		exec >>${OUTPUT}
-		exec 2>>${OUTPUT}
-		unset -f temp_make
-		unset -f temp_del
-		unset -f fail
-		echo "Before: HOME=\${HOME} _ORIG_HOME=\${_ORIG_HOME}"
-		setup_blank_home
-		echo "During: HOME=\${HOME} _ORIG_HOME=\${_ORIG_HOME}"
-		teardown_blank_home
-		echo "After: HOME=\${HOME} _ORIG_HOME=\${_ORIG_HOME}"
-	}
+	cat - >"${TESTFILE}" <<-EOF
+		. "${DF_TESTS}/utils.sh"
+		@test "test" {
+			rm ${OUTPUT} || true
+			exec >>${OUTPUT}
+			exec 2>>${OUTPUT}
+			unset -f temp_make
+			unset -f temp_del
+			unset -f fail
+			echo "Before: HOME=\${HOME} _ORIG_HOME=\${_ORIG_HOME}"
+			setup_blank_home
+			echo "During: HOME=\${HOME} _ORIG_HOME=\${_ORIG_HOME}"
+			teardown_blank_home
+			echo "After: HOME=\${HOME} _ORIG_HOME=\${_ORIG_HOME}"
+		}
 	EOF
 
 	stub temp_make '--prefix=home : echo "'"${TMPHOME}"'"'
@@ -331,24 +372,24 @@ function _assert_fut_exe_mk_test()
 	stub temp_make '--prefix=home : echo "'"${TMPHOME}"'"'
 	stub temp_del "${TMPHOME}"
 	stub fail
-	cat >"${TESTFILE}" <<-EOF
-	. "${DF_TESTS}/utils.sh"
-	unset -f temp_make
-	unset -f temp_del
-	unset -f fail
-	function setup()
-	{
-		echo "Before: HOME=\${HOME} _ORIG_HOME=\${_ORIG_HOME}" >>${OUTPUT}
-		scoped_blank_home
-	}
-	function teardown()
-	{
-		fire_teardown_fns
-		echo "After: HOME=\${HOME} _ORIG_HOME=\${_ORIG_HOME}" >>${OUTPUT}
-	}
-	@test "test" {
-		echo "During: HOME=\${HOME} _ORIG_HOME=\${_ORIG_HOME}" >>${OUTPUT}
-	}
+	cat - >"${TESTFILE}" <<-EOF
+		. "${DF_TESTS}/utils.sh"
+		unset -f temp_make
+		unset -f temp_del
+		unset -f fail
+		function setup()
+		{
+			echo "Before: HOME=\${HOME} _ORIG_HOME=\${_ORIG_HOME}" >>${OUTPUT}
+			scoped_blank_home
+		}
+		function teardown()
+		{
+			fire_teardown_fns
+			echo "After: HOME=\${HOME} _ORIG_HOME=\${_ORIG_HOME}" >>${OUTPUT}
+		}
+		@test "test" {
+			echo "During: HOME=\${HOME} _ORIG_HOME=\${_ORIG_HOME}" >>${OUTPUT}
+		}
 	EOF
 	run bats -t "${TESTFILE}"
 	assert_success
@@ -364,17 +405,17 @@ function _assert_fut_exe_mk_test()
 @test "$FUT: teardown blank \$HOME only after setup" {
 	scoped_mktemp OUTPUT --suffix=.txt
 	scoped_mktemp TESTFILE --suffix=.bats
-	cat >"${TESTFILE}" <<-EOF
-	. "${DF_TESTS}/utils.sh"
-	@test "test" {
-		exec >>${OUTPUT}
-		exec 2>>${OUTPUT}
-		unset -f temp_make
-		unset -f temp_del
-		unset -f fail
-		teardown_blank_home
-		echo "After: HOME=\${HOME} _ORIG_HOME=\${_ORIG_HOME}"
-	}
+	cat - >"${TESTFILE}" <<-EOF
+		. "${DF_TESTS}/utils.sh"
+		@test "test" {
+			exec >>${OUTPUT}
+			exec 2>>${OUTPUT}
+			unset -f temp_make
+			unset -f temp_del
+			unset -f fail
+			teardown_blank_home
+			echo "After: HOME=\${HOME} _ORIG_HOME=\${_ORIG_HOME}"
+		}
 	EOF
 
 	stub fail '* : false'

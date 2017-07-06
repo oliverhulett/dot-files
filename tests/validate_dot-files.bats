@@ -3,8 +3,6 @@
 DF_TESTS="$(cd "${BATS_TEST_DIRNAME}" && pwd -P)"
 source "${DF_TESTS}/utils.sh"
 
-DOT_FILES="$(dirname "${DF_TESTS}")"
-
 DF_FILES=(
 	bash_common.sh
 	trap_stack.sh
@@ -89,15 +87,15 @@ DF_LISTS_GITHUB=(
 			;;
 	esac
 	for f in "${FILES[@]}"; do
-		if [ ! -e "${DOT_FILES}/$f" ]; then
+		if [ ! -e "${DOTFILES}/$f" ]; then
 			fail "Expected file does not exist: $f"
 		fi
-		if [ -x "${DOT_FILES}/$f" ]; then
+		if [ -x "${DOTFILES}/$f" ]; then
 			fail "File should not be executable: $f"
 		fi
 	done
 	for f in "${EXES[@]}"; do
-		if [ ! -x "${DOT_FILES}/$f" ]; then
+		if [ ! -x "${DOTFILES}/$f" ]; then
 			fail "Expected executable does not exist: $f"
 		fi
 	done
@@ -124,14 +122,14 @@ DF_LISTS_GITHUB=(
 			;;
 	esac
 	for f in "${LISTS[@]}"; do
-		if [ "$(command cat "${DOT_FILES}/$f")" != "$(command cat "${DOT_FILES}/$f" | sort -u)" ]; then
+		if [ "$(command cat "${DOTFILES}/$f")" != "$(command cat "${DOTFILES}/$f" | sort -u)" ]; then
 			fail "List file is not sorted or not unique: $f"
 		fi
 	done
 }
 
 @test "Validate: all ignored files exist in at least one of the remotes" {
-	OTHER_REMOTE="$(cd "${DOT_FILES}" && git remote | command grep -v origin || true)"
+	OTHER_REMOTE="$(cd "${DOTFILES}" && git remote | command grep -v origin || true)"
 	if [ -z "${OTHER_REMOTE}" ]; then
 		skip "cannot verify ignored files exist without other remote"
 		return
@@ -142,14 +140,14 @@ DF_LISTS_GITHUB=(
 
 	shopt -s nullglob
 	while read -r; do
-		if [ ! -e "${DOT_FILES}/${REPLY}" ] && [ ! -e "${CHECKOUT}/${REPLY}" ]; then
+		if [ ! -e "${DOTFILES}/${REPLY}" ] && [ ! -e "${CHECKOUT}/${REPLY}" ]; then
 			fail "Ignored file does not exist in either remote: $REPLY"
 		fi
-	done <"${DOT_FILES}/sync-other-remote.ignore.txt"
+	done <"${DOTFILES}/sync-other-remote.ignore.txt"
 }
 
 @test "Validate: ignored file list is not in ignored file list" {
-	refute command grep -wqE '^sync-other-remote.ignore.txt$' "${DOT_FILES}/sync-other-remote.ignore.txt"
+	refute command grep -wqE '^sync-other-remote.ignore.txt$' "${DOTFILES}/sync-other-remote.ignore.txt"
 }
 
 @test "Validate: dot-files exist" {
@@ -170,10 +168,10 @@ DF_LISTS_GITHUB=(
 	shopt -s nullglob
 	for l in "${FILES[@]}"; do
 		while read -r f _; do
-			if [ ! -e "${DOT_FILES}/$f" ]; then
+			if [ ! -e "${DOTFILES}/$f" ]; then
 				fail "Expected dot-file does not exist: $f (from $l)"
 			fi
-		done <"${DOT_FILES}/$l"
+		done <"${DOTFILES}/$l"
 	done
 }
 
@@ -186,5 +184,5 @@ DF_LISTS_GITHUB=(
 		if [ ! -e "/$REPLY" ]; then
 			fail "File to backup does not exist: $REPLY"
 		fi
-	done <"${DOT_FILES}/backups.txt"
+	done <"${DOTFILES}/backups.txt"
 }
