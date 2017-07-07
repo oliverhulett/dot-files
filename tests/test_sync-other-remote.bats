@@ -13,8 +13,6 @@ function md5()
 
 function setup_sync_other_remote()
 {
-	scoped_blank_home
-	populate_home
 	scoped_mktemp BARE_REPO_1 -d
 	scoped_mktemp BARE_REPO_2 -d
 	scoped_mktemp CHECKOUT_1 -d
@@ -490,7 +488,6 @@ function assert_checkout_clean()
 	git lg
 	"$(pwd)/${FUT}"
 	git lg
-	fail this
 	assert_success
 	assert_checkout_clean
 	git push
