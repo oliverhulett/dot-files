@@ -251,7 +251,10 @@ function _assert_fut_exe_mk_test()
 	run bats -t "${TESTFILE}"
 	assert_success
 	run cat "$OUTPUT"
-	assert_all_lines "setup world" "hello world" "registered teardown world" "teardown world"
+	assert_all_lines "setup world" \
+					 "hello world" \
+					 "registered teardown world" \
+					 "teardown world"
 }
 
 @test "$FUT: setup and teardown inheritance" {
@@ -282,6 +285,7 @@ function _assert_fut_exe_mk_test()
 			echo "teardown dir/file.bats" >>${OUTPUT}
 		}
 		@test "test" {
+			echo "\$PATH" >>${OUTPUT}
 			echo "hello world" >>${OUTPUT}
 		}
 	EOF
@@ -290,6 +294,7 @@ function _assert_fut_exe_mk_test()
 	run cat "$OUTPUT"
 	assert_all_lines "setup dir/fixture.sh" \
 					 "setup dir/file.bats" \
+					 "--regexp ^${DIR}/bin:" \
 					 "hello world" \
 					 "teardown dir/file.bats" \
 					 "teardown dir/fixture.sh"
@@ -424,4 +429,95 @@ function _assert_fut_exe_mk_test()
 	run cat "$OUTPUT"
 	assert_all_lines
 	unstub fail
+}
+
+@test "$FUT: populate blank \$HOME" {
+	run populate_home
+	assert_failure
+
+	scoped_blank_home
+
+	run populate_home
+	assert_success
+	assert_equal "$(find "${HOME}" -type l | sed -re "s:^${HOME}/?::" | sort)" "$(cut -d' ' -f2 "${DOTFILES}/dot-files-common" | sort)"
+	EXPECTED_FILES=(
+		".dotlogs/$(date '+%Y%m%d')_${USER}_dot-files.log"
+		".gitconfig.local"
+	)
+	assert_equal "$(find "${HOME}" -type f | sed -re "s:^${HOME}/?::" | sort)" "$(printf "%s\n" "${EXPECTED_FILES[@]}" | sort)"
+	while read -r SRC LINK; do
+		assert test -L "${HOME}/${LINK}"
+		assert_equal "$(readlink -f "${HOME}/${LINK}")" "${DOTFILES}/${SRC}"
+	done <"${DOTFILES}/dot-files-common"
+	refute test -z "$(git config --get user.name)"
+	refute test -z "$(git config --get user.email)"
+}
+
+function assert_array_eq()
+{
+	arr_name="$1"
+	shift
+	assert_equal "$(eval "echo \${#${arr_name}[@]}")" $#
+	i=0
+	for v in "$@"; do
+		assert_equal "$(eval "echo \${${arr_name}[$i]}")" "$v"
+		i=$((i + 1))
+	done
+}
+@test "$FUT: _set and _restore" {
+	set +b
+	set -m
+	orig="$-"
+	refute grep -q b <(echo $orig)
+	assert grep -q m <(echo $orig)
+
+	_set -b
+	assert_array_eq _SET_LIST b
+	assert grep -q b <(echo $-)
+	_restore b
+	assert_array_eq _SET_LIST
+	assert_equal "$-" "${orig}"
+
+	_set +m
+	assert_array_eq _SET_LIST m
+	refute grep -q m <(echo $-)
+	_restore m
+	assert_array_eq _SET_LIST
+	assert_equal "$-" "${orig}"
+
+	_set -bm
+	assert_array_eq _SET_LIST b m
+	assert grep -q b <(echo $-)
+	assert grep -q m <(echo $-)
+	_restore bm
+	assert_array_eq _SET_LIST
+	assert_equal "$-" "${orig}"
+
+	_set +bm
+	assert_array_eq _SET_LIST b m
+	refute grep -q b <(echo $-)
+	refute grep -q m <(echo $-)
+	_restore b
+	assert_array_eq _SET_LIST m
+	refute grep -q b <(echo $-)
+	refute grep -q m <(echo $-)
+	_restore m
+	assert_array_eq _SET_LIST
+	assert_equal "$-" "${orig}"
+
+	_set -b +m
+	assert_array_eq _SET_LIST b m
+	assert grep -q b <(echo $-)
+	refute grep -q m <(echo $-)
+	_restore m b
+	assert_array_eq _SET_LIST
+	assert_equal "$-" "${orig}"
+
+	_set -m +b
+	assert_array_eq _SET_LIST m b
+	refute grep -q b <(echo $-)
+	assert grep -q m <(echo $-)
+	_restore_all
+	assert_array_eq _SET_LIST
+	assert_equal "$-" "${orig}"
 }

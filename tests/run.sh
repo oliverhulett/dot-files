@@ -73,15 +73,17 @@ export TMPDIR="${BATS_TMPDIR}"
 rm -rf "${BATS_TMPDIR}"
 mkdir --parents "${BATS_TMPDIR}"
 
+TIME=( command time -f "\n%E (%P %%)\nMax Mem: %M kb\nCtx Sw: %w (Inv: %c)\nFS in: %I  FS out: %O" )
+
 if [ "${PARALLEL}" -eq 1 ]; then
-	bats "${ARGS}" "$@"
+	"${TIME[@]}" -- bats "${ARGS}" "$@"
 else
 	echo "1..${NUM_TESTS}"
 	proclst=
 	testnum_offset=0
 	for f in "$@"; do
 		numtests=$(bats --count "$f")
-		( trap "kill 0" EXIT; bats "${ARGS}" "$f" 2>&1; trap - EXIT ) &
+		( trap "kill 0" EXIT; "${TIME[@]}" -- bats "${ARGS}" "$f" 2>&1; trap - EXIT ) &
 		proclst="${proclst} $!"
 		testnum_offset=$((testnum_offset + numtests))
 	done

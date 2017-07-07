@@ -37,6 +37,7 @@ DF_EXES_GITHUB=()
 
 DF_LISTS=(
 	.gitignore
+	dot-files-common
 	gitignore
 	interactive_commands
 	sync-other-remote.ignore.txt
@@ -150,8 +151,9 @@ DF_LISTS_GITHUB=(
 	refute command grep -wqE '^sync-other-remote.ignore.txt$' "${DOTFILES}/sync-other-remote.ignore.txt"
 }
 
-@test "Validate: dot-files exist" {
-	declare -a FILES
+function _get_dot_files()
+{
+	declare -ag FILES
 	case "$(git config --get remote.origin.url)" in
 		"ssh://git@git.comp.optiver.com:7999/~olihul/dot-files.git" )
 			FILES=( dot-files dot-files.3100-centos7dev )
@@ -164,6 +166,9 @@ DF_LISTS_GITHUB=(
 			fail "Unexpected git remote url"
 			;;
 	esac
+}
+@test "Validate: dot-files exist" {
+	_get_dot_files
 
 	shopt -s nullglob
 	for l in "${FILES[@]}"; do
@@ -172,6 +177,39 @@ DF_LISTS_GITHUB=(
 				fail "Expected dot-file does not exist: $f (from $l)"
 			fi
 		done <"${DOTFILES}/$l"
+	done
+}
+
+@test "Validate: dot-files do not overwrite dot-files-common" {
+	_get_dot_files
+
+	for l in "${FILES[@]}"; do
+		while read -r _ DEST; do
+			if grep -qw "${DEST}" <(cut -d' ' -f2 "${DOTFILES}/dot-files-common"); then
+				fail "Specific dot-file overwrites destination from dot-files-common: ${DEST} (from $l)"
+			fi
+		done <"${DOTFILES}/$l"
+	done
+}
+
+@test "Validate: dot-files-common contains minimum required set of files" {
+	MINIMUM_SET=(
+		.bash_aliases/30-aliases.sh
+		.bash_logout
+		.bash_profile
+		.bashrc
+		.git_wrappers
+		.gitconfig
+		.gitignore
+		.interactive_commands
+		.lessfilter
+		.profile
+		.profile
+		.vim
+		.vimrc
+	)
+	for f in "${MINIMUM_SET[@]}"; do
+		assert grep -qw "$f" <(cut -d' ' -f2 "${DOTFILES}/dot-files-common")
 	done
 }
 
@@ -185,4 +223,10 @@ DF_LISTS_GITHUB=(
 			fail "File to backup does not exist: $REPLY"
 		fi
 	done <"${DOTFILES}/backups.txt"
+}
+
+@test "Validate: bats is a link to our submodule" {
+	assert test -L "${DOTFILES}/bin/bats"
+	assert_equal "$(readlink -f "${DOTFILES}/bin/bats")" "$(readlink -f "${DOTFILES}/tests/x_helpers/bats/bin/bats")"
+	assert_equal "$(command which bats)" "${DOTFILES}/bin/bats"
 }

@@ -14,9 +14,7 @@ function md5()
 function setup_sync_other_remote()
 {
 	scoped_blank_home
-	"${DOTFILES}/setup-home.sh" -q
-	ln -s "${DOTFILES}" "${HOME}/dot-files"
-	scoped_env PATH="${DOTFILES}/bin:${PATH}"
+	populate_home
 	scoped_mktemp BARE_REPO_1 -d
 	scoped_mktemp BARE_REPO_2 -d
 	scoped_mktemp CHECKOUT_1 -d

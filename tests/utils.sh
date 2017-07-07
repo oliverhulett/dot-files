@@ -25,7 +25,7 @@ function _check_caller_is_test()
 }
 
 # The pattern for setup and teardown inheritance is that only one setup() and teardown() function should be defined,
-# namely these here.  Test files and test's fixture files should define setup_*() and teardown_* functions, where
+# namely these here.  Test files and test's fixture files should define setup_*() and teardown_*() functions, where
 # * will be replaced by each element in turn in the test's fully-qualified name.
 # A test's fully-qualified name is: ${DF_TESTS}/<path>/<to>/test_<file>.bats:<name>
 function _call_hierarchy()
@@ -72,6 +72,7 @@ function setup()
 		assert_fut_exe
 	fi
 
+	scoped_env PATH="${DOTFILES}/bin:${PATH}"
 	_call_hierarchy setup "$@"
 }
 function teardown()
@@ -209,26 +210,59 @@ function setup_blank_home()
 		export HOME="$tmphome"
 	fi
 }
+function assert_home_is_temp()
+{
+	if [ -z "${_ORIG_HOME}" ]; then
+		fail "\$_ORIG_HOME not set; can't teardown blank home"
+		return 1
+	elif [ "${HOME}" == "${_ORIG_HOME}" ]; then
+		fail "\$HOME wasn't changed; not deleting original \$HOME"
+		return 1
+	fi
+	return 0
+}
 function teardown_blank_home()
 {
 	_check_caller_is_test teardown_blank_home || return $?
 	# Paranoid about deleting $HOME.  `temp_del` should only delete things it created.
 	# `fail` doesn't actually work here?
-	if [ -z "${_ORIG_HOME}" ]; then
-		fail "\$_ORIG_HOME not set; can't teardown blank home"
-		return $?
-	elif [ "${HOME}" == "${_ORIG_HOME}" ]; then
-		fail "\$HOME wasn't changed; not deleting original \$HOME"
-		return $?
-	else
-		temp_del "${HOME}"
-	fi
+	assert_home_is_temp
+	temp_del "${HOME}"
 	export HOME="${_ORIG_HOME}"
 }
 function scoped_blank_home()
 {
 	setup_blank_home
 	register_teardown_fn teardown_blank_home
+}
+function populate_home()
+{
+	_set -e
+	assert_home_is_temp
+	stub git "submodule init" "submodule sync" "submodule update"
+	# Calling `hostname` will return an 'none', meaning only the common stuff will be installed.
+	refute test -e "${DOTFILES}/crontab.none"
+	refute test -e "${DOTFILES}/dot-files.none"
+	touch "${DOTFILES}/crontab.none" "${DOTFILES}/dot-files.none"
+
+	stub crontab '*'
+	stub hostname "-s : echo none"
+
+	"${DOTFILES}/setup-home.sh"
+
+	# Local git settings are needed, even if the common stuff didn't install them.
+	rm "${HOME}/.gitconfig.local" || true
+	cat >"${HOME}/.gitconfig.local" <<-EOF
+	[user]
+	name = Me
+	email = me@here
+	EOF
+
+	unstub crontab
+	rm "${DOTFILES}/crontab.none" "${DOTFILES}/dot-files.none"
+	unstub hostname
+	unstub git
+	_restore e
 }
 
 # A common pattern is to assert all lines of output.  Each argument is a line, in order.  All lines must be specified.
@@ -267,4 +301,36 @@ function assert_all_lines()
 		errs=$((errs + ${#lines[@]} - cnt))
 	fi
 	return $errs
+}
+
+## TODO:  These are generally useful, we should move them somewhere common and not test related.
+declare -ga _SET_LIST
+function _set()
+{
+	for a in "$@"; do
+		for (( i=1; i<${#a}; i++ )); do
+			v="${a:$i:1}"
+			eval "declare -g _set${v}=+${v}"
+			[[ $- == *${v}* ]] && eval "_set${v}=-${v}"
+			_SET_LIST=( ${_SET_LIST[@]/$v} )
+			_SET_LIST[${#_SET_LIST[@]}]="$v"
+		done
+		set "$a"
+	done
+}
+function _restore()
+{
+	for a in "$@"; do
+		for (( i=0; i<${#a}; i++ )); do
+			v="${a:$i:1}"
+			eval "set \${_set${v}:?}"
+			echo "${_SET_LIST[@]}"
+			_SET_LIST=( ${_SET_LIST[@]/$v} )
+			echo "${_SET_LIST[@]}"
+		done
+	done
+}
+function _restore_all()
+{
+	_restore "${_SET_LIST[@]}"
 }
