@@ -8,13 +8,8 @@ IS_EXE="no"
 
 function setup_gitconfig()
 {
-	scoped_blank_home
-	cp "${DOTFILES}/gitconfig" "${DOTFILES}/gitconfig.home" "${DOTFILES}/gitconfig.optiver" "${HOME}/"
-	crudini --inplace --set "${HOME}/gitconfig.home" include path "${HOME}/gitconfig"
-	crudini --inplace --set "${HOME}/gitconfig.optiver" include path "${HOME}/gitconfig"
-	ln -vfs gitconfig.home "${HOME}/.gitconfig"
-	ln -vfs "${DOTFILES}/gitignore" "${HOME}/.gitignore"
-	ln -vfs "${DOTFILES}/git_wrappers" "${HOME}/.git_wrappers"
+	rm "${HOME}/.gitconfig.local"
+	_link_local_gitconfig home
 
 	scoped_mktemp BARE_REPO -d
 	scoped_mktemp CHECKOUT -d
@@ -22,9 +17,10 @@ function setup_gitconfig()
 	( cd "${CHECKOUT}" && git clone "${BARE_REPO}" repo )
 	( cd "${CHECKOUT}/repo" && touch nothing && git add nothing && git commit -m"nothing" )
 }
-function teardown_gitconfig()
+
+function _link_local_gitconfig()
 {
-	assert false
+	ln -fsv "${DOTFILES}/gitconfig.$1" "${HOME}/.gitconfig.local"
 }
 
 function assert_files()
@@ -47,11 +43,11 @@ function assert_status()
 }
 
 @test "$FUT: home and Optiver username and e-mail are correct" {
-	ln -vfs gitconfig.home "${HOME}/.gitconfig"
+	_link_local_gitconfig home
 	run git whoami
 	assert_output "Oliver Hulett <oliver.hulett@gmail.com>"
 
-	ln -vfs gitconfig.optiver "${HOME}/.gitconfig"
+	_link_local_gitconfig optiver
 	run git whoami
 	assert_output "Oliver Hulett <oliver.hulett@optiver.com.au>"
 }

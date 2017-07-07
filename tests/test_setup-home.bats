@@ -8,7 +8,6 @@ FUT="setup-home.sh"
 
 function setup_setup_home()
 {
-	scoped_blank_home
 	# We never want to actually do the git pull bits for testing purposes...
 	stub git "submodule init" "submodule sync" "submodule update"
 }

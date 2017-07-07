@@ -73,6 +73,8 @@ function setup()
 	fi
 
 	scoped_env PATH="${DOTFILES}/bin:${PATH}"
+	scoped_blank_home
+	populate_home
 	_call_hierarchy setup "$@"
 }
 function teardown()

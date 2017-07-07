@@ -55,6 +55,11 @@ DF_LISTS_GITHUB=(
 	dot-files.prometheus
 )
 
+function setup()
+{
+	:
+}
+
 @test "Validate: required files exist" {
 	declare -a FILES EXES
 	case "$(git config --get remote.origin.url)" in
@@ -229,4 +234,18 @@ function _get_dot_files()
 	assert test -L "${DOTFILES}/bin/bats"
 	assert_equal "$(readlink -f "${DOTFILES}/bin/bats")" "$(readlink -f "${DOTFILES}/tests/x_helpers/bats/bin/bats")"
 	assert_equal "$(command which bats)" "${DOTFILES}/bin/bats"
+}
+
+@test "Validate: no tests are being skipped by \$ONLY= or \$SKIP=" {
+	FILES=(
+		$(find "${DOTFILES}/tests" \
+			\( -name x_helpers -prune -or -true \) \
+			-type f -name '*.bats' -not -name 'test_tests-utils.bats' -not -name 'validate_dot-files.bats' \
+			\( -exec grep -qw ONLY= "{}" \; -or -exec grep -qw SKIP= "{}" \; \) \
+			-print \
+		)
+	)
+	if [ ${#FILES[@]} -ne 0 ]; then
+		fail "Tests being skipped by \$ONLY= or \$SKIP=; these are intended for debugging only.  (in ${FILES[*]})"
+	fi
 }
