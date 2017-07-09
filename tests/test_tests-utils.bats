@@ -263,7 +263,6 @@ function _assert_fut_exe_mk_test()
 	mkdir --parents "${DIR}/tests/dir"
 	cat - >"${DIR}/tests/dir/fixture.sh" <<-EOF
 		source "${DF_TESTS}/utils.sh"
-		DOTFILES=${DIR}
 		DF_TESTS=${DIR}/tests
 		function setup_dir()
 		{
@@ -294,7 +293,7 @@ function _assert_fut_exe_mk_test()
 	run cat "$OUTPUT"
 	assert_all_lines "setup dir/fixture.sh" \
 					 "setup dir/file.bats" \
-					 "--regexp ^${DIR}/bin:" \
+					 "--regexp ^${DOTFILES}/bin:" \
 					 "hello world" \
 					 "teardown dir/file.bats" \
 					 "teardown dir/fixture.sh"
@@ -306,6 +305,10 @@ function _assert_fut_exe_mk_test()
 	TMPHOME="$(mktemp -p "${BATS_TMPDIR}" --suffix=home --dry-run "${BATS_TEST_NAME}".XXXXXXXX)"
 	cat - >"${TESTFILE}" <<-EOF
 		. "${DF_TESTS}/utils.sh"
+		function setup()
+		{
+			:
+		}
 		@test "test" {
 			rm ${OUTPUT} || true
 			exec >>${OUTPUT}
@@ -412,6 +415,10 @@ function _assert_fut_exe_mk_test()
 	scoped_mktemp TESTFILE --suffix=.bats
 	cat - >"${TESTFILE}" <<-EOF
 		. "${DF_TESTS}/utils.sh"
+		function setup()
+		{
+			:
+		}
 		@test "test" {
 			exec >>${OUTPUT}
 			exec 2>>${OUTPUT}

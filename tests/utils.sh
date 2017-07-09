@@ -1,5 +1,5 @@
-## A collection of utils to help testing with BATS
 # shellcheck shell=bash
+## A collection of utils to help testing with BATS
 
 ## Load bats libraries
 DF_TESTS="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
@@ -72,9 +72,9 @@ function setup()
 		assert_fut_exe
 	fi
 
-	scoped_env PATH="${DOTFILES}/bin:${PATH}"
 	scoped_blank_home
 	populate_home
+	scoped_env PATH="${DOTFILES}/bin:${PATH}"
 	_call_hierarchy setup "$@"
 }
 function teardown()
@@ -253,7 +253,7 @@ function populate_home()
 	"${DOTFILES}/setup-home.sh"
 
 	# Local git settings are needed, even if the common stuff didn't install them.
-	rm "${HOME}/.gitconfig.local" || true
+	rm "${HOME}/.gitconfig.local" 2>/dev/null || true
 	cat >"${HOME}/.gitconfig.local" <<-EOF
 	[user]
 	name = Me
