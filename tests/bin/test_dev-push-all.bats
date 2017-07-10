@@ -5,9 +5,8 @@ source "${DF_TESTS}/utils.sh"
 
 FUT="bin/dev-push-all.sh"
 
-function setup()
+function setup_dev_push_all()
 {
-	assert_fut_exe
 	scoped_mktemp TEST_FILE_1 --suffix=.txt
 	scoped_mktemp TEST_FILE_2 --suffix=.txt
 	scoped_mktemp TEST_DIR_1 -d

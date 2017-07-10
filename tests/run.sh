@@ -8,12 +8,15 @@ export HERE DOTFILES PATH
 function help()
 {
 	bats --help
+	echo "Pretty mode doesn't work here, until I can capture and aggregate the summaries."
 	echo
 	echo "Additional options:"
-	printf "%- 14s %s"  "-l, --parallel=N" "Run tests in parallel, using N processes.  Defaults to 2 * \`nproc's (2 * $(nproc))"
+	printf "  %- 14s %s\n"  "-l, --list" "List the test files that would be run with the given arguments."
+	printf "  %- 18s %s\n"  "-r, --parallel=N" "Run tests in parallel, using N processes.  Defaults to 2 * \`nproc's (2 * $(nproc))"
+	echo
 }
 
-OPTS=$(getopt -o "chtvl:" --long "count,help,tap,version,parallel:" -n "$(basename -- "$0")" -- "$@")
+OPTS=$(getopt -o "chtvlr:" --long "count,help,tap,version,list,parallel:" -n "$(basename -- "$0")" -- "$@")
 es=$?
 if [ $es != 0 ]; then
 	help
@@ -23,6 +26,7 @@ fi
 PARALLEL=$(( $(nproc) * 2 ))
 ARGS=( "-t" )
 COUNT="false"
+LIST="false"
 TAP="true"
 eval set -- "${OPTS}"
 while true; do
@@ -39,6 +43,10 @@ while true; do
 			COUNT="true"
 			shift
 			;;
+		-l | --list )
+			LIST="true"
+			shift
+			;;
 		-t | --tap )
 			ARGS=( ${ARGS[@]/$1} )
 			ARGS[${#ARGS[@]}]="$1"
@@ -50,7 +58,7 @@ while true; do
 			ARGS[${#ARGS[@]}]="$1"
 			shift
 			;;
-		-l | --parallel )
+		-r | --parallel )
 			if [ -n "$2" ] && command grep -qwE '^[0-9]+$' <(echo "$2") 2>/dev/null && [ "$2" -ne 0 ]; then
 				PARALLEL=$2
 			fi
@@ -94,7 +102,13 @@ PROCESSES="processes"
 if [ "${PARALLEL}" -eq 1 ]; then
 	PROCESSES="process"
 fi
-echo "Running ${NUM_TESTS} ${TESTS} in $# ${FILES} using at most ${PARALLEL} ${PROCESSES}"
+if [ "${LIST}" == "true" ]; then
+	echo "Running ${NUM_TESTS} ${TESTS} in $# ${FILES} using at most ${PARALLEL} ${PROCESSES}"
+	printf "%s\n" "$@"
+	exit
+else
+	echo "Running ${NUM_TESTS} ${TESTS} in $# ${FILES} using at most ${PARALLEL} ${PROCESSES}"
+fi
 
 TD="/tmp/bats/$(date '+%Y%m%d-%H%M%S')"
 rm -rf "${TD}"
