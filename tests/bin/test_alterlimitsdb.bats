@@ -5,9 +5,11 @@ source "${DF_TESTS}/utils.sh"
 
 FUT="bin/alterlimitsdb.sh"
 
-function setup()
+function setup_alterlimitsdb()
 {
-	assert_fut_exe
+	assert [ -d "/home/olihul/.subversion" ]
+	refute [ -d "${HOME}/.subversion" ]
+	ln -s /home/olihul/.subversion "${HOME}/.subversion"
 	ORIG_DB_URI="postgresql://operat@devenv002:6002/limitsdb_ml"
 	MODULE="Server.DataModel.alterlimitsdb"
 }

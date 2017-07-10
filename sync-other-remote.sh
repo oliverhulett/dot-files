@@ -1,6 +1,7 @@
 #!/bin/bash
 
 HERE="$(dirname "${BASH_SOURCE[0]}")"
+source "${HERE}/bash_common.sh" 2>/dev/null && eval "${capture_output}" || true
 cd "${HERE}" || ( echo "Failed to enter run directory"; exit 1 )
 
 OTHER_REMOTE="$(git remote | command grep -v origin)"
@@ -53,6 +54,8 @@ function git()
 	done
 	if [ $cnt -lt $# ]; then
 		echo " -- ..."
+	else
+		echo
 	fi
 	command git "$@"
 	#echo

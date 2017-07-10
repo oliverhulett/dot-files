@@ -5,10 +5,8 @@ source "${DF_TESTS}/utils.sh"
 
 FUT="bin/clone.sh"
 
-function setup()
+function setup_clone()
 {
-	assert_fut_exe
-	scoped_blank_home
 	GIT_URL_BASE="ssh://git@git.comp.optiver.com:7999"
 	REPO_DIR="${HOME}/repo"
 }
