@@ -14,6 +14,7 @@ bash_aliases/39-aliases-spell.sh .bash_aliases/39-aliases-spell.sh
 bash_logout .bash_logout
 bash_profile .bash_profile
 bashrc .bashrc
+flake8 .config/flake8
 gitconfig .gitconfig
 gitignore .gitignore
 git_wrappers .git_wrappers
