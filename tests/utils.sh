@@ -76,7 +76,7 @@ function setup()
 	populate_home
 	# TODO:  Sanitise for location of DOTFILES...
 	#source "${HOME}/.bashrc"
-	scoped_env PATH="${DOTFILES}/bin:${PATH}"
+	scoped_env PATH="${BATS_MOCK_BINDIR}:${DOTFILES}/bin:${PATH}"
 
 	_call_hierarchy setup "$@"
 }
