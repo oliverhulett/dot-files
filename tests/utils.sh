@@ -245,17 +245,22 @@ function populate_home()
 	_set -e
 	assert_home_is_temp
 	stub git "submodule init" "submodule sync" "submodule update"
-	# Calling `hostname` will return a 'none', meaning only the common stuff will be installed.
-	SFX="none.${RANDOM}"
-	refute test -e "${DOTFILES}/crontab.${SFX}"
-	refute test -e "${DOTFILES}/dot-files.${SFX}"
 
 	if [ -e "${DOTFILES}/crontab" ]; then
 		stub crontab '*'
 	fi
+
+	# Calling `hostname` will return a 'none', meaning only the common stuff will be installed.
+	SFX="none.${RANDOM}"
 	stub hostname "-s : echo ${SFX}"
 
+	refute test -e "${DOTFILES}/crontab.${SFX}"
+	refute test -s "${DOTFILES}/dot-files.${SFX}"
+	touch "${DOTFILES}/dot-files.${SFX}"
+
 	"${DOTFILES}/setup-home.sh"
+
+	rm "${DOTFILES}/dot-files.${SFX}" 2>/dev/null || true
 
 	# Local git settings are needed, even if the common stuff didn't install them.
 	rm "${HOME}/.gitconfig.local" 2>/dev/null || true
