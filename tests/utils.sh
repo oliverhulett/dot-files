@@ -74,7 +74,10 @@ function setup()
 
 	scoped_blank_home
 	populate_home
+	# TODO:  Sanitise for location of DOTFILES...
+	#source "${HOME}/.bashrc"
 	scoped_env PATH="${DOTFILES}/bin:${PATH}"
+
 	_call_hierarchy setup "$@"
 }
 function teardown()
@@ -242,13 +245,15 @@ function populate_home()
 	_set -e
 	assert_home_is_temp
 	stub git "submodule init" "submodule sync" "submodule update"
-	# Calling `hostname` will return an 'none', meaning only the common stuff will be installed.
-	refute test -e "${DOTFILES}/crontab.none"
-	refute test -e "${DOTFILES}/dot-files.none"
-	touch "${DOTFILES}/crontab.none" "${DOTFILES}/dot-files.none"
+	# Calling `hostname` will return a 'none', meaning only the common stuff will be installed.
+	SFX="none.${RANDOM}"
+	refute test -e "${DOTFILES}/crontab.${SFX}"
+	refute test -e "${DOTFILES}/dot-files.${SFX}"
 
-	stub crontab '*'
-	stub hostname "-s : echo none"
+	if [ -e "${DOTFILES}/crontab" ]; then
+		stub crontab '*'
+	fi
+	stub hostname "-s : echo ${SFX}"
 
 	"${DOTFILES}/setup-home.sh"
 
@@ -260,8 +265,9 @@ function populate_home()
 	email = me@here
 	EOF
 
-	unstub crontab
-	rm "${DOTFILES}/crontab.none" "${DOTFILES}/dot-files.none"
+	if [ -e "${DOTFILES}/crontab" ]; then
+		unstub crontab
+	fi
 	unstub hostname
 	unstub git
 	_restore e

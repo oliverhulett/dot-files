@@ -71,15 +71,16 @@ function _do_test_for_host()
 }
 
 @test "$FUT: host specific files" {
-	refute test -e "${DOTFILES}/dot-files.none"
-	refute test -e "${DOTFILES}/crontab.none"
-	touch "${DOTFILES}/dot-files.none" "${DOTFILES}/crontab.none"
-	register_teardown_fn rm "${DOTFILES}/dot-files.none" "${DOTFILES}/crontab.none"
-	echo 'dot-files.none file1' >>"${DOTFILES}/dot-files.none"
-	echo 'dot-files.none file2' >>"${DOTFILES}/dot-files.none"
+	SFX="hsftest"
+	refute test -e "${DOTFILES}/dot-files.${SFX}"
+	refute test -e "${DOTFILES}/crontab.${SFX}"
+	touch "${DOTFILES}/dot-files.${SFX}" "${DOTFILES}/crontab.${SFX}"
+	register_teardown_fn rm "${DOTFILES}/dot-files.${SFX}" "${DOTFILES}/crontab.${SFX}"
+	echo "dot-files.${SFX} file1" >>"${DOTFILES}/dot-files.${SFX}"
+	echo "dot-files.${SFX} file2" >>"${DOTFILES}/dot-files.${SFX}"
 
-	stub hostname "-s : echo NonE"
-	_do_test_for_host none
+	stub hostname "-s : echo ${SFX}"
+	_do_test_for_host ${SFX}
 	unstub hostname
 }
 

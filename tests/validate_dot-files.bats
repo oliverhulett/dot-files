@@ -233,7 +233,6 @@ function _get_dot_files()
 @test "Validate: bats is a link to our submodule" {
 	assert test -L "${DOTFILES}/bin/bats"
 	assert_equal "$(readlink -f "${DOTFILES}/bin/bats")" "$(readlink -f "${DOTFILES}/tests/x_helpers/bats/bin/bats")"
-	assert_equal "$(readlink -f "$(command which bats)")" "$(readlink -f "${DOTFILES}/tests/x_helpers/bats/bin/bats")"
 }
 
 @test "Validate: no tests are being skipped by \$ONLY= or \$SKIP=" {
