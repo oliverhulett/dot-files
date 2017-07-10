@@ -57,37 +57,7 @@ PIP_CONFIG_FILE="${HOME}/dot-files/pip.conf" sudo pip install pygments flake8
 echo
 echo "Installing some more things I don't want to docker all the time..."
 
-if [ -e "${HOME}/.bash_aliases/19-env-proxy.sh" ]; then
-	source "${HOME}/.bash_aliases/19-env-proxy.sh"
-	proxy_setup -qt ${USER}
-fi
-
-echo
-echo "Drone..."
-TMPDIR="$(mktemp -d)"
-( cd "${TMPDIR}" && \
-	curl -sS http://downloads.drone.io/release/linux/amd64/drone.tar.gz | tar zx && \
-	sudo install -t /usr/local/bin drone; \
-	rm drone 2>/dev/null || true
-)
-rm -rf "${TMPDIR}"
-
-echo
-echo "ShellCheck..."
-TMPDIR="$(mktemp -d)"
-( cd "${TMPDIR}" && \
-	HASKELL="https://haskell.org/platform/download/7.10.2/haskell-platform-7.10.2-a-unknown-linux-deb7.tar.gz" && \
-	wget --no-verbose --limit-rate=5m "${HASKELL}" && tar -xzvf "$(basename "${HASKELL}")" && \
-	sudo ./install-haskell-platform.sh && \
-	cabal update && \
-	sudo cabal --config-file="${HOME}/.cabal/config" install --global --prefix=/usr/local ShellCheck
-)
-rm -rf "${TMPDIR}"
-
-if [ -e "${HOME}/.bash_aliases/19-env-proxy.sh" ]; then
-	source "${HOME}/.bash_aliases/19-env-proxy.sh"
-	proxy_setup -q ${USER}
-fi
+"$(dirname "$0")"/install-things-w-custom-proxy.sh "$@"
 
 echo
 echo "Copying cc-env custom files for eclipse indexer and friends..."
