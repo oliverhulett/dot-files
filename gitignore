@@ -10,4 +10,5 @@
 *.sublime-project
 .sublime-project.sublime-workspace
 *.sublime-workspace
+*.swp
 .tags*

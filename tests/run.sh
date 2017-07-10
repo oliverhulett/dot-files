@@ -5,37 +5,53 @@ DOTFILES="$(dirname "${HERE}")"
 PATH="${DOTFILES}/bin:$PATH"
 export HERE DOTFILES PATH
 
-OPTS=$(getopt -o "chptvl:" --long "count,help,pretty,tap,version,parallel:" -n "$(basename -- "$0")" -- "$@")
+function help()
+{
+	bats --help
+	echo
+	echo "Additional options:"
+	printf "%- 14s %s"  "-l, --parallel=N" "Run tests in parallel, using N processes.  Defaults to 2 * \`nproc's (2 * $(nproc))"
+}
+
+OPTS=$(getopt -o "chtvl:" --long "count,help,tap,version,parallel:" -n "$(basename -- "$0")" -- "$@")
 es=$?
 if [ $es != 0 ]; then
-	bats --help
+	help
 	exit $es
 fi
 
-PARALLEL=$(nproc)
-PARALLEL=1
-ARGS="-t"
+PARALLEL=$(( $(nproc) * 2 ))
+ARGS=( "-t" )
+COUNT="false"
+TAP="true"
 eval set -- "${OPTS}"
 while true; do
 	case "$1" in
 		-h | '-?' | --help )
-			bats --help
+			help
 			exit
 			;;
 		-v | --version )
 			bats --version
 			exit
 			;;
-		-c | --count | \
-		-p | --pretty | \
+		-c | --count )
+			COUNT="true"
+			shift
+			;;
 		-t | --tap )
-			ARGS="$1"
+			ARGS=( ${ARGS[@]/$1} )
+			ARGS[${#ARGS[@]}]="$1"
+			shift
+			;;
+		-p | --pretty )
+			TAP="false"
+			ARGS=( ${ARGS[@]/$1} )
+			ARGS[${#ARGS[@]}]="$1"
 			shift
 			;;
 		-l | --parallel )
-			if [ -z "$2" ] || ! echo "$2" | command grep -vqE '[0-9]+' 2>/dev/null || [ "$2" -le 0 ]; then
-				PARALLEL=1
-			else
+			if [ -n "$2" ] && command grep -qwE '^[0-9]+$' <(echo "$2") 2>/dev/null && [ "$2" -ne 0 ]; then
 				PARALLEL=$2
 			fi
 			shift 2
@@ -50,15 +66,16 @@ function get_all_tests()
 	find "$(dirname "${BASH_SOURCE[0]}")" -not \( -name '.git' -prune -or -name '.svn' -prune -or -name '.venv' -prune -or -name '.virtualenv' -prune -or -name 'x_*' -prune \) \( -name '*.bats' \) | sort -u
 }
 
-
-function checkprocs()
-{
-	( cd /proc >/dev/null 2>/dev/null && command ls -1d "$@" 2>/dev/null )
-}
-
+# shellcheck disable=SC2046
+set -- $(printf "%s\n" "$@" | sort -u)
 if [ $# -eq 0 ]; then
 	# shellcheck disable=SC2046
 	set -- $(get_all_tests)
+fi
+
+if [ "${COUNT}" == "true" ]; then
+	bats --count "$@"
+	exit
 fi
 
 NUM_TESTS=$(bats --count "$@")
@@ -66,25 +83,49 @@ if [ "$#" -lt "${PARALLEL}" ]; then
 	PARALLEL=$#
 fi
 
-BATS_TMPDIR="/tmp/bats/$(date '+%Y%m%d-%H%M%S')"
-export BATS_TMPDIR
-export BATS_MOCK_TMPDIR="${BATS_TMPDIR}"
-export TMPDIR="${BATS_TMPDIR}"
-rm -rf "${BATS_TMPDIR}"
-mkdir --parents "${BATS_TMPDIR}"
-
+TESTS="tests"
+if [ "${NUM_TESTS}" -eq 1 ]; then
+	TESTS="test"
+fi
+FILES="files"
+if [ "$#" -eq 1 ]; then
+	FILES="file"
+fi
+PROCESSES="processes"
 if [ "${PARALLEL}" -eq 1 ]; then
-	bats "${ARGS}" "$@"
-else
-	echo "1..${NUM_TESTS}"
-	proclst=
-	testnum_offset=0
-	for f in "$@"; do
-		numtests=$(bats --count "$f")
-		( trap "kill 0" EXIT; bats "${ARGS}" "$f" 2>&1; trap - EXIT ) &
-		proclst="${proclst} $!"
-		testnum_offset=$((testnum_offset + numtests))
-	done
-	# shellcheck disable=SC2086
-	wait ${proclst}
+	PROCESSES="process"
+fi
+echo "Running ${NUM_TESTS} ${TESTS} in $# ${FILES} using at most ${PARALLEL} ${PROCESSES}"
+
+TD="/tmp/bats/$(date '+%Y%m%d-%H%M%S')"
+rm -rf "${TD}"
+mkdir --parents "${TD}"
+
+WIDTH=0
+for a in "$@"; do
+	f="$(basename -- "$a" .bats)"
+	if [ ${#f} -gt ${WIDTH} ]; then
+		WIDTH=${#f}
+	fi
+done
+
+TIME=( command time -f "\n%E (%P)\nMax Mem: %M kb\nCtx Sw: %w (Inv: %c)\nFS in: %I  FS out: %O" )
+
+# Can't actually be false for the moment, maybe later we'll add \`bats --pretty' mode back in...
+if [ "${TAP}" == "true" ]; then
+	printf "%s\0" "$@" | "${TIME[@]}" xargs -r0 -n 1 -P "${PARALLEL}" -I{} sh -c " \
+		export FN=\"\$(basename -- \"{}\" .bats)\"; \
+		export TD=\"${TD}/\${FN}\"; \
+		mkdir \"\$TD\"; \
+		export TMPDIR=\"\$TD\"; \
+		export BATS_TMPDIR=\"\$TD\"; \
+		export BATS_MOCK_TMPDIR=\"\$TD\"; \
+		bats ${ARGS[*]} {} | sed -nr \
+			-e \"2,\\\$s/^(ok [0-9]+ # skip)/\$(tput setaf 4)\\1/\" \
+			-e \"2,\\\$s/^(ok)/\$(tput setaf 2)\\1/\" \
+			-e \"2,\\\$s/^(not ok)/\$(tput setaf 1)\\1/\" \
+			-e \"2,\\\$s/$/\$(tput sgr0)/\" \
+			-e \"2,\\\$s/^/\$(printf \"%- ${WIDTH}s\" \"\${FN}\"): /p\" \
+		; \
+	"
 fi

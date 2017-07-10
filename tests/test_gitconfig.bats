@@ -1,27 +1,26 @@
 #!/usr/bin/env bats
 
 DF_TESTS="$(cd "${BATS_TEST_DIRNAME}" && pwd -P)"
-DOTFILES="$(dirname "${DF_TESTS}")"
 source "${DF_TESTS}/utils.sh"
 
 FUT="gitconfig"
+IS_EXE="no"
 
-function setup()
+function setup_gitconfig()
 {
-	should_run
-	scoped_blank_home
-	cp "${DOTFILES}/gitconfig" "${DOTFILES}/gitconfig.home" "${DOTFILES}/gitconfig.optiver" "${HOME}/"
-	crudini --inplace --set "${HOME}/gitconfig.home" include path "${HOME}/gitconfig"
-	crudini --inplace --set "${HOME}/gitconfig.optiver" include path "${HOME}/gitconfig"
-	ln -vfs gitconfig.home "${HOME}/.gitconfig"
-	ln -vfs "${DOTFILES}/gitignore" "${HOME}/.gitignore"
-	ln -vfs "${DOTFILES}/git_wrappers" "${HOME}/.git_wrappers"
+	rm "${HOME}/.gitconfig.local"
+	_link_local_gitconfig home
 
 	scoped_mktemp BARE_REPO -d
 	scoped_mktemp CHECKOUT -d
 	( cd "${BARE_REPO}" && git init --bare )
 	( cd "${CHECKOUT}" && git clone "${BARE_REPO}" repo )
 	( cd "${CHECKOUT}/repo" && touch nothing && git add nothing && git commit -m"nothing" )
+}
+
+function _link_local_gitconfig()
+{
+	ln -fsv "${DOTFILES}/gitconfig.$1" "${HOME}/.gitconfig.local"
 }
 
 function assert_files()
@@ -44,11 +43,11 @@ function assert_status()
 }
 
 @test "$FUT: home and Optiver username and e-mail are correct" {
-	ln -vfs gitconfig.home "${HOME}/.gitconfig"
+	_link_local_gitconfig home
 	run git whoami
 	assert_output "Oliver Hulett <oliver.hulett@gmail.com>"
 
-	ln -vfs gitconfig.optiver "${HOME}/.gitconfig"
+	_link_local_gitconfig optiver
 	run git whoami
 	assert_output "Oliver Hulett <oliver.hulett@optiver.com.au>"
 }
