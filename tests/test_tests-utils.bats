@@ -273,30 +273,52 @@ function _assert_fut_exe_mk_test()
 			echo "teardown dir/fixture.sh" >>${OUTPUT}
 		}
 	EOF
-	cat - >"${DIR}/tests/dir/file.bats" <<-EOF
+	cat - >"${DIR}/tests/dir/file1.bats" <<-EOF
 		source "${DIR}/tests/dir/fixture.sh"
-		function setup_file()
+		function setup_file1()
 		{
-			echo "setup dir/file.bats" >>${OUTPUT}
+			echo "setup dir/file1.bats" >>${OUTPUT}
 		}
-		function teardown_file()
+		function teardown_file1()
 		{
-			echo "teardown dir/file.bats" >>${OUTPUT}
+			echo "teardown dir/file1.bats" >>${OUTPUT}
 		}
 		@test "test" {
 			echo "\$PATH" >>${OUTPUT}
 			echo "hello world" >>${OUTPUT}
 		}
 	EOF
-	run bats -t "${DIR}/tests/dir/file.bats"
+	run bats -t "${DIR}/tests/dir/file1.bats"
 	assert_success
 	run cat "$OUTPUT"
 	assert_all_lines "setup dir/fixture.sh" \
-					 "setup dir/file.bats" \
+					 "setup dir/file1.bats" \
 					 "--regexp ^${BATS_MOCK_BINDIR}:${DOTFILES}/bin:" \
 					 "hello world" \
-					 "teardown dir/file.bats" \
+					 "teardown dir/file1.bats" \
 					 "teardown dir/fixture.sh"
+
+	cat - >"${DIR}/tests/dir/file2.bats" <<-EOF
+		source "${DIR}/tests/dir/fixture.sh"
+		function setup_more()
+		{
+			:
+		}
+		function teardown_more()
+		{
+			:
+		}
+		@test "test" {
+			fail "Warning output is only available if the test fails"
+		}
+	EOF
+	run bats -t "${DIR}/tests/dir/file2.bats"
+	assert_failure
+	assert_line --index 0 "1..1"
+	assert_line --index 1 "not ok 1 test"
+	assert_line --index $(( ${#lines[@]} - 3 )) "# WARN: Function \`setup_more' looks like a setup function, but was not found by the setup/teardown inheritance algorithm.  Possible typo?"
+	assert_line --index $(( ${#lines[@]} - 2 )) "# Warning output is only available if the test fails"
+	assert_line --index $(( ${#lines[@]} - 1 )) "# WARN: Function \`teardown_more' looks like a teardown function, but was not found by the setup/teardown inheritance algorithm.  Possible typo?"
 }
 
 @test "$FUT: blank \$HOME" {
@@ -317,9 +339,9 @@ function _assert_fut_exe_mk_test()
 			unset -f temp_del
 			unset -f fail
 			echo "Before: HOME=\${HOME} _ORIG_HOME=\${_ORIG_HOME}"
-			setup_blank_home
+			new_blank_home
 			echo "During: HOME=\${HOME} _ORIG_HOME=\${_ORIG_HOME}"
-			teardown_blank_home
+			destroy_blank_home
 			echo "After: HOME=\${HOME} _ORIG_HOME=\${_ORIG_HOME}"
 		}
 	EOF
@@ -425,7 +447,7 @@ function _assert_fut_exe_mk_test()
 			unset -f temp_make
 			unset -f temp_del
 			unset -f fail
-			teardown_blank_home
+			destroy_blank_home
 			echo "After: HOME=\${HOME} _ORIG_HOME=\${_ORIG_HOME}"
 		}
 	EOF
