@@ -122,7 +122,7 @@ for a in "$@"; do
 	fi
 done
 
-TIME=( command time -f "\n%E (%P)  User: %U secs  Sys: %S secs\nMax Mem: %M kb\nCtx Sw: %w (Inv: %c)\nFS in: %I  FS out: %O" )
+TIME=( $(command which time) -f "\n%E (%P)  User: %U secs  Sys: %S secs\nMax Mem: %M kb\nCtx Sw: %w (Inv: %c)\nFS in: %I  FS out: %O" )
 
 # Can't actually be false for the moment, maybe later we'll add \`bats --pretty' mode back in...
 if [ "${TAP}" == "true" ]; then
