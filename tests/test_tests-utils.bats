@@ -293,7 +293,7 @@ function _assert_fut_exe_mk_test()
 	run cat "$OUTPUT"
 	assert_all_lines "setup dir/fixture.sh" \
 					 "setup dir/file.bats" \
-					 "--regexp ^${DOTFILES}/bin:" \
+					 "--regexp ^${BATS_MOCK_BINDIR}:${DOTFILES}/bin:" \
 					 "hello world" \
 					 "teardown dir/file.bats" \
 					 "teardown dir/fixture.sh"

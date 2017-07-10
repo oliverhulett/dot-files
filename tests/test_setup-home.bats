@@ -25,10 +25,8 @@ function assert_is_link()
 function _do_test_for_host()
 {
 	HNAME="$1"
-	if [ -e "${DOTFILES}/crontab.${HNAME}" ]; then
+	if [ -e "${DOTFILES}/crontab.${HNAME}" ] || [ -e "${DOTFILES}/crontab" ]; then
 		stub crontab "*"
-	else
-		stub crontab
 	fi
 
 	$EXE
@@ -47,7 +45,9 @@ function _do_test_for_host()
 		done <"${DOTFILES}/dot-files"
 	fi
 
-	unstub crontab
+	if [ -e "${DOTFILES}/crontab.${HNAME}" ] || [ -e "${DOTFILES}/crontab" ]; then
+		unstub crontab
+	fi
 }
 @test "$FUT: this host" {
 	_do_test_for_host "$(hostname -s | tr '[:upper:]' '[:lower:]')"
