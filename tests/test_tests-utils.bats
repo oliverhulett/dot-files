@@ -273,22 +273,22 @@ function _assert_fut_exe_mk_test()
 			echo "teardown dir/fixture.sh" >>${OUTPUT}
 		}
 	EOF
-	cat - >"${DIR}/tests/dir/file.bats" <<-EOF
+	cat - >"${DIR}/tests/dir/file1.bats" <<-EOF
 		source "${DIR}/tests/dir/fixture.sh"
-		function setup_file()
+		function setup_file1()
 		{
-			echo "setup dir/file.bats" >>${OUTPUT}
+			echo "setup dir/file1.bats" >>${OUTPUT}
 		}
-		function teardown_file()
+		function teardown_file1()
 		{
-			echo "teardown dir/file.bats" >>${OUTPUT}
+			echo "teardown dir/file1.bats" >>${OUTPUT}
 		}
 		@test "test" {
 			echo "\$PATH" >>${OUTPUT}
 			echo "hello world" >>${OUTPUT}
 		}
 	EOF
-	run bats -t "${DIR}/tests/dir/file.bats"
+	run bats -t "${DIR}/tests/dir/file1.bats"
 	assert_success
 	run cat "$OUTPUT"
 	assert_all_lines "setup dir/fixture.sh" \
@@ -297,6 +297,25 @@ function _assert_fut_exe_mk_test()
 					 "hello world" \
 					 "teardown dir/file.bats" \
 					 "teardown dir/fixture.sh"
+
+	cat - >"${DIR}/tests/dir/file2.bats" <<-EOF
+		source "${DIR}/tests/dir/fixture.sh"
+		function setup_more()
+		{
+			:
+		}
+		function teardown_more()
+		{
+			:
+		}
+		@test "test" {
+			fail "Warning output is only available if the test fails"
+		}
+	EOF
+	run bats -1 "${DIR}/tests/dir/file2.bats"
+	assert_failure
+	assert_all_lines "1..1" \
+					 "not ok 1 test"
 }
 
 @test "$FUT: blank \$HOME" {

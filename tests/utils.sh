@@ -51,12 +51,19 @@ function _call_hierarchy()
 	if [ "${s_or_t}" == "teardown" ]; then
 		component=( $(echo "${component[@]}" | rev) )
 	fi
+	delcare -a run
 	for f in "${component[@]}"; do
 		if [ "${s_or_t}" == "teardown" ]; then
 			f="$(echo "$f" | rev)"
 		fi
 		if [ "$(type -t "${s_or_t}_${f}" 2>/dev/null)" == "function" ]; then
 			eval "${s_or_t}_${f}" "$@"
+			run[${#run[@]}]="${s_or_t}_${f}"
+		fi
+	done
+	declare -F | cut -d' ' -f3 | command grep -E "^${s_or_t}_" | while read -r; do
+		if [ "${run[*]}" == "${run[*]/$REPLY}" ]; then
+			echo "WARN: Function \`$REPLY' looks like a ${s_or_t} function, but was not found by the setup/teardown inheritance algorithm.  Possible typo?"
 		fi
 	done
 }
