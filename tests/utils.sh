@@ -51,7 +51,7 @@ function _call_hierarchy()
 	if [ "${s_or_t}" == "teardown" ]; then
 		component=( $(echo "${component[@]}" | rev) )
 	fi
-	delcare -a run
+	declare -a run
 	for f in "${component[@]}"; do
 		if [ "${s_or_t}" == "teardown" ]; then
 			f="$(echo "$f" | rev)"
@@ -209,9 +209,9 @@ function scoped_mktemp()
 }
 
 # Set ${HOME} to a blank temporary directory in-case tests want to mutate it.
-function setup_blank_home()
+function new_blank_home()
 {
-	_check_caller_is_test setup_blank_home || return $?
+	_check_caller_is_test new_blank_home || return $?
 	declare -g _ORIG_HOME="${HOME}"
 	local tmphome
 	tmphome="$(temp_make --prefix="home")"
@@ -233,9 +233,9 @@ function assert_home_is_temp()
 	fi
 	return 0
 }
-function teardown_blank_home()
+function destroy_blank_home()
 {
-	_check_caller_is_test teardown_blank_home || return $?
+	_check_caller_is_test destroy_blank_home || return $?
 	# Paranoid about deleting $HOME.  `temp_del` should only delete things it created.
 	# `fail` doesn't actually work here?
 	assert_home_is_temp
@@ -244,8 +244,8 @@ function teardown_blank_home()
 }
 function scoped_blank_home()
 {
-	setup_blank_home
-	register_teardown_fn teardown_blank_home
+	new_blank_home
+	register_teardown_fn destroy_blank_home
 }
 function populate_home()
 {
@@ -344,9 +344,7 @@ function _restore()
 		for (( i=0; i<${#a}; i++ )); do
 			v="${a:$i:1}"
 			eval "set \${_set${v}:?}"
-			echo "${_SET_LIST[@]}"
 			_SET_LIST=( ${_SET_LIST[@]/$v} )
-			echo "${_SET_LIST[@]}"
 		done
 	done
 }
