@@ -126,7 +126,7 @@ TIME=( $(command which time) -f "\n%E (%P)  User: %U secs  Sys: %S secs\nMax Mem
 
 # Can't actually be false for the moment, maybe later we'll add \`bats --pretty' mode back in...
 if [ "${TAP}" == "true" ]; then
-	echo "1..${NUM_TESTS}"
+	printf " % ${WIDTH}s %s\n" ":" "1..${NUM_TESTS}"
 	printf "%s\0" "$@" | stdbuf -oL "${TIME[@]}" xargs -r0 -n 1 -P "${PARALLEL}" -I{} sh -c "
 		export FN=\"\$(basename -- \"{}\" .bats)\";
 		export TD=\"${TD}/\${FN}\";
@@ -137,17 +137,37 @@ if [ "${TAP}" == "true" ]; then
 		bats ${ARGS[*]} {} | sed -nre \"2,\\\$s/^/\$(printf \"%- ${WIDTH}s\" \"\${FN}\"): /p\";
 	" | stdbuf -oL perl -e '
 		$| = 1;
-		my $c=1;
+		my $cnt = 0;
+		my $success = 0;
+		my $skip = 0;
+		my $failure = 0;
 		while (<STDIN>) {
-			if (m/^(.{'${WIDTH}'}: (not )?ok )([0-9]+)(.+)$/) {
-				print $1 . $c++ . $4 . "\n";
+			if (m/^(.{'${WIDTH}'}: )((not )?ok )([0-9]+)(( # skip \()?.+)$/) {
+				$cnt++;
+				my $colour = "";
+				my $file = $1;
+				my $result = $2;
+				my $name = $5;
+				if ($result =~ /^not ok $/) {
+					$failure++;
+					$colour = "\e[31m";
+				} elsif ($name =~ /^ # skip \(/) {
+					$skip++;
+					$colour = "\e[34m";
+				} else {
+					$success++;
+					$colour = "\e[32m";
+				}
+				print $file . $colour . $result . $cnt . $name . "\e[0m\n";
 			} else {
 				print $_;
 			}
 		}
-	' | stdbuf -oL sed -r \
-			-e "s/^(.{${WIDTH}}: )(ok [0-9]+ # skip)/\1$(tput setaf 4)\2/" \
-			-e "s/^(.{${WIDTH}}: )(ok [0-9]+)/\1$(tput setaf 2)\2/" \
-			-e "s/^(.{${WIDTH}}: )(not ok [0-9]+)/\1$(tput setaf 1)\2/" \
-			-e "s/$/$(tput sgr0)/"
+		print "\n";
+		my $tests = " tests";
+		if ($cnt == 1) {
+			$tests = " test";
+		}
+		print "Ran " . $cnt . $tests . ": " . $success . " succeeded; " . $skip . " skipped; " . $failure . " failed.\n";
+	'
 fi
