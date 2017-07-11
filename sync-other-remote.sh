@@ -54,6 +54,8 @@ function git()
 	done
 	if [ $cnt -lt $# ]; then
 		echo " -- ..."
+	else
+		echo
 	fi
 	command git "$@"
 	#echo

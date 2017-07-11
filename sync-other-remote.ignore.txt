@@ -7,6 +7,7 @@ bash_aliases/09-profile.d-ccache.sh
 bash_aliases/09-profile.d-gcc_4.7.2.sh
 bash_aliases/09-profile.d-insync_headless.sh
 bash_aliases/09-profile.d-pyvenv.sh
+bash_aliases/19-env-onetick.sh
 bash_aliases/19-env-proxy.sh
 bash_aliases/29-completion-optitest.sh
 bash_aliases/29-completion-project_path.sh

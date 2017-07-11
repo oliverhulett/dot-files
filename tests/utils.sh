@@ -1,11 +1,14 @@
-## A collection of utils to help testing with BATS
 # shellcheck shell=bash
+## A collection of utils to help testing with BATS
 
 ## Load bats libraries
-source "$(dirname "${BASH_SOURCE[0]}")/x_helpers/bats-support/load.bash"
-source "$(dirname "${BASH_SOURCE[0]}")/x_helpers/bats-assert/load.bash"
-source "$(dirname "${BASH_SOURCE[0]}")/x_helpers/bats-file/load.bash"
-source "$(dirname "${BASH_SOURCE[0]}")/x_helpers/bats-mock/load.bash"
+DF_TESTS="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+DOTFILES="$(dirname "${DF_TESTS}")"
+export DF_TESTS DOTFILES
+source "${DF_TESTS}/x_helpers/bats-support/load.bash"
+source "${DF_TESTS}/x_helpers/bats-assert/load.bash"
+source "${DF_TESTS}/x_helpers/bats-file/load.bash"
+source "${DF_TESTS}/x_helpers/bats-mock/load.bash"
 
 # Most of these functions only work in setup, teardown, or test functions
 function _check_caller_is_test()
@@ -21,16 +24,104 @@ function _check_caller_is_test()
 	fi
 }
 
+# The pattern for setup and teardown inheritance is that only one setup() and teardown() function should be defined,
+# namely these here.  Test files and test's fixture files should define setup_*() and teardown_*() functions, where
+# * will be replaced by each element in turn in the test's fully-qualified name.
+# A test's fully-qualified name is: ${DF_TESTS}/<path>/<to>/test_<file>.bats:<name>
+function _call_hierarchy()
+{
+	local s_or_t="$1"
+	shift
+	local fqtn
+	local -a component
+	fqtn="$(cd "$(dirname "${BATS_TEST_FILENAME}")" && pwd -P)/$(basename -- "${BATS_TEST_FILENAME%.*}")"
+	fqtn="${fqtn#$DF_TESTS}"
+	fqtn="${fqtn#/}"
+	fqtn="$(echo "${fqtn}" | sed -re 's![^a-zA-Z0-9/]+!_!g')"
+	while [ -n "${fqtn}" ]; do
+		fqtn="${fqtn#test_}"
+		component[${#component[@]}]="${fqtn%%/*}"
+
+		i=${#component[@]}
+		i=$((i - 1))
+		fqtn="${fqtn#${component[$i]}}"
+		fqtn="${fqtn#/}"
+	done
+
+	if [ "${s_or_t}" == "teardown" ]; then
+		component=( $(echo "${component[@]}" | rev) )
+	fi
+	declare -a run
+	for f in "${component[@]}"; do
+		if [ "${s_or_t}" == "teardown" ]; then
+			f="$(echo "$f" | rev)"
+		fi
+		if [ "$(type -t "${s_or_t}_${f}" 2>/dev/null)" == "function" ]; then
+			eval "${s_or_t}_${f}" "$@"
+			run[${#run[@]}]="${s_or_t}_${f}"
+		fi
+	done
+	declare -F | cut -d' ' -f3 | command grep -E "^${s_or_t}_" | while read -r; do
+		if [ "${run[*]}" == "${run[*]/$REPLY}" ]; then
+			echo "WARN: Function \`$REPLY' looks like a ${s_or_t} function, but was not found by the setup/teardown inheritance algorithm.  Possible typo?"
+		fi
+	done
+}
+function setup()
+{
+	if ! should_run; then
+		return
+	fi
+	# Default setup() is to skip the test if the program under test doesn't exist or if only one test has been requested
+	if [ "${IS_EXE}" == "no" ] || [ "${IS_EXE}" == "false" ]; then
+		assert_fut
+	else
+		assert_fut_exe
+	fi
+
+	scoped_blank_home
+	populate_home
+	# TODO:  Sanitise for location of DOTFILES...
+	#source "${HOME}/.bashrc"
+	scoped_env PATH="${BATS_MOCK_BINDIR}:${DOTFILES}/bin:${PATH}"
+
+	_call_hierarchy setup "$@"
+}
+function teardown()
+{
+	_call_hierarchy teardown "$@"
+
+	# Default teardown() is to fire all registered clean-up functions
+	fire_teardown_fns
+}
+
+# Mechanism for registering clean-up functions
+declare -ga _TEARDOWN_FNS
+function register_teardown_fn()
+{
+	_TEARDOWN_FNS[${#_TEARDOWN_FNS[@]}]="$*"
+}
+function fire_teardown_fns()
+{
+	_check_caller_is_test fire_teardown_fns || return $?
+
+	for fn in "${_TEARDOWN_FNS[@]}"; do
+		$fn
+	done
+}
+
 # Skip the test if the program under test doesn't exist
 # TODO:  What about aliases and functions?  May need to rename some things and re-work some messages.
 function assert_fut()
 {
 	_check_caller_is_test assert_fut || return $?
-	declare -g FUT_PATH
-	FUT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && cd "$(command git home)" && echo "$(command git home)/$(command git ls-files -- "${FUT}")")"
-	if [ ! -f "${FUT_PATH}" ]; then
-		skip "Failed to find file under test"
-		return 1
+	if [ -n "${FUT}" ]; then
+		declare -g FUT_PATH
+		FUT_PATH="${DOTFILES}/$(cd "${DOTFILES}" && git ls-files -- "${FUT}")"
+		if [ ! -f "${FUT_PATH}" ]; then
+			skip "Failed to find file under test"
+			return 1
+		fi
 	fi
 }
 function assert_fut_exe()
@@ -76,35 +167,6 @@ function should_run()
 	return 0
 }
 
-# Default setup() is to skip the test if the program under test doesn't exist or if only one test has been requested
-function setup()
-{
-	if ! should_run; then
-		return
-	fi
-	assert_fut_exe
-}
-
-# Mechanism for registering clean-up functions
-declare -ga _TEARDOWN_FNS
-function register_teardown_fn()
-{
-	_TEARDOWN_FNS[${#_TEARDOWN_FNS[@]}]="$*"
-}
-function fire_teardown_fns()
-{
-	_check_caller_is_test fire_teardown_fns || return $?
-
-	for fn in "${_TEARDOWN_FNS[@]}"; do
-		$fn
-	done
-}
-# Default teardown is to fire all registered clean-up functions
-function teardown()
-{
-	fire_teardown_fns
-}
-
 # Set and export an environment variable and register it to be restored in teardown.
 function scoped_env()
 {
@@ -147,9 +209,9 @@ function scoped_mktemp()
 }
 
 # Set ${HOME} to a blank temporary directory in-case tests want to mutate it.
-function setup_blank_home()
+function new_blank_home()
 {
-	_check_caller_is_test setup_blank_home || return $?
+	_check_caller_is_test new_blank_home || return $?
 	declare -g _ORIG_HOME="${HOME}"
 	local tmphome
 	tmphome="$(temp_make --prefix="home")"
@@ -160,26 +222,67 @@ function setup_blank_home()
 		export HOME="$tmphome"
 	fi
 }
-function teardown_blank_home()
+function assert_home_is_temp()
 {
-	_check_caller_is_test teardown_blank_home || return $?
-	# Paranoid about deleting $HOME.  `temp_del` should only delete things it created.
-	# `fail` doesn't actually work here?
 	if [ -z "${_ORIG_HOME}" ]; then
 		fail "\$_ORIG_HOME not set; can't teardown blank home"
-		return $?
+		return 1
 	elif [ "${HOME}" == "${_ORIG_HOME}" ]; then
 		fail "\$HOME wasn't changed; not deleting original \$HOME"
-		return $?
-	else
-		temp_del "${HOME}"
+		return 1
 	fi
+	return 0
+}
+function destroy_blank_home()
+{
+	_check_caller_is_test destroy_blank_home || return $?
+	# Paranoid about deleting $HOME.  `temp_del` should only delete things it created.
+	# `fail` doesn't actually work here?
+	assert_home_is_temp
+	temp_del "${HOME}"
 	export HOME="${_ORIG_HOME}"
 }
 function scoped_blank_home()
 {
-	setup_blank_home
-	register_teardown_fn teardown_blank_home
+	new_blank_home
+	register_teardown_fn destroy_blank_home
+}
+function populate_home()
+{
+	_set -e
+	assert_home_is_temp
+	stub git "submodule init" "submodule sync" "submodule update"
+
+	if [ -e "${DOTFILES}/crontab" ]; then
+		stub crontab '*'
+	fi
+
+	# Calling `hostname` will return a 'none', meaning only the common stuff will be installed.
+	SFX="none.${RANDOM}"
+	stub hostname "-s : echo ${SFX}"
+
+	refute test -e "${DOTFILES}/crontab.${SFX}"
+	refute test -s "${DOTFILES}/dot-files.${SFX}"
+	touch "${DOTFILES}/dot-files.${SFX}"
+
+	"${DOTFILES}/setup-home.sh"
+
+	rm "${DOTFILES}/dot-files.${SFX}" 2>/dev/null || true
+
+	# Local git settings are needed, even if the common stuff didn't install them.
+	rm "${HOME}/.gitconfig.local" 2>/dev/null || true
+	cat >"${HOME}/.gitconfig.local" <<-EOF
+	[user]
+	name = Me
+	email = me@here
+	EOF
+
+	if [ -e "${DOTFILES}/crontab" ]; then
+		unstub crontab
+	fi
+	unstub hostname
+	unstub git
+	_restore e
 }
 
 # A common pattern is to assert all lines of output.  Each argument is a line, in order.  All lines must be specified.
@@ -218,4 +321,34 @@ function assert_all_lines()
 		errs=$((errs + ${#lines[@]} - cnt))
 	fi
 	return $errs
+}
+
+## TODO:  These are generally useful, we should move them somewhere common and not test related.
+declare -ga _SET_LIST
+function _set()
+{
+	for a in "$@"; do
+		for (( i=1; i<${#a}; i++ )); do
+			v="${a:$i:1}"
+			eval "declare -g _set${v}=+${v}"
+			[[ $- == *${v}* ]] && eval "_set${v}=-${v}"
+			_SET_LIST=( ${_SET_LIST[@]/$v} )
+			_SET_LIST[${#_SET_LIST[@]}]="$v"
+		done
+		set "$a"
+	done
+}
+function _restore()
+{
+	for a in "$@"; do
+		for (( i=0; i<${#a}; i++ )); do
+			v="${a:$i:1}"
+			eval "set \${_set${v}:?}"
+			_SET_LIST=( ${_SET_LIST[@]/$v} )
+		done
+	done
+}
+function _restore_all()
+{
+	_restore "${_SET_LIST[@]}"
 }

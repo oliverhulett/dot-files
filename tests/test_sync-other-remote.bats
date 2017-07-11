@@ -1,6 +1,7 @@
 #!/usr/bin/env bats
 
 DF_TESTS="$(cd "${BATS_TEST_DIRNAME}" && pwd -P)"
+DOTFILES="$(dirname "${DF_TESTS}")"
 source "${DF_TESTS}/utils.sh"
 
 FUT="sync-other-remote.sh"
@@ -10,10 +11,8 @@ function md5()
 	md5sum "$@" | cut -d' ' -f1
 }
 
-function setup()
+function setup_sync_other_remote()
 {
-	should_run
-	assert_fut_exe
 	scoped_mktemp BARE_REPO_1 -d
 	scoped_mktemp BARE_REPO_2 -d
 	scoped_mktemp CHECKOUT_1 -d
@@ -489,7 +488,6 @@ function assert_checkout_clean()
 	git lg
 	"$(pwd)/${FUT}"
 	git lg
-	fail this
 	assert_success
 	assert_checkout_clean
 	git push
