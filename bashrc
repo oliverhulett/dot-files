@@ -172,7 +172,7 @@ function _prompt_command()
 	if [ "$TERM" == "cygwin" ]; then
 		PROMPT_COLOUR='\[\e[31m\]\u@\h \[\e[33m\]\w\[\e[0m\]'
 		PROMPT_DOLLAR='\n\$'
-	elif [ -z "${HOSTNAME/op??nxsr[0-9][0-9][0-9][0-9]*}" ]; then
+	elif [ -z "${HOSTNAME/op??nx??[0-9][0-9][0-9][0-9]*}" ]; then
 		PROMPT_COLOUR='\[\e[31m\]\u@\h \[\e[33m\]\w\[\e[0m\]'
 		PROMPT_DOLLAR='\$'
 	else

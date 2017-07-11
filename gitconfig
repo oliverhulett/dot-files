@@ -92,7 +92,6 @@ autosetuprebase = always
 autosetupmerge = false
 
 [pull]
-rebase = preserve
 ff = only
 
 [rebase]
