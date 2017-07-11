@@ -46,7 +46,7 @@ function cc-env()
 	if [ ! -x "$CC_EXE" ]; then
 		log "[FATAL] ${CC_EXE} does not exist"
 		echo "[FATAL] ${CC_EXE} does not exist"
-		return -1
+		return 1
 	fi
 	proxy_exe "${CC_EXE}" "57c4472ab67a9cf67a8fbd81eeaa0e83"
 	CC_IMAGE="$(sed -nre 's!.+(docker-registry\.aus\.optiver\.com/[^ ]+/[^ ]+).*!\1!p' "${CC_EXE}" | tail -n1)"
