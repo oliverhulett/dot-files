@@ -13,6 +13,19 @@ function testname()
 	fi
 }
 
+function oneof()
+{
+	target="$1"
+	shift
+	for a in "$@"; do
+		if [ "$target" == "$a" ]; then
+			return 0
+		fi
+	done
+	return 1
+}
+
+
 ## Firstly, let's just try the string we were given...
 testname "$*"
 
@@ -23,7 +36,14 @@ svrnum=
 if [[ "$*" =~ ^([0-9]{1,4})$ ]]; then
 	svrnum="$(printf '%04d' ${BASH_REMATCH[1]})"
 elif [[ "$*" =~ ^([a-z]{2})([0-9]{1,4})$ ]]; then
-	svrloc="${BASH_REMATCH[1]}"
+	if oneof "${BASH_REMATCH[1]}" "wn" "ws"; then
+		svros="wn"
+		svrtyp="ws"
+	elif oneof "${BASH_REMATCH[1]}" "sr" "vm"; then
+		svrtyp="${BASH_REMATCH[1]}"
+	else
+		svrloc="${BASH_REMATCH[1]}"
+	fi
 	svrnum="$(printf '%04d' ${BASH_REMATCH[2]})"
 elif [[ "$*" =~ ^([a-z]{2})([a-z]{2})([0-9]{1,4})$ ]]; then
 	svrloc="${BASH_REMATCH[1]}"

@@ -1478,7 +1478,6 @@ xkeyboard-config-2.14-1.el7.noarch
 xml-common-0.6.3-39.el7.noarch
 xmlrpc-c-1.32.5-1905.svn2451.el7.x86_64
 xmlrpc-c-client-1.32.5-1905.svn2451.el7.x86_64
-xmlstarlet-1.6.1-1.el7.x86_64
 xorg-x11-drivers-7.7-6.el7.x86_64
 xorg-x11-drv-ati-7.5.0-3.el7.x86_64
 xorg-x11-drv-dummy-0.3.6-21.el7.x86_64
