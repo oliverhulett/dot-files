@@ -5,8 +5,6 @@ alias central-archive='ssh central-archive'
 alias centralstaging='ssh central-staging'
 alias central-staging='ssh central-staging'
 
-alias sshrelay='ssh sshrelay'
-
 unalias bt 2>/dev/null
 function bt()
 {
