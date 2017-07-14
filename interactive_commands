@@ -18,6 +18,7 @@ journalctl -xe
 jupyter console
 less
 .+\| *less *$
+logless
 man
 more
 nano

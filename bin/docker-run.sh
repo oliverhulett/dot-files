@@ -2,7 +2,8 @@
 
 HERE="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
 DOTFILES="$(dirname "${HERE}")"
-source "${DOTFILES}/bash_common.sh" 2>/dev/null && eval "${capture_output}" || true
+#source "${DOTFILES}/bash_common.sh" 2>/dev/null && eval "${capture_output}" || true
+source "${DOTFILES}/bash_common.sh" && eval "${setup_log_fd}" || true
 source "${DOTFILES}/bash_aliases/39-aliases-opti_dev_aliases.sh"
 
 set +e
@@ -42,21 +43,7 @@ function run()
 {
 	echo "$@"
 	echo
-	if [ ! -f "${_orig_stdout}" ]; then
-		if [ -f /dev/tty ]; then
-			_orig_stdout=/dev/tty
-		else
-			_orig_stdout=/dev/null
-		fi
-	fi
-	if [ ! -f "${_orig_stderr}" ]; then
-		if [ -f /dev/tty ]; then
-			_orig_stderr=/dev/tty
-		else
-			_orig_stderr=/dev/null
-		fi
-	fi
-	"$@" >>"${_orig_stdout}" 2>>"${_orig_stderr}"
+	"$@"
 	es=$?
 	echo
 	return $es

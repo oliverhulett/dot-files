@@ -7,6 +7,7 @@ if [ -n "$2" ]; then
 else
 	HOME="/home/${USER}"
 fi
+echo "Installing things as $(whoami) for ${USER} in ${HOME}"
 
 #source "${HOME}/dot-files/bash_common.sh" 2>/dev/null && eval "${capture_output}" || true
 source "${HOME}/dot-files/bash_common.sh"

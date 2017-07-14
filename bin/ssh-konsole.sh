@@ -37,7 +37,7 @@ while true; do
 	fi
 done
 
-CMD=( "${SSH}" "${WHO}"@"$("${SSH_NAME}" "${WHERE}")" )
+CMD=( "${SSH}" "${WHO}@${WHERE}" )
 
 function run()
 {
