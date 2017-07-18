@@ -85,6 +85,7 @@ pip.conf
 pydistutils.cfg
 pypirc
 python_setup.txt
+ssh.config
 tests/bin/test_alterlimitsdb.bats
 tests/bin/test_clone.bats
 tests/bin/test_dev-push-all.bats
