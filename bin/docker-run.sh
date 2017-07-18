@@ -6,6 +6,7 @@ DOTFILES="$(dirname "${HERE}")"
 source "${DOTFILES}/bash_common.sh" && eval "${setup_log_fd}" || true
 source "${DOTFILES}/bash_aliases/39-aliases-opti_dev_aliases.sh"
 
+log "$@"
 set +e
 
 IMAGES="$(docker-list.sh | sort -u)"
@@ -41,11 +42,13 @@ proxy_exe "/optiver/bin/dockerme" "e377e9746adfa1f2d28b394e31e5f6e5"
 
 function run()
 {
+	log "$@"
 	echo "$@"
 	echo
 	"$@"
 	es=$?
 	echo
+	log "Returns=$es"
 	return $es
 }
 run dockerme -h "$(hostname)" --cpu-shares="$(nproc)" --privileged --name="${NAME}" \

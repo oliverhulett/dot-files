@@ -218,6 +218,14 @@ function _get_dot_files()
 	done
 }
 
+@test "Validate: crontabs are not empty" {
+	for f in "${DOTFILES}/"crontab*; do
+		if [ ! -s "$f" ]; then
+			fail "Crontab file is empty: $(basename -- "$f")"
+		fi
+	done
+}
+
 @test "Validate: files to backup exist" {
 	if [ "$(git config --get remote.origin.url)" != "ssh://git@git.comp.optiver.com:7999/~olihul/dot-files.git" ]; then
 		skip "backup list only exists at Optiver"

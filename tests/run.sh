@@ -110,7 +110,7 @@ else
 	echo "Running ${NUM_TESTS} ${TESTS} in $# ${FILES} using at most ${PARALLEL} ${PROCESSES}"
 fi
 
-TD="/tmp/bats/$(date '+%Y%m%d-%H%M%S')"
+TD="/tmp/bats/$(date '+%Y%m%d-%H%M%S').$$.${RANDOM}"
 rm -rf "${TD}"
 mkdir --parents "${TD}"
 
