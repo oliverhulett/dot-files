@@ -10,6 +10,7 @@ jupyter
 lxml<3.4
 pandas==0.19.2
 protobuf==2.5.0
+pyfieldagent
 pygments
 pylint
 pyomd
