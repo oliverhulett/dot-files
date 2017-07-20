@@ -1,18 +1,18 @@
 ## Useful git environment setup.
 
-for f in "/etc/bash_completion.d/git-prompt" \
+for _f in "/etc/bash_completion.d/git-prompt" \
 		 "/usr/share/git-core/contrib/completion/git-completion.bash" \
 		 "${HOME}/etc/git-completion.bash"; do
-	if [ -e "$f" ]; then
-		source "$f"
+	if [ -e "$_f" ]; then
+		source "$_f"
 		break
 	fi
 done
-for f in "/etc/bash_completion.d/git-prompt" \
+for _f in "/etc/bash_completion.d/git-prompt" \
 		 "/usr/share/git-core/contrib/completion/git-prompt.sh" \
 		 "${HOME}/etc/git-prompt.sh"; do
-	if [ -e "$f" ]; then
-		source "$f"
+	if [ -e "$_f" ]; then
+		source "$_f"
 		break
 	fi
 done
@@ -24,6 +24,7 @@ export GIT_PS1_SHOWUPSTREAM="auto"
 
 function __custom_git_ps1()
 {
+	local d wd
 	d="$(git branch --no-color 2>/dev/null | sed -nre 's/^\* //p' | cut -d_ -f1 | sed -re 's!^[^/]+/!!')"
 	wd="$(pwd | sed -re 's!^/home/olihul/!!')"
 	if grep -qw "master" <(echo $wd) >/dev/null 2>&1 || ! grep -qw "$d" <(echo $wd) >/dev/null 2>&1; then
@@ -42,9 +43,5 @@ if type -t __git_ps1 >/dev/null 2>&1; then
 	fi
 fi
 
-function git()
-{
-	HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
-	DOTFILES="$(dirname "${HERE}")"
-	PATH="${DOTFILES}/bin/git-bin:${PATH}" command git "$@"
-}
+DOTFILES="$(dirname "$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd -P)")"
+alias git="${DOTFILES}/bin/git.sh"

@@ -138,7 +138,7 @@ function _should_run_mk_test()
 		}
 		function setup()
 		{
-			should_run
+			should_run >>"${OUTPUT}"
 		}
 		ONLY=$1
 		SKIP=$2
@@ -146,6 +146,9 @@ function _should_run_mk_test()
 			true
 		}
 		@test "test 2" {
+			true
+		}
+		@test "test-with some:strange characters" {
 			true
 		}
 	EOF
@@ -156,21 +159,43 @@ function _should_run_mk_test()
 	_should_run_mk_test "" ""
 	run bats -t "${TESTFILE}"
 	assert_success
-	assert_all_lines "1..2" "ok 1 test 1" "ok 2 test 2"
+	assert_all_lines "1..3" \
+					 "ok 1 test 1" \
+					 "ok 2 test 2" \
+					 "ok 3 test-with some:strange characters"
 
 	_should_run_mk_test '"test 2"' ""
 	run bats -t "${TESTFILE}"
 	assert_success
-	assert_all_lines "1..2" "ok 1 # skip (should_run said no) test 1" "ok 2 test 2"
+	assert_all_lines "1..3" \
+					 "ok 1 # skip (should_run said no) test 1" \
+					 "ok 2 test 2" \
+					 "ok 3 # skip (should_run said no) test-with some:strange characters"
 	run cat "${OUTPUT}"
-	assert_all_lines --partial "Skipping='Single test requested: test 2'"
+	assert_all_lines --partial "Skipping='Single test requested: test 2'" \
+							   "Skipping='Single test requested: test 2'"
 
 	_should_run_mk_test "" '( "test 1" "test 2" )'
 	run bats -t "${TESTFILE}"
 	assert_success
-	assert_all_lines "1..2" "ok 1 # skip (should_run said no) test 1" "ok 2 # skip (should_run said no) test 2"
+	assert_all_lines "1..3" \
+					 "ok 1 # skip (should_run said no) test 1" \
+					 "ok 2 # skip (should_run said no) test 2" \
+					 "ok 3 test-with some:strange characters"
 	run cat "${OUTPUT}"
-	assert_all_lines --partial "Skipping='Skip requested by skip list: test 1'" "Skipping='Skip requested by skip list: test 2'"
+	assert_all_lines --partial "Skipping='Skip requested by skip list: test 1'" \
+							   "Skipping='Skip requested by skip list: test 2'"
+
+	_should_run_mk_test '"test-with some:strange characters"' ""
+	run bats -t "${TESTFILE}"
+	assert_success
+	assert_all_lines "1..3" \
+					 "ok 1 # skip (should_run said no) test 1" \
+					 "ok 2 # skip (should_run said no) test 2" \
+					 "ok 3 test-with some:strange characters"
+	run cat "${OUTPUT}"
+	assert_all_lines --partial "Skipping='Single test requested: test-with some:strange characters'" \
+							   "Skipping='Single test requested: test-with some:strange characters'"
 }
 
 function _assert_fut_exe_mk_test()
@@ -316,9 +341,13 @@ function _assert_fut_exe_mk_test()
 	assert_failure
 	assert_line --index 0 "1..1"
 	assert_line --index 1 "not ok 1 test"
-	assert_line --index $(( ${#lines[@]} - 3 )) "# WARN: Function \`setup_more' looks like a setup function, but was not found by the setup/teardown inheritance algorithm.  Possible typo?"
-	assert_line --index $(( ${#lines[@]} - 2 )) "# Warning output is only available if the test fails"
-	assert_line --index $(( ${#lines[@]} - 1 )) "# WARN: Function \`teardown_more' looks like a teardown function, but was not found by the setup/teardown inheritance algorithm.  Possible typo?"
+	assert_line --index $(( ${#lines[@]} - 7 )) "# WARN: Function \`setup_more' looks like a setup function, but was not found by the setup/teardown inheritance algorithm.  Possible typo?"
+	assert_line --index $(( ${#lines[@]} - 6 )) "# INFO: The setup/teardown inheritance algorithm tried:"
+	assert_line --index $(( ${#lines[@]} - 5 )) "# INFO:   setup_dir(), setup_file2()"
+	assert_line --index $(( ${#lines[@]} - 4 )) "# Warning output is only available if the test fails"
+	assert_line --index $(( ${#lines[@]} - 3 )) "# WARN: Function \`teardown_more' looks like a teardown function, but was not found by the setup/teardown inheritance algorithm.  Possible typo?"
+	assert_line --index $(( ${#lines[@]} - 2 )) "# INFO: The setup/teardown inheritance algorithm tried:"
+	assert_line --index $(( ${#lines[@]} - 1 )) "# INFO:   teardown_file2(), teardown_dir()"
 }
 
 @test "$FUT: blank \$HOME" {

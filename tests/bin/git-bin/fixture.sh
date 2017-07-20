@@ -1,19 +1,11 @@
+#!/usr/bin/env bats
+
 HERE="$(cd "${BATS_TEST_DIRNAME}" && pwd -P)"
 DF_TESTS="$(dirname "$(dirname "${HERE}")")"
-DOTFILES="$(dirname "${DF_TESTS}")"
 source "${DF_TESTS}/utils.sh"
 
-function fixture_setup()
+function setup_git_bin()
 {
-	should_run
-	scoped_blank_home
-	cp "${DOTFILES}/gitconfig" "${DOTFILES}/gitconfig.home" "${DOTFILES}/gitconfig.optiver" "${HOME}/"
-	crudini --inplace --set "${HOME}/gitconfig.home" include path "${HOME}/gitconfig"
-	crudini --inplace --set "${HOME}/gitconfig.optiver" include path "${HOME}/gitconfig"
-	ln -vfs gitconfig.home "${HOME}/.gitconfig"
-	ln -vfs "${DOTFILES}/gitignore" "${HOME}/.gitignore"
-	ln -vfs "${DOTFILES}/git_wrappers" "${HOME}/.git_wrappers"
-
 	scoped_mktemp BARE_REPO -d
 	scoped_mktemp CHECKOUT -d
 	( cd "${BARE_REPO}" && git init --bare )

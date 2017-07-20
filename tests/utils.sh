@@ -51,11 +51,12 @@ function _call_hierarchy()
 	if [ "${s_or_t}" == "teardown" ]; then
 		component=( $(echo "${component[@]}" | rev) )
 	fi
-	declare -a run
+	declare -la run tried
 	for f in "${component[@]}"; do
 		if [ "${s_or_t}" == "teardown" ]; then
 			f="$(echo "$f" | rev)"
 		fi
+		tried[${#tried[@]}]="${s_or_t}_${f}"
 		if [ "$(type -t "${s_or_t}_${f}" 2>/dev/null)" == "function" ]; then
 			eval "${s_or_t}_${f}" "$@"
 			run[${#run[@]}]="${s_or_t}_${f}"
@@ -64,6 +65,8 @@ function _call_hierarchy()
 	declare -F | cut -d' ' -f3 | command grep -E "^${s_or_t}_" | while read -r; do
 		if [ "${run[*]}" == "${run[*]/$REPLY}" ]; then
 			echo "WARN: Function \`$REPLY' looks like a ${s_or_t} function, but was not found by the setup/teardown inheritance algorithm.  Possible typo?"
+			echo "INFO: The setup/teardown inheritance algorithm tried:"
+			echo "INFO:   $(echo "${tried[@]}" | sed -re 's/ /(), /g;s/$/()/')"
 		fi
 	done
 }
@@ -148,17 +151,20 @@ function assert_fut_exe()
 function should_run()
 {
 	_check_caller_is_test should_run || return $?
+	local SUFFIX NAME
 	if [ -n "$ONLY" ]; then
-		SUFFIX="$(echo "$ONLY" | sed -re 's/ /_/g')"
-		if [ "${BATS_TEST_NAME}" == "${BATS_TEST_NAME%%$SUFFIX}" ]; then
+		SUFFIX="$(echo "$ONLY" | sed -re 's/[^a-zA-Z0-9]+/_/g')"
+		NAME="$(echo "${BATS_TEST_NAME}" | sed -re 's/-[0-9a-z]{2}/_/g;s/[^a-zA-Z0-9]+/_/g')"
+		if [ "${NAME}" == "${NAME%%$SUFFIX}" ]; then
 			skip "Single test requested: $ONLY"
 			return 1
 		fi
 	fi
 	if [ -n "$SKIP" ]; then
 		for t in "${SKIP[@]}"; do
-			SUFFIX="$(echo "$t" | sed -re 's/ /_/g')"
-			if [ "${BATS_TEST_NAME}" != "${BATS_TEST_NAME%%$SUFFIX}" ]; then
+			SUFFIX="$(echo "$t" | sed -re 's/[^a-zA-Z0-9]+/_/g')"
+			NAME="$(echo "${BATS_TEST_NAME}" | sed -re 's/-[0-9a-z]{2}/_/g;s/[^a-zA-Z0-9]+/_/g')"
+			if [ "${NAME}" != "${NAME%%$SUFFIX}" ]; then
 				skip "Skip requested by skip list: $t"
 				return 1
 			fi
@@ -236,10 +242,12 @@ function assert_home_is_temp()
 function destroy_blank_home()
 {
 	_check_caller_is_test destroy_blank_home || return $?
-	# Paranoid about deleting $HOME.  `temp_del` should only delete things it created.
-	# `fail` doesn't actually work here?
-	assert_home_is_temp
-	temp_del "${HOME}"
+	if [ "${KEEP_BLANK_HOME}" != "yes" ] && [ "${KEEP_BLANK_HOME}" != "true" ]; then
+		# Paranoid about deleting $HOME.  `temp_del` should only delete things it created.
+		# `fail` doesn't actually work here?
+		assert_home_is_temp
+		temp_del "${HOME}"
+	fi
 	export HOME="${_ORIG_HOME}"
 }
 function scoped_blank_home()

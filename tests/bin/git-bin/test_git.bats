@@ -1,54 +1,40 @@
 #!/usr/bin/env bats
 
 HERE="$(cd "${BATS_TEST_DIRNAME}" && pwd -P)"
-DF_TESTS="$(dirname "$(dirname "${HERE}")")"
-DOTFILES="$(dirname "${DF_TESTS}")"
 source "${HERE}/fixture.sh"
 
-FUT="git"
-
-function setup()
-{
-	fixture_setup
-}
+FUT="bin/git.sh"
 
 function _gitenv()
 {
-	git env | command grep "$@"
+	$EXE env | command grep "$@"
 }
-@test "$FUT: is a function that adds git-bin to path" {
-	run type -t git
-	assert_success
-	assert_output "function"
-
+@test "$FUT: prepends git-bin to path" {
 	run _gitenv -E '^PATH='
 	# git prepends to the path.
 	assert_all_lines --partial ":${DOTFILES}/bin/git-bin:"
-
-	run git which which
-	assert_all_lines "\`git which' is: ${DOTFILES}/bin/git-bin/git-which"
-
-	git config --global --add alias.which "!echo not my command"
-
-	run git which which
-	assert_all_lines "\`git which' is: ${DOTFILES}/bin/git-bin/git-which"
 }
 
-@test "$FUT: home and Optiver username and e-mail are correct" {
-	ln -vfs gitconfig.home "${HOME}/.gitconfig"
-	run git whoami
-	assert_output "Oliver Hulett <oliver.hulett@gmail.com>"
+@test "$FUT: standard git-exe interface" {
+	find "${DOTFILES}/bin/git-bin" -type l -name 'git-*' | while read -r; do
+		# git-exe commands are links to executables in the git-bin directory
+		assert [ "$(dirname "$(readlink -f "${REPLY}")")" == "${DOTFILES}/bin/git-bin" ]
 
-	ln -vfs gitconfig.optiver "${HOME}/.gitconfig"
-	run git whoami
-	assert_output "Oliver Hulett <oliver.hulett@optiver.com.au>"
+		GIT_CMD="$(basename "${REPLY}" | sed -re 's/^git-//')"
+
+		# git-exe commands accept -h and --help
+		run $EXE "${GIT_CMD}" --help
+		assert_success
+		run $EXE "${GIT_CMD}" -h
+		assert_success
+	done
 }
 
 @test "$FUT: filter ini-file-leading-space" {
 	cd "${CHECKOUT}/repo" || fail "Failed to change into directory: ${CHECKOUT}/repo"
 	cp "${DOTFILES}/.gitattributes" ./
-	git add .gitattributes
-	git commit -m"Add attributes, including filter for .ini files"
+	$EXE add .gitattributes
+	$EXE commit -m"Add attributes, including filter for .ini files"
 
 	assert command grep -qE '^gitconfig\*\s+text\s+(.*\s+)?filter=ini-file-leading-space(\s+|$)' .gitattributes
 
@@ -63,8 +49,8 @@ function _gitenv()
 EOF
 
 	# Should run the filter...
-	git add file.ini
-	run git show :file.ini
+	$EXE add file.ini
+	run $EXE show :file.ini
 	assert_all_lines "	# a comment" \
 					 "[section]" \
 					 "key = value" \
@@ -73,11 +59,11 @@ EOF
 					 "key = values" \
 					 "	continued"
 
-	git commit -am"file should be cleaned"
+	$EXE commit -am"file should be cleaned"
 	assert_status ""
 
 	rm file.ini
-	git checkout file.ini
+	$EXE checkout file.ini
 	assert_contents file.ini \
 		"	# a comment" \
 		 "[section]" \
@@ -92,25 +78,25 @@ EOF
 	cd "${CHECKOUT}/repo" || fail "Failed to change into directory: ${CHECKOUT}/repo"
 
 	echo "text" >file
-	git add file
-	git commit -m"initial commit"
+	$EXE add file
+	$EXE commit -m"initial commit"
 	HASH="$(git rev-parse HEAD)"
 
 	echo "more text" >>file
-	git commit -am"new commit"
+	$EXE commit -am"new commit"
 	assert_status ""
 	assert test "$(git rev-parse HEAD)" != "${HASH}"
 
-	git undo-commit
+	$EXE undo-commit
 	assert_status " M file"
 	assert_equal "$(git rev-parse HEAD)" "${HASH}"
 	assert_contents file "text" "more text"
 
 	echo "change" >file
-	git add -A
+	$EXE add -A
 	assert_status "M  file"
 
-	git unstage
+	$EXE unstage
 	assert_status " M file"
 	assert_contents file "change"
 
@@ -118,7 +104,7 @@ EOF
 	echo "new" >new-file
 	assert_status " M file" "?? new-file"
 
-	git discard
+	$EXE discard
 	assert_files file new-file
 	assert_status "?? new-file"
 	assert_contents file "text"
@@ -133,29 +119,29 @@ EOF
 	fi
 	cd "${CHECKOUT}/repo" || fail "Failed to change into directory: ${CHECKOUT}/repo"
 
-	git which ignore
+	$EXE which ignore
 	echo git ignore '*.txt'
-	git ignore '*.txt'
+	$EXE ignore '*.txt'
 	assert_status "A  .gitignore"
 	assert_contents .gitignore '*.txt'
 
-	git commit -am"initial commit"
+	$EXE commit -am"initial commit"
 
 	echo >>.gitignore
 
 	mkdir emptydir
 	touch one two three
-	git ignore one two three
+	$EXE ignore one two three
 	assert_status "M  .gitignore"
 	assert_contents .gitignore "one" "three" "two" '*.txt'
 
-	git commit -m"ignored files"
+	$EXE commit -m"ignored files"
 
 	# globally ignored files.
 	touch .project .pydevproject .cproject
 	ln -vfs emptydir .settings
 
-	git cleanignored
+	$EXE cleanignored
 	assert_status ""
 	assert_files .gitignore .project .pydevproject .cproject .settings emptydir
 }
@@ -163,42 +149,42 @@ EOF
 @test "$FUT: git cleanbranches" {
 	cd "${CHECKOUT}/repo" || fail "Failed to change into directory: ${CHECKOUT}/repo"
 
-	git checkout -b testbranch
-	run git branch
+	$EXE checkout -b testbranch
+	run $EXE branch
 	assert_all_lines "  master" "* testbranch"
 
-	git upstream
+	$EXE upstream
 
-	git checkout -b testbranch2
-	run git branch
+	$EXE checkout -b testbranch2
+	run $EXE branch
 	assert_all_lines "  master" "  testbranch" "* testbranch2"
 
-	git upstream
+	$EXE upstream
 
-	git cleanbranches
-	run git branch
+	$EXE cleanbranches
+	run $EXE branch
 	assert_all_lines "  master" "  testbranch" "* testbranch2"
 
-	git checkout master
-	run git branch
+	$EXE checkout master
+	run $EXE branch
 	assert_all_lines "* master" "  testbranch" "  testbranch2"
 
-	git cleanbranches
-	run git branch
+	$EXE cleanbranches
+	run $EXE branch
 	assert_all_lines "* master" "  testbranch" "  testbranch2"
 
-	git push origin --delete testbranch
-	git fetch --prune
+	$EXE push origin --delete testbranch
+	$EXE fetch --prune
 
-	run git branch
+	run $EXE branch
 	assert_all_lines "* master" "  testbranch" "  testbranch2"
 
-	git cleanbranches
-	run git branch
+	$EXE cleanbranches
+	run $EXE branch
 	assert_all_lines "* master" "  testbranch2"
 
-	git push origin --delete testbranch2
-	git pullb
-	run git branch
+	$EXE push origin --delete testbranch2
+	$EXE pullb
+	run $EXE branch
 	assert_all_lines "* master"
 }

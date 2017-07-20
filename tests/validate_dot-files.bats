@@ -235,6 +235,18 @@ function _get_dot_files()
 	assert_equal "$(readlink -f "${DOTFILES}/bin/bats")" "$(readlink -f "${DOTFILES}/tests/x_helpers/bats/bin/bats")"
 }
 
+@test "Validate: home and Optiver username and e-mail are correct" {
+	rm "${HOME}/.gitconfig.local"
+	ln -fsv "${DOTFILES}/gitconfig.home" "${HOME}/.gitconfig.local"
+	run git whoami
+	assert_output "Oliver Hulett <oliver.hulett@gmail.com>"
+
+	rm "${HOME}/.gitconfig.local"
+	ln -fsv "${DOTFILES}/gitconfig.optiver" "${HOME}/.gitconfig.local"
+	run git whoami
+	assert_output "Oliver Hulett <oliver.hulett@optiver.com.au>"
+}
+
 @test "Validate: no tests are being skipped by \$ONLY= or \$SKIP=" {
 	FILES=(
 		$(find "${DOTFILES}/tests" \

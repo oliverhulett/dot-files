@@ -4,6 +4,7 @@
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 DOTFILES="$(dirname "$(dirname "${HERE}")")"
 source "${DOTFILES}/bash_common.sh" 2>/dev/null && eval "${capture_output}" || true
+set -x
 
 function print_help()
 {
