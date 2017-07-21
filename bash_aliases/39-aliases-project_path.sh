@@ -32,13 +32,14 @@ function repo()
 {
 	dir="$(get-repo-dir.sh "$@" | head -n1)"
 	echo "$dir"
-	cd "$dir"
+	cd "$dir" || return 1
 }
 unalias clone 2>/dev/null
 function clone()
 {
 	clone.sh "$@"
-	repo "$(echo "${@##\~}" | tr [:upper:] [:lower:])"
+	set -- "${@/--*/}"
+	repo "$(echo "${@##\~}" | tr '[:upper:]' '[:lower:]')"
 }
 alias get-repo-dir=get-repo-dir.sh
 alias repo-dir=get-repo-dir.sh
@@ -46,7 +47,7 @@ alias repo-dir=get-repo-dir.sh
 function depo()
 {
 	REPO_DIR=
-	if [ $# -ge 3 -a -z "$REPO_DIR" ]; then
+	if [ $# -ge 3 ] && [ -z "$REPO_DIR" ]; then
 		REPO_DIR="$(repo-dir "$1" "$2" "$3")"
 		if [ -d "$REPO_DIR" ]; then
 			shift 3
@@ -54,7 +55,7 @@ function depo()
 			REPO_DIR=
 		fi
 	fi
-	if [ $# -ge 2 -a -z "$REPO_DIR" ]; then
+	if [ $# -ge 2 ] && [ -z "$REPO_DIR" ]; then
 		REPO_DIR="$(repo-dir "$1" "$2")"
 		if [ -d "$REPO_DIR" ]; then
 			shift 2
@@ -62,7 +63,7 @@ function depo()
 			REPO_DIR=
 		fi
 	fi
-	if [ $# -ge 1 -a -z "$REPO_DIR" ]; then
+	if [ $# -ge 1 ] && [ -z "$REPO_DIR" ]; then
 		REPO_DIR="$(repo-dir "$1")"
 		if [ -d "$REPO_DIR" ]; then
 			shift
@@ -75,13 +76,13 @@ function depo()
 	fi
 	IMG_DIR="$(dirname "$REPO_DIR" | sed -re "s!${HOME}/!${HOME}/dot-files/images/!")"
 	IMG_NAME="$(cd "$IMG_DIR" && make name)"
-	if [ -z "$(docker images -q $IMG_NAME)" ]; then
+	if [ -z "$(docker images -q "$IMG_NAME")" ]; then
 		( cd "$IMG_DIR" && make build )
 	fi
 	if ! grep -qw "$REPO_DIR" <(pwd -P) 2>/dev/null; then
 		echo "Changing directory: $REPO_DIR"
-		cd "$REPO_DIR"
+		cd "$REPO_DIR" || return 1
 	fi
-	echo "Running docker image: $IMG_NAME -- $@"
-	docker-run.sh -v '/u01:/u01' $IMG_NAME "$@"
+	echo "Running docker image: $IMG_NAME -- $*"
+	docker-run.sh -v '/u01:/u01' "$IMG_NAME" "$@"
 }
