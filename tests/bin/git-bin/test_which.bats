@@ -7,18 +7,10 @@ FUT="bin/git-bin/which.sh"
 
 ONLY="git-executables take precedence over aliases"
 @test "$FUT: git-executables take precedence over aliases" {
-#	echo $PATH
-#	git env | grep -E '^PATH='
-	git config --global --add alias.which "!which"
-	git which which
-	git which git-which
-	run git which which
-	assert_all_lines "\`git which' is: ${DOTFILES}/bin/git-bin/git-which"
-
-	git config --global --add alias.which "!echo not my command"
-
-	run git which which
-	assert_all_lines "\`git which' is: ${DOTFILES}/bin/git-bin/git-which"
+	( set -x; git -c "alias.which=!which" which which -a )
+	run git -c "alias.which=!which" which which -a
+	assert_all_lines "\`git which' is: ${DOTFILES}/bin/git-bin/git-which" \
+	                 "\`git which' is: !which"
 }
 
 @test "$FUT: returns success only if all commands exist" {

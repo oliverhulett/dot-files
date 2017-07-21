@@ -5,9 +5,18 @@ source "${HERE}/fixture.sh"
 
 FUT="bin/git.sh"
 
+@test "$FUT: expects the same interace as system git" {
+	run command git --help
+	assert_line --index 0 "usage: git [--version] [--help] [-c name=value]"
+	assert_line --index 1 "           [--exec-path[=<path>]] [--html-path] [--man-path] [--info-path]"
+	assert_line --index 2 "           [-p|--paginate|--no-pager] [--no-replace-objects] [--bare]"
+	assert_line --index 3 "           [--git-dir=<path>] [--work-tree=<path>] [--namespace=<name>]"
+	assert_line --index 4 "           <command> [<args>]"
+}
+
 function _gitenv()
 {
-	$EXE env | command grep "$@"
+	"${EXE}" env | command grep "$@"
 }
 @test "$FUT: prepends git-bin to path" {
 	run _gitenv -E '^PATH='
@@ -15,17 +24,28 @@ function _gitenv()
 	assert_all_lines --partial ":${DOTFILES}/bin/git-bin:"
 }
 
+@test "$FUT: proxies git exit code" {
+	run "${EXE}" status
+	assert_success
+	run "${EXE}" status
+	assert_success
+	run "${EXE}" -h asdf-string-not-close-to-a-git-cmd
+	assert_failure
+	run "${EXE}" asdf-string-not-close-to-a-git-cmd
+	assert_failure
+}
+
 @test "$FUT: standard git-exe interface" {
-	find "${DOTFILES}/bin/git-bin" -type l -name 'git-*' | while read -r; do
+	find "${DOTFILES}/bin/git-bin" \( -type f -or -type l \) -name 'git-*' | while read -r; do
 		# git-exe commands are links to executables in the git-bin directory
 		assert [ "$(dirname "$(readlink -f "${REPLY}")")" == "${DOTFILES}/bin/git-bin" ]
 
 		GIT_CMD="$(basename "${REPLY}" | sed -re 's/^git-//')"
 
 		# git-exe commands accept -h and --help
-		run $EXE "${GIT_CMD}" --help
+		run "${EXE}" "${GIT_CMD}" --help
 		assert_success
-		run $EXE "${GIT_CMD}" -h
+		run "${EXE}" "${GIT_CMD}" -h
 		assert_success
 	done
 }
@@ -33,8 +53,8 @@ function _gitenv()
 @test "$FUT: filter ini-file-leading-space" {
 	cd "${CHECKOUT}/repo" || fail "Failed to change into directory: ${CHECKOUT}/repo"
 	cp "${DOTFILES}/.gitattributes" ./
-	$EXE add .gitattributes
-	$EXE commit -m"Add attributes, including filter for .ini files"
+	"${EXE}" add .gitattributes
+	"${EXE}" commit -m"Add attributes, including filter for .ini files"
 
 	assert command grep -qE '^gitconfig\*\s+text\s+(.*\s+)?filter=ini-file-leading-space(\s+|$)' .gitattributes
 
@@ -49,8 +69,8 @@ function _gitenv()
 EOF
 
 	# Should run the filter...
-	$EXE add file.ini
-	run $EXE show :file.ini
+	"${EXE}" add file.ini
+	run "${EXE}" show :file.ini
 	assert_all_lines "	# a comment" \
 					 "[section]" \
 					 "key = value" \
@@ -59,11 +79,11 @@ EOF
 					 "key = values" \
 					 "	continued"
 
-	$EXE commit -am"file should be cleaned"
+	"${EXE}" commit -am"file should be cleaned"
 	assert_status ""
 
 	rm file.ini
-	$EXE checkout file.ini
+	"${EXE}" checkout file.ini
 	assert_contents file.ini \
 		"	# a comment" \
 		 "[section]" \
@@ -78,25 +98,25 @@ EOF
 	cd "${CHECKOUT}/repo" || fail "Failed to change into directory: ${CHECKOUT}/repo"
 
 	echo "text" >file
-	$EXE add file
-	$EXE commit -m"initial commit"
-	HASH="$(git rev-parse HEAD)"
+	"${EXE}" add file
+	"${EXE}" commit -m"initial commit"
+	HASH="$("${EXE}" rev-parse HEAD)"
 
 	echo "more text" >>file
-	$EXE commit -am"new commit"
+	"${EXE}" commit -am"new commit"
 	assert_status ""
-	assert test "$(git rev-parse HEAD)" != "${HASH}"
+	assert test "$("${EXE}" rev-parse HEAD)" != "${HASH}"
 
-	$EXE undo-commit
+	"${EXE}" undo-commit
 	assert_status " M file"
-	assert_equal "$(git rev-parse HEAD)" "${HASH}"
+	assert_equal "$("${EXE}" rev-parse HEAD)" "${HASH}"
 	assert_contents file "text" "more text"
 
 	echo "change" >file
-	$EXE add -A
+	"${EXE}" add -A
 	assert_status "M  file"
 
-	$EXE unstage
+	"${EXE}" unstage
 	assert_status " M file"
 	assert_contents file "change"
 
@@ -104,7 +124,7 @@ EOF
 	echo "new" >new-file
 	assert_status " M file" "?? new-file"
 
-	$EXE discard
+	"${EXE}" discard
 	assert_files file new-file
 	assert_status "?? new-file"
 	assert_contents file "text"
@@ -119,29 +139,29 @@ EOF
 	fi
 	cd "${CHECKOUT}/repo" || fail "Failed to change into directory: ${CHECKOUT}/repo"
 
-	$EXE which ignore
+	"${EXE}" which ignore
 	echo git ignore '*.txt'
-	$EXE ignore '*.txt'
+	"${EXE}" ignore '*.txt'
 	assert_status "A  .gitignore"
 	assert_contents .gitignore '*.txt'
 
-	$EXE commit -am"initial commit"
+	"${EXE}" commit -am"initial commit"
 
 	echo >>.gitignore
 
 	mkdir emptydir
 	touch one two three
-	$EXE ignore one two three
+	"${EXE}" ignore one two three
 	assert_status "M  .gitignore"
 	assert_contents .gitignore "one" "three" "two" '*.txt'
 
-	$EXE commit -m"ignored files"
+	"${EXE}" commit -m"ignored files"
 
 	# globally ignored files.
 	touch .project .pydevproject .cproject
 	ln -vfs emptydir .settings
 
-	$EXE cleanignored
+	"${EXE}" cleanignored
 	assert_status ""
 	assert_files .gitignore .project .pydevproject .cproject .settings emptydir
 }
@@ -149,42 +169,42 @@ EOF
 @test "$FUT: git cleanbranches" {
 	cd "${CHECKOUT}/repo" || fail "Failed to change into directory: ${CHECKOUT}/repo"
 
-	$EXE checkout -b testbranch
-	run $EXE branch
+	"${EXE}" checkout -b testbranch
+	run "${EXE}" branch
 	assert_all_lines "  master" "* testbranch"
 
-	$EXE upstream
+	"${EXE}" upstream
 
-	$EXE checkout -b testbranch2
-	run $EXE branch
+	"${EXE}" checkout -b testbranch2
+	run "${EXE}" branch
 	assert_all_lines "  master" "  testbranch" "* testbranch2"
 
-	$EXE upstream
+	"${EXE}" upstream
 
-	$EXE cleanbranches
-	run $EXE branch
+	"${EXE}" cleanbranches
+	run "${EXE}" branch
 	assert_all_lines "  master" "  testbranch" "* testbranch2"
 
-	$EXE checkout master
-	run $EXE branch
+	"${EXE}" checkout master
+	run "${EXE}" branch
 	assert_all_lines "* master" "  testbranch" "  testbranch2"
 
-	$EXE cleanbranches
-	run $EXE branch
+	"${EXE}" cleanbranches
+	run "${EXE}" branch
 	assert_all_lines "* master" "  testbranch" "  testbranch2"
 
-	$EXE push origin --delete testbranch
-	$EXE fetch --prune
+	"${EXE}" push origin --delete testbranch
+	"${EXE}" fetch --prune
 
-	run $EXE branch
+	run "${EXE}" branch
 	assert_all_lines "* master" "  testbranch" "  testbranch2"
 
-	$EXE cleanbranches
-	run $EXE branch
+	"${EXE}" cleanbranches
+	run "${EXE}" branch
 	assert_all_lines "* master" "  testbranch2"
 
-	$EXE push origin --delete testbranch2
-	$EXE pullb
-	run $EXE branch
+	"${EXE}" push origin --delete testbranch2
+	"${EXE}" pullb
+	run "${EXE}" branch
 	assert_all_lines "* master"
 }

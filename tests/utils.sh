@@ -293,6 +293,19 @@ function populate_home()
 	_restore e
 }
 
+# A common pattern is to need to be in a particular directory when running a test
+function run_in_dir()
+{
+	OLD_DIR="$(pwd)"
+	NEW_DIR="$1"
+	shift
+	cd "$NEW_DIR" || fail "Failed to change into directory: $NEW_DIR"
+	run "$@"
+	es=$?
+	cd "$OLD_DIR" || fail "Failed to restore directory: $OLD_DIR"
+	return $es
+}
+
 # A common pattern is to assert all lines of output.  Each argument is a line, in order.  All lines must be specified.
 function assert_all_lines()
 {
@@ -311,6 +324,10 @@ function assert_all_lines()
 			l="$(echo "$l" | cut -d' ' -f2-)"
 		else
 			LOCAL_REGEX_OR_PARTIAL=
+		fi
+		## BATS will drop empty lines of output, if we are asked to check an empty line, just assume it was there.
+		if [ -z "$l" ]; then
+			continue
 		fi
 		## Can't quote {GLOBAL,LOCAL}_REGEX_OR_PARTIAL because they'll be interpreted as "empty" lines and not match.
 		# shellcheck disable=SC2086

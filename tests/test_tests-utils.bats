@@ -49,6 +49,14 @@ function _do_assert_all_lines_test()
 	_do_assert_all_lines_test 1 " line1" "line 2" " --partial ine"
 	run echo -n
 	_do_assert_all_lines_test 0
+	# BATS doesn't give us empty lines, assert_all_lines() should also drop them.
+	run echo $'line1\n\nline2\n'
+	_do_assert_all_lines_test 0 "" "line1" "" "line2" ""
+	# Unfortunately that means these all match as well
+	_do_assert_all_lines_test 0 "line1" "line2"
+	_do_assert_all_lines_test 0 "" "" "line1" "line2"
+	_do_assert_all_lines_test 0 "line1" "" "" "line2"
+	_do_assert_all_lines_test 0 "line1" "line2" "" ""
 }
 
 @test "$FUT: register teardown functions" {
@@ -282,6 +290,43 @@ function _assert_fut_exe_mk_test()
 					 "teardown world"
 }
 
+@test "$FUT: run in dir" {
+	scoped_mktemp DIR -d
+	mkdir "${DIR}/empty" "${DIR}/populated"
+	touch "${DIR}/populated/file"
+
+	scoped_mktemp OUTPUT --suffix=.txt
+	scoped_mktemp TESTFILE --suffix=.bats
+	TMPHOME="$(mktemp -p "${BATS_TMPDIR}" --suffix=home --dry-run "${BATS_TEST_NAME}".XXXXXXXX)"
+	cat - >"${TESTFILE}" <<-EOF
+		. "${DF_TESTS}/utils.sh"
+		function setup()
+		{
+			:
+		}
+		function run()
+		{
+			pwd
+			echo "\$@"
+			"\$@"
+		}
+		@test "test" {
+			rm ${OUTPUT} || true
+			exec >>${OUTPUT}
+			exec 2>>${OUTPUT}
+			cd "$DIR/empty" || fail "Could not CD into $DIR"
+			run ls
+			run_in_dir "$DIR/populated" ls
+		}
+	EOF
+
+	run bats -t "${TESTFILE}"
+	assert_success
+	run cat "$OUTPUT"
+	assert_all_lines "$DIR/empty" "ls" "" \
+					 "$DIR/populated" "ls" "file"
+}
+
 @test "$FUT: setup and teardown inheritance" {
 	scoped_mktemp OUTPUT --suffix=.txt
 	scoped_mktemp DIR -d
@@ -419,6 +464,34 @@ function _assert_fut_exe_mk_test()
 	assert_failure
 	run cat "$OUTPUT"
 	assert_all_lines "Before: HOME=${HOME} _ORIG_HOME="
+	unstub temp_make
+	unstub temp_del
+	unstub fail
+
+	export KEEP_BLANK_HOME="yes"
+	stub temp_make '--prefix=home : echo "'"${TMPHOME}"'"'
+	stub temp_del
+	stub fail
+	run bats -t "${TESTFILE}"
+	assert_success
+	run cat "$OUTPUT"
+	assert_all_lines "Before: HOME=${HOME} _ORIG_HOME=" \
+					 "During: HOME=${TMPHOME} _ORIG_HOME=${HOME}" \
+					 "After: HOME=${HOME} _ORIG_HOME=${HOME}"
+	unstub temp_make
+	unstub temp_del
+	unstub fail
+
+	export KEEP_BLANK_HOME="true"
+	stub temp_make '--prefix=home : echo "'"${TMPHOME}"'"'
+	stub temp_del
+	stub fail
+	run bats -t "${TESTFILE}"
+	assert_success
+	run cat "$OUTPUT"
+	assert_all_lines "Before: HOME=${HOME} _ORIG_HOME=" \
+					 "During: HOME=${TMPHOME} _ORIG_HOME=${HOME}" \
+					 "After: HOME=${HOME} _ORIG_HOME=${HOME}"
 	unstub temp_make
 	unstub temp_del
 	unstub fail
