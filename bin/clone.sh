@@ -7,6 +7,49 @@ source "${DOTFILES}/bash_common.sh" 2>/dev/null && eval "${capture_output}" || t
 GIT_URL_BASE="ssh://git@git.comp.optiver.com:7999"
 REPO_DIR="${HOME}/repo"
 
+function print_help()
+{
+	echo "$(basename -- "$0") [-h|-?|--help]"
+	echo "$(basename -- "$0") [--cpp|--go|--py[thon]] <REPOSITORY> <PROJECT>"
+	echo "  --cpp:          Treat cloned project as a C++ project,"
+	echo "  --go:           Treat cloned project as a C++ project,"
+	echo "  --py --python:  Treat cloned project as a python project,"
+	echo "    Otherwise, attempt to detect the project type from the cloned files."
+	echo "  <REPOSITORY> <PROJECT>:  The repo a project parts of the git URL to clone, omit the '.git' suffix"
+}
+
+OPTS=$(getopt -o "h" --long "help,cpp,go,py,python" -n "$(basename -- "$0")" -- "$@")
+es=$?
+if [ $es != 0 ]; then
+	print_help
+	exit $es
+fi
+
+PROJ_TYPE=
+eval set -- "${OPTS}"
+while true; do
+	case "$1" in
+		-h | '-?' | --help )
+			print_help;
+			exit 0;
+			;;
+		--cpp )
+			PROJ_TYPE="cpp"
+			shift
+			;;
+		--go )
+			PROJ_TYPE="go"
+			shift
+			;;
+		--py | --python )
+			PROJ_TYPE="python"
+			shift
+			;;
+		-- ) shift; break ;;
+		* ) break ;;
+	esac
+done
+
 if [ $# -eq 2 ]; then
 	PROJ="$(echo $1 | tr '[:upper:]' '[:lower:]' | tr ' ' -)"
 	REPO="$(echo $2 | tr '[:upper:]' '[:lower:]' | tr ' ' -)"
@@ -40,10 +83,10 @@ fi
 
 if [ ! -e "${DEST_DIR}/.project" ]; then
 	ECLIPSE_PROJECT_FILES="${DOTFILES}/eclipse-project-files"
-	if [ -e "master/CMakeLists.txt" ]; then
+	if [ "${PROJ_TYPE}" == "cpp" ] || [ -e "master/CMakeLists.txt" ]; then
 		## C++ project
 		cp -rv "${ECLIPSE_PROJECT_FILES}/cpp/".[a-z]* ./
-	elif [ -d "master/src" ]; then
+	elif [ "${PROJ_TYPE}" == "go" ] || [ -d "master/src" ]; then
 		## GO project
 		cp -rv "${ECLIPSE_PROJECT_FILES}/go/".[a-z]* ./
 	else

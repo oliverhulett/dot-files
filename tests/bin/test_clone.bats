@@ -12,17 +12,24 @@ function setup_clone()
 }
 
 @test "$FUT: requires two arguments" {
-	run ${EXE}
+	run "${EXE}"
 	assert_failure
-	run ${EXE} arg1
+	run "${EXE}" arg1
 	assert_failure
-	run ${EXE} arg1 arg2 arg3
+	run "${EXE}" arg1 arg2 arg3
+	assert_failure
+
+	run "${EXE}" --cpp
+	assert_failure
+	run "${EXE}" --cpp arg1
+	assert_failure
+	run "${EXE}" --cpp arg1 arg2 arg3
 	assert_failure
 }
 
 @test "$FUT: clones master and copies Eclipse project files" {
 	stub git "clone --recursive ${GIT_URL_BASE}/repo1/proj1.git master : mkdir master" "update"
-	run ${EXE} repo1 proj1
+	run "${EXE}" repo1 proj1
 	assert_success
 	unstub git
 
@@ -33,14 +40,14 @@ function setup_clone()
 	mkdir --parents "${REPO_DIR}/repo1/proj1/master"
 	touch "${REPO_DIR}/repo1/proj1/master/.project"
 	stub git
-	run ${EXE} repo1 proj1
+	run "${EXE}" repo1 proj1
 	assert_success
 	unstub git
 }
 
 @test "$FUT: failes if clone fails" {
 	stub git "clone --recursive ${GIT_URL_BASE}/repo1/proj1.git master : false"
-	run ${EXE} repo1 proj1
+	run "${EXE}" repo1 proj1
 	assert_failure
 	unstub git
 
@@ -52,7 +59,7 @@ function setup_clone()
 @test "$FUT: detects C++ projects" {
 	mkdir --parents "${REPO_DIR}/repo1/proj1/master"
 	touch "${REPO_DIR}/repo1/proj1/master/CMakeLists.txt"
-	run ${EXE} repo1 proj1
+	run "${EXE}" repo1 proj1
 	assert_success
 
 	assert [ -e "${REPO_DIR}/repo1/proj1/master/.cproject" ]
@@ -60,7 +67,7 @@ function setup_clone()
 
 @test "$FUT: detects GOLANG projects" {
 	mkdir --parents "${REPO_DIR}/repo1/proj1/master/src"
-	run ${EXE} repo1 proj1
+	run "${EXE}" repo1 proj1
 	assert_success
 
 	assert [ -e "${REPO_DIR}/repo1/proj1/master/.settings/com.googlecode.goclipse.core.prefs" ]
@@ -68,8 +75,26 @@ function setup_clone()
 
 @test "$FUT: falls-back to Python project" {
 	mkdir --parents "${REPO_DIR}/repo1/proj1/master"
-	run ${EXE} repo1 proj1
+	run "${EXE}" repo1 proj1
 	assert_success
 
 	assert [ -e "${REPO_DIR}/repo1/proj1/master/.pydevproject" ]
+}
+
+@test "$FUT: can override project type" {
+	mkdir --parent "${REPO_DIR}/repo1/cpp-proj/master"
+	mkdir --parent "${REPO_DIR}/repo1/go-proj/master"
+	mkdir --parent "${REPO_DIR}/repo1/py-proj/master"
+
+	run "${EXE}" repo1 cpp-proj --cpp
+	assert_success
+	assert [ -e "${REPO_DIR}/repo1/cpp-proj/master/.cproject" ]
+
+	run "${EXE}" repo1 go-proj --go
+	assert_success
+	assert [ -e "${REPO_DIR}/repo1/go-proj/master/.settings/com.googlecode.goclipse.core.prefs" ]
+
+	run "${EXE}" repo1 py-proj --py
+	assert_success
+	assert [ -e "${REPO_DIR}/repo1/py-proj/master/.pydevproject" ]
 }
