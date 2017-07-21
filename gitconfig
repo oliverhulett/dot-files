@@ -48,14 +48,6 @@ upstream = "!f() { remote=\"origin\"; if [ -n \"$1\" ]; then remote=\"$1\"; fi; 
 when = "!f() { git for-each-ref --sort=-committerdate --format='%(authorname)#%(committerdate)#%(refname)#%(subject)' refs/remotes/origin/ \"$@\" | column -ts'#'; }; f"
 when-added = "!f() { : git log ; follow=; if [ $# -le 1 ]; then follow=\"--follow\"; fi; git log $follow --diff-filter=A --find-renames=40% -- \"$@\"; }; cd \"$GIT_PREFIX\" && f"
 who = "!f() { git for-each-ref --sort=-authorname --format='%(authorname)#%(committerdate)#%(refname)#%(subject)' refs/remotes/origin/ \"$@\" | column -ts'#'; }; f"
-which = !which
-which = !which
-which = !which
-which = !which
-which = !which
-which = !which
-which = !which
-which = !which
 
 [add]
 ignoreErrors = true
