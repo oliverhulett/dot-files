@@ -18,9 +18,9 @@ PYSETUP_MARKER="${PYVENV_HOME}/.setup"
 if [ ! -e "${PYSETUP_MARKER}" ] || [ "$(command cat "${PYSETUP_MARKER}" 2>/dev/null)" != "$(pip_version)" ]; then
 	touch "${PYSETUP_MARKER}"
 	## Install the things
-	pip -q install -U pip
-	pip -q install -U wheel setuptools
-	pip -q install -U -r "${DOTFILES}/python_setup.txt"
+	pip install -U pip
+	pip install -U wheel setuptools
+	pip install -U -r "${DOTFILES}/python_setup.txt"
 
 	pip_version >"${PYSETUP_MARKER}"
 fi
