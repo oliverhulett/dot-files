@@ -114,8 +114,8 @@ function joinby()
 	printf "%s" "${@/#/$d}"
 }
 
-unalias find_alias_or_fn 2>/dev/null
-function find_alias_or_fn()
+unalias _find_alias_or_fn 2>/dev/null
+function _find_alias_or_fn()
 {
 	(
 		command grep -lR -E "^[^#]*\balias[[:space:]]+${arg}=" ~/.bashrc ~/.bash_profile ~/.bash_aliases ~/dot-files/bash_common.sh
@@ -141,13 +141,13 @@ function which()
 		case `type -t "$arg" 2>/dev/null` in
 			alias)
 				alias "$arg"
-				find_alias_or_fn "$arg"
+				_find_alias_or_fn "$arg"
 				cmd="$(alias "$arg" | sed -re "s/^[^=]+=(.+)$/\1/;s/^["'"'"']//;s/["'"'"']$//;s/command //g;s/builtin //g;s/sudo //g;s/ +-[^ ]+//g") $cmd"
 				;;
 			keyword)
 				;;
 			function)
-				find_alias_or_fn "$arg"
+				_find_alias_or_fn "$arg"
 				;;
 			builtin)
 				;;
