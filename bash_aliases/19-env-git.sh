@@ -44,4 +44,7 @@ if type -t __git_ps1 >/dev/null 2>&1; then
 fi
 
 DOTFILES="$(dirname "$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd -P)")"
-alias git="${DOTFILES}/bin/git.sh"
+function git()
+{
+	MANPATH="${DOTFILES}/git-things/man:${MANPATH}" PATH="${DOTFILES}/git-things/bin:${PATH}" command git "$@"
+}

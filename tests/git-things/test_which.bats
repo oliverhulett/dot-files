@@ -7,7 +7,8 @@ FUT="bin/git-bin/which.sh"
 
 ONLY="git-executables take precedence over aliases"
 @test "$FUT: git-executables take precedence over aliases" {
-	( set -x; git -c "alias.which=!which" which which -a )
+	type git
+	which -a git
 	run git -c "alias.which=!which" which which -a
 	assert_all_lines "\`git which' is: ${DOTFILES}/bin/git-bin/git-which" \
 	                 "\`git which' is: !which"

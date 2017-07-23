@@ -1,10 +1,10 @@
 #!/usr/bin/env bats
 
 HERE="$(cd "${BATS_TEST_DIRNAME}" && pwd -P)"
-DF_TESTS="$(dirname "$(dirname "${HERE}")")"
+DF_TESTS="$(dirname "${HERE}")"
 source "${DF_TESTS}/utils.sh"
 
-function setup_git_bin()
+function setup_git_things()
 {
 	scoped_mktemp BARE_REPO -d
 	scoped_mktemp CHECKOUT -d

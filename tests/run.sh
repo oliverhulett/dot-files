@@ -16,7 +16,7 @@ function help()
 	echo
 }
 
-OPTS=$(getopt -o "chtvlr:" --long "count,help,tap,version,list,parallel:" -n "$(basename -- "$0")" -- "$@")
+OPTS=$(getopt -o "chtpvlr:" --long "count,help,tap,pretty,version,list,parallel:" -n "$(basename -- "$0")" -- "$@")
 es=$?
 if [ $es != 0 ]; then
 	help
@@ -124,50 +124,47 @@ done
 
 TIME=( $(command which time) -f "\n%E (%P)  User: %U secs  Sys: %S secs\nMax Mem: %M kb\nCtx Sw: %w (Inv: %c)\nFS in: %I  FS out: %O" )
 
-# Can't actually be false for the moment, maybe later we'll add \`bats --pretty' mode back in...
-if [ "${TAP}" == "true" ]; then
-	printf " % ${WIDTH}s %s\n" ":" "1..${NUM_TESTS}"
-	printf "%s\0" "$@" | stdbuf -oL "${TIME[@]}" xargs -r0 -n 1 -P "${PARALLEL}" -I{} sh -c "
-		export FN=\"\$(basename -- \"{}\" .bats)\";
-		export TD=\"${TD}/\${FN}\";
-		mkdir \"\$TD\";
-		export TMPDIR=\"\$TD\";
-		export BATS_TMPDIR=\"\$TD\";
-		export BATS_MOCK_TMPDIR=\"\$TD\";
-		bats ${ARGS[*]} {} | sed -nre \"2,\\\$s/^/\$(printf \"%- ${WIDTH}s\" \"\${FN}\"): /p\";
-	" | stdbuf -oL perl -e '
-		$| = 1;
-		my $cnt = 0;
-		my $success = 0;
-		my $skip = 0;
-		my $failure = 0;
-		while (<STDIN>) {
-			if (m/^(.{'${WIDTH}'}: )((not )?ok )([0-9]+)(( # skip \()?.+)$/) {
-				$cnt++;
-				my $colour = "";
-				my $file = $1;
-				my $result = $2;
-				my $name = $5;
-				if ($result =~ /^not ok $/) {
-					$failure++;
-					$colour = "\e[31m";
-				} elsif ($name =~ /^ # skip \(/) {
-					$skip++;
-					$colour = "\e[34m";
-				} else {
-					$success++;
-					$colour = "\e[32m";
-				}
-				print $file . $colour . $result . $cnt . $name . "\e[0m\n";
+printf " % ${WIDTH}s %s\n" ":" "1..${NUM_TESTS}"
+printf "%s\0" "$@" | stdbuf -oL "${TIME[@]}" xargs -r0 -n 1 -P "${PARALLEL}" -I{} sh -c "
+	export FN=\"\$(basename -- \"{}\" .bats)\";
+	export TD=\"${TD}/\${FN}\";
+	mkdir \"\$TD\";
+	export TMPDIR=\"\$TD\";
+	export BATS_TMPDIR=\"\$TD\";
+	export BATS_MOCK_TMPDIR=\"\$TD\";
+	bats ${ARGS[*]} {} | sed -nre \"2,\\\$s/^/\$(printf \"%- ${WIDTH}s\" \"\${FN}\"): /p\";
+" | stdbuf -oL perl -e '
+	$| = 1;
+	my $cnt = 0;
+	my $success = 0;
+	my $skip = 0;
+	my $failure = 0;
+	while (<STDIN>) {
+		if (m/^(.{'${WIDTH}'}: )((not )?ok )([0-9]+)(( # skip \()?.+)$/) {
+			$cnt++;
+			my $colour = "";
+			my $file = $1;
+			my $result = $2;
+			my $name = $5;
+			if ($result =~ /^not ok $/) {
+				$failure++;
+				$colour = "\e[31m";
+			} elsif ($name =~ /^ # skip \(/) {
+				$skip++;
+				$colour = "\e[34m";
 			} else {
-				print $_;
+				$success++;
+				$colour = "\e[32m";
 			}
+			print $file . $colour . $result . $cnt . $name . "\e[0m\n";
+		} else {
+			print $_;
 		}
-		print "\n";
-		my $tests = " tests";
-		if ($cnt == 1) {
-			$tests = " test";
-		}
-		print "Ran " . $cnt . $tests . ": " . $success . " succeeded; " . $skip . " skipped; " . $failure . " failed.\n";
-	'
-fi
+	}
+	print "\n";
+	my $tests = " tests";
+	if ($cnt == 1) {
+		$tests = " test";
+	}
+	print "Ran " . $cnt . $tests . ": " . $success . " succeeded; " . $skip . " skipped; " . $failure . " failed.\n";
+'
