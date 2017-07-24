@@ -140,6 +140,10 @@ function setup()
 		skip "cannot verify ignored files exist without other remote"
 		return
 	fi
+	if [ -z "$(git ls-remotes --heads "$(git config --get "remote.${OTHER_REMOTE}.url")" "$(git this)")" ]; then
+		skip "cannot verify ignored fies exist without corresponding branch on other remote"
+		return
+	fi
 
 	scoped_mktemp CHECKOUT -d
 	git clone --depth 1 --branch "$(git this)" "$(git config --get "remote.${OTHER_REMOTE}.url")" "${CHECKOUT}"

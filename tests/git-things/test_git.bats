@@ -3,7 +3,8 @@
 HERE="$(cd "${BATS_TEST_DIRNAME}" && pwd -P)"
 source "${HERE}/fixture.sh"
 
-FUT="git-things/bin/git.sh"
+FUT="git-things"
+IS_EXE="false"
 
 function _gitenv()
 {
@@ -26,9 +27,7 @@ function _gitenv()
 		assert [ "$man" -nt "$REPLY" ]
 		assert [ "$man" -nt "$(readlink -f "$REPLY")" ]
 
-		GIT_CMD="$(basename "${REPLY}" | sed -re 's/^git-//')"
-
-		assert_equal "$(git "${GIT_CMD}" --help)" "$(gunzip -c "$man")"
+		assert_equal "$("${REPLY}" --help)" "$(gunzip -c "$man")"
 	done
 }
 
@@ -121,8 +120,6 @@ EOF
 	fi
 	cd "${CHECKOUT}/repo" || fail "Failed to change into directory: ${CHECKOUT}/repo"
 
-	git which ignore
-	echo git ignore '*.txt'
 	git ignore '*.txt'
 	assert_status "A  .gitignore"
 	assert_contents .gitignore '*.txt'

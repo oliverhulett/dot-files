@@ -1,5 +1,25 @@
+# Create simple man pages from the --help output of custom git commands.
 
-all: man/man1/*.1.gz
+GIT_CMDS := $(wildcard bin/git-*)
+MAN_FILES := $(addsuffix .1.gz, $(addprefix man/man1/, $(notdir $(GIT_CMDS))))
+TARGETS := $(notdir $(GIT_CMDS))
+
+help:   ## Display this help message
+	@echo -e "Makefile to create simple man pages from the --help output of custom git commands."
+	@echo
+	@echo -e "$$(grep -hE '^\S+:.*##' $(MAKEFILE_LIST) | sed -e 's/:.*##\s*/:/' -e 's/^\(.\+\):\(.*\)/\\x1b[36m\1\\x1b[m:\2/' | column -c2 -t -s :)"
+	@echo -e "  Available targets: $(TARGETS)"
+
+.PHONY: help all $(TARGETS)
+
+all:	## Build all man pages
+all: $(MAN_FILES)
+
+
+$(TARGETS):	## Build single man file
+$(TARGETS):%: man/man1/%.1.gz
+
 
 man/man1/%.1.gz: bin/%
-	$* --help | gzip -c >$>
+	@mkdir --parents man/man1
+	$< --help | gzip -c >$@

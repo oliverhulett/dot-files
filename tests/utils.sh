@@ -72,14 +72,12 @@ function _call_hierarchy()
 }
 function setup()
 {
-	if ! should_run; then
-		return
-	fi
 	# Default setup() is to skip the test if the program under test doesn't exist or if only one test has been requested
-	if [ "${IS_EXE}" == "no" ] || [ "${IS_EXE}" == "false" ]; then
-		assert_fut
-	else
-		assert_fut_exe
+	if ! should_run; then
+		return 1
+	fi
+	if ! assert_fut_exe; then
+		return 1
 	fi
 
 	scoped_blank_home
@@ -120,9 +118,13 @@ function assert_fut()
 	_check_caller_is_test assert_fut || return $?
 	if [ -n "${FUT}" ]; then
 		declare -g FUT_PATH
+		if [ -d "${DOTFILES}/${FUT}" ] && [ -n "$(cd "${DOTFILES}" && git ls-files -- "${FUT}")" ]; then
+			FUT_PATH="${DOTFILES}/${FUT}"
+			return
+		fi
 		FUT_PATH="${DOTFILES}/$(cd "${DOTFILES}" && git ls-files -- "${FUT}")"
 		if [ ! -f "${FUT_PATH}" ]; then
-			skip "Failed to find file under test"
+			fail "Failed to find file under test"
 			return 1
 		fi
 	fi
@@ -132,13 +134,20 @@ function assert_fut_exe()
 	_check_caller_is_test assert_fut_exe || return $?
 	if [ -n "${FUT}" ]; then
 		assert_fut || return $?
+		if [ "${IS_EXE}" == "no" ] || [ "${IS_EXE}" == "false" ]; then
+			return
+		fi
+		if [ -d "${FUT_PATH}" ]; then
+			fail "Program under test is a directory, cannot execute.  Did you forget to set \`IS_EXE=\"no\"'?"
+			return 1
+		fi
 		declare -g EXE="${FUT_PATH}"
 		if [ ! -x "${EXE}" ]; then
 			local shebang
 			shebang="$(head -n1 "${EXE}")"
 			local interpreter="${shebang:2}"
 			if [ "${shebang:0:2}" != '#!' ] || [ ! -e "${interpreter%% *}" ]; then
-				skip "Program under test is not executable or has an invalid shebang"
+				fail "Program under test is not executable or has an invalid shebang"
 				return 1
 			else
 				EXE="${interpreter} $EXE"

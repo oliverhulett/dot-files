@@ -212,15 +212,16 @@ function _assert_fut_exe_mk_test()
 	cat - >"${TESTFILE}" <<-EOF
 		. "${DF_TESTS}/utils.sh"
 		FUT="$1"
+		IS_EXE="${3:-yes}"
 		function setup()
 		{
 			:
 		}
-		eval "__original_\$(declare -f skip)"
-		function skip()
+		function fail()
 		{
-			echo "Skipping='\$*' FUT=\$FUT EXE=\$EXE" >"${OUTPUT}"
-			__original_skip "assert_fut_exe failed"
+			echo "Failing='\$*' FUT=\$FUT EXE=\$EXE" >"${OUTPUT}"
+			## The output of bats when skipping tests is easier to parse.
+			skip "assert_fut_exe failed"
 			return 1
 		}
 		@test "test" {
@@ -242,7 +243,7 @@ function _assert_fut_exe_mk_test()
 	assert_success
 	assert_all_lines "1..1" "ok 1 # skip (assert_fut_exe failed) test"
 	run cat "${OUTPUT}"
-	assert_all_lines --partial "Skipping='Failed to find file under test'"
+	assert_all_lines --partial "Failing='Failed to find file under test'"
 
 	_assert_fut_exe_mk_test "tests/data/executable.sh" "${DF_TESTS}/data/executable.sh"
 	run bats -t "${TESTFILE}"
@@ -259,7 +260,24 @@ function _assert_fut_exe_mk_test()
 	assert_success
 	assert_all_lines "1..1" "ok 1 # skip (assert_fut_exe failed) test"
 	run cat "${OUTPUT}"
-	assert_all_lines --partial "Skipping='Program under test is not executable or has an invalid shebang'"
+	assert_all_lines --partial "Failing='Program under test is not executable or has an invalid shebang'"
+
+	_assert_fut_exe_mk_test "tests/data/" ""
+	run bats -t "${TESTFILE}"
+	assert_success
+	assert_all_lines "1..1" "ok 1 # skip (assert_fut_exe failed) test"
+	run cat "${OUTPUT}"
+	assert_all_lines --partial "Failing='Program under test is a directory, cannot execute.  Did you forget to set \`IS_EXE=\"no\"'?'"
+
+	_assert_fut_exe_mk_test "tests/data/" "" "no"
+	run bats -t "${TESTFILE}"
+	assert_success
+	assert_all_lines "1..1" "ok 1 test"
+
+	_assert_fut_exe_mk_test "tests/data/no-shebang.sh" "" "no"
+	run bats -t "${TESTFILE}"
+	assert_success
+	assert_all_lines "1..1" "ok 1 test"
 }
 
 @test "$FUT: simple test file" {
