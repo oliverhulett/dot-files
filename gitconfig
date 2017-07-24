@@ -121,3 +121,7 @@ enabled = true
 [filter "ini-file-leading-space"]
 smudge = sed -r -e 's/^\\s+([a-zA-Z0-9_-]+)\\s+=\\s+/\\1 = /' -e 's/^\\s+/\t/' -e '/^\\s*$/d' -e 's/^\\s*\\[/\\n[/'
 clean = sed -r -e 's/^\\s+([a-zA-Z0-9_-]+)\\s+=\\s+/\\1 = /' -e 's/^\\s+/\t/' -e '/^\\s*$/d' -e 's/^\\s*\\[/\\n[/'
+
+[user]
+name = Oliver Hulett
+email = oliver.hulett@optiver.com.au
