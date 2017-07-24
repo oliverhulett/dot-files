@@ -48,8 +48,7 @@ This is just a random assortment of TODO thoughts.  For more detailed TODOs, see
     * Group things better:  branch management, externals management, resolution helpers, cleaning, pulling, refs and discovery?
     * merge and branch help, don't merge til changelog is updated.
     * Add a command to rebase all from master.
-    * Update git-which to work with git-bin.
-    * Fix following two things also, with tests.
+    * Pattern for overwriting builtin command should be a suffix with 'me'.  Get it in the fingers, keep the rest of the interface the same and hopefully the git typo heuristic does the rest.
 * I had an idea about creating git feature branches...  Create a todo/task list for the feature branch that gets turned into changelog details.  Wrap feature branch creation and merging to create todo/task list and merge into changelog.  Basically enforce/helpers for git workflow built into the branch/merge commands.
 
 * Plan vim plugin.  Stand alone project (make a new one)
