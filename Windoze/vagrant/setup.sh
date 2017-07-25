@@ -39,8 +39,7 @@ if [ -e "${HOME}/etc/passwd" ]; then
 fi
 
 echo "Cloning dot-files..."
-su -c "cd ${HOME} && git config --global user.name 'Oliver Hulett' && git config --global user.email oliver.hulett@optiver.com.au" ${USER}
-su -c "cd ${HOME} && git clone ssh://git@git.comp.optiver.com:7999/~${USER}/dot-files.git ${HOME}/dot-files" ${USER}
+su -c "cd ${HOME} && git -c user.name='Oliver Hulett' -c user.email=oliver.hulett@optiver.com.au clone ssh://git@git.comp.optiver.com:7999/~${USER}/dot-files.git ${HOME}/dot-files" ${USER}
 source "${HOME}/dot-files/bash_aliases/19-env-proxy.sh"
 proxy_setup -q ${USER}
 su -c "cd ${HOME}/dot-files && git submodule init && git submodule update" ${USER}
