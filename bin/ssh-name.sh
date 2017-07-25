@@ -8,7 +8,7 @@ function testname()
 {
 	host="$(command ssh -o ConnectTimeout=2 -o PasswordAuthentication=no "${@}" hostname 2>&${log_fd})"
 	if [ -n "$host" ]; then
-		echo $host
+		echo "$host"
 		exit 0
 	fi
 }
@@ -29,13 +29,26 @@ function oneof()
 ## Firstly, let's just try the string we were given...
 testname "$*"
 
+srv="$*"
+relay_cmd=()
+relay="${srv%%:*}"
+if [ "${relay}" == "${srv}" ]; then
+	relay=
+else
+	srv="${srv#*:}"
+	if [ -n "${relay}" ]; then
+		relay_cmd=( "-o" "ProxyCommand ssh -W %h:%p ${relay}" )
+	fi
+fi
+testname "${relay_cmd[@]}" "$srv"
+
 svrloc="sy"
 svros="nx"
 svrtyp="sr"
 svrnum=
-if [[ "$*" =~ ^([0-9]{1,4})$ ]]; then
-	svrnum="$(printf '%04d' ${BASH_REMATCH[1]})"
-elif [[ "$*" =~ ^([a-z]{2})([0-9]{1,4})$ ]]; then
+if [[ "$srv" =~ ^([0-9]{1,4})$ ]]; then
+	svrnum="$(printf '%04d' "${BASH_REMATCH[1]}")"
+elif [[ "$srv" =~ ^([a-z]{2})([0-9]{1,4})$ ]]; then
 	if oneof "${BASH_REMATCH[1]}" "wn" "ws"; then
 		svros="wn"
 		svrtyp="ws"
@@ -44,16 +57,16 @@ elif [[ "$*" =~ ^([a-z]{2})([0-9]{1,4})$ ]]; then
 	else
 		svrloc="${BASH_REMATCH[1]}"
 	fi
-	svrnum="$(printf '%04d' ${BASH_REMATCH[2]})"
-elif [[ "$*" =~ ^([a-z]{2})([a-z]{2})([0-9]{1,4})$ ]]; then
+	svrnum="$(printf '%04d' "${BASH_REMATCH[2]}")"
+elif [[ "$srv" =~ ^([a-z]{2})([a-z]{2})([0-9]{1,4})$ ]]; then
 	svrloc="${BASH_REMATCH[1]}"
 	svrtyp="${BASH_REMATCH[2]}"
-	svrnum="$(printf '%04d' ${BASH_REMATCH[3]})"
-elif [[ "$*" =~ ^([a-z]{2})([a-z]{2})([a-z]{2})([0-9]{1,4})$ ]]; then
+	svrnum="$(printf '%04d' "${BASH_REMATCH[3]}")"
+elif [[ "$srv" =~ ^([a-z]{2})([a-z]{2})([a-z]{2})([0-9]{1,4})$ ]]; then
 	svrloc="${BASH_REMATCH[1]}"
 	svros="${BASH_REMATCH[2]}"
 	svrtyp="${BASH_REMATCH[3]}"
-	svrnum="$(printf '%04d' ${BASH_REMATCH[4]})"
+	svrnum="$(printf '%04d' "${BASH_REMATCH[4]}")"
 fi
 if [ -z "${svrnum}" ]; then
 	echo >&2 "Bad server name pattern [<location>[[<os>]<type>]]<number>"
@@ -65,7 +78,7 @@ if [ -z "${svrnum}" ]; then
 fi
 
 target="op${svrloc}${svros}${svrtyp}${svrnum}"
-testname "${target}"
+testname "${relay_cmd[@]}" "${target}"
 
 echo >&2 "Target server does not exist or cannot be contacted."
 echo >&2 "From your input '$*' I guessed you wanted: ${target}"

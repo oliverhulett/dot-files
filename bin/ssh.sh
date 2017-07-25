@@ -12,10 +12,20 @@ if [ $# -eq 1 ]; then
 	if [ "${user}" == "${target}" ]; then
 		user="$(whoami)"
 	fi
+	relay_cmd=()
+	relay="${target%%:*}"
+	if [ "${relay}" == "${target}" ]; then
+		relay=
+	else
+		target="${target#*:}"
+		if [ -n "${relay}" ]; then
+			relay_cmd=( "-o" "ProxyCommand ssh -W %h:%p ${relay}" )
+		fi
+	fi
 
 	echo "Looking up ${target} in DNS"
 	if ! command nslookup "${target}" >/dev/null; then
-		name="$(ssh-name.sh "$target")"
+		name="$(ssh-name.sh "${relay}:${target}")"
 		if [ -n "$name" ]; then
 			echo "DNS lookup failed; guessing at $name from convention"
 			target="$name"
@@ -25,27 +35,22 @@ if [ $# -eq 1 ]; then
 	fi
 
 	echo "Testing SSH key on ${target}"
-	if ! command ssh ${user}@${target} -o ConnectTimeout=2 -o PasswordAuthentication=no echo "SSH key already installed on ${target}" 2>/dev/null; then
-		ssh-copy-id -i ${HOME}/.ssh/id_rsa.pub ${user}@${target} 2>/dev/null
+	if ! command ssh "${relay_cmd[@]}" "${user}@${target}" -o ConnectTimeout=2 -o PasswordAuthentication=no echo "SSH key already installed on ${target}" 2>/dev/null; then
+		ssh-copy-id -i "${HOME}/.ssh/id_rsa.pub" "${relay_cmd[@]}" "${user}@${target}" 2>/dev/null
 	fi
 
 	echo "Testing SSH connection to ${target}"
-	host="$(command ssh -o ConnectTimeout=2 -o PasswordAuthentication=no ${user}@${target} hostname 2>/dev/null)"
+	host="$(command ssh -o ConnectTimeout=2 -o PasswordAuthentication=no "${relay_cmd[@]}" "${user}@${target}" hostname 2>/dev/null)"
 	if [ -n "${host}" ]; then
-		command ssh -o ConnectTimeout=2 -o PasswordAuthentication=no ${user}@${host} echo "Successfully SSH-ed to ${target} \(which is really ${host}\) as ${user} without a password" 2>/dev/null
+		command ssh -o ConnectTimeout=2 -o PasswordAuthentication=no "${relay_cmd[@]}" "${user}@${host}" echo "Successfully SSH-ed to ${target} \(which is really ${host}\) as ${user} without a password" 2>/dev/null
 	fi
 
 	# The `if' statement above ensures there was only one command line argument to begin with,
 	# we can safely re-write them now that we're sure of the target.
-	set -- "${user}@${target}"
+	set -- "${relay_cmd[@]}" "${user}@${target}"
 
 	echo "Setting up environment on ${target}"
-	# Don't actually want submodules here, leave that to install-dot-files.sh
-	command ssh ${target} 'git clone ssh://git@git.comp.optiver.com:7999/~olihul/dot-files.git ${HOME}/dot-files 2>/dev/null; cd ${HOME}/dot-files && git pull' 2>/dev/null
-	command ssh ${target} 'test -d ${HOME}/dot-files/.git' 2>/dev/null || run rsync --delete -zpPXrogthlcm --exclude='.git' "${HOME}/dot-files/" ${target}:"${HOME}/dot-files/" 2>/dev/null
-	command ssh ${target} '${HOME}/dot-files/setup-home.sh' 2>/dev/null
-
-	install-dot-files.sh ${target} >&${log_fd} 2>&${log_fd} &
+	install-dot-files.sh "${relay}:${target}" >&${log_fd} 2>&${log_fd} &
 	disown -h 2>/dev/null
 	disown 2>/dev/null
 fi

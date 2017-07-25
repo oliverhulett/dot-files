@@ -74,16 +74,31 @@ function run()
 function do_svr()
 {
 	srv="$1"
+	shift
+	relay_cmd=()
+	rsync_relay_cmd=()
+	if [ -n "$1" ]; then
+		relay_cmd=( "-o" "ProxyCommand ssh -W %h:%p $1" )
+		rsync_relay_cmd=( "-e" "ssh -o 'ProxyCommand ssh -W %h:%p $1'" )
+	fi
 	echo "Server: $srv  ============================================================================"
-	run ssh ${USER}@${srv} "rm -v $(printf "'%s' " "${DIRS[@]}") 2>/dev/null; mkdir -pv $(printf "'%s' " "${DIRS[@]}")" 2>&${log_fd}
-	for i in ${!DIRS[@]}; do
+	run ssh "${relay_cmd[@]}" "${USER}@${srv}" "rm -v $(printf "'%s' " "${DIRS[@]}") 2>/dev/null; mkdir -pv $(printf "'%s' " "${DIRS[@]}")" 2>&${log_fd}
+	for i in "${!DIRS[@]}"; do
 		echo
-		run rsync -zpPXrogthlcm ${RSYNC_ARG} ${SPLITS[$i]} ${USER}@${srv}:"'${DIRS[$i]}/'" || echo -e "\n\nFailed to push files to ${USER}@${srv}" >&2
+		run rsync "${rsync_relay_cmd[@]}" -zpPXrogthlcm ${RSYNC_ARG} ${SPLITS[$i]} ${USER}@${srv}:"'${DIRS[$i]}/'" || echo -e "\n\nFailed to push files to ${USER}@${srv}" >&2
 	done
 	echo
 }
 
 for srv in "${DEV_SRVS[@]}"; do
+	relay="${srv%%:*}"
+	if [ "${relay}" == "${srv}" ]; then
+		relay=
+	else
+		srv="${srv#*:}"
+	fi
+	srv="$(ssh-name.sh "$relay:$srv")"
+
 	if [ -z "$srv" ]; then
 		continue
 	fi
@@ -93,5 +108,5 @@ for srv in "${DEV_SRVS[@]}"; do
 	if [ "$srv" = "localhost" ]; then
 		continue
 	fi
-	do_svr "$srv"
+	do_svr "$srv" "${relay}"
 done

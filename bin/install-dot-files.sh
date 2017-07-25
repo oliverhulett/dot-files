@@ -13,15 +13,30 @@ FILES=( "${HOME}/.ssh/config" "${HOME}/.ssh/known_hosts" "${HOME}/.ssh/id_rsa" "
 
 function run()
 {
-	echo -e "$1\t$2\t${@:3}"
+	echo -e "$1\t$2\t" "${@:3}"
 	"$@"
 }
 
 run dev-push-all.sh --delete --exclude='backups/' "${SERVERS[@]/%/:}" "${FILES[@]}"
 
 for server in "${SERVERS[@]}"; do
-	command ssh ${server} 'git clone ssh://git@git.comp.optiver.com:7999/~olihul/dot-files.git ${HOME}/dot-files 2>/dev/null; cd ${HOME}/dot-files && git pull 2>/dev/null'
-	command ssh ${server} 'test -d ${HOME}/dot-files/.git' || run rsync --delete -zpPXrogthlcm --exclude='.git' "${HOME}/dot-files/" ${server}:"${HOME}/dot-files/"
-	command ssh ${server} '${HOME}/dot-files/setup-home.sh'
+	relay_cmd=()
+	rsync_relay_cmd=()
+	relay="${server%%:*}"
+	if [ "${relay}" == "${server}" ]; then
+		relay=
+	else
+		server="${server#*:}"
+		if [ -n "$relay" ]; then
+			relay_cmd=( "-o" "ProxyCommand ssh -W %h:%p ${relay}" )
+			rsync_relay_cmd=( "-e" "ssh -o 'ProxyCommand ssh -W %h:%p ${relay}'" )
+		fi
+	fi
+	server="$(ssh-name.sh "${relay}:${server}")"
+
+	command ssh "${relay_cmd[@]}" "${server}" 'git clone ssh://git@git.comp.optiver.com:7999/~olihul/dot-files.git ${HOME}/dot-files 2>/dev/null; cd ${HOME}/dot-files && git pull 2>/dev/null'
+	command ssh "${relay_cmd[@]}" "${server}" 'test -d ${HOME}/dot-files/.git' || run rsync "${rsync_relay_cmd[@]}" --delete -zpPXrogthlcm --exclude='.git' "${HOME}/dot-files/" ${server}:"${HOME}/dot-files/"
+	command ssh "${relay_cmd[@]}" "${server}" '${HOME}/dot-files/setup-home.sh'
 	## TODO:  Special case for Vundle, copy if clone fails?  Or make sure vim and edt works without
+	echo -e "\n\tUpdated dot-files; please re-source ~/.bashrc\n" | command ssh "${relay_cmd[@]}" "${server}" "write $(whoami)"
 done
