@@ -311,7 +311,7 @@ set statusline+=%*
 
 " Syntastic warnings
 set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%{exists('g:loaded_syntastic')?SyntasticStatuslineFlag():''}
 set statusline+=%*
 
 " left/right separator
