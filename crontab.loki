@@ -4,4 +4,4 @@ HOME=/home/ols
 @daily cd "${HOME}/dot-files" && git pullb && crontab -l >"crontab.$(hostname -s | tr A-Z a-z)" && echo -e "\n## Backed up on $(date -R) by $(whoami)" >>"crontab.$(hostname -s | tr A-Z a-z)" && git commit -a --allow-empty -m"Autocommit: $(git status -s)" && git push
 @daily sleep 20 && cd "${HOME}/dot-files" && git pullb && git update && ./setup-home.sh >/dev/null 2>&1
 -e 
-## Backed up on Wed, 26 Jul 2017 00:00:14 +1000 by oliver
+## Backed up on Thu, 27 Jul 2017 00:00:14 +1000 by oliver
