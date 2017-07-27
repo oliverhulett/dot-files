@@ -11,16 +11,19 @@ This is just a random assortment of TODO thoughts.  For more detailed TODOs, see
     * Merging back to master removes that feature's TODO (or that feature should have removed it before merging?)
     * Can create a feature branch from a TODO feature.
 * Want to be able to add to TODOs from any checkout and sync them so they can be read from any checkout (and any remote).
+* Look at bash-todo project in github.  Not quite what we want, but an idea to follow for other purposes.
+* Look also at bash-* on github for prompt commands magic for a more fancy prompt command...  I forget the URLs.
 
 * What is wrong with my colours on Ubuntu?
 * ssh.sh hard-codes cloning from optiver repo, be smarter about that.  Since ssh.sh is checked in, can we discover and use 'origin'?  What if we're SSH-ing from a machine where ssh.sh is a copy not a checkout (but to a machine where we could clone dot-files?)
 * Docker/drone the tests to run on a Centos7 image, a Centos5 image, and a few Ubuntu images.
-    * Make sure tests run against working directory of dot-files, not against installed version.
+    * Make sure tests run against working directory of dot-files, not against installed version.  This seams better now that we have the setup hierarchy and the automatic populated blank home.
 * Organise all the files better.
 * Discovery mechanism for including environment setups.
     * Sourcing .../09-env-proxy.sh is a common pattern in scripts that need to fetch stuff from the internet.  But they don't all do it in the same way (e.g. some source ${HOME}/.bash_aliases/... and some source $(dirname "${BASH_SOURCE[0]}")/bash_aliases)  Is there a "correct" way (testability) or should it depend on what they're doing?
     * Is there an easier way of including these bits that will provide a central place to update if we move the files?  Or should be just be testing file location?
     * Whatever it is has to work for scripts launched by a fully setup bash prompt and from a "clean" environment.
+    * `source` looks in $PATH if the file to source has not slashes in it.  Put bash_common.sh in path, source it to fetch a `source` wrapper that knows about ~/.bash_aliases and dot-files (maybe two wrappers)
 
 * Test/Task/CI idea
     * Start with a directory hierarcy.
@@ -76,9 +79,9 @@ This is just a random assortment of TODO thoughts.  For more detailed TODOs, see
     * Setup as discussed in notes
     * How to have dependent/ordered tasks?
 * General: Is it possible to have core files named to include their timestamp, rather than just process ID?
-* less: Stay in less on short files, but also keep short files on screen after exit?  Do I still want that one?
+* less: Stay in less on short files, but also keep short files on screen after exit?  Do I still want that one?  Look at combinations of -X and -F.
+* Fix less at home, grr  Look at combinations of -X and -F.
 * Colourise (pygmentise) `cat`, `head`, and `tail` output.  Need flag to disable?  detect output?
-* Fix less at home, grr
 * Fix less follow with `lessfilter` (or is it just `colourise.py`?)
 * `stasher.py` force cache refresh with cmdline flag.  (Or are we happy to just find and remove temp file?)
 

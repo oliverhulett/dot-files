@@ -40,7 +40,7 @@ alias chmod='chmod -c'
 alias eject='eject -T'
 alias file='file -krz'
 alias top='top -c'
-export LESS='-RFiMx4'
+export LESS='-RFXiMx4'
 alias less="less ${LESS}"
 
 if uname -s | command grep -q 'MINGW' >/dev/null 2>&1 ; then
