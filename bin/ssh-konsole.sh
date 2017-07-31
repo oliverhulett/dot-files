@@ -39,17 +39,15 @@ done
 
 CMD=( "${SSH}" "${WHO}@${WHERE}" )
 
-function run()
+function dbuser()
 {
-	for cmd in echo exec; do
-		$cmd "$@"
-	done
+	qdbus org.kde.konsole "$@"
 }
 
 if [ -z "$(command which konsole 2>/dev/null)" ]; then
 	if [ -t 0 ]; then
 		echo "Konsole not found, will SSH directly..."
-		run "${CMD[@]}"
+		exec "${CMD[@]}"
 	else
 		kdialog --sorry "Konsole not found, will not be able to SSH to server..."
 		exit 1
@@ -58,5 +56,6 @@ else
 	## TODO:  SSH-ing to a new server here (e.g. needing to install ssh-keys) poped up a KWallet dialog looking for a password.
 	## Why?  ssh-askpass perhaps?
 	## Also, where has my random background colouring gone?  They're transparrent now, but not coloured :(
-	run konsole --profile "Random-SSH-Server" -e "${CMD[@]}"
+	echo "Launching new Konsole window..."
+	exec konsole --name "${WHO}@${WHERE}" --title "${WHO}@${WHERE}" --profile "Random-SSH-Server" -e "${CMD[@]}"
 fi
