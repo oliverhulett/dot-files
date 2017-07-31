@@ -23,7 +23,7 @@ This is just a random assortment of TODO thoughts.  For more detailed TODOs, see
     * Sourcing .../09-env-proxy.sh is a common pattern in scripts that need to fetch stuff from the internet.  But they don't all do it in the same way (e.g. some source ${HOME}/.bash_aliases/... and some source $(dirname "${BASH_SOURCE[0]}")/bash_aliases)  Is there a "correct" way (testability) or should it depend on what they're doing?
     * Is there an easier way of including these bits that will provide a central place to update if we move the files?  Or should be just be testing file location?
     * Whatever it is has to work for scripts launched by a fully setup bash prompt and from a "clean" environment.
-    * `source` looks in $PATH if the file to source has not slashes in it.  Put bash_common.sh in path, source it to fetch a `source` wrapper that knows about ~/.bash_aliases and dot-files (maybe two wrappers)
+    * `source` looks in $PATH if the file to source has no slashes in it.  Put bash_common.sh in path, source it to fetch a `source` wrapper that knows about ~/.bash_aliases and dot-files (maybe two wrappers)
 
 * Test/Task/CI idea
     * Start with a directory hierarcy.
