@@ -45,6 +45,8 @@ if [ $# -eq 1 ]; then
 		command ssh -o ConnectTimeout=2 -o PasswordAuthentication=no "${relay_cmd[@]}" "${user}@${host}" echo "Successfully SSH-ed to ${target} \(which is really ${host}\) as ${user} without a password" 2>/dev/null
 	fi
 
+	qdbus org.kde.konsole "$KONSOLE_DBUS_SESSION" setTitle 0 "$*"
+	qdbus org.kde.konsole "$KONSOLE_DBUS_SESSION" setTitle 1 "$*"
 	# The `if' statement above ensures there was only one command line argument to begin with,
 	# we can safely re-write them now that we're sure of the target.
 	set -- "${relay_cmd[@]}" "${user}@${target}"

@@ -39,11 +39,6 @@ done
 
 CMD=( "${SSH}" "${WHO}@${WHERE}" )
 
-function dbuser()
-{
-	qdbus org.kde.konsole "$@"
-}
-
 if [ -z "$(command which konsole 2>/dev/null)" ]; then
 	if [ -t 0 ]; then
 		echo "Konsole not found, will SSH directly..."
