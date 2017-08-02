@@ -40,4 +40,4 @@ MAILTO=olihul@optiver.com.au
 ## Python virtualenv should be refreshed regularly.
 @daily source "${HOME}/.bash_aliases/09-profile.d-pyvenv.sh" && rm -rf "${PYVENV_HOME}" && ${HOME}/dot-files/bin/python_setup.sh
 
-## Backed up at Wed Aug  2 18:50:02 AEST 2017 by olihul
+## Backed up at Thu Aug  3 07:17:19 AEST 2017 by olihul
