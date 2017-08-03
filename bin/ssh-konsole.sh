@@ -52,5 +52,5 @@ else
 	## Why?  ssh-askpass perhaps?
 	## Also, where has my random background colouring gone?  They're transparrent now, but not coloured :(
 	echo "Launching new Konsole window..."
-	exec konsole --name "${WHO}@${WHERE}" --title "${WHO}@${WHERE}" --profile "Random-SSH-Server" -e "${CMD[@]}"
+	exec konsole --profile "Random-SSH-Server" -p "tabTitle=${WHO}@${WHERE}" --name "${WHO}@${WHERE}" --title "${WHO}@${WHERE}" -e "${CMD[@]}"
 fi
