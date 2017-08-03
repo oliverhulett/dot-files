@@ -93,6 +93,7 @@ This is just a random assortment of TODO thoughts.  For more detailed TODOs, see
         * Tab completion/Program specific environment magic
             * I'm thinking of a way to "automagically" install tab-completion and other program specific environment magic on first use of a program.  Basically, on first execution, look for some program specific setup in .bash_something and execute/source it.
             * Tab completion, at least, may best be hooked into the global tab completion mechanism, if that is possible.
+* Need to worry about re-entrance/concurrent execution.  Especially, test setup-home.sh concurrent execution...
 
 * Data conceptualisation idea
     * Define "data types" (loosely, just a name/index and a version)
