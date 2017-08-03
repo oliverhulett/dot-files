@@ -23,26 +23,26 @@ fi
 
 #export BASH_ENV="${HOME}/.bashrc"
 
-export VISUAL=$(command which vim 2>/dev/null)
-export EDITOR=$VISUAL
-export PAGER=$(command which less 2>/dev/null)
-unalias edt 2>/dev/null
-function edt()
+export VISUAL=vim
+export EDITOR=vim
+export PAGER=less
+function vim()
 {
 	source "${HOME}/dot-files/bash_common.sh" 2>/dev/null || true
 	VUNDLE_LAST_UPDATED_MARKER="${HOME}/.vim/bundle/.last_updated"
 	if [ -z "$(find "${VUNDLE_LAST_UPDATED_MARKER}" -mtime -1 2>/dev/null)" ] || \
 		[ "$(command grep -P '^[ \t]*Plugin ' "${HOME}/.vimrc" | xargs -L1 | sort)" != "$(tail -n +2 "${VUNDLE_LAST_UPDATED_MARKER}")" ]; then
 		[ -e "${HOME}/.bash_aliases/49-setup-proxy.sh" ] && source "${HOME}/.bash_aliases/49-setup-proxy.sh" 2>/dev/null
-		vim +'silent! PluginInstall' +qall
+		command vim +'silent! PluginInstall' +qall
 		date >"${VUNDLE_LAST_UPDATED_MARKER}"
 		command grep -P '^[ \t]*Plugin ' "${HOME}/.vimrc" | xargs -L1 | sort >>"${VUNDLE_LAST_UPDATED_MARKER}"
 	fi
-	vim "${VUNDLE_UPDATE_CMDS[@]}" "$@"
+	command vim "${VUNDLE_UPDATE_CMDS[@]}" "$@"
 	es=$?
-	log "Command=edt Seconds=$((SECONDS - _timer)) Returned=$es CWD=$(pwd) Files={$*}"
+	log "Command=vim Seconds=$((SECONDS - _timer)) Returned=$es CWD=$(pwd) Files={$*}"
 	return $es
 }
+alias edt=vim
 
 export HISTCONTROL="ignoredups"
 export HISTIGNORE="[   ]*:&:bg:fg:sh:exit:history"
