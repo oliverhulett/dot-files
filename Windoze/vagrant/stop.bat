@@ -7,5 +7,12 @@ set https_proxy=
 set HTTP_PROXY=
 set HTTPS_PROXY=
 
-stop.bat
-start.bat
+echo "STOPPING VM"
+echo
+vagrant halt
+echo
+echo "DESTROYING VM"
+echo
+vagrant destroy -f
+echo
+echo "DONE"

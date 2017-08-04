@@ -7,5 +7,13 @@ set https_proxy=
 set HTTP_PROXY=
 set HTTPS_PROXY=
 
-stop.bat
-start.bat
+echo
+echo "UPDATING BASE IMAGE"
+echo
+vagrant box update
+echo
+echo "STARTING VM"
+echo
+vagrant up
+echo
+echo "DONE"
