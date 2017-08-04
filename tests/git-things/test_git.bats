@@ -114,14 +114,14 @@ EOF
 }
 
 @test "$FUT: git ignore" {
-	if command which git-ignore >/dev/null 2>/dev/null; then
-		skip "\`git ignore' points to an executable, so my alias won't work."
-		return
-	fi
 	cd "${CHECKOUT}/repo" || fail "Failed to change into directory: ${CHECKOUT}/repo"
 
 	git ignore '*.txt'
-	assert_status "A  .gitignore"
+	if command which git-ignore >/dev/null 2>/dev/null; then
+		assert_status "M  .gitignore"
+	else
+		assert_status "A  .gitignore"
+	fi
 	assert_contents .gitignore '*.txt'
 
 	git commit -am"initial commit"
@@ -132,7 +132,11 @@ EOF
 	touch one two three
 	git ignore one two three
 	assert_status "M  .gitignore"
-	assert_contents .gitignore "one" "three" "two" '*.txt'
+	if command which git-ignore >/dev/null 2>/dev/null; then
+		assert_contents .gitignore "*.txt" "" "one" "two" 'three'
+	else
+		assert_contents .gitignore "one" "three" "two" '*.txt'
+	fi
 
 	git commit -m"ignored files"
 
@@ -186,4 +190,58 @@ EOF
 	git pullb
 	run git branch
 	assert_all_lines "* master"
+}
+
+ONLY="editor.sh"
+@test "$FUT: editor.sh" {
+	cd "${CHECKOUT}/repo" || fail "Failed to change into directory: ${CHECKOUT}/repo"
+	GIT="$(command which git)"
+
+	# UX design: Show status before commit, show existing msg (offer to use existing msg), offer to show diff at time of msg input.
+	#            Ask for input (message) first, do book-keeping later.
+	#            Save message (for possible editing later) if book-keeping fails.
+
+	touch file
+	git add file
+	git commit -am"Adding file, we'll change it for each commit"
+
+	GIT_STATUS_LINES=(
+		'# On branch master'
+		'# Changes to be committed:'
+		'#   (use "git reset HEAD <file>..." to unstage)'
+		'#'
+		'#	modified:   file'
+		'#'
+	)
+	MSG_PROMPT="Enter a short (single line) commit message.  Press 'e' or enter 'edit' to launch \`vim'.  Press 'd' or enter 'diff' to see the commit diff."
+	# Committing shows current commit msg (if present), status, offers diff, accepts simple msg, can fall into vim.
+	# can't stub git, from within git /usr/libexec/git-core is prefixed to path and /usr/libexec/git-core/git is found instead of binstub.
+	echo "words" >file
+	run git commit -a <<-EOF
+	EOF
+	assert_failure # aborted commit due to empty msg.
+#	assert_all_lines "${GIT_STATUS_LINES[@]}" \
+#					 "${MSG_PROMPT}" \
+#					 "Aborting commit due to empty commit message."
+
+	#for i in "e" "E" "t\be" "t\bE" "t\bedit" "t\bEdit" "t\bEDIT" "t\beDiT"; do
+	for i in "asdf\b\b\b\be" "t\be" "t\bE" "t\bedit" "t\bEdit" "t\bEDIT" "t\beDiT"; do
+		stub vim '*.git/COMMIT_EDITMSG : echo special vim because of '"$i"
+		run script -qfc "PATH="${DOTFILES}/git-things/bin:${PATH}" git commit -a" /dev/null <<<"$i"
+		#assert_failure # aborted commit due to empty msg.
+		assert_all_lines "${GIT_STATUS_LINES[@]}" \
+						 "${MSG_PROMPT}" \
+						 "special vim because of $i" \
+						 "Aborting commit due to empty commit message."
+		unstub vim
+	done
+
+	run git commit -a <<-EOF
+		d
+	EOF
+	assert_failure # aborted commit due to empty msg.
+	assert_all_lines "${GIT_STATUS_LINES[@]}" \
+					 "${MSG_PROMPT}" \
+					 "git diff" \
+					 "Aborting commit due to empty commit message."
 }

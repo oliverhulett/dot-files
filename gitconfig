@@ -76,8 +76,8 @@ conflictstyle = diff3
 stat = true
 
 [core]
-pager = less -RFiMx4 -+S
-editor = ~/.git_wrappers/commit.sh
+pager = less -RFXiMx4 -+S
+editor = editor.sh
 excludesfile = ~/.gitignore
 safecrlf = true
 abbrev = 11
