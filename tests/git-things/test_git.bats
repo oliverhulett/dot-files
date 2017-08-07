@@ -195,15 +195,15 @@ EOF
 ONLY="editor.sh"
 @test "$FUT: editor.sh" {
 	cd "${CHECKOUT}/repo" || fail "Failed to change into directory: ${CHECKOUT}/repo"
-	GIT="$(command which git)"
 
 	# UX design: Show status before commit, show existing msg (offer to use existing msg), offer to show diff at time of msg input.
 	#            Ask for input (message) first, do book-keeping later.
 	#            Save message (for possible editing later) if book-keeping fails.
 
+	INITIAL_COMMIT_MSG="Adding file, we'll change it for each commit"
 	touch file
 	git add file
-	git commit -am"Adding file, we'll change it for each commit"
+	git commit -am"${INITIAL_COMMIT_MSG}"
 
 	GIT_STATUS_LINES=(
 		'# On branch master'
@@ -220,28 +220,67 @@ ONLY="editor.sh"
 	run git commit -a <<-EOF
 	EOF
 	assert_failure # aborted commit due to empty msg.
-#	assert_all_lines "${GIT_STATUS_LINES[@]}" \
-#					 "${MSG_PROMPT}" \
-#					 "Aborting commit due to empty commit message."
+	assert_all_lines "${GIT_STATUS_LINES[@]}" \
+					 "${MSG_PROMPT}" \
+					 "Aborting commit due to empty commit message."
 
-	#for i in "e" "E" "t\be" "t\bE" "t\bedit" "t\bEdit" "t\bEDIT" "t\beDiT"; do
-	for i in "asdf\b\b\b\be" "t\be" "t\bE" "t\bedit" "t\bEdit" "t\bEDIT" "t\beDiT"; do
+	# The backspace thing doesn't really work.  For testing purposes, make sure you're overwriting with more characters than you're deleting.
+	# In real life, readline will handle this for us, `read' will only see the "final" string.
+	for i in "$(printf "e")" \
+			 "$(printf "E")" \
+			 "$(printf "t\be")" \
+			 "$(printf "t\bE")" \
+			 "$(printf "sadf\b\b\b\bedit")" \
+			 "$(printf "sadf\b\b\b\bEDIT")" \
+			 "$(printf "sadf\b\b\b\bEdIt")"; do
 		stub vim '*.git/COMMIT_EDITMSG : echo special vim because of '"$i"
-		run script -qfc "PATH="${DOTFILES}/git-things/bin:${PATH}" git commit -a" /dev/null <<<"$i"
-		#assert_failure # aborted commit due to empty msg.
+		run git commit -a <<<"$i"
 		assert_all_lines "${GIT_STATUS_LINES[@]}" \
 						 "${MSG_PROMPT}" \
 						 "special vim because of $i" \
 						 "Aborting commit due to empty commit message."
+		assert_failure # aborted commit due to empty msg.
 		unstub vim
 	done
 
-	run git commit -a <<-EOF
-		d
+	GIT_DIFF_LINES=(
+		'diff --git c/file i/file'
+		'--regexp index .+ 100644'
+		'--- c/file'
+		'+++ i/file'
+		'@@ -0,0 +1 @@'
+		'+words'
+	)
+	for i in "$(printf "d")" \
+			 "$(printf "D")" \
+			 "$(printf "t\bd")" \
+			 "$(printf "t\bD")" \
+			 "$(printf "sadf\b\b\b\bdiff")" \
+			 "$(printf "sadf\b\b\b\bDIFF")" \
+			 "$(printf "sadf\b\b\b\bDiFf")"; do
+		run git commit -a <<<"$i"
+		assert_all_lines "${GIT_STATUS_LINES[@]}" \
+						 "${MSG_PROMPT}" \
+						 "${GIT_DIFF_LINES[@]}" \
+						 "${MSG_PROMPT}" \
+						 "Aborting commit due to empty commit message."
+		assert_failure # aborted commit due to empty msg.
+	done
+
+	NEW_COMMIT_MSG="Amended commit message, plus some text in the file"
+	run git commit -a --amend <<-EOF
+		${NEW_COMMIT_MSG}
 	EOF
-	assert_failure # aborted commit due to empty msg.
-	assert_all_lines "${GIT_STATUS_LINES[@]}" \
+	assert_success
+	assert_all_lines "${INITIAL_COMMIT_MSG}" \
+					 "${GIT_STATUS_LINES[@]}" \
 					 "${MSG_PROMPT}" \
-					 "git diff" \
-					 "Aborting commit due to empty commit message."
+					 "--regexp \[master [0-9a-f]+\] ${NEW_COMMIT_MSG}" \
+					 " 1 file changed, 1 insertion(+)" \
+					 " create mode 100644 file"
+	assert_equal "$(git log -1 --pretty=%B)" "${NEW_COMMIT_MSG}"
+
+	# Ask about prefixing branch to message if we're on a branch and a message was given.
+	# If no message was given, automate adding branch name to contents of .git/COMMIT_EDITMSG
+	# There are two types of branches for this too, feature and fix/work branches, they have different formats.
 }
