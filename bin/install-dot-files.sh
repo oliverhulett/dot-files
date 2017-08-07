@@ -19,6 +19,11 @@ function run()
 
 run dev-push-all.sh --delete --exclude='backups/' "${SERVERS[@]/%/:}" "${FILES[@]}"
 
+function hsh()
+{
+	command ssh "${relay_cmd[@]}" "${server}" '( cd "${HOME}/dot-files" && git rev-parse HEAD ) || ( find -type f -print0 | sort -z | xargs -0 sha1sum | sha1sum )'
+}
+
 for server in "${SERVERS[@]}"; do
 	relay_cmd=()
 	rsync_relay_cmd=()
@@ -34,9 +39,13 @@ for server in "${SERVERS[@]}"; do
 	fi
 	server="$(ssh-name.sh "${relay}:${server}")"
 
+	HASH_B4="$(hsh)"
 	command ssh "${relay_cmd[@]}" "${server}" 'git clone ssh://git@git.comp.optiver.com:7999/~olihul/dot-files.git ${HOME}/dot-files 2>/dev/null; cd ${HOME}/dot-files && git pull 2>/dev/null'
 	command ssh "${relay_cmd[@]}" "${server}" 'test -d ${HOME}/dot-files/.git' || run rsync "${rsync_relay_cmd[@]}" --delete -zpPXrogthlcm --exclude='.git' "${HOME}/dot-files/" ${server}:"${HOME}/dot-files/"
 	command ssh "${relay_cmd[@]}" "${server}" '${HOME}/dot-files/setup-home.sh'
 	## TODO:  Special case for Vundle, copy if clone fails?  Or make sure vim and edt works without
-	echo -e "\n\tUpdated dot-files; please re-source ~/.bashrc\n" | command ssh "${relay_cmd[@]}" "${server}" "write $(whoami)"
+	HASH_AFTER="$(hsh)"
+	if [ "${HASH_B4}" != "${HASH_AFTER}" ]; then
+		echo -e "\n\tUpdated dot-files; please re-source ~/.bashrc\n" | command ssh "${relay_cmd[@]}" "${server}" "write $(whoami)"
+	fi
 done

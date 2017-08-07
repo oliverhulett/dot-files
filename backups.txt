@@ -39,6 +39,7 @@
 /home/olihul/.bash_history
 /home/olihul/.config
 /home/olihul/.dotlogs
+/home/olihul/.eclipse-user-dictionary.txt
 /home/olihul/.kde/Autostart
 /home/olihul/.kde/share
 /home/olihul/.local
