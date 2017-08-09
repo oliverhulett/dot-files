@@ -1,0 +1,7 @@
+HOME=/home/ols
+SHELL=/bin/bash
+
+@reboot cd "${HOME}/dot-files" && git pullb && crontab -l >"crontab.$(hostname -s | tr A-Z a-z)" && echo -e "\n## Backed up on $(date -R) by $(whoami)" >>"crontab.$(hostname -s | tr A-Z a-z)" && git commit -a --allow-empty -m"Autocommit: $(git status -s)" && git push
+@reboot sleep 20 && cd "${HOME}/dot-files" && git pullb && git update && ./setup-home.sh >/dev/null 2>&1
+
+## Backed up on Wed, 09 Aug 2017 00:00:13 +1000 by oliver
