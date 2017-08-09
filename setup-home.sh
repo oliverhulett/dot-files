@@ -15,7 +15,7 @@ disown 2>/dev/null
 HOSTNAME="$(hostname -s | tr '[:upper:]' '[:lower:]')"
 if [ -f "${HERE}/crontab.${HOSTNAME}" ]; then
 	echo "Installing crontab from ~/dot-files/crontab.${HOSTNAME}..."
-	crontab <(head -n -2 "${HERE}/crontab.${HOSTNAME}")
+	head -n -2 "${HERE}/crontab.${HOSTNAME}" | crontab
 elif [ -f "${HERE}/crontab" ]; then
 	echo "Installing crontab from ~/dot-files/crontab..."
 	crontab "${HERE}/crontab"
