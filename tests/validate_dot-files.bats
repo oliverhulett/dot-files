@@ -21,6 +21,7 @@ DF_FILES_OPTIVER=(
 )
 DF_FILES_GITHUB=(
 	crontab.loki
+	crontab.prometheus
 	gitconfig.home
 )
 
