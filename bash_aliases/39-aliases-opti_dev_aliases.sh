@@ -17,6 +17,19 @@ function bt()
 	done
 }
 
+unalias stage 2>/dev/null
+function stage()
+{
+	for f in "$@"; do
+		b="$(basename -- "$f")"
+		n="${b}.$(date '+%Y%m%d-%H%M%S')"
+		d="/apps/bin/olihul"
+		ssh central-staging "mkdir --parents $d"
+		scp "$f" central-staging:"$d/$n"
+		ssh central-staging "chmod 0775 '$d/$n'"
+	done
+}
+
 function proxy_exe()
 {
 	EXE="$(readlink -f "$1")"
@@ -50,7 +63,8 @@ function cc-env()
 	CC_IMAGE="$(sed -nre 's!.+(docker-registry\.aus\.optiver\.com/[^ ]+/[^ ]+).*!\1!p' "${CC_EXE}" | tail -n1)"
 	# does the app releases mount exists, then map it into the container
 	[ -d /ApplicationReleases ] && MOUNT_APPRELEASES=( "-v" "/ApplicationReleases:/ApplicationReleases" ) || MOUNT_APPRELEASES=()
-	docker-run.sh "${MOUNT_APPRELEASES[@]}" "${CC_IMAGE}" "$@"
+	[ -d /u01 ] && MOUNT_U01=( "-v" "/u01:/u01" ) || MOUNT_U01=()
+	docker-run.sh "${MOUNT_U01[@]}" "${MOUNT_APPRELEASES[@]}" "${CC_IMAGE}" "$@"
 	es=$?
 	proxy_exe "${CC_EXE}" "e7f92198178a9c7bdb1b6c04ef679c08"
 	return $es
