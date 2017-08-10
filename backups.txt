@@ -44,3 +44,5 @@
 /home/olihul/.kde/share
 /home/olihul/.local
 /home/olihul/repo/.metadata
+/optiver/
+/usr/local/bin/
