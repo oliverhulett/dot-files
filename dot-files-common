@@ -1,5 +1,6 @@
 ackrc .ackrc
 bash_aliases/19-env-git.sh .bash_aliases/19-env-git.sh
+bash_aliases/19-env-svn.sh .bash_aliases/19-env-svn.sh
 bash_aliases/20-completion.sh .bash_aliases/20-completion.sh
 bash_aliases/29-completion-pyinvoke.sh .bash_aliases/29-completion-pyinvoke.sh
 bash_aliases/30-aliases.sh .bash_aliases/30-aliases.sh
