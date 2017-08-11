@@ -2,16 +2,19 @@
 
 function _svn_ps1()
 {
-	local root
-	root="$(pwd -P)"
-	while [ "${root}" != "/" ] && [ ! -d "${root}/.svn" ]; do
-		root="$(dirname "${root}")"
+	local root here
+	here="$(pwd -P)"
+	while [ "${here}" != "/" ]; do
+		if [ -d "${here}/.svn" ]; then
+			root="${here}"
+		fi
+		here="$(dirname "${here}")"
 	done
-	if [ ! -d "${root}/.svn" ]; then
+	if [ -z "${root}" ]; then
 		return
 	fi
 	local unversioned added_deleted changes conflicts locked
-	for c in $(cd "${root}" && svn status --ignore-externals -v | cut -c1-7 | sort -u); do
+	for c in $(svn status -v "${root}" | cut -c1-7 | sort -u | command grep -v Perform); do
 		case "${c[0]}" in
 			'?' ) unversioned='%' ;;
 			A | D ) added_deleted='+' ;;
@@ -35,12 +38,12 @@ function _svn_ps1()
 			conflicts='X'
 		fi
 	done
-	local dirty
-	dirty="${unversioned}${added_deleted}${changes}${conflicts}${locked}"
-	if [ -z "${dirty}" ]; then
-		dirty='='
+	local hint
+	hint="${unversioned}${added_deleted}${changes}${conflicts}${locked}"
+	if [ -z "${hint}" ]; then
+		hint='='
 	fi
-	echo -n " (${dirty})"
+	echo -n " (${hint})"
 }
 
 if [ "$TERM" == "cygwin" ]; then
