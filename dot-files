@@ -17,6 +17,7 @@ bash_aliases/39-aliases-opti_dev_aliases.sh .bash_aliases/39-aliases-opti_dev_al
 bash_aliases/39-aliases-project_path.sh .bash_aliases/39-aliases-project_path.sh
 bash_aliases/39-aliases-site_packages.sh .bash_aliases/39-aliases-site_packages.sh
 bash_aliases/39-aliases-ssh.sh .bash_aliases/39-aliases-ssh.sh
+bash_aliases/39-aliases-swd.sh .bash_aliases/39-aliases-swd.sh
 bash_aliases/49-setup-ccache.sh .bash_aliases/49-setup-ccache.sh
 bash_aliases/49-setup-proxy.sh .bash_aliases/49-setup-proxy.sh
 bash_aliases/49-setup-ulimit.sh .bash_aliases/49-setup-ulimit.sh
