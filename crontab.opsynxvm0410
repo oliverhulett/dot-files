@@ -1,0 +1,24 @@
+## The master crontab for this machine is ~/dot-files/crontab.opsynxvm0410.  Edit that files always.
+## That file is installed into /var/spool/crontab regularly.  /var/spool/crontab will be regularly overwritten
+## by ~/dot-files/crontab (or ~/dot-files/crontab.`hostname` if it exists)
+HOME=/home/olihul
+MAILTO=olihul@optiver.com.au
+
+## Keep ~/dot-files up-to-date
+@daily [ -d ${HOME}/dot-files/.git ] && ( cd ${HOME}/dot-files && git pullb -q >/dev/null 2>/dev/null && git update >/dev/null 2>/dev/null )
+## Keep ~/repo up-to-date
+@daily [ -d ${HOME}/repo ] && find ${HOME}/repo/ -type d -exec test -d "{}/.git" \; -prune -print | while read; do ( cd "$REPLY" && git pullb -q >/dev/null 2>/dev/null && git update >/dev/null 2>/dev/null && ( [ ! -f pins.json ] || git checkout pins.json >/dev/null ) ) || echo -e "\n${REPLY} Update Failed\n\n"; done
+
+## Clean builds every now and then
+@weekly [ -d ${HOME}/repo ] && find ${HOME}/repo/ -name .git -prune | while read; do ( cd "$(dirname "$REPLY")" && [ -e build.py ] && ( ./build.py -c -t all || echo -e "\n${REPLY} Clean Failed\n\n" ) ); done
+@weekly [ -d ${HOME}/repo ] && find ${HOME}/repo/ -name .prof -exec rm -rf "{}" \;
+## Clean /tmp every now and then
+@weekly find /tmp /var/tmp -xdev -not -exec /sbin/fuser -s "{}" \; -delete 2>/dev/null
+
+## Python virtualenv should be refreshed regularly.
+@daily source "${HOME}/.bash_aliases/09-profile.d-pyvenv.sh" && rm -rf "${PYVENV_HOME}" && ${HOME}/dot-files/bin/python_setup.sh
+
+## Fetch TP0014 files for staging deltron releases.  Needs only be run once, Deltron instances will share TP0014 files.
+30 10 * * 1-5 /apps/centralConfig/dlt_hk_smashkopt_001/refresh-tp0014-files.sh
+
+# not yet backed up
