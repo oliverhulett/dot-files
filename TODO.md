@@ -16,6 +16,10 @@ This is just a random assortment of TODO thoughts.  For more detailed TODOs, see
 
 * What is wrong with my colours on Ubuntu?
 * ssh.sh hard-codes cloning from optiver repo, be smarter about that.  Since ssh.sh is checked in, can we discover and use 'origin'?  What if we're SSH-ing from a machine where ssh.sh is a copy not a checkout (but to a machine where we could clone dot-files?)
+* Add versions to backup script.
+    * Ideally we want to keep N changes of any file we back up, regardless of how long the timeline is for this.
+    * A cheeper version may just be the last N days, possibly choosing N based on backup size.
+    * rsync --link-dest= might be your friend.
 * Docker/drone the tests to run on a Centos7 image, a Centos5 image, and a few Ubuntu images.
     * Make sure tests run against working directory of dot-files, not against installed version.  This seams better now that we have the setup hierarchy and the automatic populated blank home.
 * Organise all the files better.
