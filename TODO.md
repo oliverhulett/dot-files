@@ -1,6 +1,7 @@
 This is just a random assortment of TODO thoughts.  For more detailed TODOs, see the files in the `todo/` directory.
 
 * Add README.md and CHANGELOG.md.
+* Be smarter about triming last two lines from crontab when installing, only if blank or comment?
 * Create TODO format and helpers for adding TODOs in that format.
 * TODO cmd to add to this ad-hoc todo list.
 * Consolidate all of the TODOs, they're too hard to keep track of when distributed.
@@ -23,6 +24,8 @@ This is just a random assortment of TODO thoughts.  For more detailed TODOs, see
 * Docker/drone the tests to run on a Centos7 image, a Centos5 image, and a few Ubuntu images.
     * Make sure tests run against working directory of dot-files, not against installed version.  This seams better now that we have the setup hierarchy and the automatic populated blank home.
 * Organise all the files better.
+* Come up with a mechanism for combining list files where lists are needed but need to be different between machines.
+    * I'm thinking a naming or directory heirarchy that won't be too dissimilar to the Test/Task/CI idea.  Therefore also a tool/tools to view the heirarchy and show resolutions for various inputs.
 * Discovery mechanism for including environment setups.
     * Sourcing .../09-env-proxy.sh is a common pattern in scripts that need to fetch stuff from the internet.  But they don't all do it in the same way (e.g. some source ${HOME}/.bash_aliases/... and some source $(dirname "${BASH_SOURCE[0]}")/bash_aliases)  Is there a "correct" way (testability) or should it depend on what they're doing?
     * Is there an easier way of including these bits that will provide a central place to update if we move the files?  Or should be just be testing file location?

@@ -28,11 +28,15 @@ def do_file(name):
 	for key in xternals.iterkeys():
 		d = os.path.join(os.path.dirname(name), key)
 		if 'ref' in xternals[key] and 'rev' in xternals[key]:
-			p = subprocess.Popen(['git', 'rev-parse', '-q', '--verify', 'refs/tags/{0}'.format(xternals[key]['ref'])], stdout=subprocess.PIPE, cwd=d)
-			p.communicate()
-			if p.returncode != 0:
-				print "Un-pinning non-tag: {0} @ {1}".format(key, xternals[key]['ref'])
+			if not os.path.exists(d):
+				print "Un-pinning external (not checked out): {0} @ {1}".format(key, xternals[key]['ref'])
 				del xternals[key]['rev']
+			else:
+				p = subprocess.Popen(['git', 'rev-parse', '-q', '--verify', 'refs/tags/{0}'.format(xternals[key]['ref'])], stdout=subprocess.PIPE, cwd=d)
+				p.communicate()
+				if p.returncode != 0:
+					print "Un-pinning non-tag: {0} @ {1}".format(key, xternals[key]['ref'])
+					del xternals[key]['rev']
 	with open(name, 'w') as f:
 		json.dump(xternals, f, indent=4)
 
