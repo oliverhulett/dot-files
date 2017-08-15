@@ -50,5 +50,5 @@ function swd()
 			"${root}/$a/common_scripts/management/flatten_xml.sh"
 		fi
 	done
-	command swd "$@"
+	command swd "${ARGS[@]}" "$@"
 }
