@@ -25,6 +25,7 @@ nano
 sdock
 sdock.sh
 sh
+sqlite3
 ssh
 sudo -e
 sudoedit
