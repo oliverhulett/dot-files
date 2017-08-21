@@ -7,5 +7,5 @@ set https_proxy=
 set HTTP_PROXY=
 set HTTPS_PROXY=
 
-stop.bat
-start.bat
+CALL stop.bat
+CALL start.bat
