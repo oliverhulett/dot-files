@@ -30,3 +30,4 @@ jupyter_notebook_config.py .jupyter/jupyter_notebook_config.py
 pip.conf .pip/pip.conf
 pydistutils.cfg .pydistutils.cfg
 pypirc .pypirc
+ssh.config .ssh/config

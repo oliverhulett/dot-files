@@ -17,7 +17,7 @@ bash_aliases/39-aliases-project_path.sh .bash_aliases/39-aliases-project_path.sh
 bash_aliases/39-aliases-site_packages.sh .bash_aliases/39-aliases-site_packages.sh
 bash_aliases/39-aliases-ssh.sh .bash_aliases/39-aliases-ssh.sh
 bash_aliases/49-setup-ccache.sh .bash_aliases/49-setup-ccache.sh
-bash_aliases/49-setup-proxy.3100-centos7dev.sh .bash_aliases/49-setup-proxy.sh
+bash_aliases/49-setup-proxy.sh .bash_aliases/49-setup-proxy.sh
 bash_aliases/49-setup-ulimit.sh .bash_aliases/49-setup-ulimit.sh
 docker_favourites .docker_favourites
 gitconfig.optiver .gitconfig.local
@@ -29,3 +29,4 @@ jupyter_notebook_config.py .jupyter/jupyter_notebook_config.py
 pip.conf .pip/pip.conf
 pydistutils.cfg .pydistutils.cfg
 pypirc .pypirc
+ssh.config .ssh/config
