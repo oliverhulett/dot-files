@@ -40,4 +40,4 @@ MAILTO=olihul@optiver.com.au
 ## Python virtualenv should be refreshed regularly, as long as it is not in use.
 @daily source "${HOME}/.bash_aliases/09-profile.d-pyvenv.sh"; [ -z "$(sudo fuser "${PYVENV_HOME}"/bin/*)" ] && rm -rf "${PYVENV_HOME}" && ${HOME}/dot-files/bin/python_setup.sh
 
-## Backed up at Mon Aug 28 18:50:07 AEST 2017 by olihul
+## Backed up at Tue Aug 29 18:50:02 AEST 2017 by olihul
