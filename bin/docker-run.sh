@@ -11,15 +11,12 @@ set +e
 
 IMAGES="$(docker-list.sh | sort -u)"
 DOCKER_RUN_ARGS=()
-while ! echo "$IMAGES" | grep -qE '^'"$1"'$' 2>/dev/null >/dev/null; do
+while [ $# -ne 0 ] && ! echo "$IMAGES" | grep -qE "$1"'$' 2>/dev/null >/dev/null; do
 	DOCKER_RUN_ARGS[${#DOCKER_RUN_ARGS[@]}]="$1"
 	shift
 done
 IMAGE="$1"
 shift
-if [ $# == 0 ]; then
-	set -- /bin/bash
-fi
 
 # user specific container name
 NAME="$(basename -- "$IMAGE")-$(whoami)-$(date "+%s")"
