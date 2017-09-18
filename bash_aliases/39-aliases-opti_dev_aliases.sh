@@ -22,7 +22,12 @@ function stage()
 {
 	for f in "$@"; do
 		b="$(basename -- "$f")"
-		n="${b}.$(date '+%Y%m%d-%H%M%S')"
+		t="$(cd "$(dirname -- "$f")" && git ticket)"
+		if [ -n "$t" ]; then
+			n="${b}.${t}.$(date '+%Y%m%d-%H%M%S')"
+		else
+			n="${b}.$(date '+%Y%m%d-%H%M%S')"
+		fi
 		d="/apps/bin/olihul"
 		ssh central-staging "mkdir --parents $d"
 		scp "$f" central-staging:"$d/$n"
