@@ -27,6 +27,7 @@ ipython_config.py .ipython/profile_default/ipython_config.py
 ipython_kernel_config.py .ipython/profile_default/ipython_kernel_config.py
 jupyter_console_config.py .jupyter/jupyter_console_config.py
 jupyter_notebook_config.py .jupyter/jupyter_notebook_config.py
+npmrc .npmrc
 pip.conf .pip/pip.conf
 pydistutils.cfg .pydistutils.cfg
 pypirc .pypirc
