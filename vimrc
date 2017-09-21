@@ -136,20 +136,25 @@ nnoremap <C-q> :q<CR>
 nnoremap j gj
 nnoremap k gk
 
-" Ctrl+j as the opposite of Shift+j;  Insert a new line without entering insert mode.
+" Shift+k as the opposite of Shift+j;  Insert a new line without entering insert mode.
 nnoremap J mzJ`z
-nnoremap <C-J> mzi<CR><ESC>`z$
+nnoremap K mzi<CR><ESC>`z$
 
 " Ctrl+o to replicate o without entering insert mode.
-nnoremap <C-O> mzo<ESC>`z
-nnoremap <C-I> mzO<ESC>`z
+nnoremap <C-O> mzo<ESC>`zj
+nnoremap <C-I> mzO<ESC>`zk
+
+" Split navigation; Ctrl+{j,k,l,h} to move between splits.
+nnoremap <C-j> <C-W><C-J>
+nnoremap <C-k> <C-W><C-K>
+nnoremap <C-l> <C-W><C-L>
+nnoremap <C-h> <C-W><C-H>
 
 " }}}
 
 " Shortcuts and re-mappings - highlighting {{{
 
 " Shortcut to substitute.  In visual mode yank selection first.
-noremap <C-h> :%s/
 noremap <C-f> :%s/<C-r>///gc<left><left><left>
 vnoremap <C-f> y:%s/<C-r>///gc<left><left><left>
 
@@ -246,8 +251,8 @@ nnoremap <leader>kj :lnext<CR>
 " Spelling {{{
 
 " Shortcut keys to turn on spell-checking.
-nnoremap <C-l> :setlocal spell! spelllang=en_gb<CR>
-inoremap <C-l> <C-g>u<ESC>[s
+nnoremap <C-a> :setlocal spell! spelllang=en_gb<CR>
+inoremap <C-a> <C-g>u<ESC>[s
 nnoremap <leader>lk ]s
 nnoremap <leader>sj z=<C-g>u
 nnoremap <leader>a :spellrepall<CR>
