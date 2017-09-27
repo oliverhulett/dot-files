@@ -1172,7 +1172,6 @@ poppler-data-0.4.6-3.el7.noarch
 poppler-utils-0.26.5-5.el7.x86_64
 popt-1.13-16.el7.x86_64
 postgresql-9.2.14-1.el7_1.x86_64
-postgresql-devel-9.2.14-1.el7_1.x86_64
 postgresql-libs-9.2.14-1.el7_1.x86_64
 powertop-2.3-9.el7.x86_64
 ppp-2.4.5-33.el7.x86_64
