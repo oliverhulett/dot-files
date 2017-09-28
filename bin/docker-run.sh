@@ -19,7 +19,7 @@ IMAGE="$1"
 shift
 
 # user specific container name
-NAME="$(basename -- "$IMAGE")-$(whoami)-$(date "+%s")"
+NAME="$(basename -- "$IMAGE" | sed -re 's/^([^:]+)(:.+)?$/\1/')-$(whoami)-$(date "+%s")"
 echo "Starting $NAME ($IMAGE)"
 docker inspect "$IMAGE" 2>&${log_fd} | jq '.[0].Config.Labels' 2>&${log_fd} || true
 

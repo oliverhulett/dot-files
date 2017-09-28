@@ -64,14 +64,14 @@ function cc-env()
 		echo "[FATAL] ${CC_EXE} does not exist"
 		return 1
 	fi
-	proxy_exe "${CC_EXE}" "e7f92198178a9c7bdb1b6c04ef679c08"
+	proxy_exe "${CC_EXE}" "54ee89223c6d4b3117de03ab5847850f"
 	CC_IMAGE="$(sed -nre 's!.+(docker-registry\.aus\.optiver\.com/[^ ]+/[^ ]+).*!\1!p' "${CC_EXE}" | tail -n1)"
 	# does the app releases mount exists, then map it into the container
 	[ -d /ApplicationReleases ] && MOUNT_APPRELEASES=( "-v" "/ApplicationReleases:/ApplicationReleases" ) || MOUNT_APPRELEASES=()
 	[ -d /u01 ] && MOUNT_U01=( "-v" "/u01:/u01" ) || MOUNT_U01=()
 	docker-run.sh "${MOUNT_U01[@]}" "${MOUNT_APPRELEASES[@]}" "${CC_IMAGE}" "$@"
 	es=$?
-	proxy_exe "${CC_EXE}" "e7f92198178a9c7bdb1b6c04ef679c08"
+	proxy_exe "${CC_EXE}" "54ee89223c6d4b3117de03ab5847850f"
 	return $es
 }
 
