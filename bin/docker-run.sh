@@ -19,12 +19,13 @@ IMAGE="$1"
 shift
 
 # user specific container name
-NAME="$(basename -- "$IMAGE" | sed -re 's/^([^:]+)(:.+)?$/\1/')-$(whoami)-$(date "+%s")"
+IMAGE_NAME="$(basename -- "$IMAGE" | sed -re 's/^([^:]+)(:.+)?$/\1/')"
+NAME="${IMAGE_NAME}-$(whoami)-$(date "+%s")"
 echo "Starting $NAME ($IMAGE)"
 docker inspect "$IMAGE" 2>&${log_fd} | jq '.[0].Config.Labels' 2>&${log_fd} || true
 
 # Use a docker container to do things
-TMP="$(mktemp -p "${HOME}" -t ".$(date '+%Y%m%d-%H%M%S').docker.$(basename -- "$1").XXXXXXXXXX")"
+TMP="$(mktemp -p "${HOME}" -t ".$(date '+%Y%m%d-%H%M%S').docker.${IMAGE_NAME}.XXXXXXXXXX")"
 NODIR="$(mktemp -d)"
 trap 'ec=$?; echo && echo "Leaving $NAME (${IMAGE})" && echo "Ran: $@" && echo "Exit code: $ec" && rm -fr "${TMP}" "${NODIR}"' EXIT
 command cat >"$TMP" <<-EOF
