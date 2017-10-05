@@ -1,5 +1,7 @@
 *~
 .cproject
+dummy.cc
+dummy.h
 .externalToolBuilders
 .idea
 .metadata
