@@ -22,7 +22,7 @@ shift
 IMAGE_NAME="$(basename -- "$IMAGE" | sed -re 's/^([^:]+)(:.+)?$/\1/')"
 NAME="${IMAGE_NAME}-$(whoami)-$(date "+%s")"
 echo "Starting $NAME ($IMAGE)"
-docker inspect "$IMAGE" 2>&${log_fd} | jq '.[0].Config.Labels' 2>&${log_fd} || true
+docker inspect "$IMAGE" 2>&${log_fd} | jq '.[0].ContainerConfig.Labels' 2>&${log_fd} || true
 
 # Use a docker container to do things
 TMP="$(mktemp -p "${HOME}" -t ".$(date '+%Y%m%d-%H%M%S').docker.${IMAGE_NAME}.XXXXXXXXXX")"
