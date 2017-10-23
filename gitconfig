@@ -12,7 +12,7 @@ cleanignored = "!f() { ~/.git_wrappers/cleanignored.sh \"$@\"; }; f" ## Want to 
 cp = "!f() { ~/.git_wrappers/cp.sh \"$@\"; }; cd \"$GIT_PREFIX\" && f"
 discard = reset --hard HEAD
 env = "!f() { env; }; cd \"$GIT_PREFIX\" && f"
-externals2tags = "!f() { ~/.git_wrappers/tag_externals.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
+externals = "!f() { ~/.git_wrappers/tag_externals.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 find = log --all --full-history
 gresolve = "!f() { : git mergetool ; git mergetool --tool=kdiff3 -y \"$@\" && echo \"Removing kdiff3 original files.\" && find ./ \\( -name '*.BASE.*' -or -name '*.BACKUP.*' -or -name '*.LOCAL.*' -or -name '*.REMOTE.*' -or -name '*.orig' \\) -delete -print; }; cd \"$GIT_PREFIX\" && f"
 home = "!f() { pwd -P; }; f" ## Want to execute from the top level, not GIT_PREFIX
@@ -23,7 +23,6 @@ mine = "!f() { : git for-each-ref; git branch -vv; git for-each-ref --sort=-comm
 mkbranch = "!f() { ~/.git_wrappers/mkbranch.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 mvbranch = "!f() { : git checkout ; git branch -m \"$1\" \"$2\" && git push origin :\"$1\" && git push --set-upstream origin \"$2\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 new = "!f() { ~/.git_wrappers/new.sh \"$@\"; }; cd \"$GIT_PREFIX\" && f"
-pin = "!f() { ~/.git_wrappers/pin_externals.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 pullb = "!f() { : git pull; git fetch --all; git pull --prune --recurse-submodules \"$@\"; git cleanbranches; }; f" ## Want to execute from top level, not GIT_PREFIX
 pushtags = push --tags
 refs = for-each-ref refs/remotes/origin
@@ -40,10 +39,8 @@ tags = "!f() { if [ $# -eq 0 ]; then set -- 5; fi; count=\"--lines=$1\"; if [ \"
 this = "!f() { git branch --no-color | sed -nre 's/^\\* //p'; }; f"
 ticket = "!f() { git branch --no-color | sed -nre 's/^\\* //p' | cut -d'_' -f1 | rev | cut -d'/' -f1 | rev; }; f"
 undo-commit = reset HEAD^
-unpin = "!f() { ~/.git_wrappers/unpin_externals.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 unstage = reset HEAD
 update = "!f() { ~/.git_wrappers/update.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
-upgrade = "!f() { ~/.git_wrappers/update_externals.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 upstream = "!f() { remote=\"origin\"; if [ -n \"$1\" ]; then remote=\"$1\"; fi; git push --set-upstream \"$remote\" $(git this); }; f"
 when = "!f() { git for-each-ref --sort=-committerdate --format='%(authorname)#%(committerdate)#%(refname)#%(subject)' refs/remotes/origin/ \"$@\" | column -ts'#'; }; f"
 when-added = "!f() { : git log ; follow=; if [ $# -le 1 ]; then follow=\"--follow\"; fi; git log $follow --diff-filter=A --find-renames=40% -- \"$@\"; }; cd \"$GIT_PREFIX\" && f"
