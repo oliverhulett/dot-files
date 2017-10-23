@@ -11,8 +11,11 @@ function help()
 	echo "Pretty mode doesn't work here, until I can capture and aggregate the summaries."
 	echo
 	echo "Additional options:"
-	printf "  %- 14s %s\n"  "-l, --list" "List the test files that would be run with the given arguments."
-	printf "  %- 18s %s\n"  "-r, --parallel=N" "Run tests in parallel, using N processes.  Defaults to 2 * \`nproc's (2 * $(nproc))"
+	FMT="  %- 18s %s\n"
+	# shellcheck disable=SC2059
+	printf "${FMT}"  "-l, --list" "List the test files that would be run with the given arguments."
+	# shellcheck disable=SC2059
+	printf "${FMT}"  "-r, --parallel=N" "(-p was taken) Run tests in parallel, using N processes.  Defaults to 2 * \`nproc' (2 * $(nproc) = $((2 * $(nproc))))"
 	echo
 }
 

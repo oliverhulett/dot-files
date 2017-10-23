@@ -10,6 +10,22 @@ IS_EXE="false"
 #            Ask for input (message) first, do book-keeping later.
 #            Save message (for possible editing later) if book-keeping fails.
 
+function setup_editor()
+{
+	# It stands for Line Start...
+	# TODO:  Check for opti-version, it's less likely to change.
+	if [ "$(git --version)" == "git version 2.09.0" ]; then
+		LS='# '
+		PREAMBLE=()
+	else
+		LS=
+		PREAMBLE=(
+			"Your branch is ahead of 'origin/master' by 1 commit."
+			"  (use \"git push\" to publish your local commits)"
+		)
+	fi
+}
+
 @test "$FUT: master" {
 	cd "${CHECKOUT}/repo" || fail "Failed to change into directory: ${CHECKOUT}/repo"
 
@@ -19,12 +35,13 @@ IS_EXE="false"
 	git commit -am"${INITIAL_COMMIT_MSG}"
 
 	GIT_STATUS_LINES=(
-		'# On branch master'
-		'# Changes to be committed:'
-		'#   (use "git reset HEAD <file>..." to unstage)'
-		'#'
-		'#	modified:   file'
-		'#'
+		"${LS}On branch master"
+		"${PREAMBLE[@]}"
+		"${LS}Changes to be committed:"
+		"${LS}  (use \"git reset HEAD <file>...\" to unstage)"
+		${LS}
+		"${LS}	modified:   file"
+		${LS}
 	)
 	MSG_PROMPT="Enter a short (single line) commit message.  Press 'e' or enter 'edit' to launch \`vim'.  Press 'd' or enter 'diff' to see the commit diff."
 	# Committing shows current commit msg (if present), status, offers diff, accepts simple msg, can fall into vim.
@@ -57,12 +74,12 @@ IS_EXE="false"
 	done
 
 	GIT_DIFF_LINES=(
-		'diff --git c/file i/file'
-		'--regexp index .+ 100644'
-		'--- c/file'
-		'+++ i/file'
-		'@@ -0,0 +1 @@'
-		'+words'
+		"diff --git c/file i/file"
+		"--regexp index .+ 100644"
+		"--- c/file"
+		"+++ i/file"
+		"@@ -0,0 +1 @@"
+		"+words"
 	)
 	for i in "$(printf "d")" \
 			 "$(printf "D")" \
@@ -101,6 +118,7 @@ IS_EXE="false"
 					 "${GIT_STATUS_LINES[@]}" \
 					 "${MSG_PROMPT}" \
 					 "--regexp \[master [0-9a-f]+\] ${NEW_COMMIT_MSG}" \
+					 "--regexp Date: .+" \
 					 " 1 file changed, 1 insertion(+)" \
 					 " create mode 100644 file"
 	assert_equal "$(git log -1 --pretty=%B)" "${NEW_COMMIT_MSG}"
@@ -109,10 +127,12 @@ IS_EXE="false"
 yasdf"
 	assert_success
 	assert_all_lines "${NEW_COMMIT_MSG}" \
-					 "# On branch master" \
-					 "nothing to commit, working directory clean" \
+					 "${LS}On branch master" \
+					 "${PREAMBLE[@]}" \
+					 "nothing to commit, working tree clean" \
 					 "${MSG_PROMPT}" \
 					 "--regexp \[master [0-9a-f]+\] asdf: ${NEW_COMMIT_MSG}" \
+					 "--regexp Date: .+" \
 					 " 1 file changed, 1 insertion(+)" \
 					 " create mode 100644 file"
 	assert_equal "$(git log -1 --pretty=%B)" "asdf: ${NEW_COMMIT_MSG}"
@@ -133,18 +153,28 @@ yasdf"
 	git add file
 	git commit -am"${INITIAL_COMMIT_MSG}"
 
-	GIT_STATUS_LINES=(
-		'# On branch '"${BRANCH_NAME}"
-		"# Your branch is ahead of 'origin/${BRANCH_NAME}' by 1 commit."
-		'#   (use "git push" to publish your local commits)'
-		'#'
-		'nothing to commit, working directory clean'
-	)
 	MSG_PROMPT="Enter a short (single line) commit message.  Press 'e' or enter 'edit' to launch \`vim'.  Press 'd' or enter 'diff' to see the commit diff."
 	# Committing shows current commit msg (if present), status, offers diff, accepts simple msg, can fall into vim.
 	# can't stub git, from within git /usr/libexec/git-core is prefixed to path and /usr/libexec/git-core/git is found instead of binstub.
 
 	for a in "n" "" "y" "Y" "n" "N"; do
+		if [ "$(git --version)" == "git version 2.09.0" ]; then
+			PREAMBLE=()
+		else
+			PREAMBLE=(
+				"Your branch is ahead of '${BRANCH_NAME}' by 1 commit."
+				"  (use \"git push\" to publish your local commits)"
+			)
+		fi
+
+		GIT_STATUS_LINES=(
+			"${LS}On branch ${BRANCH_NAME}"
+			"${PREAMBLE[@]}" \
+			"${LS}Your branch is ahead of 'origin/${BRANCH_NAME}' by 1 commit."
+			"${LS}   (use \"git push\" to publish your local commits)"
+			${LS}
+			"nothing to commit, working directory clean"
+		)
 		if [ "$a" == "" ] || [ "$a" == "y" ] || [ "$a" == "Y" ]; then
 			PREFIX="my-feature: "
 		else
@@ -204,13 +234,23 @@ ${a}asdf"
 		echo "${BRANCH_NAME}">file
 		git add file
 
+		if [ "$(git --version)" == "git version 2.09.0" ]; then
+			PREAMBLE=()
+		else
+			PREAMBLE=(
+				"Your branch is ahead of '${BRANCH_NAME}' by 1 commit."
+				"  (use \"git push\" to publish your local commits)"
+			)
+		fi
+
 		GIT_STATUS_LINES=(
-			'# On branch '"${BRANCH_NAME}"
-			'# Changes to be committed:'
-			'#   (use "git reset HEAD <file>..." to unstage)'
-			'#'
-			'#	new file:   file'
-			'#'
+			"${LS}On branch ""${BRANCH_NAME}"
+			"${PREAMBLE[@]}" \
+			"${LS}Changes to be committed:"
+			"${LS}   (use \"git reset HEAD <file>...\" to unstage)"
+			${LS}
+			"${LS}	new file:   file"
+			${LS}
 		)
 		run git commit -a <<<"${COMMIT_MSG}"
 		assert_success
@@ -238,12 +278,13 @@ ${a}asdf"
 	stub vim '-c startinsert .git/COMMIT_EDITMSG : echo commit msg >.git/COMMIT_EDITMSG'
 	run git commit -a <<<"e"
 	assert_success
-	assert_all_lines '# On branch master' \
-					 '# Changes to be committed:' \
-					 '#   (use "git reset HEAD <file>..." to unstage)' \
-					 '#' \
-					 '#	modified:   file' \
-					 '#' \
+	assert_all_lines "${LS}On branch master" \
+					 "${PREAMBLE[@]}" \
+					 "${LS}Changes to be committed:" \
+					 "${LS}   (use \"git reset HEAD <file>...\" to unstage)" \
+					 ${LS} \
+					 "${LS}	modified:   file" \
+					 ${LS} \
 					 "${MSG_PROMPT}" \
 					 "--regexp \[master [0-9a-f]+\] ${NEW_COMMIT_MSG}" \
 					 " 1 file changed, 1 insertion(+)"
@@ -254,8 +295,9 @@ ${a}asdf"
 	run git commit -a --amend <<<"e"
 	assert_success
 	assert_all_lines "commit msg" \
-					 '# On branch master' \
-					 'nothing to commit, working directory clean' \
+					 "${LS}On branch master" \
+					 "${PREAMBLE[@]}" \
+					 "nothing to commit, working directory clean" \
 					 "${MSG_PROMPT}" \
 					 "--regexp \[master [0-9a-f]+\] ${NEW_COMMIT_MSG}" \
 					 " 1 file changed, 1 insertion(+)"

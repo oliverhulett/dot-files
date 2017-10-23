@@ -10,7 +10,7 @@ function setup_git_things()
 	scoped_mktemp CHECKOUT -d
 	( cd "${BARE_REPO}" && git init --bare )
 	( cd "${CHECKOUT}" && git clone "${BARE_REPO}" repo )
-	( cd "${CHECKOUT}/repo" && touch nothing && git add nothing && git commit -m"nothing" )
+	( cd "${CHECKOUT}/repo" && touch nothing && git add nothing && git commit -m"nothing" && git upstream )
 
 	source "${DOTFILES}/bash_aliases/19-env-git.sh"
 }

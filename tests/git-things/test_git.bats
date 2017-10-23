@@ -24,8 +24,6 @@ function _gitenv()
 		assert [ "$(dirname "$(readlink -f "${REPLY}")")" == "${DOTFILES}/git-things/bin" ]
 		man="${DOTFILES}/git-things/man/man1/$(basename -- "$REPLY").1.gz"
 		assert [ -e "$man" ]
-		assert [ "$man" -nt "$REPLY" ]
-		assert [ "$man" -nt "$(readlink -f "$REPLY")" ]
 
 		assert_equal "$("${REPLY}" --help)" "$(gunzip -c "$man")"
 	done
@@ -113,15 +111,11 @@ EOF
 	rm new-file
 }
 
-@test "$FUT: git ignore" {
+@test "$FUT: git ignoreme" {
 	cd "${CHECKOUT}/repo" || fail "Failed to change into directory: ${CHECKOUT}/repo"
 
-	git ignore '*.txt'
-	if command which git-ignore >/dev/null 2>/dev/null; then
-		assert_status "M  .gitignore"
-	else
-		assert_status "A  .gitignore"
-	fi
+	git ignoreme '*.txt'
+	assert_status "A  .gitignore"
 	assert_contents .gitignore '*.txt'
 
 	git commit -am"initial commit"
@@ -130,13 +124,9 @@ EOF
 
 	mkdir emptydir
 	touch one two three
-	git ignore one two three
+	git ignoreme one two three
 	assert_status "M  .gitignore"
-	if command which git-ignore >/dev/null 2>/dev/null; then
-		assert_contents .gitignore "*.txt" "" "one" "two" 'three'
-	else
-		assert_contents .gitignore "one" "three" "two" '*.txt'
-	fi
+	assert_contents .gitignore "one" "three" "two" '*.txt'
 
 	git commit -m"ignored files"
 
