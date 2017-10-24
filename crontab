@@ -7,7 +7,7 @@ MAILTO=olihul@optiver.com.au
 ## Keep ~/dot-files up-to-date
 @daily [ -d ${HOME}/dot-files/.git ] && ( cd ${HOME}/dot-files && git pullb -q >/dev/null 2>/dev/null && git update >/dev/null 2>/dev/null )
 ## Keep ~/repo up-to-date
-@daily [ -d ${HOME}/repo ] && find ${HOME}/repo/ -type d -exec test -d "{}/.git" \; -prune -print | while read; do ( cd "$REPLY" && git pullb -q >/dev/null 2>/dev/null && git update >/dev/null 2>/dev/null && ( [ ! -f pins.json ] || git checkout pins.json >/dev/null ) ) || echo -e "\n${REPLY} Update Failed\n\n"; done
+@daily [ -d ${HOME}/repo ] && find ${HOME}/repo/ -type d -exec test -d "{}/.git" \; -prune -print | while read; do ( cd "$REPLY" && git pullb --force -q >/dev/null 2>/dev/null && git update >/dev/null 2>/dev/null && ( [ ! -f pins.json ] || git checkout pins.json >/dev/null ) ) || echo -e "\n${REPLY} Update Failed\n\n"; done
 
 ## Clean builds every now and then
 @weekly [ -d ${HOME}/repo ] && find ${HOME}/repo/ -name .git -prune | while read; do ( cd "$(dirname "$REPLY")" && [ -e build.py ] && ( ./build.py -c -t all || echo -e "\n${REPLY} Clean Failed\n\n" ) ); done
@@ -19,7 +19,7 @@ MAILTO=olihul@optiver.com.au
 @weekly command which docker >/dev/null 2>/dev/null && [ $(docker ps -a -q | wc -l) -gt 0 ] && docker rm $(docker ps -a -q)
 @weekly command which docker >/dev/null 2>/dev/null && [ $(docker images -q | wc -l) -gt 0 ] && docker rmi $(docker images -q)
 ## Kill docker containers running overnight, you can always re-start them.
-@daily command which docker >/dev/null 2>/dev/null && [ $(docker ps -q | wc -l) -gt 0 ] && docker kill $(docker ps -q)
+@daily command which docker >/dev/null 2>/dev/null && [ $(docker ps -q | wc -l) -gt 0 ] && docker kill $(docker ps -q) >/dev/null
 
 ## Python virtualenv should be refreshed regularly, as long as it is not in use.
-@daily source "${HOME}/.bash_aliases/09-profile.d-pyvenv.sh"; [ -z "$(sudo fuser "${PYVENV_HOME}"/bin/*)" ] && rm -rf "${PYVENV_HOME}" && ${HOME}/dot-files/bin/python_setup.sh
+@daily source "${HOME}/.bash_aliases/19-env-proxy.sh" && proxy_setup && source "${HOME}/.bash_aliases/09-profile.d-pyvenv.sh"; [ -z "$(sudo fuser "${PYVENV_HOME}"/bin/*)" ] && rm -rf "${PYVENV_HOME}" && ${HOME}/dot-files/bin/python_setup.sh
