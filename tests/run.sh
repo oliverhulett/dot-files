@@ -56,6 +56,7 @@ while true; do
 			shift
 			;;
 		-p | --pretty )
+			# shellcheck disable=SC2034
 			TAP="false"
 			ARGS=( ${ARGS[@]/$1} )
 			ARGS[${#ARGS[@]}]="$1"
@@ -80,15 +81,24 @@ function get_all_test_files()
 	find "$@" -not \( -name '.git' -prune -or -name '.svn' -prune -or -name '.venv' -prune -or -name '.virtualenv' -prune -or -name 'x_*' -prune \) \( -name '*.bats' \) | sort -u
 }
 
+function count()
+{
+	cnt=0
+	for f in "$@"; do
+		cnt=$((cnt + $(bats --count "$f")))
+	done
+	echo "$cnt"
+}
+
 # shellcheck disable=SC2046
 set -- $(get_all_test_files "$@")
 
 if [ "${COUNT}" == "true" ]; then
-	bats --count "$@"
+	count "$@"
 	exit
 fi
 
-NUM_TESTS=$(bats --count "$@")
+NUM_TESTS=$(count "$@")
 if [ "$#" -lt "${PARALLEL}" ]; then
 	PARALLEL=$#
 fi
