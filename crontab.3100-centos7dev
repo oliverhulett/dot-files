@@ -16,7 +16,7 @@ MAILTO=olihul@optiver.com.au
 00 08 * * 1-5 cd ${HOME}/repo/olihul/dot-files/master && git pullb && ./sync-other-remote.sh && git push --quiet --all
 
 ## Install dot-files to development machines.  Sleep for 10 so that the backup script has had a chance to commit the latest dot-files.
-@daily PATH="${HOME}/dot-files/bin:${PATH}" ${HOME}/dot-files/bin/install-dot-files.sh >/dev/null 2>/dev/null
+@daily PATH="${HOME}/dot-files/bin:${PATH}" ${HOME}/dot-files/bin/install-dot-files.sh >/dev/null
 ## Install my personal docker image (which I should use more.)  Sleep for 10 so that the backup script has had a chance to commit the latest dot-files.
 @daily cd "${HOME}/dot-files/images/c7" && make release
 
@@ -40,4 +40,4 @@ MAILTO=olihul@optiver.com.au
 ## Python virtualenv should be refreshed regularly, as long as it is not in use.
 @daily source "${HOME}/.bash_aliases/09-profile.d-pyvenv.sh"; [ -z "$(sudo fuser "${PYVENV_HOME}"/bin/*)" ] && rm -rf "${PYVENV_HOME}" && ${HOME}/dot-files/bin/python_setup.sh
 
-## Backed up at Wed Oct 25 18:50:07 AEDT 2017 by olihul
+## Backed up at Thu Oct 26 18:50:07 AEDT 2017 by olihul
