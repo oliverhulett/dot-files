@@ -25,7 +25,8 @@ echo "Starting $NAME ($IMAGE)"
 docker inspect "$IMAGE" 2>&${log_fd} | jq '.[0].ContainerConfig.Labels' 2>&${log_fd} || true
 
 # Use a docker container to do things
-TMP="$(mktemp -p "${HOME}" -t ".$(date '+%Y%m%d-%H%M%S').docker.${IMAGE_NAME}.XXXXXXXXXX")"
+mkdir --parents "${HOME}/.cache/docker-run" 2>/dev/null || true
+TMP="$(mktemp -p "${HOME}/.cache/docker-run" -t ".$(date '+%Y%m%d-%H%M%S').docker.${IMAGE_NAME}.XXXXXXXXXX")"
 NODIR="$(mktemp -d)"
 trap 'ec=$?; echo && echo "Leaving $NAME (${IMAGE})" && echo "Ran: $@" && echo "Exit code: $ec" && rm -fr "${TMP}" "${NODIR}"' EXIT
 command cat >"$TMP" <<-EOF

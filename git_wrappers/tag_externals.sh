@@ -27,9 +27,10 @@ import argparse
 
 parser = argparse.ArgumentParser(description="Tag and pin externals to latest versions")
 parser.add_argument('-k', '--keep', action='store_true', help="Keep existing versions of already tagged externals")
+parser.add_argument('-m', '--keep-master', action='store_true', help="Keep master for externals currently pointing at master")
 parser.add_argument('-p', '--pin', action='store_true', help="Add revision pins to all tags")
 parser.add_argument('--pin-all', action='store_true', help="Add revision pins to all externals")
-parser.add_argument('-u', '--unpin', action='store_false', help="Remove revision pins from all externals")
+parser.add_argument('-u', '--unpin', action='store_true', help="Remove revision pins from all externals")
 parser.add_argument('files', nargs=argparse.REMAINDER, help="externals.json files to use")
 args = parser.parse_args(sys.argv[1:])
 files = args.files
@@ -63,10 +64,13 @@ def do_file(name):
 		except:
 			rev = None
 
+		keep = False
+		if not args.unpin and not args.pin and not args.pin_all and rev is not None:
+			keep = True
 		is_master = False
 		if ('ref' not in xternals[key]) or (xternals[key]['ref'] == 'master'):
 			is_master = True
-		if (tag is not None) and (not args.keep or is_master):
+		if (tag is not None) and (not keep or not args.keep or (is_master and not args.keep_master)):
 			xternals[key]['ref'] = tag
 		if args.unpin and ('rev' in xternals[key]):
 			del xternals[key]['rev']

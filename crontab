@@ -5,7 +5,7 @@ HOME=/home/olihul
 MAILTO=olihul@optiver.com.au
 
 ## Keep ~/dot-files up-to-date
-@daily [ -d ${HOME}/dot-files/.git ] && ( cd ${HOME}/dot-files && git pullb -q >/dev/null 2>/dev/null && git update >/dev/null 2>/dev/null )
+@daily [ -d ${HOME}/dot-files/.git ] && ( cd ${HOME}/dot-files && git pull -q >/dev/null 2>/dev/null && git update >/dev/null 2>/dev/null )
 ## Keep ~/repo up-to-date
 @daily [ -d ${HOME}/repo ] && find ${HOME}/repo/ -type d -exec test -d "{}/.git" \; -prune -print | while read; do ( cd "$REPLY" && git pullb --force -q >/dev/null 2>/dev/null && git update >/dev/null 2>/dev/null && ( [ ! -f pins.json ] || git checkout pins.json >/dev/null ) ) || echo -e "\n${REPLY} Update Failed\n\n"; done
 
