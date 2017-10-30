@@ -21,7 +21,6 @@ gitignore .gitignore
 git_wrappers .git_wrappers
 interactive_commands .interactive_commands
 invoke.py .invoke.py
-lessfilter .lessfilter
 profile .profile
 vimrc .vimrc
 vim .vim
