@@ -57,8 +57,6 @@ bin/prod-find-logs.sh
 bin/prod-pull-logs.sh
 bin/python_setup.sh
 bin/rtorrent-start.sh
-bin/ssh-konsole.sh
-bin/ssh-list.sh
 bin/ssh-name.sh
 bin/stasher.py
 bin/vbmanage.sh
@@ -86,7 +84,6 @@ pip.conf
 pydistutils.cfg
 pypirc
 python_setup.txt
-ssh.config
 tests/bin/test_alterlimitsdb.bats
 tests/bin/test_clone.bats
 tests/bin/test_dev-push-all.bats
