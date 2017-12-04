@@ -483,6 +483,7 @@ ibus-setup-1.5.3-13.el7.noarch
 ibus-table-1.5.0-5.el7.noarch
 ibus-table-chinese-1.4.6-3.el7.noarch
 icoutils-0.31.0-3.el7.x86_64
+iftop-1.0-0.7.pre4.el7.x86_64
 ilmbase-1.0.3-7.el7.x86_64
 ImageMagick-6.7.8.9-10.el7.x86_64
 im-chooser-1.6.4-4.el7.x86_64
@@ -1013,12 +1014,13 @@ optiver-repo-dell-7-1.noarch
 optiver-repo-epel-7-1.noarch
 optiver-repo-fleet-7-1.noarch
 optiver-repo-goss-7-1.noarch
+optiver-repo-intel-7-1.noarch
 optiver-repo-openonload-7-1.noarch
 optiver-repo-optiver-7-1.noarch
 optiver-repo-puppetlabs-pc1-7-1.noarch
 optiver-repo-sensu-7-2.noarch
 optiver-repo-timekeeper-7-2.noarch
-optiver-tuned-profile-0.1.0-13.el7.centos.x86_64
+optiver-tuned-profile-0.1.0-14.el7.centos.x86_64
 ORBit2-2.14.19-13.el7.x86_64
 orc-0.4.22-5.el7.x86_64
 os-prober-1.58-5.el7.x86_64
