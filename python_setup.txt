@@ -18,4 +18,5 @@ pyomd_numpy
 ruamel.yaml
 sphinx
 stashy
+tox
 twisted
