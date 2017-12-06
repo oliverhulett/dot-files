@@ -1,7 +1,7 @@
 unset http_proxy_orig
 unset https_proxy_orig
 
-export NO_PROXY='comp.optiver.com,aus.optiver.com,127.0.0.1,localhost,git,srcsyd.comp.optiver.com,10.0.2.*,192.168.56.*'
+export NO_PROXY='comp.optiver.com,aus.optiver.com,127.0.0.1,localhost,git,bamboo,srcsyd.comp.optiver.com,10.0.2.*,192.168.56.*'
 export no_proxy="${NO_PROXY}"
 
 SQUID_URL="sydsquid.aus.optiver.com"

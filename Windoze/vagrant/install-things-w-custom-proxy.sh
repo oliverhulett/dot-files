@@ -47,4 +47,15 @@ TMPDIR="$(mktemp -d)"
 )
 rm -rf "${TMPDIR}"
 
+
+echo
+echo "Ministat"
+TMPDIR="$(mktemp -d)"
+( cd "${TMPDIR}" && \
+	git clone --recursive https://github.com/thorduri/ministat.git && \
+	make && \
+	sudo make PREFIX=/usr/local install
+)
+rm -rf "${TMPDIR}"
+
 proxy_setup -q ${USER}
