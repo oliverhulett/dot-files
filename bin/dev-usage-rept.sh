@@ -17,10 +17,22 @@ declare -a PIDS TMPS
 CMDS="sh -c 'mpstat 5 1; echo; free -m; echo; ps -eo pcpu,pid,user,args | sort -k1 -r | head -n3; echo; df -h; echo; echo -n Num Users:\ ; who | cut -d' ' -f1 | sort -u | wc -l;'"
 
 for srv in "${DEV_SRVS[@]}"; do
+	relay_cmd=()
+	relay="${srv%%:*}"
+	if [ "${relay}" == "${srv}" ]; then
+		relay=
+	else
+		srv="${srv#*:}"
+		if [ -n "${relay}" ]; then
+			relay_cmd=( "-o" "ProxyCommand ssh -W %h:%p ${relay}" )
+		fi
+	fi
+	srv="$(ssh-name.sh "$relay:$srv")"
+
 	filename=`mktemp`
 	TMPS[${#TMPS[@]}]="$filename"
 	echo "==========================================================================================" >"$filename"
-	ssh ${USER}@${srv} "${CMDS}" >>"$filename" 2>/dev/null &
+	ssh "${relay_cmd[@]}" ${USER}@${srv} "${CMDS}" >>"$filename" 2>/dev/null &
 	PIDS[${#PIDS[@]}]=$!
 done
 

@@ -69,7 +69,7 @@ elif [[ "$srv" =~ ^([a-z]{2})([a-z]{2})([a-z]{2})([0-9]{1,4})$ ]]; then
 	svrnum="$(printf '%04d' "${BASH_REMATCH[4]}")"
 fi
 if [ -z "${svrnum}" ]; then
-	echo >&2 "Bad server name pattern [<location>[[<os>]<type>]]<number>"
+	echo >&2 "Bad server name pattern: $srv; expected [<location>[[<os>]<type>]]<number>"
 	echo >&2 "  That is, <number> is mandatory.  Between 1 and 4 numbers will be left zero padded."
 	echo >&2 "  Two preceding letters are interpreted as the location (colo.)"
 	echo >&2 "  Four preceding letters are interpreted as the location, then the type (sr, vm, etc.)"

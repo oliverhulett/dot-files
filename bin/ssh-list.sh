@@ -18,12 +18,15 @@ if [ "$1" == "-v" ]; then
 fi
 
 if [ $# -eq 0 ]; then
-	set -- $(command cat ${HOME}/.ssh/known_hosts | command grep -vE '^\[?git' | cut -d' ' -f1 | cut -d, -f1)
+	set -- $(command cat ${HOME}/.ssh/known_hosts | command grep -vE '^\[?git' | cut -d' ' -f1 | cut -d, -f1 | sort)
 fi
 
 declare -a FAILURES
 for svr in "$@"; do
-	command ssh -o ConnectTimeout=2 -o PasswordAuthentication=no $svr hostname 2>&${log_fd} || FAILURES[${#FAILURES[@]}]="$svr"
+	( \
+		command ssh -o ConnectTimeout=2 -o PasswordAuthentication=no $svr hostname || \
+		command ssh -o ConnectTimeout=2 -o PasswordAuthentication=no -o 'ProxyCommand ssh -W %h:%p sshrelay' $svr 'echo -n sshrelay: && hostname' \
+	) 2>&${log_fd} || FAILURES[${#FAILURES[@]}]="$svr"
 done
 
 function join()
