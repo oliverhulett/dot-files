@@ -68,6 +68,56 @@ function cleaninline()
 	done
 }
 
+## Convert spaces to tabs, write result back to files
+function unexpandinline()
+{
+	ARGS=()
+	FILES=()
+	has_dash_t="no"
+	for f in "$@"; do
+		if [ -f "$f" ]; then
+			FILES[${#FILES[@]}]="$(readlink -e "$f")"
+		else
+			ARGS[${#ARGS[@]}]="$f"
+			if [ "${f[0]}" == "-" ] && [ "${f[1]}" == "t" ]; then
+				has_dash_t="yes"
+			fi
+		fi
+	done
+	if [ "${has_dash_t}" == "no" ]; then
+		ARGS[${#ARGS[@]}]="-t4"
+	fi
+	for f in "${FILES[@]}"; do
+		echo "unexpand ${ARGS[@]} $f"
+		echo "$(unexpand "${ARGS[@]}" "$f")" >"$f"
+	done
+}
+
+## Convert tabs to spaces, write result back to files
+function expandinline()
+{
+	ARGS=()
+	FILES=()
+	has_dash_t="no"
+	for f in "$@"; do
+		if [ -f "$f" ]; then
+			FILES[${#FILES[@]}]="$(readlink -e "$f")"
+		else
+			ARGS[${#ARGS[@]}]="$f"
+			if [ "${f[0]}" == "-" ] && [ "${f[1]}" == "t" ]; then
+				has_dash_t="yes"
+			fi
+		fi
+	done
+	if [ "${has_dash_t}" == "no" ]; then
+		ARGS[${#ARGS[@]}]="-t4"
+	fi
+	for f in "${FILES[@]}"; do
+		echo "expand ${ARGS[@]} $f"
+		echo "$(expand "${ARGS[@]}" "$f")" >"$f"
+	done
+}
+
 ## Add items to a list file.  Keep the list file sorted, uniq-ified, and clean of empty lines.
 function list()
 {
