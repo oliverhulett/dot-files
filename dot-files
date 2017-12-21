@@ -5,7 +5,6 @@ bash_aliases/09-profile.d-makeflags.optiver.sh .bash_aliases/09-profile.d-makefl
 bash_aliases/09-profile.d-pyvenv.sh .bash_aliases/09-profile.d-pyvenv.sh
 bash_aliases/19-env-onetick.sh .bash_aliases/19-env-onetick.sh
 bash_aliases/19-env-proxy.sh .bash_aliases/19-env-proxy.sh
-bash_aliases/19-env-shellcheck.sh .bash_aliases/19-env-shellcheck.sh
 bash_aliases/28-completion-docker_compose.sh .bash_aliases/28-completion-docker_compose.sh
 bash_aliases/28-completion-docker.sh .bash_aliases/28-completion-docker.sh
 bash_aliases/29-completion-docker_custom.sh .bash_aliases/29-completion-docker_custom.sh

@@ -146,11 +146,15 @@ function setup()
 	git clone --depth 1 --branch "$(git this)" "$(git config --get "remote.${OTHER_REMOTE}.url")" "${CHECKOUT}"
 
 	shopt -s nullglob
+	MISSING=()
 	while read -r; do
 		if [ ! -e "${DOTFILES}/${REPLY}" ] && [ ! -e "${CHECKOUT}/${REPLY}" ]; then
-			fail "Ignored file does not exist in either remote: $REPLY"
+			MISSING[${#MISSING[@]}]="${REPLY}"
 		fi
 	done <"${DOTFILES}/sync-other-remote.ignore.txt"
+	if [ ${#MISSING[@]} -ne 0 ]; then
+		fail "Ignored files do not exist in either remote: ${MISSING[@]}"
+	fi
 }
 
 @test "Validate: ignored file list is not in ignored file list" {
@@ -208,7 +212,6 @@ function _get_dot_files()
 		.gitconfig
 		.gitignore
 		.interactive_commands
-		.lessfilter
 		.profile
 		.profile
 		.vim

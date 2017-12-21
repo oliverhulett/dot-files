@@ -73,10 +73,7 @@ dot-files.loki
 dot-files.odysseus
 dot-files.prometheus
 eclipse-project-files
-git_wrappers/pin_externals.sh
 git_wrappers/tag_externals.sh
-git_wrappers/unpin_externals.sh
-git_wrappers/update_externals.sh
 images
 installed-software.txt
 new_blogs
