@@ -1,3 +1,6 @@
+## The master crontab for this machine is /var/spool/crontab.  Edit the crontab with `crontab -e` always.
+## There is a backup of the crontab in ~/dot-files, but that is not the master, it is only used to bootstrap the crontab
+## after a machine re-build (e.g. vagrant destroy && vagrant up)
 HOME=/home/ols
 SHELL=/bin/bash
 
