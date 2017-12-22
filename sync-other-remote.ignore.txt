@@ -64,6 +64,7 @@ bin/vboxctl.sh
 crontab
 crontab.3100-centos7dev
 crontab.loki
+crontab.odysseus
 crontab.opsynxvm0410
 crontab.prometheus
 docker_favourites
