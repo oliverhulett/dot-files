@@ -1,14 +1,10 @@
-## The master crontab for this machine is /var/spool/crontab.  Edit the crontab with `crontab -e` always.
-## There is a backup of the crontab in ~/dot-files, but that is not the master, it is only used to bootstrap the crontab
-## after a machine re-build (e.g. vagrant destroy && vagrant up)
 HOME=/home/ols
-SHELL=/bin/bash
-
 @reboot insync-headless start >/dev/null 2>&1
 
 * * * * * for i in /dev/disk/by-label/*; do echo $i; ls -l /media/$(basename $i); done >/dev/null 2>&1
 
 @daily cd "${HOME}/dot-files" && git pullb && crontab -l >"crontab.$(hostname -s | tr A-Z a-z)" && echo -e "\n\n## Backed up on $(date -R) by $(whoami)" >>"crontab.$(hostname -s | tr A-Z a-z)" && git commit -a --allow-empty -m"Autocommit: $(git status -s)" && git push
 @daily sleep 20 && cd "${HOME}/dot-files" && git pullb && git update && ./setup-home.sh >/dev/null 2>&1
+-e 
 
-## Backed up on Fri, 22 Dec 2017 00:00:14 +1100 by oliver
+## Backed up on Sat, 23 Dec 2017 00:00:15 +1100 by oliver
