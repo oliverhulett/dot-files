@@ -17,7 +17,7 @@ SHELL=/bin/bash
 @weekly find /tmp /var/tmp -xdev -not -exec /sbin/fuser -s "{}" \; -delete 2>/dev/null
 
 ## Python virtualenv should be refreshed regularly.
-@daily source "${HOME}/.bash_aliases/19-env-proxy.sh" && proxy_setup && source "${HOME}/.bash_aliases/09-profile.d-pyvenv.sh" && source "${HOME}/.bash_aliases/39-aliases-chronic.sh"; [ -z "$(sudo fuser "${PYVENV_HOME}"/bin/*)" ] && rm -rf "${PYVENV_HOME}" && chronic ${HOME}/dot-files/bin/python_setup.sh
+@daily source "${HOME}/.bash_aliases/19-env-proxy.sh" && proxy_setup && source "${HOME}/.bash_aliases/09-profile.d-pyvenv.sh" && source "${HOME}/.bash_aliases/39-aliases-chronic.sh"; [ -z "$(sudo fuser "${PYVENV_HOME}"/bin/* 2>&1)" ] && rm -rf "${PYVENV_HOME}" && chronic ${HOME}/dot-files/bin/python_setup.sh
 
 ## Fetch TP0014 files for staging deltron releases.  Needs only be run once, Deltron instances will share TP0014 files.
 30 10 * * 1-5 source "${HOME}/.bash_aliases/39-aliases-chronic.sh" && chronic /apps/centralConfig/dlt_hk_smashkopt_001/refresh-tp0014-files.sh

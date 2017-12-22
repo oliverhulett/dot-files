@@ -23,4 +23,4 @@ SHELL=/bin/bash
 @daily command which docker >/dev/null 2>/dev/null && [ $(docker ps -q | wc -l) -gt 0 ] && docker kill $(docker ps -q) >/dev/null
 
 ## Python virtualenv should be refreshed regularly, as long as it is not in use.
-@daily source "${HOME}/.bash_aliases/19-env-proxy.sh" && proxy_setup && source "${HOME}/.bash_aliases/09-profile.d-pyvenv.sh" && source "${HOME}/.bash_aliases/39-aliases-chronic.sh"; [ -z "$(sudo fuser "${PYVENV_HOME}"/bin/*)" ] && rm -rf "${PYVENV_HOME}" && chronic ${HOME}/dot-files/bin/python_setup.sh
+@daily source "${HOME}/.bash_aliases/19-env-proxy.sh" && proxy_setup && source "${HOME}/.bash_aliases/09-profile.d-pyvenv.sh" && source "${HOME}/.bash_aliases/39-aliases-chronic.sh"; [ -z "$(sudo fuser "${PYVENV_HOME}"/bin/* 2>&1)" ] && rm -rf "${PYVENV_HOME}" && chronic ${HOME}/dot-files/bin/python_setup.sh
