@@ -5,7 +5,7 @@ function __chronic()
 	local tmp="$(mktemp)" || return
 	"$@"  >"$tmp" 2>&1
 	local ret=$?
-	[ "$ret" -eq 0 ] || cat "$tmp"
+	[ "$ret" -eq 0 ] || command cat "$tmp"
 	rm -f "$tmp"
 	return "$ret"
 }

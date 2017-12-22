@@ -12,4 +12,9 @@ venv_setup
 pip install -U pip
 pip install -U wheel setuptools
 
-cat "${DOTFILES}/python_setup.txt" | xargs -n1 -P0 -t pip install -U
+command cat "${DOTFILES}/python_setup.txt" | xargs -n1 -P0 -t pip install -U
+local ret=$?
+if [ $ret -eq 123 ]; then
+	ret=0
+fi
+exit $ret
