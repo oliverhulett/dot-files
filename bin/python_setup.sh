@@ -12,4 +12,4 @@ venv_setup
 pip install -U pip
 pip install -U wheel setuptools
 
-pip install -U -r "${DOTFILES}/python_setup.txt"
+cat "${DOTFILES}/python_setup.txt" | xargs -n1 -P0 -t pip install -U
