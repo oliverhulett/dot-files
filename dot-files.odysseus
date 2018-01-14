@@ -5,4 +5,5 @@ bash_aliases/39-aliases-insync_trash.sh .bash_aliases/39-aliases-insync_trash.sh
 bash_aliases/39-aliases-kodi.sh .bash_aliases/39-aliases-kodi.sh
 bash_aliases/39-aliases-odysseus.sh .bash_aliases/39-aliases-odysseus.sh
 bash_aliases/39-aliases-ubuntu.sh .bash_aliases/39-aliases-ubuntu.sh
+eclipse-user-dictionary.txt .eclipse-user-dictionary.txt
 gitconfig.home .gitconfig.local
