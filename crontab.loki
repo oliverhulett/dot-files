@@ -7,4 +7,4 @@ HOME=/home/ols
 @daily sleep 20 && cd "${HOME}/dot-files" && git pullb && git update && ./setup-home.sh >/dev/null 2>&1
 -e 
 
-## Backed up on Thu, 22 Feb 2018 00:10:44 +1100 by oliver
+## Backed up on Fri, 23 Feb 2018 00:00:34 +1100 by oliver
