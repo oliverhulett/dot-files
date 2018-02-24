@@ -69,6 +69,7 @@ alias rsync-ca='rsync -zvvpPAXrogthlcm'
 alias sursync-ca='sudo rsync -zvvpPAXrogthlcm'
 
 alias iotop='sudo iotop'
+alias nethogs='sudo nethogs'
 
 alias umount='sudo umount'
 
