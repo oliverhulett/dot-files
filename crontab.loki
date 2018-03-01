@@ -9,5 +9,19 @@ SHELL=/bin/bash
 * * * * * for i in /dev/disk/by-label/*; do echo $i; ls -l /media/$(basename $i); done >/dev/null 2>&1
 * * * * * env >"${HOME}/.crontab.env"
 
+<<<<<<< HEAD
 @daily cd "${HOME}/dot-files" && git commit -a --allow-empty -m"Autocommit: $(git status -s)" && git push
 @daily sleep 20 && cd "${HOME}/dot-files" && git pullme && git update && ./setup-home.sh
+||||||| parent of 5947d5e177a... Autocommit:  M crontab.loki
+@daily cd "${HOME}/dot-files" && git pullb && crontab -l >"crontab.$(hostname -s | tr A-Z a-z)" && echo -e "\n\n## Backed up on $(date -R) by $(whoami)" >>"crontab.$(hostname -s | tr A-Z a-z)" && git commit -a --allow-empty -m"Autocommit: $(git status -s)" && git push
+@daily sleep 20 && cd "${HOME}/dot-files" && git pullb && git update && ./setup-home.sh
+-e 
+
+## Backed up on Thu, 01 Mar 2018 00:00:18 +1100 by oliver
+=======
+@daily cd "${HOME}/dot-files" && git pullb && crontab -l >"crontab.$(hostname -s | tr A-Z a-z)" && echo -e "\n\n## Backed up on $(date -R) by $(whoami)" >>"crontab.$(hostname -s | tr A-Z a-z)" && git commit -a --allow-empty -m"Autocommit: $(git status -s)" && git push
+@daily sleep 20 && cd "${HOME}/dot-files" && git pullb && git update && ./setup-home.sh
+-e 
+
+## Backed up on Fri, 02 Mar 2018 00:00:16 +1100 by oliver
+>>>>>>> 5947d5e177a... Autocommit:  M crontab.loki
