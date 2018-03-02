@@ -23,5 +23,11 @@ SHELL=/bin/bash
 @daily sleep 20 && cd "${HOME}/dot-files" && git pullb && git update && ./setup-home.sh
 -e 
 
+<<<<<<< HEAD
 ## Backed up on Fri, 02 Mar 2018 00:00:16 +1100 by oliver
 >>>>>>> 5947d5e177a... Autocommit:  M crontab.loki
+||||||| parent of 6d2217c707d... Autocommit:  M crontab.loki
+## Backed up on Fri, 02 Mar 2018 00:00:16 +1100 by oliver
+=======
+## Backed up on Sat, 03 Mar 2018 00:00:18 +1100 by oliver
+>>>>>>> 6d2217c707d... Autocommit:  M crontab.loki
