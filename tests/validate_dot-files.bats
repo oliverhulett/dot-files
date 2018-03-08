@@ -4,15 +4,19 @@ DF_TESTS="$(cd "${BATS_TEST_DIRNAME}" && pwd -P)"
 source "${DF_TESTS}/utils.sh"
 
 DF_FILES=(
+	gitconfig
+	gitconfig.github
+	vimrc
+)
+
+DF_SOURCED_SCRIPTS=(
 	bash_common.sh
 	bash_logout
 	bash_profile
 	bashrc
-	gitconfig
-	gitconfig.home
 	profile
 	trap_stack.sh
-	vimrc
+	$(cd "${DOTFILES}" && echo bash_aliases/*)
 )
 
 DF_CRONTABS=( $(cd "${DOTFILES}" && echo crontab.*) )
@@ -38,7 +42,7 @@ function setup()
 }
 
 @test "Validate: required files exist" {
-	for f in "${DF_LISTS[@]}" "${DF_CRONTABS[@]}" "${DF_FILES[@]}"; do
+	for f in "${DF_LISTS[@]}" "${DF_CRONTABS[@]}" "${DF_SOURCED_SCRIPTS}" "${DF_FILES[@]}"; do
 		if [ ! -e "${DOTFILES}/$f" ]; then
 			fail "Expected file does not exist: $f"
 		fi
@@ -49,6 +53,14 @@ function setup()
 	for f in "${DF_EXES[@]}"; do
 		if [ ! -x "${DOTFILES}/$f" ]; then
 			fail "Expected executable does not exist: $f"
+		fi
+	done
+}
+
+@test "Validate: sourced shell scripts start with shellcheck shell=bash" {
+	for f in "${DF_SOURCED_SCRIPTS[@]}"; do
+		if [ "$(command head -n1 "${DOTFILES}/$f")" != "# shellcheck shell=sh" ] && [ "$(command head -n1 "${DOTFILES}/$f")" != "# shellcheck shell=bash" ]; then
+			fail "Sourced shell script does not start with shellcheck shell=bash as expected: $f"
 		fi
 	done
 }

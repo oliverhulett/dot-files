@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # Aliases
 source "$(dirname "$(readlink -f "${BASH_SOURCE}")")/../bash_common.sh"
 

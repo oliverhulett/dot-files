@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # /home/ols/.bashrc:
 #
 # This file is sourced by all *interactive* bash shells on startup,

@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # To pick up the latest recommended .bash_profile content,
 # look in /etc/defaults/etc/skel/.bash_profile
 

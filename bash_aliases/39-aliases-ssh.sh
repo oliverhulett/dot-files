@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 unalias ssh 2>/dev/null
 alias ssh-konsole='ssh-konsole.sh'
 alias ssh-list='ssh-list.sh'

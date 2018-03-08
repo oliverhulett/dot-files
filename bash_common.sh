@@ -1,6 +1,6 @@
+# shellcheck shell=sh
 ## Common function used by bashrc and bash_alias/* files.
 ## `source bash_common.sh` must be idempotent.
-# shellcheck shell=sh
 # shellcheck disable=SC2016,SC2015
 
 _hidex='_setx=n; [[ $- == *x* ]] && _setx=y; set +x;'

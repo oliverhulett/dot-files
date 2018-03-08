@@ -9,7 +9,7 @@ IS_EXE="no"
 function setup_gitconfig()
 {
 	rm "${HOME}/.gitconfig.local"
-	_link_local_gitconfig home
+	_link_local_gitconfig github
 
 	scoped_mktemp BARE_REPO -d
 	scoped_mktemp CHECKOUT -d
@@ -42,14 +42,10 @@ function assert_status()
 	assert_all_lines "$@"
 }
 
-@test "$FUT: home and Optiver username and e-mail are correct" {
-	_link_local_gitconfig home
+@test "$FUT: github username and e-mail are correct" {
+	_link_local_gitconfig github
 	run git whoami
 	assert_output "Oliver Hulett <oliver.hulett@gmail.com>"
-
-	_link_local_gitconfig optiver
-	run git whoami
-	assert_output "Oliver Hulett <oliver.hulett@optiver.com.au>"
 }
 
 @test "$FUT: filter ini-file-leading-space" {

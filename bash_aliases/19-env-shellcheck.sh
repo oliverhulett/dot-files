@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 ## Ignore some shell check errors...
 SHELLCHECK_OPTS=
 

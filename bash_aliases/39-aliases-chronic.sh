@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 ## If `chronic` doesn't exist, make a poor man's version.
 
 function __chronic()

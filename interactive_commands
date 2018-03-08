@@ -1,9 +1,6 @@
 bash
 crontab -e
 dash
-dock
-docker-run.sh .*docker-registry.aus.optiver.com/[^ ]+$
-dock.sh
 dotlogs
 edt
 git diff
@@ -17,14 +14,12 @@ iotop
 journalctl -xe
 jupyter console
 less
-.+\| *less *$
 logless
 man
 more
 nano
-sdock
-sdock.sh
 sh
+.+\|\s*less *$
 sqlite3
 ssh
 sudo -e

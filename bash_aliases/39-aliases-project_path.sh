@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # Aliases and function for finding top of project
 unalias get-project-root 2>/dev/null
 function get-project-root()

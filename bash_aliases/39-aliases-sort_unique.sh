@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 ## Call sort on files, write results back to files
 function sortinline()
 {

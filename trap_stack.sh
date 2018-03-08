@@ -1,3 +1,4 @@
+# shellcheck shell=sh
 ## Introduce the concept of named traps.
 ## There exists one anonymous trap stack, which has the usual installation semantics of:
 ##   $ trap <spec> SIGS...
@@ -10,7 +11,6 @@
 ## Concepts stolen from http://stackoverflow.com/a/16115145
 ##
 ## `source trap_stack.sh` is sourced by bash_common.sh, so must be idempotent.
-# shellcheck shell=sh
 # shellcheck source=bash_common.sh
 # shellcheck disable=SC2016,SC2086,SC2046
 

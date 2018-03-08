@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 
 unalias brokenlinks 2>/dev/null
 function brokenlinks

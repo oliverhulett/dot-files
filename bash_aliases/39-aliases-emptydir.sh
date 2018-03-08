@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 unalias rmemptyfiles 2>/dev/null
 function rmemptyfiles()
 {

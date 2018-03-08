@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # Kodi stuff.
 ## Make sure you set kodi in /etc/hosts
 ## Make sure you install kodicall.sh in your path

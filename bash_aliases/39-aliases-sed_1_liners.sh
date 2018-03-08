@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # Useful 1-liners for sed, awk, etc.
 # For more, see: http://sed.sourceforge.net/sed1line.txt
 # Add them as you use them.

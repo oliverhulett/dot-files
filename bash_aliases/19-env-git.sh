@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 ## Useful git environment setup.
 
 for f in "/etc/bash_completion.d/git-prompt" \

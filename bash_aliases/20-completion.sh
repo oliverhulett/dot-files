@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 set show-all-if-ambiguous on
 set show-all-if-unmodified on
 set mark-directories on

@@ -1,7 +1,7 @@
 # shellcheck shell=bash
 # Custom docker completion commands.
 
-# Add remote images from docker-registry.aus.optiver.com/ to the images output.
+# Add remote images to the images output.
 function __docker_remote_images()
 {
 	if [ -z "$(command which docker 2>/dev/null)" ]; then

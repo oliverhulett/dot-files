@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # Ubuntu specific things.
 
 alias service='sudo service'
@@ -20,16 +21,16 @@ function unity-reset()
 {
 	MACH=`hostname -s`
 	USER=`whoami`
-	
+
 	nohup unity --reset 2>&1 >/dev/null &
-	
+
 	echo
 	for i in `seq 1 10`; do
 		echo -n .
 		sleep 10
 	done
 	echo
-	
+
 	gconftool --load "${HOME}/etc/${MACH}-${USER}.gconf.xml"
 }
 
@@ -37,7 +38,7 @@ function unity-save()
 {
 	MACH=`hostname -s`
 	USER=`whoami`
-	
+
 	gconftool --dump / >"${HOME}/etc/${MACH}-${USER}.gconf.xml"
 }
 

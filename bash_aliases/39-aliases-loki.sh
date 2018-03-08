@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # Stuff for Loki.
 alias rtorrent-dtach="dtach -a /var/lib/rtorrent/fifo -e '^Q'"
 

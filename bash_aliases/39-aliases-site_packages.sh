@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # Navigate to the current Python virtual env's site packages directory
 
 function site-packages()

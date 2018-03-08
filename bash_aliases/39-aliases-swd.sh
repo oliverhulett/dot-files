@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # SWD (and other SVN) helpers
 function swd()
 {

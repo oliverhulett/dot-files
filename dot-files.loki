@@ -6,4 +6,4 @@ bash_aliases/39-aliases-insync_trash.sh .bash_aliases/39-aliases-insync_trash.sh
 bash_aliases/39-aliases-kodi.sh .bash_aliases/39-aliases-kodi.sh
 bash_aliases/39-aliases-loki.sh .bash_aliases/39-aliases-loki.sh
 bash_aliases/39-aliases-ubuntu.sh .bash_aliases/39-aliases-ubuntu.sh
-gitconfig.home .gitconfig.local
+gitconfig.github .gitconfig.local

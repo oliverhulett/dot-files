@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 unalias safefind 2>/dev/null
 function safefind
 {

@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 ## Validate JSON
 function jsoncheck()
 {

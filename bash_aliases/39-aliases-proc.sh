@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 ## Process management related aliases
 
 function killprocs()

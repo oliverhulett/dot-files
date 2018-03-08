@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # Invoke (pyinvoke.org) tab-completion script to be sourced with Bash shell.
 # Known to work on Bash 3.x, untested on 4.x.
 
