@@ -206,7 +206,7 @@ EOF
 	assert_all_lines "* master" "  testbranch2"
 
 	git push origin --delete testbranch2
-	git pullb
+	git pullme
 	run git branch
 	assert_all_lines "* master"
 }

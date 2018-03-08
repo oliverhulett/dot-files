@@ -1,10 +1,13 @@
+## This master file for this crontab is part of this user's ~/dot-files repository.
+## Edit that file always and then run ~/dot-files/setup-home.sh to install it.
+## Never use `crontab -e` or your changes may be overwritten.
 HOME=/home/ols
+SHELL=/bin/bash
+
 @reboot /usr/bin/insync-headless start
 
 * * * * * for i in /dev/disk/by-label/*; do echo $i; ls -l /media/$(basename $i); done >/dev/null 2>&1
+* * * * * env >"${HOME}/.crontab.env"
 
-@daily cd "${HOME}/dot-files" && git pullb && crontab -l >"crontab.$(hostname -s | tr A-Z a-z)" && echo -e "\n\n## Backed up on $(date -R) by $(whoami)" >>"crontab.$(hostname -s | tr A-Z a-z)" && git commit -a --allow-empty -m"Autocommit: $(git status -s)" && git push
-@daily sleep 20 && cd "${HOME}/dot-files" && git pullb && git update && ./setup-home.sh
--e 
-
-## Backed up on Wed, 28 Feb 2018 00:00:15 +1100 by oliver
+@daily cd "${HOME}/dot-files" && git commit -a --allow-empty -m"Autocommit: $(git status -s)" && git push
+@daily sleep 20 && cd "${HOME}/dot-files" && git pullme && git update && ./setup-home.sh

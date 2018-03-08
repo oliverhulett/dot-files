@@ -76,7 +76,7 @@ else
 	sleep 1
 fi
 
-git pullb
+git pullme
 git fetch origin ${CURR_BRANCH}
 
 ( cd .. && git new-workdir "${MASTER_DIR}" "${NEW_DIR}" "${CURR_BRANCH}" )
@@ -103,5 +103,5 @@ if [ -f ../.project ] || [ -f ../master/.project ]; then
 	cp ../.project ./ 2>/dev/null || cp ../master/.project ./ 2>/dev/null
 fi
 if [ -f .project ]; then
-	sed -re 's!@master</name>!@'"${NEW_TICKET}_${NEW_DESCR}"'</name>!' .project -i 2>/dev/null
+	sed -re 's!@master</name>!@'"${NEW_TICKET}_${NEW_DESCR}"'</name>!' .project -i
 fi
