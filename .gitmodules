@@ -1,18 +1,34 @@
 [submodule "vim/bundle/Vundle.vim"]
+	shallow = true
+	checkout = update
 	path = vim/bundle/Vundle.vim
 	url = https://github.com/VundleVim/Vundle.vim.git
 [submodule "tests/x_helpers/bats"]
+	shallow = true
+	checkout = update
 	path = tests/x_helpers/bats
-	url = https://oliverhulett@github.com/oliverhulett/bats
+	url = https://github.com/sstephenson/bats
+	branch = v0.4.0
 [submodule "tests/x_helpers/bats-support"]
+	shallow = true
+	checkout = update
 	path = tests/x_helpers/bats-support
-	url = https://oliverhulett@github.com/oliverhulett/bats-support
+	url = https://github.com/ztombol/bats-support
+	branch = v0.3.0
 [submodule "tests/x_helpers/bats-file"]
+	shallow = true
+	checkout = update
 	path = tests/x_helpers/bats-file
-	url = https://oliverhulett@github.com/oliverhulett/bats-file
+	url = https://github.com/ztombol/bats-file
+	branch = v0.2.0
 [submodule "tests/x_helpers/bats-assert"]
+	shallow = true
+	checkout = update
 	path = tests/x_helpers/bats-assert
-	url = https://oliverhulett@github.com/oliverhulett/bats-assert
+	url = https://github.com/ztombol/bats-assert
+	branch = v0.3.0
 [submodule "tests/x_helpers/bats-mock"]
+	checkout = update
 	path = tests/x_helpers/bats-mock
-	url = https://oliverhulett@github.com/oliverhulett/bats-mock
+	url = https://github.com/oliverhulett/bats-mock
+	branch = master
