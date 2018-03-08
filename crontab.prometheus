@@ -4,7 +4,7 @@
 HOME=/home/ols
 SHELL=/bin/bash
 
-* * * * * env >"${HOME}/.crontab.env
+* * * * * env >"${HOME}/.crontab.env"
 
 @daily cd "${HOME}/dot-files" && git pullme && git commit -a --allow-empty -m"Autocommit: $(git status -s)" && git push
 @daily sleep 20 && cd "${HOME}/dot-files" && git pullme && git update && ./setup-home.sh >/dev/null 2>&1
