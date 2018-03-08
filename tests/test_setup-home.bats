@@ -26,7 +26,7 @@ function _do_test_for_host()
 {
 	HNAME="$1"
 	if [ -e "${DOTFILES}/crontab.${HNAME}" ]; then
-		stub crontab ""
+		stub crontab "${DOTFILES}/crontab.${HNAME}"
 	elif [ -e "${DOTFILES}/crontab" ]; then
 		stub crontab "${DOTFILES}/crontab"
 	fi

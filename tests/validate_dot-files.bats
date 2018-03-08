@@ -5,55 +5,31 @@ source "${DF_TESTS}/utils.sh"
 
 DF_FILES=(
 	bash_common.sh
-	trap_stack.sh
 	bash_logout
 	bash_profile
 	bashrc
-	profile
 	gitconfig
+	gitconfig.home
+	profile
+	trap_stack.sh
 	vimrc
 )
-DF_FILES_OPTIVER=(
-	autocommit.service
-	crontab
-	crontab.3100-centos7dev
-	gitconfig.optiver
-)
-DF_FILES_GITHUB=(
-	crontab.loki
-	crontab.prometheus
-	gitconfig.home
-)
+
+DF_CRONTABS=( $(cd "${DOTFILES}" && echo crontab.*) )
 
 DF_EXES=(
 	lessfilter
 	setup-home.sh
-	sync-other-remote.sh
 )
-DF_EXES_OPTIVER=(
-	autocommit.sh
-	backup.sh
-)
-DF_EXES_GITHUB=()
 
 DF_LISTS=(
 	.gitignore
 	dot-files-common
-	gitignore
-	interactive_commands
-	sync-other-remote.ignore.txt
-)
-DF_LISTS_OPTIVER=(
-	backups.txt
-	docker_favourites
-	dot-files
-	dot-files.3100-centos7dev
-	python_setup.txt
-)
-DF_LISTS_GITHUB=(
 	dot-files.loki
 	dot-files.odysseus
 	dot-files.prometheus
+	gitignore
+	interactive_commands
 )
 
 function setup()
@@ -62,38 +38,7 @@ function setup()
 }
 
 @test "Validate: required files exist" {
-	declare -a FILES EXES
-	case "$(git config --get remote.origin.url)" in
-		"ssh://git@git.comp.optiver.com:7999/~olihul/dot-files.git" )
-			FILES=(
-				"${DF_LISTS[@]}"
-				"${DF_FILES[@]}"
-				"${DF_LISTS_OPTIVER[@]}"
-				"${DF_FILES_OPTIVER[@]}"
-			)
-			EXES=(
-				"${DF_EXES[@]}"
-				"${DF_EXES_OPTIVER[@]}"
-			)
-			;;
-		"https://github.com/oliverhulett/dot-files.git" | \
-		"git@github.com:oliverhulett/dot-files.git" )
-			FILES=(
-				"${DF_LISTS[@]}"
-				"${DF_FILES[@]}"
-				"${DF_LISTS_GITHUB[@]}"
-				"${DF_FILES_GITHUB[@]}"
-			)
-			EXES=(
-				"${DF_EXES[@]}"
-				"${DF_EXES_GITHUB[@]}"
-			)
-			;;
-		* )
-			fail "Unexpected git remote url"
-			;;
-	esac
-	for f in "${FILES[@]}"; do
+	for f in "${DF_LISTS[@]}" "${DF_CRONTABS[@]}" "${DF_FILES[@]}"; do
 		if [ ! -e "${DOTFILES}/$f" ]; then
 			fail "Expected file does not exist: $f"
 		fi
@@ -101,84 +46,42 @@ function setup()
 			fail "File should not be executable: $f"
 		fi
 	done
-	for f in "${EXES[@]}"; do
+	for f in "${DF_EXES[@]}"; do
 		if [ ! -x "${DOTFILES}/$f" ]; then
 			fail "Expected executable does not exist: $f"
 		fi
 	done
 }
 
+@test "Validate: crontabs have preamble" {
+	# CRONTAB_PREAMBLE should include the empty line at the end.
+	CRONTAB_PREAMBLE=$(
+		cat <<-'EOF'
+			## This master file for this crontab is part of this user's ~/dot-files repository.
+			## Edit that file always and then run ~/dot-files/setup-home.sh to install it.
+			## Never use `crontab -e` or your changes may be overwritten.
+			HOME=/home/ols
+			SHELL=/bin/bash
+
+		EOF
+	)
+	for f in "${DF_CRONTABS[@]}"; do
+		if [ "$(command head -n6 "${DOTFILES}/$f")" != "${CRONTAB_PREAMBLE}" ]; then
+			fail "Crontab does not have expected preamble: $f"
+		fi
+	done
+}
+
 @test "Validate: lists are sorted and unique" {
-	declare -a LISTS
-	case "$(git config --get remote.origin.url)" in
-		"ssh://git@git.comp.optiver.com:7999/~olihul/dot-files.git" )
-			LISTS=(
-				"${DF_LISTS[@]}"
-				"${DF_LISTS_OPTIVER[@]}"
-			)
-			;;
-		"https://github.com/oliverhulett/dot-files.git" | \
-		"git@github.com:oliverhulett/dot-files.git" )
-			LISTS=(
-				"${DF_LISTS[@]}"
-				"${DF_LISTS_GITHUB[@]}"
-			)
-			;;
-		* )
-			fail "Unexpected git remote url"
-			;;
-	esac
-	for f in "${LISTS[@]}"; do
+	for f in "${DF_LISTS[@]}"; do
 		if [ "$(command cat "${DOTFILES}/$f")" != "$(command cat "${DOTFILES}/$f" | sort -u)" ]; then
 			fail "List file is not sorted or not unique: $f"
 		fi
 	done
 }
 
-@test "Validate: all ignored files exist in at least one of the remotes" {
-	OTHER_REMOTE="$(cd "${DOTFILES}" && git remote | command grep -v origin || true)"
-	if [ -z "${OTHER_REMOTE}" ]; then
-		skip "cannot verify ignored files exist without other remote"
-		return
-	fi
-
-	scoped_mktemp CHECKOUT -d
-	git clone --depth 1 --branch "$(git this)" "$(git config --get "remote.${OTHER_REMOTE}.url")" "${CHECKOUT}"
-
-	shopt -s nullglob
-	MISSING=()
-	while read -r; do
-		if [ ! -e "${DOTFILES}/${REPLY}" ] && [ ! -e "${CHECKOUT}/${REPLY}" ]; then
-			MISSING[${#MISSING[@]}]="${REPLY}"
-		fi
-	done <"${DOTFILES}/sync-other-remote.ignore.txt"
-	if [ ${#MISSING[@]} -ne 0 ]; then
-		fail "Ignored files do not exist in either remote: ${MISSING[@]}"
-	fi
-}
-
-@test "Validate: ignored file list is not in ignored file list" {
-	refute command grep -wqE '^sync-other-remote.ignore.txt$' "${DOTFILES}/sync-other-remote.ignore.txt"
-}
-
-function _get_dot_files()
-{
-	declare -ag FILES
-	case "$(git config --get remote.origin.url)" in
-		"ssh://git@git.comp.optiver.com:7999/~olihul/dot-files.git" )
-			FILES=( dot-files dot-files.3100-centos7dev )
-			;;
-		"https://github.com/oliverhulett/dot-files.git" | \
-		"git@github.com:oliverhulett/dot-files.git" )
-			FILES=( dot-files.loki dot-files.odysseus dot-files.prometheus )
-			;;
-		* )
-			fail "Unexpected git remote url"
-			;;
-	esac
-}
 @test "Validate: dot-files exist" {
-	_get_dot_files
+	FILES=( dot-files.loki dot-files.odysseus dot-files.prometheus )
 
 	shopt -s nullglob
 	for l in "${FILES[@]}"; do
@@ -191,7 +94,7 @@ function _get_dot_files()
 }
 
 @test "Validate: dot-files do not overwrite dot-files-common" {
-	_get_dot_files
+	FILES=( dot-files.loki dot-files.odysseus dot-files.prometheus )
 
 	for l in "${FILES[@]}"; do
 		while read -r _ DEST; do
@@ -223,23 +126,11 @@ function _get_dot_files()
 }
 
 @test "Validate: crontabs are not empty" {
-	for f in "${DOTFILES}/"crontab*; do
-		if [ ! -s "$f" ]; then
+	for f in "${DF_CRONTABS[@]}"; do
+		if [ ! -s "${DOTFILES}/$f" ]; then
 			fail "Crontab file is empty: $(basename -- "$f")"
 		fi
 	done
-}
-
-@test "Validate: files to backup exist" {
-	if [ "$(git config --get remote.origin.url)" != "ssh://git@git.comp.optiver.com:7999/~olihul/dot-files.git" ]; then
-		skip "backup list only exists at Optiver"
-		return
-	fi
-	while read -r; do
-		if [ ! -e "/$REPLY" ]; then
-			fail "File to backup does not exist: $REPLY"
-		fi
-	done <"${DOTFILES}/backups.txt"
 }
 
 @test "Validate: bats is a link to our submodule" {
