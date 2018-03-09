@@ -3,8 +3,9 @@
 ## Never use `crontab -e` or your changes may be overwritten.
 HOME=/home/ols
 SHELL=/bin/bash
+PATH=/bin:/usr/bin:${HOME}/dot-files/bin
 
 * * * * * env >"${HOME}/.crontab.env"
 
-@daily cd "${HOME}/dot-files" && git pullme && git commit -a --allow-empty -m"Autocommit: $(git status -s)" && git push
-@daily sleep 20 && cd "${HOME}/dot-files" && git pullme && git update && ./setup-home.sh >/dev/null 2>&1
+0 * * * * cd "${HOME}/dot-files" && git pullme && git commit -a --allow-empty -m"Autocommit: $(git status -s)" && git push
+0 * * * * sleep 30 && cd "${HOME}/dot-files" && git pullme && git update && ./setup-home.sh >/dev/null 2>&1

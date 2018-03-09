@@ -74,6 +74,7 @@ function setup()
 			## Never use `crontab -e` or your changes may be overwritten.
 			HOME=/home/ols
 			SHELL=/bin/bash
+			PATH=/bin:/usr/bin:${HOME}/dot-files/bin
 
 		EOF
 	)

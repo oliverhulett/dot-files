@@ -3,11 +3,12 @@
 ## Never use `crontab -e` or your changes may be overwritten.
 HOME=/home/ols
 SHELL=/bin/bash
+PATH=/bin:/usr/bin:${HOME}/dot-files/bin
 
-@reboot /usr/bin/insync-headless start
+0 * * * * source "${HOME}/.bash_aliases/09-profile.d-insync_headless.sh"
 
 * * * * * for i in /dev/disk/by-label/*; do echo $i; ls -l /media/$(basename $i); done >/dev/null 2>&1
 * * * * * env >"${HOME}/.crontab.env"
 
-@daily cd "${HOME}/dot-files" && git commit -a --allow-empty -m"Autocommit: $(git status -s)" && git push
-@daily sleep 20 && cd "${HOME}/dot-files" && git pullme && git update && ./setup-home.sh
+0 * * * * cd "${HOME}/dot-files" && git commit -a --allow-empty -m"Autocommit: $(git status -s)" && git push
+0 * * * * sleep 30 && cd "${HOME}/dot-files" && git pullme && git update && ./setup-home.sh
