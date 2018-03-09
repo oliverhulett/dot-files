@@ -3,7 +3,7 @@
 ## Never use `crontab -e` or your changes may be overwritten.
 HOME=/home/ols
 SHELL=/bin/bash
-PATH=/bin:/usr/bin:${HOME}/dot-files/bin
+PATH=/bin:/usr/bin:~/dot-files/bin
 
 0 * * * * source "${HOME}/.bash_aliases/09-profile.d-insync_headless.sh"
 
