@@ -18,11 +18,12 @@ bash_logout .bash_logout
 bash_profile .bash_profile
 bashrc .bashrc
 flake8 .config/flake8
+git_wrappers .git_wrappers
 gitconfig .gitconfig
 gitignore .gitignore
-git_wrappers .git_wrappers
 interactive_commands .interactive_commands
 invoke.py .invoke.py
 profile .profile
-vimrc .vimrc
+ssh.config .ssh/config
 vim .vim
+vimrc .vimrc
