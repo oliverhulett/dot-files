@@ -1,4 +1,5 @@
 ackrc .ackrc
+bash_aliases/09-profile.d-python_virtualenv.sh .bash_aliases/09-profile.d-python_virtualenv.sh
 bash_aliases/19-env-git.sh .bash_aliases/19-env-git.sh
 bash_aliases/19-env-shellcheck.sh .bash_aliases/19-env-shellcheck.sh
 bash_aliases/19-env-svn.sh .bash_aliases/19-env-svn.sh
