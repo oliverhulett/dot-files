@@ -3,7 +3,7 @@
 ## Never use `crontab -e` or your changes may be overwritten.
 HOME=/home/ols
 SHELL=/bin/bash
-PATH=/bin:/usr/bin:/home/ols/dot-files/bin
+PATH=/home/ols/dot-files/bin:/usr/local/bin:/usr/bin:/bin
 
 0 * * * * source "${HOME}/.bash_aliases/09-profile.d-insync_headless.sh"
 
@@ -11,4 +11,4 @@ PATH=/bin:/usr/bin:/home/ols/dot-files/bin
 * * * * * env >"${HOME}/.crontab.env"
 
 0 * * * * cd "${HOME}/dot-files" && git commit -a -m"Autocommit from $(hostname): $(git status -s)" && git pull && git push
-1 * * * * cd "${HOME}/dot-files" && git pullme && git update && ./setup-home.sh
+10 * * * * cd "${HOME}/dot-files" && git pullme && git update && ./setup-home.sh

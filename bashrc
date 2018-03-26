@@ -5,7 +5,7 @@
 # including some apparently interactive shells such as scp and rcp
 # that can't tolerate any output.
 
-export PATH="${PATH:-/bin:/usr/bin}"
+export PATH="${PATH:-/usr/local/bin:/usr/bin:/bin}"
 source "${HOME}/dot-files/bash_common.sh"
 export PATH="$(append_path "/bin" "/usr/bin")"
 if reentered "${HOME}/.bashrc" "${HOME}/.bash_aliases"/*; then

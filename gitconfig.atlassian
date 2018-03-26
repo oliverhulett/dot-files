@@ -1,0 +1,8 @@
+# vim:filetype=gitconfig
+
+[user]
+name = Oliver Hulett
+email = ohulett@atlassian.com
+
+[pull]
+rebase = preserve
