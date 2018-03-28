@@ -1,3 +1,4 @@
-bash_aliases/28-completion-docker_compose.sh .bash_aliases/28-completion-docker_compose.sh
+bash_aliases/09-profile.d-atlassian.sh .bash_aliases/09-profile.d-atlassian.sh
 bash_aliases/28-completion-docker.sh .bash_aliases/28-completion-docker.sh
+bash_aliases/28-completion-docker_compose.sh .bash_aliases/28-completion-docker_compose.sh
 gitconfig.atlassian .gitconfig.local

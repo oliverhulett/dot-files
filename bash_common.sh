@@ -10,7 +10,14 @@ _restorex='[ ${_setx:-n} == y ] && set -x; unset _setx;'
 # Alias gnu utils installed on the mac with homebrew to their usual names.
 ## Do we need to detect mac-ness?
 ## This should work on linux too (mostly it'll be a no-op, worst case it create some useless links)
-( cd /usr/local/bin && ln -s g* ./; rm '[' )
+for f in /usr/local/bin/g*; do
+	g="$(basename -- "$f")"
+	if [ "$g" != 'g[' ] && [ ! -e "/usr/local/bin/${g:1}" ]; then
+		( cd /usr/local/bin/ && ln -s "$g" "${g:1}" 2>/dev/null )
+	fi
+done
+# Doesn't work, for some reason.
+rm '/usr/local/bin/[' 2>/dev/null
 
 export DEBUG_BASHRC="${DEBUG_BASHRC:-*}"
 function source()
