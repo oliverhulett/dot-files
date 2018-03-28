@@ -30,11 +30,13 @@ if [ -e "${HOME}/.bashrc" ] ; then
 fi
 
 # Set MANPATH so it includes users' private man if it exists
+MANPATH="/usr/local/share/man:${MANPATH}"
 if [ -d "${HOME}/man" ]; then
 	MANPATH=${HOME}/man:${MANPATH}
 fi
 
 # Set INFOPATH so it includes users' private info if it exists
+INFOPATH="/usr/local/share/info:${INFOPATH}"
 if [ -d "${HOME}/info" ]; then
 	INFOPATH=${HOME}/info:${INFOPATH}
 fi

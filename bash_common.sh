@@ -7,6 +7,11 @@ _hidex='_setx=n; [[ $- == *x* ]] && _setx=y; set +x;'
 eval "${_hidex}"
 _restorex='[ ${_setx:-n} == y ] && set -x; unset _setx;'
 
+# Alias gnu utils installed on the mac with homebrew to their usual names.
+## Do we need to detect mac-ness?
+## This should work on linux too (mostly it'll be a no-op, worst case it create some useless links)
+( cd /usr/local/bin && ln -s g* ./; rm '[' )
+
 export DEBUG_BASHRC="${DEBUG_BASHRC:-*}"
 function source()
 {

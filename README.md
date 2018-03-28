@@ -15,6 +15,8 @@ $ BREWINSTALLER=$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/
 $ brew update
 $ brew tap homebrew/dupes
 $ brew install --with-default-names gnu-getopt gnu-indent gnu-sed gnu-tar gnutls gnu-time gnu-which grep gawk
+$ brew link --force gnu-getopt
+$ ( cd /usr/local/bin && ln -s greadlink readlink )
 ```
 
 And, of course, use [iTerm|https://www.iterm2.com/downloads.html] on the Mac.
