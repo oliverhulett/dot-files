@@ -7,5 +7,5 @@ PATH=/home/ols/dot-files/bin:/usr/local/bin:/usr/bin:/bin
 
 * * * * * env >"${HOME}/.crontab.env"
 
-0 * * * * cd "${HOME}/dot-files" && git commit -a -m"Autocommit from $(hostname): $(git status -s)" && git pull && git push
-10 * * * * cd "${HOME}/dot-files" && git pullme && git update && ./setup-home.sh >/dev/null 2>&1
+0 8,12,17 * * * cd "${HOME}/dot-files" && git commit -a -m"Autocommit from $(hostname): $(git status -s)" && git pull && git push
+10 8,12,17 * * * cd "${HOME}/dot-files" && git pullme && git update && ./setup-home.sh >/dev/null 2>&1

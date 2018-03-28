@@ -49,9 +49,14 @@ else
 	echo "No dot-files file found, not linking anything..."
 fi
 
-if [ -e "${HOME}/etc/passwd.github" ]; then
+if [ -e "${HOME}/etc/git.passwds" ]; then
 	GIT_CREDS="${HOME}/.git-credentials"
 	rm "${GIT_CREDS}" 2>/dev/null || true
-	echo "https://oliverhulett:$(sed -ne '1p' "${HOME}/etc/passwd.github")@github.com" >>"${GIT_CREDS}"
+	for f in "${HOME}/etc/git.passwds/"*; do
+		b="$(basename -- "$f")"
+		user="${b%%:*}"
+		addr="${b#*:}"
+		echo "https://${user}:$(sed -ne '1p' "$b")@${addr}" >>"${GIT_CREDS}"
+	done
 	chmod 0600 "${GIT_CREDS}"
 fi
