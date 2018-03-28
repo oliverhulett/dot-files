@@ -1,7 +1,8 @@
 # shellcheck shell=bash
 ## Useful git environment setup.
 
-for f in "/etc/bash_completion.d/git-prompt" \
+for f in "/etc/bash_completion.d/git-completion.bash" \
+		 "/usr/local/etc/bash_completion.d/git-completion.bash" \
 		 "/usr/share/git-core/contrib/completion/git-completion.bash" \
 		 "${HOME}/etc/git-completion.bash"; do
 	if [ -e "$f" ]; then
@@ -10,6 +11,8 @@ for f in "/etc/bash_completion.d/git-prompt" \
 	fi
 done
 for f in "/etc/bash_completion.d/git-prompt" \
+		 "/etc/bash_completion.d/git-prompt.sh" \
+		 "/usr/local/etc/bash_completion.d/git-prompt.sh" \
 		 "/usr/share/git-core/contrib/completion/git-prompt.sh" \
 		 "${HOME}/etc/git-prompt.sh"; do
 	if [ -e "$f" ]; then

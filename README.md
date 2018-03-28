@@ -14,7 +14,7 @@ $ BREWINSTALLER=$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/
     ruby -e "$BREWINSTALLER" || echo "Failed to install brew :("
 $ brew update
 $ brew tap homebrew/dupes
-$ brew install --with-default-names gnu-getopt gnu-indent gnu-sed gnu-tar gnutls gnu-time gnu-which grep gawk
+$ brew install --with-default-names gnu-getopt gnu-indent gnu-sed gnu-tar gnutls gnu-time gnu-which grep gawk bash-completion
 $ brew link --force gnu-getopt
 ```
 
