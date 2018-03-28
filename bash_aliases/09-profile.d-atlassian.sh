@@ -6,7 +6,7 @@ export JAVA_HOME="$(/usr/libexec/java_home -v 1.8)"
 export NVM_DIR="${HOME}/.nvm"
 source "$(brew --prefix nvm)/nvm.sh"
 
-export ATLASSIAN_SCRIPTS="${HOME}/src/atlassian-scripts"
+export ATLASSIAN_SCRIPTS="${HOME}/src/atlassian/atlassian-scripts"
 if [ -d "${ATLASSIAN_SCRIPTS}" ]; then
 	source "${ATLASSIAN_SCRIPTS}/sourceme.sh"
 fi
