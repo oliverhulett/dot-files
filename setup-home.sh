@@ -54,9 +54,9 @@ if [ -e "${HOME}/etc/git.passwds" ]; then
 	rm "${GIT_CREDS}" 2>/dev/null || true
 	for f in "${HOME}/etc/git.passwds/"*; do
 		b="$(basename -- "$f")"
-		user="${b%%:*}"
-		addr="${b#*:}"
-		echo "https://${user}:$(sed -ne '1p' "$b")@${addr}" >>"${GIT_CREDS}"
+		user="${b%%@*}"
+		addr="${b#*@}"
+		echo "https://${user}:$(sed -ne '1p' "$f")@${addr}" >>"${GIT_CREDS}"
 	done
 	chmod 0600 "${GIT_CREDS}"
 fi

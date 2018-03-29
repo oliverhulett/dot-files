@@ -1,5 +1,10 @@
 # vim:filetype=gitconfig
 
+[alias]
+gup = smart-pull
+gm = smart-merge
+gl = smart-log
+
 [user]
 name = Oliver Hulett
 email = ohulett@atlassian.com

@@ -1,11 +1,11 @@
 ## This master file for this crontab is part of this user's ~/dot-files repository.
 ## Edit that file always and then run ~/dot-files/setup-home.sh to install it.
 ## Never use `crontab -e` or your changes may be overwritten.
-HOME=/home/ols
+HOME=/Users/ohulett
 SHELL=/bin/bash
-PATH=/home/ols/dot-files/bin:/usr/local/bin:/usr/bin:/bin
+PATH=/Users/ohulett/dot-files/bin:/usr/local/bin:/usr/bin:/bin
 
 * * * * * env >"${HOME}/.crontab.env"
 
-0 8,12,17 * * * cd "${HOME}/dot-files" && git commit -a -m"Autocommit from $(hostname): $(git status -s)" && git pull && git push
-10 8,12,17 * * * cd "${HOME}/dot-files" && git pullme && git update && ./setup-home.sh >/dev/null 2>&1
+0 8,10,13,17 * * * cd "${HOME}/dot-files" && git commit -a -m"Autocommit from $(hostname): $(git status -s)" && git pull && git push
+10 8,10,13,17 * * * cd "${HOME}/dot-files" && git pullme && git update && ./setup-home.sh >/dev/null 2>&1
