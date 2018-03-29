@@ -27,40 +27,64 @@ function lsl
 }
 alias ls='lss '
 
-if uname -s | command grep -q 'MINGW' >/dev/null 2>&1 ; then
-	alias cp='cp --preserve'
-else
-	alias cp='cp --preserve=all'
-fi
+case "$(uname -s)" in
+	'*MINGW*' )
+		alias cp='cp --preserve'
+		;;
+	'*' )
+		alias cp='cp --preserve=all'
+		;;
+esac
+
 alias sudo='sudo -E'
 alias mount='mount -l'
 alias sdiff='sdiff --strip-trailing-cr -bB'
 alias diff='diff -wB'
-alias time='/usr/bin/time'
+case "$(uname -s)" in
+	'Darwin' )
+		alias time='/usr/local/bin/time'
+		;;
+	'*' )
+		alias time='/usr/bin/time'
+		;;
+esac
 alias chmod='chmod -c'
 alias eject='eject -T'
 alias file='file -krz'
-alias top='top -c'
+case "$(uname -s)" in
+	'Darwin' )
+		alias top='top -o cpu'
+		;;
+	'*' )
+		alias top='top -c'
+		;;
+esac
 export LESS='-RFXiMx4'
 alias less="less ${LESS}"
 
-if uname -s | command grep -q 'MINGW' >/dev/null 2>&1 ; then
-	alias ifconfig='ipconfig'
-else
-	alias ifconfig='sudo /sbin/ifconfig'
-fi
+case "$(uname -s)" in
+	'*MINGW*' )
+		alias ifconfig='ipconfig'
+		;;
+	'*' )
+		alias ifconfig='sudo /sbin/ifconfig'
+		;;
+esac
 
 GREP_ARGS=
 GREP_ARGS_NC=
-if uname -s | command grep -q 'MINGW' >/dev/null 2>&1 ; then
-	# MINGW's version of grep doesn't support --exclude or --color.
-	# There may be a better test, version for example.
-	GREP_ARGS=
-	GREP_ARGS_NC=
-else
-	GREP_ARGS="--exclude='.svn' --exclude='.git' --color=always"
-	GREP_ARGS_NC="--exclude='.svn' --exclude='.git' --color=never"
-fi
+case "$(uname -s)" in
+	'*MINGW*' )
+		# MINGW's version of grep doesn't support --exclude or --color.
+		# There may be a better test, version for example.
+		GREP_ARGS=
+		GREP_ARGS_NC=
+		;;
+	'*' )
+		GREP_ARGS="--exclude='.svn' --exclude='.git' --color=always"
+		GREP_ARGS_NC="--exclude='.svn' --exclude='.git' --color=never"
+		;;
+esac
 alias grep="command grep ${GREP_ARGS} -nT"
 alias ngrep="command grep ${GREP_ARGS_NC}"
 
