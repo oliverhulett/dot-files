@@ -27,34 +27,35 @@ function lsl
 }
 alias ls='lss '
 
-function per_os_alias()
+function per_os()
 {
-	set -x
-	OPTS=$(getopt -o "w:d:m:l:" --long "windows:,windoze:,mac:,darwin:,linux:" -n "per_os_alias" -- "$@")
+	OPTS=$(getopt -o "w:d:m:l:" --long "windows:,windoze:,mac:,darwin:,linux:" -n "per_os" -- "$@")
 	es=$?
 	if [ $es != 0 ]; then
-		echo 'per_os [-wmdl] [--windoze=] [--windows] [--mac=] [--darwin=] [--linux=] <default>'
+		echo >&2 'per_os [-wmdl] [--windoze=] [--windows] [--mac=] [--darwin=] [--linux=] <default>'
 		return $es
 	fi
 	eval set -- "${OPTS}"
-	local ALIAS=
 	while true; do
 		case "$1" in
 			-w | --windows | --windoze )
 				if [ "$(uname -s)" == 'MINGW' ]; then
-					ALIAS="$2"
+					echo "$2"
+					return
 				fi
 				shift 2
 				;;
 			-d | -m | --mac | --darwin )
 				if [ "$(uname -s)" == 'Darwin' ]; then
-					ALIAS="$2"
+					echo "$2"
+					return
 				fi
 				shift 2
 				;;
 			-l | --linux )
 				if [ "$(uname -s)" == 'Linux' ]; then
-					ALIAS="$2"
+					echo "$2"
+					return
 				fi
 				shift 2
 				;;
@@ -67,28 +68,23 @@ function per_os_alias()
 				;;
 		esac
 	done
-	if [ -n "${ALIAS}" ]; then
-		alias "$1"="${ALIAS}"
-	else
-		alias "$1"="$2"
-	fi
-	set +x
+	echo "$1"
 }
 
-per_os_alias cp -w "cp --preserve" "cp --preserve=all"
+alias cp="$(per_os -w "cp --preserve" "cp --preserve=all")"
 alias sudo='sudo -E'
 alias mount='mount -l'
 alias sdiff='sdiff --strip-trailing-cr -bB'
 alias diff='diff -wB'
-per_os_alias time -m "/usr/local/bin/time" "/usr/bin/time"
+alias time="$(per_os -m "/usr/local/bin/time" "/usr/bin/time")"
 alias chmod='chmod -c'
 alias eject='eject -T'
 alias file='file -krz'
-per_os_alias top -m "top -o cpu" "top -c"
+alias top="$(per_os -m "top -o cpu" "top -c")"
 export LESS='-RFXiMx4'
 alias less="less ${LESS}"
 
-per_os_alias ifconfig -w "ipconfig" "sudo /sbin/ifconfig"
+alias ifconfig="$(per_os -w "ipconfig" "sudo /sbin/ifconfig")"
 
 GREP_ARGS=
 GREP_ARGS_NC=
