@@ -27,49 +27,68 @@ function lsl
 }
 alias ls='lss '
 
-case "$(uname -s)" in
-	'*MINGW*' )
-		alias cp='cp --preserve'
-		;;
-	'*' )
-		alias cp='cp --preserve=all'
-		;;
-esac
+function per_os_alias()
+{
+	set -x
+	OPTS=$(getopt -o "w:d:m:l:" --long "windows:,windoze:,mac:,darwin:,linux:" -n "per_os_alias" -- "$@")
+	es=$?
+	if [ $es != 0 ]; then
+		echo 'per_os [-wmdl] [--windoze=] [--windows] [--mac=] [--darwin=] [--linux=] <default>'
+		return $es
+	fi
+	eval set -- "${OPTS}"
+	local ALIAS=
+	while true; do
+		case "$1" in
+			-w | --windows | --windoze )
+				if [ "$(uname -s)" == 'MINGW' ]; then
+					ALIAS="$2"
+				fi
+				shift 2
+				;;
+			-d | -m | --mac | --darwin )
+				if [ "$(uname -s)" == 'Darwin' ]; then
+					ALIAS="$2"
+				fi
+				shift 2
+				;;
+			-l | --linux )
+				if [ "$(uname -s)" == 'Linux' ]; then
+					ALIAS="$2"
+				fi
+				shift 2
+				;;
+			'--' )
+				shift
+				break
+				;;
+			* )
+				break
+				;;
+		esac
+	done
+	if [ -n "${ALIAS}" ]; then
+		alias "$1"="${ALIAS}"
+	else
+		alias "$1"="$2"
+	fi
+	set +x
+}
 
+per_os_alias cp -w "cp --preserve" "cp --preserve=all"
 alias sudo='sudo -E'
 alias mount='mount -l'
 alias sdiff='sdiff --strip-trailing-cr -bB'
 alias diff='diff -wB'
-case "$(uname -s)" in
-	'Darwin' )
-		alias time='/usr/local/bin/time'
-		;;
-	'*' )
-		alias time='/usr/bin/time'
-		;;
-esac
+per_os_alias time -m "/usr/local/bin/time" "/usr/bin/time"
 alias chmod='chmod -c'
 alias eject='eject -T'
 alias file='file -krz'
-case "$(uname -s)" in
-	'Darwin' )
-		alias top='top -o cpu'
-		;;
-	'*' )
-		alias top='top -c'
-		;;
-esac
+per_os_alias top -m "top -o cpu" "top -c"
 export LESS='-RFXiMx4'
 alias less="less ${LESS}"
 
-case "$(uname -s)" in
-	'*MINGW*' )
-		alias ifconfig='ipconfig'
-		;;
-	'*' )
-		alias ifconfig='sudo /sbin/ifconfig'
-		;;
-esac
+per_os_alias ifconfig -w "ipconfig" "sudo /sbin/ifconfig"
 
 GREP_ARGS=
 GREP_ARGS_NC=
