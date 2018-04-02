@@ -201,14 +201,14 @@ function _prompt_command()
 		if ! grep -qwE "$(sed -re 's/^\^?/^/' ${HOME}/.interactive_commands 2>/dev/null | paste -sd'|' -)" <(echo "$@") >/dev/null 2>/dev/null; then
 			PROMPT_TIMER='['
 			if [ ${_timer_show} -ge 3600 ]; then
-				PROMPT_TIMER="${PROMPT_TIMER}$((_timer_show / 3600))h"
+				PROMPT_TIMER="${PROMPT_TIMER}$((_timer_show / 3600))h "
 				_timer_show=$((_timer_show % 3600))
 				if [ ${_timer_show} -lt 60 ]; then
-					PROMPT_TIMER="${PROMPT_TIMER}0m"
+					PROMPT_TIMER="${PROMPT_TIMER}0m "
 				fi
 			fi
 			if [ ${_timer_show} -ge 60 ]; then
-				PROMPT_TIMER="${PROMPT_TIMER}$((_timer_show / 60))m"
+				PROMPT_TIMER="${PROMPT_TIMER}$((_timer_show / 60))m "
 				_timer_show=$((_timer_show % 60))
 			fi
 			PROMPT_TIMER="${PROMPT_TIMER}${_timer_show}s"'] '
