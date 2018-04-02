@@ -111,7 +111,7 @@ function _install_trap()
 		builtin trap "_fire $sig" $sig
 		es=$?
 	fi
-	log "Installed trap: Signal=$sig StackIdx=$cnt TrapName=$NAME Spec="'"'"$spec"'"'
+	dotlog "Installed trap: Signal=$sig StackIdx=$cnt TrapName=$NAME Spec="'"'"$spec"'"'
 	return $es
 }
 
@@ -125,7 +125,7 @@ function _fire()
 	local ref='echo "${'"${stack}"'[$idx]}"'
 	for (( idx=0 ; idx < $(_stack_size "${stack}") ; idx += 1 )); do
 		local spec="$(eval $ref)"
-		log "Firing trap: Signal=$sig StackIdx=$idx TrapName=$stack Spec="'"'"$spec"'"'
+		dotlog "Firing trap: Signal=$sig StackIdx=$idx TrapName=$stack Spec="'"'"$spec"'"'
 		( return $_last_exit_status )
 		eval "${spec:-:}"
 	done

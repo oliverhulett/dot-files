@@ -3,5 +3,5 @@
 if [ -e "${HOME}/.local/bin" ]; then
 	# shellcheck disable=SC1090
 	source "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/../bash_common.sh"
-	PATH="$(prepend_path "${HOME}/.local/bin")"
+	PATH="$(prepend_path "${PATH}" "${HOME}/.local/bin")"
 fi

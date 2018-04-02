@@ -11,7 +11,7 @@
 
 export PATH="${PATH:-/bin:/usr/bin}"
 source "${HOME}/dot-files/bash_common.sh"
-export PATH="$(append_path "/bin" "/usr/bin")"
+export PATH="$(append_path "${PATH}" "/usr/local/bin" "/usr/bin" "/bin")"
 if reentered "${HOME}/.profile"; then
 	return 0
 fi

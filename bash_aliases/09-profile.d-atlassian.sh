@@ -14,3 +14,5 @@ fi
 if [ -e "${HOME}/.sdmake/complete/sdmake.completion.bash" ]; then
 	source "${HOME}/.sdmake/complete/sdmake.completion.bash"
 fi
+
+export PATH="$(append_path "${PATH}" $(echo "${PATH}" | sed -re 's/:/ /g'))"

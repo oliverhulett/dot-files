@@ -4,8 +4,10 @@
 # shellcheck disable=SC2016,SC2015
 
 _hidex='_setx=n; [[ $- == *x* ]] && _setx=y; set +x;'
+_hidex=
 eval "${_hidex}"
 _restorex='[ ${_setx:-n} == y ] && set -x; unset _setx;'
+_restorex=
 
 # Alias gnu utils installed on the mac with homebrew to their usual names.
 ## Do we need to detect mac-ness?
@@ -22,13 +24,12 @@ rm '/usr/local/bin/[' 2>/dev/null
 export DEBUG_BASHRC="${DEBUG_BASHRC:-*}"
 function source()
 {
-	log "${DEBUG_BASHRC} - source $*"
+	dotlog "${DEBUG_BASHRC} - source $*"
 	DEBUG_BASHRC="${DEBUG_BASHRC}"'*'
 	builtin source "$@"
 	es=$?
 	DEBUG_BASHRC="${DEBUG_BASHRC%\*}"
-	log "${DEBUG_BASHRC} - ~source $*"
-	return $es
+	dotlog "${DEBUG_BASHRC} - ~source $*"
 }
 
 function _reentrance_hash()
@@ -56,7 +57,7 @@ function reentrance_check()
 		unset var guard name FILE
 		return 1
 	else
-		log "${DEBUG_BASHRC} - re-entered ${name}"
+		dotlog "${DEBUG_BASHRC} - re-entered ${name}"
 		unset var guard name FILE
 		return 0
 	fi
@@ -75,7 +76,7 @@ function _logfile()
 	echo "${LOGFILE}"
 }
 
-function log()
+function dotlog()
 {
 	echo "$(date '+%H:%M:%S.%N') [$$] [$(basename -- "$0")] [LOG   ] $*" >>"$(_logfile)"
 }
@@ -84,43 +85,49 @@ builtin source "$(dirname "$(readlink -f "${BASH_SOURCE}")")/trap_stack.sh"
 
 function _echo_clean_path()
 {
-	echo "$PATH" | sed -re 's/^://;s/::+/:/g;s/:$//'
+	echo "$@" | sed -re 's/^://;s/::+/:/g;s/:$//'
 }
 
 function rm_path()
 {
+	local p="$1"
+	shift
 	for d in "$@"; do
 		d="$(cd "$d" 2>/dev/null && pwd || echo "${d%%/}" | sed -re 's!/+!/!g')"
 		if [ -n "$d" ]; then
-			PATH="$(echo "${PATH}" | sed -re 's!(^|:)'"$d"'/?(:|$)!\1!g')"
+			p="$(echo "$p" | sed -re 's!(^|:)'"$d"'/?(:|$)!\1!g')"
 		fi
 	done
 	unset d
-	_echo_clean_path
+	_echo_clean_path "$p"
 }
 
 function prepend_path()
 {
+	local p="$1"
+	shift
 	for d in "$@"; do
 		d="$(cd "$d" 2>/dev/null && pwd || echo "${d%%/}" | sed -re 's!/+!/!g')"
 		if [ -n "$d" ]; then
-			PATH="$d:$(echo "${PATH}" | sed -re 's!(^|:)'"$d"'/?(:|$)!\1!g')"
+			p="$d:$(echo "$p" | sed -re 's!(^|:)'"$d"'/?(:|$)!\1!g')"
 		fi
 	done
 	unset d
-	_echo_clean_path
+	_echo_clean_path "$p"
 }
 
 function append_path()
 {
+	local p="$1"
+	shift
 	for d in "$@"; do
 		d="$(cd "$d" 2>/dev/null && pwd || echo "${d%%/}" | sed -re 's!/+!/!g')"
 		if [ -n "$d" ]; then
-			PATH="$(echo "${PATH}" | sed -re 's!(^|:)'"$d"'/?(:|$)!\2!g'):$d"
+			p="$(echo "$p" | sed -re 's!(^|:)'"$d"'/?(:|$)!\2!g'):$d"
 		fi
 	done
 	unset d
-	_echo_clean_path
+	_echo_clean_path "$p"
 }
 
 function callstack()
@@ -182,7 +189,7 @@ _redirect='{
 		else
 			_orig_stderr="/dev/tty";
 		fi;
-		#builtin trap "log \$ \$BASH_COMMAND" DEBUG;
+		#builtin trap "dotlog \$ \$BASH_COMMAND" DEBUG;
 		exec > >(_tee_totaler "$$" "$(basename -- "$0")" STDOUT 2>/dev/null);
 		exec 2> >(_tee_totaler "$$" "$(basename -- "$0")" STDERR >&2);
 		_redirected="true";

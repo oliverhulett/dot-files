@@ -7,7 +7,7 @@
 
 export PATH="${PATH:-/usr/local/bin:/usr/bin:/bin}"
 source "${HOME}/dot-files/bash_common.sh"
-export PATH="$(append_path "/bin" "/usr/bin")"
+export PATH="$(append_path "${PATH}" "/usr/local/bin" "/usr/bin" "/bin")"
 if reentered "${HOME}/.bashrc" "${HOME}/.bash_aliases"/*; then
 	return 0
 fi
@@ -40,7 +40,7 @@ function vim()
 	fi
 	command vim "${VUNDLE_UPDATE_CMDS[@]}" "$@"
 	es=$?
-	log "Command=vim Seconds=$((SECONDS - _timer)) Returned=$es CWD=$(pwd) Files={$*}"
+	dotlog "Command=vim Seconds=$((SECONDS - _timer)) Returned=$es CWD=$(pwd) Files={$*}"
 	return $es
 }
 alias edt=vim
@@ -58,13 +58,13 @@ function set_local_paths()
 	done
 	unset p
 	if [ -d "${HOME}/bin" ]; then
-		export PATH="$(prepend_path "${HOME}/bin")"
+		export PATH="$(prepend_path "${PATH}" "${HOME}/bin")"
 	fi
 	if [ -d "$HOME/sbin" ]; then
-		export PATH="$(prepend_path "${HOME}/sbin")"
+		export PATH="$(prepend_path "${PATH}" "${HOME}/sbin")"
 	fi
-	export PATH="$(prepend_path "${HOME}/dot-files/bin")"
-	export PATH="$(append_path /usr/local/sbin /usr/sbin /sbin)"
+	export PATH="$(prepend_path "${PATH}" "${HOME}/dot-files/bin")"
+	export PATH="$(append_path "${PATH}" /usr/local/sbin /usr/sbin /sbin)"
 	shopt -u nullglob
 }
 
