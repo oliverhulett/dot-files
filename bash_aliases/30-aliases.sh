@@ -95,8 +95,8 @@ alias umount='sudo umount'
 export LESS='-RFXiMx4'
 alias less="less ${LESS}"
 
-GREP_ARGS="$(per_os -w "" -- "--exclude='.svn' --exclude='.git' --color=always")"
-GREP_ARGS_NC="$(per_os -w "" -- "--exclude='.svn' --exclude='.git' --color=never")"
+GREP_ARGS="$(per_os -w "" -- "--exclude-dir='.svn' --exclude-dir='.git' --color=always")"
+GREP_ARGS_NC="$(per_os -w "" -- "--exclude-dir='.svn' --exclude-dir='.git' --color=never")"
 alias grep="command grep ${GREP_ARGS} -nT"
 alias ngrep="command grep ${GREP_ARGS_NC}"
 
