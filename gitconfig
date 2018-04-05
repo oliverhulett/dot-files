@@ -23,7 +23,7 @@ mine = "!f() { : git for-each-ref; git branch -vv; git for-each-ref --sort=-comm
 mkbranch = "!f() { ~/.git_wrappers/mkbranch.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 mvbranch = "!f() { : git checkout ; git branch -m \"$1\" \"$2\" && git push origin :\"$1\" && git push --set-upstream origin \"$2\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 new = "!f() { ~/.git_wrappers/new.sh \"$@\"; }; cd \"$GIT_PREFIX\" && f"
-pullme = "!f() { : git pull; git fetch --all; git pull --prune \"$@\"; git update; git cleanbranches; }; f" ## Want to execute from top level, not GIT_PREFIX
+pullme = "!f() { : git pull; git fetch --all; git pull --force --prune \"$@\"; git update; git cleanbranches; }; f" ## Want to execute from top level, not GIT_PREFIX
 pushtags = push --tags
 refs = for-each-ref refs/remotes/origin
 remotes = remote -v

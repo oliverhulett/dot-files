@@ -10,5 +10,5 @@ PATH=/home/ols/dot-files/bin:/usr/local/bin:/usr/bin:/bin
 * * * * * for i in /dev/disk/by-label/*; do echo $i; ls -l /media/$(basename $i); done >/dev/null 2>&1
 * * * * * env >"${HOME}/.crontab.env"
 
-0 */6 * * * cd "${HOME}/dot-files" && git commit -a -m"Autocommit from $(hostname): $(git status -s)" && git pull && git push
-10 */6 * * * cd "${HOME}/dot-files" && git pullme && git update && ./setup-home.sh
+0 */6 * * * cd "${HOME}/dot-files" && chronic sh -c 'git commit -a -m"Autocommit from $(hostname): $(git status -s)" && git pull && git push'
+10 */6 * * * cd "${HOME}/dot-files" && chronic sh -c 'git pullme && git update && ./setup-home.sh'

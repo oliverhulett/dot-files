@@ -71,51 +71,34 @@ function per_os()
 	echo "$1"
 }
 
-alias cp="$(per_os -w "cp --preserve" "cp --preserve=all")"
-alias sudo='sudo -E'
-alias mount='mount -l'
-alias sdiff='sdiff --strip-trailing-cr -bB'
-alias diff='diff -wB'
-alias time="$(per_os -m "/usr/local/bin/time" "/usr/bin/time")"
 alias chmod='chmod -c'
+alias chronic='chronic.sh'
+alias cp="$(per_os -w "cp --preserve" "cp --preserve=all")"
+alias diff='diff -wB'
 alias eject='eject -T'
 alias file='file -krz'
+alias fuser='sudo fuser -vau'
+alias ifconfig="$(per_os -w "ipconfig" "sudo /sbin/ifconfig")"
+alias iotop='sudo iotop'
+alias mount='mount -l'
+alias nethogs='sudo nethogs'
+alias rsync-a='rsync -zvvpPAXrogthlm'
+alias rsync-ca='rsync -zvvpPAXrogthlcm'
+alias sdiff='sdiff --strip-trailing-cr -bB'
+alias sudo='sudo -E'
+alias sursync-a='sudo rsync -zvvpPAXrogthlm'
+alias sursync-ca='sudo rsync -zvvpPAXrogthlcm'
+alias time="$(per_os -m "/usr/local/bin/time" "/usr/bin/time")"
 alias top="$(per_os -m "top -o cpu" "top -c")"
+alias umount='sudo umount'
+
 export LESS='-RFXiMx4'
 alias less="less ${LESS}"
 
-alias ifconfig="$(per_os -w "ipconfig" "sudo /sbin/ifconfig")"
-
-GREP_ARGS=
-GREP_ARGS_NC=
-case "$(uname -s)" in
-	'*MINGW*' )
-		# MINGW's version of grep doesn't support --exclude or --color.
-		# There may be a better test, version for example.
-		GREP_ARGS=
-		GREP_ARGS_NC=
-		;;
-	'*' )
-		GREP_ARGS="--exclude='.svn' --exclude='.git' --color=always"
-		GREP_ARGS_NC="--exclude='.svn' --exclude='.git' --color=never"
-		;;
-esac
+GREP_ARGS="$(per_os -w "" -- "--exclude='.svn' --exclude='.git' --color=always")"
+GREP_ARGS_NC="$(per_os -w "" -- "--exclude='.svn' --exclude='.git' --color=never")"
 alias grep="command grep ${GREP_ARGS} -nT"
 alias ngrep="command grep ${GREP_ARGS_NC}"
-
-alias rsync-a='rsync -zvvpPAXrogthlm'
-alias sursync-a='sudo rsync -zvvpPAXrogthlm'
-alias rsync-ca='rsync -zvvpPAXrogthlcm'
-alias sursync-ca='sudo rsync -zvvpPAXrogthlcm'
-
-alias iotop='sudo iotop'
-alias nethogs='sudo nethogs'
-
-alias umount='sudo umount'
-
-alias fuser='sudo fuser -vau'
-
-alias service='sudo service'
 
 alias poweroff='sudo shutdown -hP'
 alias powerdown='sudo shutdown -hP'

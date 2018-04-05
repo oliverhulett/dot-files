@@ -6,7 +6,6 @@ bash_aliases/19-env-svn.sh .bash_aliases/19-env-svn.sh
 bash_aliases/20-completion.sh .bash_aliases/20-completion.sh
 bash_aliases/29-completion-pyinvoke.sh .bash_aliases/29-completion-pyinvoke.sh
 bash_aliases/30-aliases.sh .bash_aliases/30-aliases.sh
-bash_aliases/39-aliases-chronic.sh .bash_aliases/39-aliases-chronic.sh
 bash_aliases/39-aliases-emptydir.sh .bash_aliases/39-aliases-emptydir.sh
 bash_aliases/39-aliases-find.sh .bash_aliases/39-aliases-find.sh
 bash_aliases/39-aliases-json.sh .bash_aliases/39-aliases-json.sh

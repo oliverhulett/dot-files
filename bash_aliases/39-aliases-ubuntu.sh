@@ -1,11 +1,11 @@
 # shellcheck shell=bash
 # Ubuntu specific things.
 
-alias service='sudo service'
-alias aptitude='sudo aptitude -vPDZW'
-alias xapt='sudo xapt --keep-cache'
-alias apt-file='sudo apt-file -x'
 alias apt-cache='sudo apt-cache'
+alias apt-file='sudo apt-file -x'
+alias aptitude='sudo aptitude -vPDZW'
+alias service='sudo service'
+alias xapt='sudo xapt --keep-cache'
 
 function apt-get-keys()
 {
