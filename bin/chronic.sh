@@ -8,5 +8,10 @@ tmp="$(mktemp)" || return
 trap 'rm -f "$tmp"' EXIT
 "$@" > "$tmp" 2>&1
 ret=$?
-[ "$ret" -eq 0 ] || command cat "$tmp"
+if [ "$ret" -ne 0 ]; then
+	command cat "$tmp"
+	echo
+	echo "Exiting: $*"
+	echo "Exit code: $ret"
+fi
 exit $ret

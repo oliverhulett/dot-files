@@ -6,12 +6,9 @@ SHELL=/bin/bash
 PATH=/Users/ohulett/dot-files/bin:/usr/local/bin:/usr/bin:/bin
 
 * * * * * env >"${HOME}/.crontab.env"
-# Can still do this better:
-#  - We want to commit every hour.
-#  - If there are no changes in the last hour, but there are unpushed changes, we should push.
-#  - We should still pull every hour (and update)
-#  - We should run the tests (or just the validations?) before running setup-home.sh (Do we trust the tests enough to do this?  I don't run thgem often and have no visibility over them, if I were to get mailed by the cron system that they're failing I might trust them more because I know they're being run regularly.)
-#  - Do we make the tests part of setup-home.sh? no, because the tests use that script (which is midly dodgy?)
-#  - If we only run setup-home.sh when we've pulled changes (or made them locally) we can run the tests first without too much overhead.
+
+@daily docker container prune -f
+@weekly sleep 1 && docker image prune -af
+
 0 8,10,13,17 * * * cd "${HOME}/dot-files" && chronic.sh sh -c 'git commit -a -m"Autocommit from $(hostname): $(git status -s)" && git pull && git push'
 10 8,10,13,17 * * * cd "${HOME}/dot-files" && chronic.sh sh -c 'git pullme && git update && ./setup-home.sh'
