@@ -60,7 +60,6 @@ This is just a random assortment of TODO thoughts.  For more detailed TODOs, see
     * Add a command to rebase all from master.
     * Update git-which to work with git-bin.
     * Fix following two things also, with tests.
-* Git pull with sync-other-remote.  Pull does a merge that has conflicts as it replays sync-other-remote commits.  Is the answer just to push first?  So we should push from the sync-other-remote script?
 * I had an idea about creating git feature branches...  Create a todo/task list for the feature branch that gets turned into changelog details.  Wrap feature branch creation and merging to create todo/task list and merge into changelog.  Basically enforce/helpers for git workflow built into the branch/merge commands.
 
 * Plan vim plugin.  Stand alone project (make a new one)

@@ -1,5 +1,4 @@
 #!/bin/bash
-set -x
 
 if command which --skip-aliases --skip-functions chronic >/dev/null 2>/dev/null; then
 	exec chronic "$@"
