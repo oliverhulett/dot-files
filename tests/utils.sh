@@ -96,7 +96,7 @@ function teardown()
 }
 
 # Mechanism for registering clean-up functions
-declare -ga _TEARDOWN_FNS
+declare -xa _TEARDOWN_FNS
 function register_teardown_fn()
 {
 	_TEARDOWN_FNS[${#_TEARDOWN_FNS[@]}]="$*"
@@ -112,11 +112,11 @@ function fire_teardown_fns()
 
 # Skip the test if the program under test doesn't exist
 # TODO:  What about aliases and functions?  May need to rename some things and re-work some messages.
+declare -x FUT_PATH
 function assert_fut()
 {
 	_check_caller_is_test assert_fut || return $?
 	if [ -n "${FUT}" ]; then
-		declare -g FUT_PATH
 		FUT_PATH="${DOTFILES}/$(cd "${DOTFILES}" && git ls-files -- "${FUT}")"
 		if [ ! -f "${FUT_PATH}" ]; then
 			skip "Failed to find file under test"
@@ -124,12 +124,13 @@ function assert_fut()
 		fi
 	fi
 }
+declare -x EXE
 function assert_fut_exe()
 {
 	_check_caller_is_test assert_fut_exe || return $?
 	if [ -n "${FUT}" ]; then
 		assert_fut || return $?
-		declare -g EXE="${FUT_PATH}"
+		EXE="${FUT_PATH}"
 		if [ ! -x "${EXE}" ]; then
 			local shebang
 			shebang="$(head -n1 "${EXE}")"
@@ -209,10 +210,11 @@ function scoped_mktemp()
 }
 
 # Set ${HOME} to a blank temporary directory in-case tests want to mutate it.
+declare -x _ORIG_HOME
 function new_blank_home()
 {
 	_check_caller_is_test new_blank_home || return $?
-	declare -g _ORIG_HOME="${HOME}"
+	_ORIG_HOME="${HOME}"
 	local tmphome
 	tmphome="$(temp_make --prefix="home")"
 	if [ -z "$tmphome" ] || [ "$tmphome" == "$HOME" ]; then
@@ -324,13 +326,13 @@ function assert_all_lines()
 }
 
 ## TODO:  These are generally useful, we should move them somewhere common and not test related.
-declare -ga _SET_LIST
+declare -xa _SET_LIST
 function _set()
 {
 	for a in "$@"; do
 		for (( i=1; i<${#a}; i++ )); do
 			v="${a:$i:1}"
-			eval "declare -g _set${v}=+${v}"
+			eval "declare -x _set${v}=+${v}"
 			[[ $- == *${v}* ]] && eval "_set${v}=-${v}"
 			_SET_LIST=( ${_SET_LIST[@]/$v} )
 			_SET_LIST[${#_SET_LIST[@]}]="$v"

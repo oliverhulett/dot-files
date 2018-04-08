@@ -1,11 +1,12 @@
+.+\|\s*less *$
 bash
 crontab -e
 dash
 dotlogs
 edt
 git diff
-git lg -a
 git lg --all
+git lg -a
 git log
 git new
 git resolve
@@ -19,12 +20,11 @@ man
 more
 nano
 sh
-.+\|\s*less *$
 sqlite3
 ssh
 sudo -e
-sudoedit
 sudo su
+sudoedit
 top
 vim
 watch

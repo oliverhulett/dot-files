@@ -169,5 +169,6 @@ if [ "${TAP}" == "true" ]; then
 			$tests = " test";
 		}
 		print "Ran " . $cnt . $tests . ": " . $success . " succeeded; " . $skip . " skipped; " . $failure . " failed.\n";
+		exit $failure
 	'
 fi

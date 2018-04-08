@@ -1,6 +1,8 @@
+# shellcheck shell=bash
 # Things for the mac.
 # N.B.  The craziness with the gnu-utils in /usr/local/bin is covered by the ordering of path in ~/.bashrc
 # and some symlink magic in bash_common.sh, because it needs to happen very very early.
+# shellcheck disable=SC2155,SC1090
 
 export JAVA_HOME="$(/usr/libexec/java_home -v 1.8)"
 export NVM_DIR="${HOME}/.nvm"

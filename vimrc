@@ -14,6 +14,7 @@ try
 
 	Plugin 'ConradIrwin/vim-bracketed-paste'
 	Plugin 'altercation/vim-colors-solarized'
+	Plugin 'djoshea/vim-autoread'
 	Plugin 'godlygeek/tabular'
 	Plugin 'kawaz/batscheck.vim'
 	Plugin 'lifepillar/vim-cheat40'

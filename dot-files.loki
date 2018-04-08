@@ -1,7 +1,7 @@
 bash_aliases/09-profile.d-insync_headless.sh .bash_aliases/09-profile.d-insync_headless.sh
 bash_aliases/09-profile.d-makeflags.home.sh .bash_aliases/09-profile.d-makeflags.sh
-bash_aliases/28-completion-docker_compose.sh .bash_aliases/28-completion-docker_compose.sh
 bash_aliases/28-completion-docker.sh .bash_aliases/28-completion-docker.sh
+bash_aliases/28-completion-docker_compose.sh .bash_aliases/28-completion-docker_compose.sh
 bash_aliases/39-aliases-insync_trash.sh .bash_aliases/39-aliases-insync_trash.sh
 bash_aliases/39-aliases-kodi.sh .bash_aliases/39-aliases-kodi.sh
 bash_aliases/39-aliases-loki.sh .bash_aliases/39-aliases-loki.sh

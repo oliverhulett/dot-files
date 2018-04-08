@@ -10,5 +10,4 @@ PATH=/Users/ohulett/dot-files/bin:/usr/local/bin:/usr/bin:/bin
 @daily docker container prune -f
 @weekly sleep 1 && docker image prune -af
 
-0 8,10,13,17 * * * cd "${HOME}/dot-files" && chronic.sh sh -c 'git commit -a -m"Autocommit from $(hostname): $(git status -s)" && git pull && git push'
-10 8,10,13,17 * * * cd "${HOME}/dot-files" && chronic.sh sh -c 'git pullme && git update && ./setup-home.sh'
+@hourly chronic.sh "${HOME}/dot-files/autocommit.sh"

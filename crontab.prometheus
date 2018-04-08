@@ -7,5 +7,4 @@ PATH=/home/ols/dot-files/bin:/usr/local/bin:/usr/bin:/bin
 
 * * * * * env >"${HOME}/.crontab.env"
 
-0 * * * * cd "${HOME}/dot-files" && chronic.sh sh -c 'git commit -a -m"Autocommit from $(hostname): $(git status -s)" && git pull && git push'
-10 * * * * cd "${HOME}/dot-files" && chronic.sh sh -c 'git pullme && git update && ./setup-home.sh'
+@hourly chronic.sh "${HOME}/dot-files/autocommit.sh"

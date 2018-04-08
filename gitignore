@@ -1,7 +1,8 @@
+*.sublime-project
+*.sublime-workspace
+*.swp
 *~
 .cproject
-dummy.cc
-dummy.h
 .externalToolBuilders
 .idea
 .metadata
@@ -9,8 +10,7 @@ dummy.h
 .pydevproject
 .settings
 .sublime-project
-*.sublime-project
 .sublime-project.sublime-workspace
-*.sublime-workspace
-*.swp
 .tags*
+dummy.cc
+dummy.h

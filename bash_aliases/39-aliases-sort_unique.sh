@@ -2,6 +2,7 @@
 ## Call sort on files, write results back to files
 function sortinline()
 {
+	export LC_ALL=C
 	KEEP_BLANK="no"
 	ARGS=()
 	FILES=()
@@ -28,6 +29,7 @@ function sortinline()
 ## Call uniq on files, write results back to files
 function uniqinline()
 {
+	export LC_ALL=C
 	KEEP_BLANK="no"
 	ARGS=()
 	FILES=()

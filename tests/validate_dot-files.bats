@@ -5,6 +5,7 @@ source "${DF_TESTS}/utils.sh"
 
 DF_FILES=(
 	gitconfig
+	gitconfig.atlassian
 	gitconfig.github
 	vimrc
 )
@@ -22,6 +23,7 @@ DF_SOURCED_SCRIPTS=(
 DF_CRONTABS=( $(cd "${DOTFILES}" && echo crontab.*) )
 
 DF_EXES=(
+	autocommit.sh
 	lessfilter
 	setup-home.sh
 )
@@ -32,6 +34,7 @@ DF_LISTS=(
 	dot-files.loki
 	dot-files.odysseus
 	dot-files.prometheus
+	eclipse-user-dictionary.txt
 	gitignore
 	interactive_commands
 )
@@ -66,28 +69,33 @@ function setup()
 }
 
 @test "Validate: crontabs have preamble" {
-	# CRONTAB_PREAMBLE should include the empty line at the end.
-	CRONTAB_PREAMBLE=$(
-		cat <<-'EOF'
-			## This master file for this crontab is part of this user's ~/dot-files repository.
-			## Edit that file always and then run ~/dot-files/setup-home.sh to install it.
-			## Never use `crontab -e` or your changes may be overwritten.
-			HOME=/home/ols
-			SHELL=/bin/bash
-			PATH=/bin:/usr/bin:~/dot-files/bin
-
-		EOF
-	)
 	for f in "${DF_CRONTABS[@]}"; do
+		if [ "$f" == "crontab.c02w104ahtdg" ]; then
+			h="/Users/ohulett"
+		else
+			h="/home/ols"
+		fi
+		# CRONTAB_PREAMBLE should include the empty line at the end.
+		CRONTAB_PREAMBLE=$(
+			cat <<-EOF
+				## This master file for this crontab is part of this user's ~/dot-files repository.
+				## Edit that file always and then run ~/dot-files/setup-home.sh to install it.
+				## Never use \`crontab -e\` or your changes may be overwritten.
+				HOME=$h
+				SHELL=/bin/bash
+				PATH=$h/dot-files/bin:/usr/local/bin:/usr/bin:/bin
+
+			EOF
+		)
 		if [ "$(command head -n6 "${DOTFILES}/$f")" != "${CRONTAB_PREAMBLE}" ]; then
-			fail "Crontab does not have expected preamble: $f"
+			fail "Crontab does not have expected preamble: $f\n$(diff <(echo "${CRONTAB_PREAMBLE}") <(command head -n6 "${DOTFILES}/$f"))"
 		fi
 	done
 }
 
 @test "Validate: lists are sorted and unique" {
 	for f in "${DF_LISTS[@]}"; do
-		if [ "$(command cat "${DOTFILES}/$f")" != "$(command cat "${DOTFILES}/$f" | sort -u)" ]; then
+		if [ "$(command cat "${DOTFILES}/$f")" != "$(command cat "${DOTFILES}/$f" | LC_ALL=C sort -u)" ]; then
 			fail "List file is not sorted or not unique: $f"
 		fi
 	done
