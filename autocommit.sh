@@ -18,6 +18,16 @@ function runhere()
 	cd "${HERE}" && "$@"
 }
 
+function git_is_busy()
+{
+	test -d "$(runhere -q git rev-parse --git-path rebase-merge)" || test -d "$(runhere -q git rev-parse --git-path rebase-apply)"
+}
+
+if git_is_busy; then
+	report "Git is busy with an interactive command, we can't interrupt..."
+	exit 1
+fi
+
 IFS=$'\n' read -r -a LAST_COMMIT_MSG <<< "$(runhere -q git log -1 --pretty=%B)"
 report "Last commit: ${LAST_COMMIT_MSG[*]}"
 THIS_COMMIT_MSG=( "Autocommit from $(hostname)" "$(runhere -q git status -s))" )
@@ -43,13 +53,23 @@ if [ ${WC_WAS_CLEAN} -ne 0 ]; then
 		report "Last commit was not an autocommit from this machine, amending..."
 		AMEND="--amend"
 	fi
-	runhere git commit ${AMEND} -a "${THIS_COMMIT_MSG[@]/#/-m/}"
+	runhere git commit ${AMEND} -a "${THIS_COMMIT_MSG[@]/#/-m}"
 fi
 
 # Second, pull new code.
 report
 report "Pulling new code from origin..."
 runhere git pullme
+# Pulling can kick us into a rebase or merge conflict resolution, check for that.
+if git_is_busy; then
+	report "Pull failed due to conflicts, aborting..."
+	if [ -d "$(runhere -q git rev-parse --git-path rebase-merge)" ]; then
+		runhere git merge --abort
+	elif [ -d "$(runhere -q git rev-parse --git-path rebase-apply)" ]; then
+		runhere git rebase --abort
+	fi
+	exit 1
+fi
 
 # Third, if there is an unpushed commit, that wasn't just created or amended (reduce churn) push the commits.
 report
