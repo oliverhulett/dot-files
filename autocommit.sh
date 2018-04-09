@@ -49,10 +49,10 @@ runhere git diff --quiet --exit-code && runhere git diff --cached --quiet --exit
 WC_WAS_CLEAN=$?
 report_good "Working copy was clean: 0 == ${WC_WAS_CLEAN}"
 
-test -n "$(runhere git log master..origin/master --oneline)"
+test -n "$(runhere -q git log master..origin/master --oneline)"
 PULL_HAS_COMMITS=$?
 report_good "Pull has commits: 0 == ${PULL_HAS_COMMITS}"
-test -n "$(runhere git log origin/master..master --oneline)"
+test -n "$(runhere -q git log origin/master..master --oneline)"
 PUSH_HAS_COMMITS=$?
 report_good "Push has commits: 0 == ${PUSH_HAS_COMMITS}"
 
