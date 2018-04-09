@@ -68,6 +68,7 @@ if [ ${WC_WAS_CLEAN} -ne 0 ]; then
 		AMEND="--amend"
 		CHANGES="$(printf '%s\n' "${LAST_COMMIT_MSG[@]:3}")${CHANGES}"
 	fi
+	CHANGES="$(echo "${CHANGES}" | LC_ALL=C sort -u)"
 	THIS_COMMIT_MSG=( "Autocommit from $(hostname): $(echo "${CHANGES}" | wc -l) files changed" "${CHANGES}" )
 	runhere git commit ${AMEND} -a "${THIS_COMMIT_MSG[@]/#/-m}"
 fi
