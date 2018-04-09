@@ -44,9 +44,6 @@ fi
 
 read -r -a LAST_COMMIT_MSG <<< "$(runhere -q git log -1 --pretty=%B)"
 report_good "Last commit: ${LAST_COMMIT_MSG[*]}"
-CHANGES="$(runhere -q git status -s)"
-THIS_COMMIT_MSG=( "Autocommit from $(hostname): $(echo "${CHANGES}" | wc -l) files changed" "${CHANGES}" )
-report_good "This commit: ${THIS_COMMIT_MSG[*]}"
 
 runhere git diff --quiet --exit-code && runhere git diff --cached --quiet --exit-code
 WC_WAS_CLEAN=$?
@@ -64,12 +61,14 @@ report_good
 if [ ${WC_WAS_CLEAN} -ne 0 ]; then
 	report_good "Working copy was not clean..."
 	AMEND=
+	CHANGES="$(runhere -q git status -s)"
 	# Autocommit msg format is "Autocommit from <hostname>..."
-	read -r -a TCM_FIRST_TOKEN <<< "${THIS_COMMIT_MSG[0]}"
-	if [ "${LAST_COMMIT_MSG[0]}" == "${TCM_FIRST_TOKEN[0]}" ] && [ "${LAST_COMMIT_MSG[1]}" == "${TCM_FIRST_TOKEN[1]}" ] && [ "${LAST_COMMIT_MSG[2]}" == "${TCM_FIRST_TOKEN[2]}" ]; then
-		report_good "Last commit was an autocommit from this machine, amending..."
+	if [ ${PUSH_HAS_COMMITS} -ne 0 ] && [ "${LAST_COMMIT_MSG[0]}" == "Autocommit" ] && [ "${LAST_COMMIT_MSG[1]}" == "from" ] && [ "${LAST_COMMIT_MSG[2]}" == "$(hostname)" ]; then
+		report_good "Last commit is unpushed and was an autocommit from this machine, amending..."
 		AMEND="--amend"
+		CHANGES="$(printf '%s\n' "${LAST_COMMIT_MSG[@]:3}")${CHANGES}"
 	fi
+	THIS_COMMIT_MSG=( "Autocommit from $(hostname): $(echo "${CHANGES}" | wc -l) files changed" "${CHANGES}" )
 	runhere git commit ${AMEND} -a "${THIS_COMMIT_MSG[@]/#/-m}"
 fi
 
@@ -99,5 +98,5 @@ fi
 report_good
 if [ ${WC_WAS_CLEAN} -ne 0 ] || [ ${PULL_HAS_COMMITS} -eq 0 ]; then
 	report_good "Detected changes since last run (commits added locally or pulled from origin), running tests and setup-home.sh..."
-	runhere ./tests/run.sh && runhere ./setup-home.sh
+	runhere nice -n 10 ./tests/run.sh && runhere ./setup-home.sh
 fi
