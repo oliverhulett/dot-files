@@ -10,4 +10,4 @@ PATH=/home/ols/dot-files/bin:/usr/local/bin:/usr/bin:/bin
 * * * * * for i in /dev/disk/by-label/*; do echo $i; ls -l /media/$(basename $i); done >/dev/null 2>&1
 * * * * * env >"${HOME}/.crontab.env"
 
-@hourly cd "${HOME}/dot-files && git pull && chronic.sh "${HOME}/dot-files/autocommit.sh"
+@hourly chronic.sh "${HOME}/dot-files/autocommit.sh"
