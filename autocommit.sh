@@ -96,8 +96,8 @@ if [ ${WC_WAS_CLEAN} -eq 0 ] && [ ${PUSH_HAS_COMMITS} -eq 0 ]; then
 fi
 
 # Finally, if there have been changes since last time (commits added locally or pulled in) run the tests? and setup-home.sh.
-report_good
 if [ ${WC_WAS_CLEAN} -ne 0 ] || [ ${PULL_HAS_COMMITS} -eq 0 ]; then
+	report_good
 	report_good "Detected changes since last run (commits added locally or pulled from origin), running tests and setup-home.sh..."
-	runhere nice -n 10 ./tests/run.sh && runhere ./setup-home.sh
+	runhere nice -n 10 ./tests/run.sh ./tests/validate_dot-files.bats && runhere ./setup-home.sh
 fi
