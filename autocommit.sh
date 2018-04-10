@@ -36,7 +36,7 @@ function git_is_busy()
 	test -d "$(runhere git rev-parse --git-path rebase-merge)" || test -d "$(runhere git rev-parse --git-path rebase-apply)"
 }
 
-LOCK_DIR="${TMPDIR:-$TMP}/autocommit.lock.d"
+LOCK_DIR="${TMPDIR:-${TMP:-${HOME}}}/.autocommit.lock.d"
 function cleanup()
 {
 	rm -rf "${LOCK_DIR}" >/dev/null 2>/dev/null

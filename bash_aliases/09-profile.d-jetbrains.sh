@@ -1,3 +1,4 @@
 # shellcheck shell=bash
 ## Add IntelliJ and PyCharm command line tools to PATH
-export PATH="$(append_path "/Applications/IntelliJ IDEA.app/Contents/bin" "/Applications/PyCharm.app/Contents/bin")"
+source "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/../bash_common.sh"
+export PATH="$(append_path "${PATH}" "/Applications/IntelliJ IDEA.app/Contents/bin")"
