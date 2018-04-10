@@ -42,6 +42,7 @@ function cleanup()
 	rm -rf "${LOCK_DIR}" >/dev/null 2>/dev/null
 }
 
+report_good "Using lock directory: ${LOCK_DIR}"
 if ! mkdir --parents "${LOCK_DIR}" 2>/dev/null; then
 	## Lock dir already existed, look for running instance
 	if [ -f "${LOCK_DIR}/autocommit.pid" ] && kill -0 "$(command cat "${LOCK_DIR}/autocommit.pid")" >/dev/null 2>/dev/null; then
