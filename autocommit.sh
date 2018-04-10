@@ -36,7 +36,28 @@ function git_is_busy()
 	test -d "$(runhere git rev-parse --git-path rebase-merge)" || test -d "$(runhere git rev-parse --git-path rebase-apply)"
 }
 
-## TODO: reentrance...
+LOCK_DIR="${TMPDIR:-$TMP}/autocommit.lock.d"
+function cleanup()
+{
+	rm -rf "${LOCK_DIR}" >/dev/null 2>/dev/null
+}
+
+if ! mkdir --parents "${LOCK_DIR}" 2>/dev/null; then
+	## Lock dir already existed, look for running instance
+	if [ -f "${LOCK_DIR}/autocommit.pid" ] && kill -0 "$(command cat "${LOCK_DIR}/autocommit.pid")" >/dev/null 2>/dev/null; then
+		## An instance is already running, we re-entered
+		report_bad "An instance of autocommit.sh is still running, stopping to prevent re-entrance..."
+		exit 1
+	else
+		## An instance crashed?
+		report_bad "The autocommit.sh lock directory exists but I can't find the running process, suspected crash.  Cleaning lock directory and exiting..."
+		cleanup
+		exit 1
+	fi
+fi
+## Lock dir was created, no existing instance running
+echo $$ >"${LOCK_DIR}/autocommit.pid"
+trap cleanup EXIT
 
 if git_is_busy; then
 	report_bad "Git is busy with an interactive command, we can't interrupt..."
