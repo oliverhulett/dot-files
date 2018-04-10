@@ -43,7 +43,7 @@ function cleanup()
 }
 
 report_good "Using lock directory: ${LOCK_DIR}"
-if ! mkdir --parents "${LOCK_DIR}" 2>/dev/null; then
+if ! mkdir "${LOCK_DIR}" 2>/dev/null; then
 	## Lock dir already existed, look for running instance
 	if [ -f "${LOCK_DIR}/autocommit.pid" ] && kill -0 "$(command cat "${LOCK_DIR}/autocommit.pid")" >/dev/null 2>/dev/null; then
 		## An instance is already running, we re-entered
