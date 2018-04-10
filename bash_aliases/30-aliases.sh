@@ -1,6 +1,7 @@
 # shellcheck shell=bash
 # Aliases
-source "$(dirname "$(readlink -f "${BASH_SOURCE}")")/../bash_common.sh"
+# shellcheck disable=SC1090
+source "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/../bash_common.sh"
 
 alias lssc='lss --color=none'
 alias lsc='lss --color=none'

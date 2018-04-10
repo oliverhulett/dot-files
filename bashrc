@@ -224,7 +224,7 @@ function _prompt_command()
 		# ...otherwise we'll use it as a custom prefix.
 		USER_CUSTOM_FRONT="$PS1"
 	fi
-	export PS1="${USER_CUSTOM_FRONT}${PROMPT}"
+	export PS1=" ${USER_CUSTOM_FRONT}${PROMPT}"
 	printf '%*s\n' ${COLUMNS} "$(date)"
 	eval "${_restorex}"
 }

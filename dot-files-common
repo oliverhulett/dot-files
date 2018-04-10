@@ -22,6 +22,7 @@ flake8 .config/flake8
 git_wrappers .git_wrappers
 gitconfig .gitconfig
 gitignore .gitignore
+inputrc .inputrc
 interactive_commands .interactive_commands
 invoke.py .invoke.py
 profile .profile
