@@ -7,7 +7,7 @@ PATH=/Users/ohulett/dot-files/bin:/usr/local/bin:/usr/bin:/bin
 
 * * * * * env >"${HOME}/.crontab.env"
 
-@daily docker container prune -f
-@weekly sleep 1 && docker image prune -af
-
 @hourly chronic.sh "${HOME}/dot-files/autocommit.sh"
+
+@daily test -z "$(docker ps -qa)" || docker container kill $(docker ps -aq) && docker container prune -f
+@weekly sleep 1 && docker image prune -af

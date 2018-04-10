@@ -45,14 +45,14 @@ function setup()
 }
 
 @test "Validate: required files exist and are committed" {
-	for f in "${DF_LISTS[@]}" "${DF_CRONTABS[@]}" "${DF_SOURCED_SCRIPTS}" "${DF_FILES[@]}"; do
+	for f in "${DF_LISTS[@]}" "${DF_CRONTABS[@]}" "${DF_SOURCED_SCRIPTS[@]}" "${DF_FILES[@]}"; do
 		if [ ! -e "${DOTFILES}/$f" ]; then
 			fail "Expected file does not exist: $f"
 		fi
 		if [ -x "${DOTFILES}/$f" ]; then
 			fail "File should not be executable: $f"
 		fi
-		if cd "${DOTFILES}" && git ls-files --error-unmatch -- "$f" >/dev/null 2>/dev/null; then
+		if ! ( cd "${DOTFILES}" && git ls-files --error-unmatch -- "$f" >/dev/null 2>/dev/null ); then
 			fail "Expected file is not committed: $f"
 		fi
 	done
@@ -60,9 +60,23 @@ function setup()
 		if [ ! -x "${DOTFILES}/$f" ]; then
 			fail "Expected executable does not exist: $f"
 		fi
-		if cd "${DOTFILES}" && git ls-files --error-unmatch -- "$f" >/dev/null 2>/dev/null; then
+		if ! ( cd "${DOTFILES}" && git ls-files --error-unmatch -- "$f" >/dev/null 2>/dev/null ); then
 			fail "Expected file is not committed: $f"
 		fi
+	done
+}
+
+@test "Validate: source dot-files exist and are committed" {
+	for f in "${DOTFILES}/dot-files-common" "${DOTFILES}"/dot-files.*; do
+		# shellcheck disable=SC2094
+		while read -r df _; do
+			if [ ! -e "${DOTFILES}/$df" ]; then
+				fail "Source dot-file does not exist: $df from: $f"
+			fi
+			if ! ( cd "${DOTFILES}" && git ls-files --error-unmatch -- "$df" >/dev/null 2>/dev/null ); then
+				fail "Source dot-file is not committed: $df from: $f"
+			fi
+		done <"$f"
 	done
 }
 
