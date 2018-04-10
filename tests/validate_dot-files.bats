@@ -44,7 +44,7 @@ function setup()
 	:
 }
 
-@test "Validate: required files exist" {
+@test "Validate: required files exist and are committed" {
 	for f in "${DF_LISTS[@]}" "${DF_CRONTABS[@]}" "${DF_SOURCED_SCRIPTS}" "${DF_FILES[@]}"; do
 		if [ ! -e "${DOTFILES}/$f" ]; then
 			fail "Expected file does not exist: $f"
@@ -52,10 +52,16 @@ function setup()
 		if [ -x "${DOTFILES}/$f" ]; then
 			fail "File should not be executable: $f"
 		fi
+		if cd "${DOTFILES}" && git ls-files --error-unmatch -- "$f" >/dev/null 2>/dev/null; then
+			fail "Expected file is not committed: $f"
+		fi
 	done
 	for f in "${DF_EXES[@]}"; do
 		if [ ! -x "${DOTFILES}/$f" ]; then
 			fail "Expected executable does not exist: $f"
+		fi
+		if cd "${DOTFILES}" && git ls-files --error-unmatch -- "$f" >/dev/null 2>/dev/null; then
+			fail "Expected file is not committed: $f"
 		fi
 	done
 }
