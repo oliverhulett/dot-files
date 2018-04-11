@@ -24,13 +24,24 @@ DF_CRONTABS=( $(cd "${DOTFILES}" && echo crontab.*) )
 
 DF_EXES=(
 	autocommit.sh
+	backup.sh
 	lessfilter
+	nansible.sh
 	setup-home.sh
 )
 
 DF_LISTS=(
 	.gitignore
+	backups.c02w104ahtdg
+	backups.c02w104ahtdg.exclude
+	backups.loki
+	backups.loki.exclude
+	backups.odysseus
+	backups.odysseus.exclude
+	backups.prometheus
+	backups.prometheus.exclude
 	dot-files-common
+	dot-files.c02w104ahtdg
 	dot-files.loki
 	dot-files.odysseus
 	dot-files.prometheus

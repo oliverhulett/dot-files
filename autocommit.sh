@@ -3,28 +3,7 @@
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 
-export TERM="${TERM:-xterm-256color}"
-
-RED="$(tput setaf 1)"
-GREEN="$(tput setaf 2)"
-WHITE="$(tput bold)$(tput setaf 7)"
-RESET="$(tput sgr0)"
-
-function report_good()
-{
-	echo -e "${GREEN}" "$*" "${RESET}"
-}
-
-function report_bad()
-{
-	echo -e "${RED}" "$*" "${RESET}"
-}
-
-function report_cmd()
-{
-	echo -e "${WHITE}" "$*" "${RESET}"
-	"$@"
-}
+source "${HERE}/lib/script_utils.sh"
 
 function runhere()
 {
@@ -36,34 +15,7 @@ function git_is_busy()
 	test -d "$(runhere git rev-parse --git-path rebase-merge)" || test -d "$(runhere git rev-parse --git-path rebase-apply)"
 }
 
-LOCK_DIR="${TMPDIR:-${TMP:-${HOME}}}/.autocommit.lock.d"
-function cleanup()
-{
-	rm -rf "${LOCK_DIR}" >/dev/null 2>/dev/null
-}
-
-report_good "Using lock directory: ${LOCK_DIR}"
-if ! mkdir "${LOCK_DIR}" 2>/dev/null; then
-	## Lock dir already existed, look for running instance
-	if [ -f "${LOCK_DIR}/autocommit.pid" ] && kill -0 "$(command cat "${LOCK_DIR}/autocommit.pid")" >/dev/null 2>/dev/null; then
-		## An instance is already running, we re-entered
-		report_bad "An instance of autocommit.sh is still running, stopping to prevent re-entrance..."
-		exit 1
-	else
-		## An instance crashed?
-		report_bad "The autocommit.sh lock directory exists but I can't find the running process, suspected crash.  Cleaning lock directory and exiting..."
-		cleanup
-		exit 1
-	fi
-fi
-## Lock dir was created, no existing instance running
-echo $$ >"${LOCK_DIR}/autocommit.pid"
-trap cleanup EXIT
-
-if git_is_busy; then
-	report_bad "Git is busy with an interactive command, we can't interrupt..."
-	exit 1
-fi
+reentrance_check
 
 read -r -a LAST_COMMIT_MSG <<< "$(runhere git log -1 --pretty=%B)"
 report_good "Last commit: ${LAST_COMMIT_MSG[*]}"
@@ -86,7 +38,7 @@ if [ ${WC_WAS_CLEAN} -ne 0 ]; then
 	AMEND=
 	CHANGES="$(runhere git status -s)"
 	# Autocommit msg format is "Autocommit from <hostname>..."
-	if [ ${PUSH_HAS_COMMITS} -ne 0 ] && [ "${LAST_COMMIT_MSG[0]}" == "Autocommit" ] && [ "${LAST_COMMIT_MSG[1]}" == "from" ] && [ "${LAST_COMMIT_MSG[2]}" == "$(hostname)" ]; then
+	if [ ${PUSH_HAS_COMMITS} -eq 0 ] && [ "${LAST_COMMIT_MSG[0]}" == "Autocommit" ] && [ "${LAST_COMMIT_MSG[1]}" == "from" ] && [ "${LAST_COMMIT_MSG[2]}" == "$(hostname):" ]; then
 		report_good "Last commit is unpushed and was an autocommit from this machine, amending..."
 		AMEND="--amend"
 		CHANGES="$(printf '%s\n' "${LAST_COMMIT_MSG[@]:3}")${CHANGES}"

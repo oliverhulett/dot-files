@@ -41,8 +41,8 @@ if [ "$VERBOSE" == "yes" ]; then
 	echo "${#FAILURES[@]} Failure(s)"
 	echo 'Remove failed hosts with `sed -e '"'/^($(join "${FAILURES[@]}"))/d'"' ~/.ssh/known_hosts -i`'
 else
-	log "${#FAILURES[@]} Failure(s)"
-	log 'Remove failed hosts with `sed -e '"'/^($(join "${FAILURES[@]}"))/d'"' ~/.ssh/known_hosts -i`'
+	dotlog "${#FAILURES[@]} Failure(s)"
+	dotlog 'Remove failed hosts with `sed -e '"'/^($(join "${FAILURES[@]}"))/d'"' ~/.ssh/known_hosts -i`'
 fi
 
 exit ${#FAILURES[@]}
