@@ -1,6 +1,6 @@
 #!/bin/bash
 ## Backup local files to another local directory that'll be synced to the cloud.
-## Version 1 will just use rsync to copy stuff as diffs with https://github.com/laurent22/rsync-time-backup
+## Version 1 will just use rsync to copy stuff as diffs/hard-link
 ## Version 2 will compress and/or encrypt the backup directory.  I have to work a few things out before I can do that.
 ## e.g. How does Google drive sync deal with the hard-links?  How does rsync deal with linking diffs on compressed and encrypted file systems.
 
@@ -35,5 +35,7 @@ else
 fi
 
 # Delete expired backups
+# Keep last 3 hours, last 5 days, last 2 months, last 1 year.
+DAILIES_TO_DELETE="${BACKUP_DEST}/$(cd "${BACKUP_DEST}" && find . -maxdepth 3 -mindepth 3 | sort | head -n-4)"
 
 # Stats and validate backups (hanging links and that sort of thing...)
