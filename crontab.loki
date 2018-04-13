@@ -5,7 +5,7 @@ HOME=/home/ols
 SHELL=/bin/bash
 PATH=/home/ols/dot-files/bin:/usr/local/bin:/usr/bin:/bin
 
-0 * * * * source "${HOME}/.bash_aliases/09-profile.d-insync_headless.sh"
+@hourly source "${HOME}/.bash_aliases/09-profile.d-insync_headless.sh"
 
 * * * * * for i in /dev/disk/by-label/*; do echo $i; ls -l /media/$(basename $i); done >/dev/null 2>&1
 * * * * * env >"${HOME}/.crontab.env"
