@@ -19,7 +19,7 @@ for f in /usr/local/bin/g*; do
 	fi
 done
 # Doesn't work, for some reason.
-rm '/usr/local/bin/[' 2>/dev/null
+rm '/usr/local/bin/[' 2>/dev/null || true
 
 export DEBUG_BASHRC="${DEBUG_BASHRC:-*}"
 function source()

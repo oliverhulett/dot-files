@@ -3,13 +3,11 @@
 
 source "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/../bash_common.sh"
 
-export TERM="${TERM:-xterm-256color}"
-
 _SHUTILS_QUIET="no"
-RED="$(tput setaf 1)"
-GREEN="$(tput setaf 2)"
-WHITE="$(tput bold)$(tput setaf 7)"
-RESET="$(tput sgr0)"
+RED="$(tput -T"${TERM:-dumb}" setaf 1 || true)"
+GREEN="$(tput -T"${TERM:-dumb}" setaf 2 || true)"
+WHITE="$(tput -T"${TERM:-dumb}" bold || true)$(tput -T"${TERM:-dumb}" setaf 7 || true)"
+RESET="$(tput -T"${TERM:-dumb}" sgr0 || true)"
 
 function report_good()
 {

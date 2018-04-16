@@ -36,16 +36,19 @@ report_good
 if [ ${WC_WAS_CLEAN} -ne 0 ]; then
 	report_good "Working copy was not clean..."
 	AMEND=
+	set -x
 	CHANGES="$(runhere git status -s)"
-	# Autocommit msg format is "Autocommit from <hostname>..."
+	# Autocommit msg format is "Autocommit from <hostname>: X files changed"
 	if [ ${PUSH_HAS_COMMITS} -eq 0 ] && [ "${LAST_COMMIT_MSG[0]}" == "Autocommit" ] && [ "${LAST_COMMIT_MSG[1]}" == "from" ] && [ "${LAST_COMMIT_MSG[2]}" == "$(hostname):" ]; then
 		report_good "Last commit is unpushed and was an autocommit from this machine, amending..."
 		AMEND="--amend"
-		CHANGES="$(printf '%s\n' "${LAST_COMMIT_MSG[@]:3}")${CHANGES}"
+		CHANGES="$(runhere git log -1 --pretty=%B | tail -n+2)
+${CHANGES}"
 	fi
 	CHANGES="$(echo "${CHANGES}" | LC_ALL=C sort -u)"
 	THIS_COMMIT_MSG=( "Autocommit from $(hostname): $(echo "${CHANGES}" | wc -l) files changed" "${CHANGES}" )
 	report_cmd runhere git commit ${AMEND} -a "${THIS_COMMIT_MSG[@]/#/-m}"
+	set +x
 fi
 
 # Second, pull new code.

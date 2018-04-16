@@ -7,7 +7,6 @@ if [ -e "${HOME}/.local/bin" ]; then
 fi
 # Add ~/opt/pyvenv/bin to the path.  It is where I create my "global" python venv for systems that need these sorts of things.
 if [ -e "${HOME}/opt/pyvenv/bin" ]; then
-	export VIRTUAL_ENV_DISABLE_PROMPT="yes"
 	# shellcheck disable=SC1090
-	source "${HOME}/opt/pyvenv/bin/activate"
+	VIRTUAL_ENV_DISABLE_PROMPT="yes" source "${HOME}/opt/pyvenv/bin/activate"
 fi

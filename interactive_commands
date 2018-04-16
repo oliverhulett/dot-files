@@ -16,6 +16,7 @@ journalctl -xe
 jupyter console
 less
 logless
+mail
 man
 more
 nano

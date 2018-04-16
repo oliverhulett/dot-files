@@ -16,6 +16,7 @@ $ brew update
 $ brew tap homebrew/dupes
 $ brew install --with-default-names gnu-getopt gnu-indent gnu-sed gnu-tar gnutls gnu-time gnu-which grep gawk bash-completion
 $ brew link --force gnu-getopt
+$ python <(curl https://bootstrap.pypa.io/get-pip.py)
 ```
 
 And, of course, use [iTerm|https://www.iterm2.com/downloads.html] on the Mac.

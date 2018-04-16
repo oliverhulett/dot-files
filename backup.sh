@@ -11,7 +11,7 @@ source "${HERE}/lib/script_utils.sh"
 reentrance_check
 
 export LC_ALL=C
-RSYNC_ARGS=( -rpAXogthR --links --delete --delete-excluded --stats )
+RSYNC_ARGS=( -rpAXogthR --one-file-system --links --delete --delete-excluded --stats )
 BACKUP_DEST="${HOME}/etc/backups"
 
 # Get backup sources from files
@@ -19,7 +19,7 @@ HOSTNAME="$(hostname -s | tr '[:upper:]' '[:lower:]')"
 FILES_FROM="${HERE}/backups.${HOSTNAME}"
 EXCLUDE_FROM="${HERE}/backups.${HOSTNAME}.exclude"
 
-# State Variables
+# State Variables.  This won't work if mount and unmount are called in different runs, we need a better mechanism (like actually checking the mount table)
 MOUNTED="no"
 function do_mount()
 {
@@ -55,6 +55,15 @@ function _get_latest_backup()
 	_list_backups | sort | tail -n1
 }
 
+function do_list()
+{
+	if [ "${MOUNTED}" == "no" ]; then
+		do_mount
+	fi
+
+	_list_backups | sed -re 's!^'"${BACKUP_DEST}"'/!!' | sort
+}
+
 function do_backup()
 {
 	if [ "${MOUNTED}" == "no" ]; then
@@ -66,10 +75,10 @@ function do_backup()
 
 	if [ -z "${LATEST_BACKUP}" ]; then
 		report_bad "No previous backup exists, creating new backup..."
-		report_cmd rsync "${RSYNC_ARGS[@]}" --exclude-from="${EXCLUDE_FROM}" $(command cat ${FILES_FROM}) "$(_get_this_backup)"
+		report_cmd rsync "${RSYNC_ARGS[@]}" --exclude-from="${EXCLUDE_FROM}" $(command cat ${FILES_FROM}) "$(_get_this_backup)" || true  # Expect some failures due to not being root...
 	else
 		report_good "Creating new backup based on latest: ${LATEST_BACKUP}"
-		report_cmd rsync "${RSYNC_ARGS[@]}" --exclude-from="${EXCLUDE_FROM}" --link-dest="${LATEST_BACKUP}" $(command cat ${FILES_FROM}) "$(_get_this_backup)"
+		report_cmd rsync "${RSYNC_ARGS[@]}" --exclude-from="${EXCLUDE_FROM}" --link-dest="${LATEST_BACKUP}" $(command cat ${FILES_FROM}) "$(_get_this_backup)" || true  # Expect some failures due to not being root...
 	fi
 }
 
@@ -123,7 +132,7 @@ function expire_backups()
 		# Keep last 3 hours, last 5 days, last 2 months, last 1 year.
 		if [ "${KEEPING}" == "hours" ]; then
 			_check_backup "${BACKUP}" "hourly" 3 \
-				"${BACKUP}" "$(dirname "${BACKUP}")" "days"
+				"$(basename -- "${BACKUP}" | sed -nre 's/([0-9]{2})[0-9]{2}$/\1/p')" "$(dirname "${BACKUP}")" "days"
 		fi
 		if [ "${KEEPING}" == "days" ]; then
 			_check_backup "${BACKUP}" "daily" 5 \
@@ -131,11 +140,11 @@ function expire_backups()
 		fi
 		if [ "${KEEPING}" == "months" ]; then
 			_check_backup "${BACKUP}" "monthly" 6 \
-				"$(dirname "$(dirname "${BACKUP}")")" "$(dirname "$(dirname "${BACKUP}")" | sed -nre 's/([0-9]{2})-[0-9]{2}$/\1/')" "years"
+				"$(dirname "$(dirname "${BACKUP}")")" "$(dirname "$(dirname "${BACKUP}")" | sed -nre 's/([0-9]{2})-[0-9]{2}$/\1/p')" "years"
 		fi
 		if [ "${KEEPING}" == "years" ]; then
 			_check_backup "${BACKUP}" "yearly" 1 \
-				"$(dirname "$(dirname "${BACKUP}")" | sed -nre 's/([0-9]{2})-[0-9]{2}$/\1/')" "$(dirname "$(dirname "$(dirname "${BACKUP}")")")" ""
+				"$(dirname "$(dirname "${BACKUP}")" | sed -nre 's/([0-9]{2})-[0-9]{2}$/\1/p')" "$(dirname "$(dirname "$(dirname "${BACKUP}")")")" ""
 		fi
 	done
 }
@@ -146,6 +155,13 @@ function do_validate()
 	if [ "${MOUNTED}" == "no" ]; then
 		do_mount
 	fi
+
+	find -L "$(_get_this_backup)" -type l -exec ls -hdl --color=always "{}" \;
+	find "$(_get_this_backup)" -type d | while read -r; do
+		if [ "$(command ls -BAUn "$REPLY")" == "total 0" ]; then
+			ls -d "$REPLY" 2>/dev/null
+		fi
+	done
 }
 
 function do_stats()
@@ -153,13 +169,15 @@ function do_stats()
 	if [ "${MOUNTED}" == "no" ]; then
 		do_mount
 	fi
+
+	du -hscx $(_list_backups)
 }
 
 if [ $# -eq 0 ]; then
 	## By default, do mount, backup, rotate, unmount
 	do_mount
 	do_backup
-	exire_backups
+	expire_backups
 	do_validate
 	do_unmount
 	do_stats
@@ -185,9 +203,12 @@ else
 			stats )
 				do_stats
 				;;
+			list | -l )
+				do_list
+				;;
 			* )
 				report_bad "Usage:"
-				report_bad "  $(basename -- "$0") [mount] [backup] [expire] [validate] [unmount] [stats]"
+				report_bad "  $(basename -- "$0") [mount] [backup] [expire] [validate] [unmount] [stats] [list]"
 				exit 1
 				;;
 		esac
