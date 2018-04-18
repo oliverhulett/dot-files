@@ -12,30 +12,36 @@ reentrance_check
 
 export LC_ALL=C
 RSYNC_ARGS=( -rpAXogthR --one-file-system --links --delete --delete-excluded --stats )
-BACKUP_DEST="${HOME}/etc/backups"
+BACKUP_ARCHIVE="${HOME}/etc/backups.tar.gz"
+BACKUP_DEST="${TMPDIR:-${TMP:-${HOME}/tmp}}/backups"
 
 # Get backup sources from files
 HOSTNAME="$(hostname -s | tr '[:upper:]' '[:lower:]')"
 FILES_FROM="${HERE}/backups.${HOSTNAME}"
 EXCLUDE_FROM="${HERE}/backups.${HOSTNAME}.exclude"
 
-# State Variables.  This won't work if mount and unmount are called in different runs, we need a better mechanism (like actually checking the mount table)
-MOUNTED="no"
+function _archive_is_mounted()
+{
+	test -d "${BACKUP_DEST}" && test "$(stat -fc%t:%T "${BACKUP_DEST}")" != "$(stat -fc%t:%T "${BACKUP_DEST}/..")"
+}
 function do_mount()
 {
-	if [ "${MOUNTED}" == "yes" ]; then
+	if _archive_is_mounted; then
 		return
 	fi
 
-	MOUNTED="yes"
+	touch "${BACKUP_ARCHIVE}"
+	mkdir --parents "${BACKUP_DEST}" 2>/dev/null
+	report_cmd archivemount -o nobackup "${BACKUP_ARCHIVE}" "${BACKUP_DEST}" || exit 1
 }
 function do_unmount()
 {
-	if [ "${MOUNTED}" == "no" ]; then
+	if ! _archive_is_mounted; then
 		return
 	fi
 
-	MOUNTED="no"
+	report_cmd umount "${BACKUP_DEST}"
+
 }
 trap -n "mounting" do_unmount EXIT
 
@@ -52,23 +58,23 @@ function _list_backups()
 
 function _get_latest_backup()
 {
-	_list_backups | sort | tail -n1
+	if [ -d "$(_get_this_backup)" ]; then
+		_list_backups | sort | tail -n2 | head -n1
+	else
+		_list_backups | sort | tail -n1
+	fi
 }
 
 function do_list()
 {
-	if [ "${MOUNTED}" == "no" ]; then
-		do_mount
-	fi
+	do_mount
 
 	_list_backups | sed -re 's!^'"${BACKUP_DEST}"'/!!' | sort
 }
 
 function do_backup()
 {
-	if [ "${MOUNTED}" == "no" ]; then
-		do_mount
-	fi
+	do_mount
 
 	mkdir --parents "$(_get_this_backup)"
 	LATEST_BACKUP="$(_get_latest_backup)"
@@ -82,7 +88,7 @@ function do_backup()
 	fi
 }
 
-function _check_backup()
+function check_for_expired_backup()
 {
 	BACKUP="$1"
 	TYPE="$2"
@@ -120,9 +126,7 @@ function _check_backup()
 }
 function expire_backups()
 {
-	if [ "${MOUNTED}" == "no" ]; then
-		do_mount
-	fi
+	do_mount
 
 	CNT=0
 	KEEPING="hours"
@@ -131,19 +135,19 @@ function expire_backups()
 	_list_backups | sort -r | while read -r BACKUP; do
 		# Keep last 3 hours, last 5 days, last 2 months, last 1 year.
 		if [ "${KEEPING}" == "hours" ]; then
-			_check_backup "${BACKUP}" "hourly" 3 \
+			check_for_expired_backup "${BACKUP}" "hourly" 3 \
 				"$(basename -- "${BACKUP}" | sed -nre 's/([0-9]{2})[0-9]{2}$/\1/p')" "$(dirname "${BACKUP}")" "days"
 		fi
 		if [ "${KEEPING}" == "days" ]; then
-			_check_backup "${BACKUP}" "daily" 5 \
+			check_for_expired_backup "${BACKUP}" "daily" 5 \
 				"$(dirname "${BACKUP}")" "$(dirname "$(dirname "${BACKUP}")")" "months"
 		fi
 		if [ "${KEEPING}" == "months" ]; then
-			_check_backup "${BACKUP}" "monthly" 6 \
+			check_for_expired_backup "${BACKUP}" "monthly" 6 \
 				"$(dirname "$(dirname "${BACKUP}")")" "$(dirname "$(dirname "${BACKUP}")" | sed -nre 's/([0-9]{2})-[0-9]{2}$/\1/p')" "years"
 		fi
 		if [ "${KEEPING}" == "years" ]; then
-			_check_backup "${BACKUP}" "yearly" 1 \
+			check_for_expired_backup "${BACKUP}" "yearly" 1 \
 				"$(dirname "$(dirname "${BACKUP}")" | sed -nre 's/([0-9]{2})-[0-9]{2}$/\1/p')" "$(dirname "$(dirname "$(dirname "${BACKUP}")")")" ""
 		fi
 	done
@@ -152,9 +156,7 @@ function expire_backups()
 # Stats and validate backups (hanging links and that sort of thing...)
 function do_validate()
 {
-	if [ "${MOUNTED}" == "no" ]; then
-		do_mount
-	fi
+	do_mount
 
 	find -L "$(_get_this_backup)" -type l -exec ls -hdl --color=always "{}" \;
 	find "$(_get_this_backup)" -type d | while read -r; do
@@ -166,11 +168,9 @@ function do_validate()
 
 function do_stats()
 {
-	if [ "${MOUNTED}" == "no" ]; then
-		do_mount
-	fi
+	do_mount
 
-	du -hscx $(_list_backups)
+	report_cmd du -hscx $(_list_backups)
 }
 
 if [ $# -eq 0 ]; then
@@ -187,6 +187,7 @@ else
 		case "$i" in
 			mount )
 				do_mount
+				trap -n "mounting" "" EXIT
 				;;
 			backup )
 				do_backup
@@ -197,7 +198,7 @@ else
 			validate )
 				do_validate
 				;;
-			unmount )
+			unmount | umount )
 				do_unmount
 				;;
 			stats )

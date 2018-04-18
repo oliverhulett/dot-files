@@ -7,4 +7,4 @@ PATH=/home/ols/dot-files/bin:/usr/local/bin:/usr/bin:/bin
 
 * * * * * env >"${HOME}/.crontab.env"
 
-@hourly chronic.sh "${HOME}/dot-files/autocommit.sh"
+0 * * * * chronic.sh "${HOME}/dot-files/autocommit.sh"

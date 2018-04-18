@@ -81,7 +81,7 @@ alias file='file -krz'
 alias fuser='sudo fuser -vau'
 alias ifconfig="$(per_os -w "ipconfig" "sudo /sbin/ifconfig")"
 alias iotop='sudo iotop'
-alias mount='mount -l'
+alias mount="$(per_os -l "mount -l" "mount")"
 alias nethogs='sudo nethogs'
 alias rsync-a='rsync -zvvpPAXrogthlm'
 alias rsync-ca='rsync -zvvpPAXrogthlcm'
@@ -91,7 +91,6 @@ alias sursync-a='sudo rsync -zvvpPAXrogthlm'
 alias sursync-ca='sudo rsync -zvvpPAXrogthlcm'
 alias time="$(per_os -m "/usr/local/bin/time" "/usr/bin/time")"
 alias top="$(per_os -m "top -o cpu" "top -c")"
-alias umount='sudo umount'
 
 export LESS='-RFXiMx4'
 alias less="less ${LESS}"

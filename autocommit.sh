@@ -45,7 +45,7 @@ if [ ${WC_WAS_CLEAN} -ne 0 ]; then
 		CHANGES="$(runhere git log -1 --pretty=%B | tail -n+2)
 ${CHANGES}"
 	fi
-	CHANGES="$(echo "${CHANGES}" | LC_ALL=C sort -u)"
+	CHANGES="$(echo "${CHANGES}" | sed -re '/^$/d' | LC_ALL=C sort -u)"
 	THIS_COMMIT_MSG=( "Autocommit from $(hostname): $(echo "${CHANGES}" | wc -l) files changed" "${CHANGES}" )
 	report_cmd runhere git commit ${AMEND} -a "${THIS_COMMIT_MSG[@]/#/-m}"
 	set +x
