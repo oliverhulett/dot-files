@@ -52,11 +52,6 @@ export HISTSIZE=10000
 
 function set_local_paths()
 {
-	shopt -s nullglob
-	for p in $(echo ${HOME}/.bash_aliases/*-profile.d-* | sort -n); do
-		source "$p"
-	done
-	unset p
 	if [ -d "${HOME}/bin" ]; then
 		export PATH="$(prepend_path "${PATH}" "${HOME}/bin")"
 	fi
@@ -65,6 +60,11 @@ function set_local_paths()
 	fi
 	export PATH="$(prepend_path "${PATH}" "${HOME}/dot-files/bin")"
 	export PATH="$(append_path "${PATH}" /usr/local/sbin /usr/sbin /sbin)"
+	shopt -s nullglob
+	for p in $(echo ${HOME}/.bash_aliases/*-profile.d-* | sort -n); do
+		source "$p"
+	done
+	unset p
 	shopt -u nullglob
 }
 
