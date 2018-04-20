@@ -195,6 +195,14 @@ function which()
 				fi
 				bin="$newbin"
 			done
+			if [ -n "$bin" ]; then
+				v="$("$bin" --version 2>&1)"
+				if [ $? -eq 0 ]; then
+					echo "$v"
+				else
+					echo "$bin --version failed"
+				fi
+			fi
 			echo
 		done
 		if [ -z "$commands" ]; then

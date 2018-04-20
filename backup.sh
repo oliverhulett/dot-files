@@ -3,6 +3,7 @@
 ## Version 1 will just use rsync to copy stuff as diffs/hard-link
 ## Version 2 will compress and/or encrypt the backup directory.  I have to work a few things out before I can do that.
 ## e.g. How does Google drive sync deal with the hard-links?  How does rsync deal with linking diffs on compressed and encrypted file systems.
+## TODO:  Links, soft and hard...
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 
@@ -14,6 +15,7 @@ export LC_ALL=C
 RSYNC_ARGS=( -rpAXogthR --one-file-system --links --delete --delete-excluded --stats )
 BACKUP_ARCHIVE="${HOME}/etc/backups.tar.gz"
 BACKUP_DEST="${TMPDIR:-${TMP:-${HOME}/tmp}}/backups"
+BACKUP_DEST="${HOME}/etc/backups"
 
 # Get backup sources from files
 HOSTNAME="$(hostname -s | tr '[:upper:]' '[:lower:]')"
@@ -24,26 +26,25 @@ function _archive_is_mounted()
 {
 	test -d "${BACKUP_DEST}" && test "$(stat -fc%t:%T "${BACKUP_DEST}")" != "$(stat -fc%t:%T "${BACKUP_DEST}/..")"
 }
-function do_mount()
-{
-	if _archive_is_mounted; then
-		return
-	fi
-
-	touch "${BACKUP_ARCHIVE}"
-	mkdir --parents "${BACKUP_DEST}" 2>/dev/null
-	report_cmd archivemount -o nobackup "${BACKUP_ARCHIVE}" "${BACKUP_DEST}" || exit 1
-}
 function do_unmount()
 {
 	if ! _archive_is_mounted; then
 		return
 	fi
 
-	report_cmd umount "${BACKUP_DEST}"
-
+	#report_cmd umount "${BACKUP_DEST}"
 }
-trap -n "mounting" do_unmount EXIT
+function do_mount()
+{
+	if _archive_is_mounted; then
+		return
+	fi
+
+	#touch "${BACKUP_ARCHIVE}"
+	mkdir --parents "${BACKUP_DEST}" 2>/dev/null
+	#report_cmd archivemount -o nobackup "${BACKUP_ARCHIVE}" "${BACKUP_DEST}" || exit 1
+	#trap -n "mounting" do_unmount EXIT
+}
 
 _THIS_BACKUP=
 function _get_this_backup()
@@ -158,12 +159,26 @@ function do_validate()
 {
 	do_mount
 
-	find -L "$(_get_this_backup)" -type l -exec ls -hdl --color=always "{}" \;
-	find "$(_get_this_backup)" -type d | while read -r; do
-		if [ "$(command ls -BAUn "$REPLY")" == "total 0" ]; then
-			ls -d "$REPLY" 2>/dev/null
-		fi
-	done
+	local _this_backup="$(_get_this_backup)"
+
+	LINKS="$(find -L "${_this_backup}" -type l -exec ls -hdl --color=always "{}" \;)"
+	if [ -n "${LINKS}" ]; then
+		report_bad "Found hanging links..."
+		echo "${LINKS}"
+		echo
+	fi
+	DIRS="$(
+		find "${_this_backup}" -type d | while read -r; do
+			if [ "$(command ls -BAUn "$REPLY")" == "total 0" ]; then
+				ls -d "$REPLY" 2>/dev/null
+			fi
+		done
+	)"
+	if [ -n "${DIRS}" ]; then
+		report_bad "Found empty directories..."
+		echo "${DIRS}"
+		echo
+	fi
 }
 
 function do_stats()
@@ -171,6 +186,7 @@ function do_stats()
 	do_mount
 
 	report_cmd du -hscx $(_list_backups)
+	report_cmd du -hscx "${BACKUP_ARCHIVE}"
 }
 
 if [ $# -eq 0 ]; then
@@ -179,8 +195,8 @@ if [ $# -eq 0 ]; then
 	do_backup
 	expire_backups
 	do_validate
-	do_unmount
 	do_stats
+	do_unmount
 else
 	# Do the requested actions.
 	for i in "$@"; do
@@ -209,7 +225,7 @@ else
 				;;
 			* )
 				report_bad "Usage:"
-				report_bad "  $(basename -- "$0") [mount] [backup] [expire] [validate] [unmount] [stats] [list]"
+				report_bad "  $(basename -- "$0") [mount] [backup] [expire] [validate] [stats] [list] [unmount]"
 				exit 1
 				;;
 		esac
