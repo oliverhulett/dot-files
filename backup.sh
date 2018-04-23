@@ -4,6 +4,7 @@
 ## Version 2 will compress and/or encrypt the backup directory.  I have to work a few things out before I can do that.
 ## e.g. How does Google drive sync deal with the hard-links?  How does rsync deal with linking diffs on compressed and encrypted file systems.
 ## TODO:  Links, soft and hard...
+## TODO:  Add second backup pass to copy contents of any symlinks backed-up by first pass.
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 

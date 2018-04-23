@@ -1,5 +1,3 @@
-" vim:foldmethod=marker:foldlevel=0
-
 set nocompatible
 syntax enable
 
@@ -179,6 +177,7 @@ nnoremap Q gqap
 " Personalise {{{
 
 set copyindent
+set foldlevel=99
 set hlsearch
 set incsearch
 set modelines=1

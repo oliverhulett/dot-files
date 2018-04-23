@@ -58,13 +58,14 @@ function yamlpretty()
 {
 	source "$(dirname "$(readlink -f "${BASH_SOURCE}")")/../bash_common.sh" 2>/dev/null && eval "${setup_log_fd}" || true
 	for f in "$@"; do
-		python >&${log_fd} <<-EOF
+		python <<-EOF
+			import sys
 			from ruamel.yaml import YAML
 			yaml = YAML(typ='rt')
 			yaml.top_level_colon_align = True
 			yaml.preserve_quotes = True
 			doc = yaml.load(open("$f", 'r').read())
-			yaml.dump(doc, open("$f", 'w'))
+			yaml.dump(doc, sys.stdout)
 		EOF
 	done
 }
@@ -78,7 +79,7 @@ function yamlprettyinline()
 			yaml.top_level_colon_align = True
 			yaml.preserve_quotes = True
 			doc = yaml.load(open("$f", 'r').read())
-			yaml.dumps(doc)
+			yaml.dump(doc, open("$f", 'w'))
 		EOF
 	done
 }
