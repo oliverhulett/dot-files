@@ -80,5 +80,5 @@ fi
 if [ ${WC_WAS_CLEAN} -ne 0 ] || [ ${PULL_HAS_COMMITS} -eq 0 ]; then
 	report_good
 	report_good "Detected changes since last run (commits added locally or pulled from origin), running tests and setup-home.sh..."
-	report_cmd runhere nice -n 10 ./tests/run.sh ./tests/validate_dot-files.bats && report_cmd runhere ./setup-home.sh
+	report_cmd runhere nice -n 10 ./tests/run.sh && report_cmd runhere ./setup-home.sh
 fi

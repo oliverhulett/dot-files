@@ -29,11 +29,11 @@ export GIT_PS1_SHOWUPSTREAM="auto"
 function __custom_git_ps1()
 {
 	d="$(git branch --no-color 2>/dev/null | sed -nre 's/^\* //p' | cut -d_ -f1 | sed -re 's!^[^/]+/!!')"
-	wd="$(pwd | sed -re 's!^/home/olihul/!!')"
+	wd="$(pwd | sed -re 's!^'"${HOME}"/?'!!')"
 	if grep -qw "master" <(echo $wd) >/dev/null 2>&1 || ! grep -qw "$d" <(echo $wd) >/dev/null 2>&1; then
 		__git_ps1 "$@"
 	else
-		__git_ps1 "$@" "%s" | sed -re 's!(\w+:)?[/0-9a-zA-Z_-#]+( ?.*)?!\1\2!'
+		__git_ps1 "$@" "%s" | sed -re 's!(\w+:)?[/0-9a-zA-Z_#-]+( ?.*)?!\1\2!'
 	fi
 }
 
