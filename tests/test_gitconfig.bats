@@ -151,7 +151,7 @@ EOF
 	touch one two three
 	git ignore one two three
 	assert_status "M  .gitignore"
-	assert_contents .gitignore "one" "three" "two" '*.txt'
+	assert_contents .gitignore '*.txt' "one" "three" "two"
 
 	git commit -m"ignored files"
 

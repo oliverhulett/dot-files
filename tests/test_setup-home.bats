@@ -87,9 +87,9 @@ function _do_test_for_host()
 }
 
 @test "$FUT: github passwd" {
-	refute test -f "${HOME}/etc/passwd.github"
-	mkdir -p "${HOME}/etc"
-	echo "asdf" >"${HOME}/etc/passwd.github"
+	refute test -e "${HOME}/etc/git.passwds"
+	mkdir -p "${HOME}/etc/git.passwds"
+	echo "asdf" >"${HOME}/etc/git.passwds/oliverhulett@github.com"
 
 	_do_test_for_host "$(hostname -s | tr '[:upper:]' '[:lower:]')"
 

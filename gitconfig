@@ -16,7 +16,7 @@ externals = "!f() { ~/.git_wrappers/tag_externals.sh \"$@\"; }; f" ## Want to ex
 find = log --all --full-history
 gresolve = "!f() { : git mergetool ; git mergetool --tool=kdiff3 -y \"$@\" && echo \"Removing kdiff3 original files.\" && find ./ \\( -name '*.BASE.*' -or -name '*.BACKUP.*' -or -name '*.LOCAL.*' -or -name '*.REMOTE.*' -or -name '*.orig' \\) -delete -print; }; cd \"$GIT_PREFIX\" && f"
 home = "!f() { pwd -P; }; f" ## Want to execute from the top level, not GIT_PREFIX
-ignore = "!f() { for i in \"$@\"; do echo \"$i\" >>.gitignore; done; echo \"$(sort -u .gitignore)\" >.gitignore; sed -re '/^$/d' -i .gitignore; git add .gitignore; }; cd \"$GIT_PREFIX\" && f"
+ignore = "!f() { for i in \"$@\"; do echo \"$i\" >>.gitignore; done; echo \"$(LC_ALL=C sort -u .gitignore)\" >.gitignore; sed -re '/^$/d' -i .gitignore; git add .gitignore; }; cd \"$GIT_PREFIX\" && f"
 lg = "!f() { ~/.git_wrappers/log.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 mergeflict = "!f() { : git checkout ; git push; git pull --all && git fetch origin $1 && git merge FETCH_HEAD; }; f" ## Want to execute from top level, not GIT_PREFIX
 mine = "!f() { : git for-each-ref; git branch -vv; git for-each-ref --sort=-committerdate --format='#%(committerdate)#%(refname)#%(subject)' refs/remotes/origin/$(whoami) \"$@\" | column -ts'#'; }; f"
