@@ -12,7 +12,12 @@ function runhere()
 
 function git_is_busy()
 {
-	test -d "$(runhere git rev-parse --git-path rebase-merge)" || test -d "$(runhere git rev-parse --git-path rebase-apply)"
+	for i in rebase-merge rebase-apply MERGE_HEAD CHERRY_PICK_HEAD REVERT_HEAD BISECT_LOG; do
+		if test -e "$(runhere git rev-parse --git-path "$i")"; then
+			return 0
+		fi
+	done
+	return 1
 }
 
 reentrance_check
@@ -36,7 +41,6 @@ report_good
 if [ ${WC_WAS_CLEAN} -ne 0 ]; then
 	report_good "Working copy was not clean..."
 	AMEND=
-	set -x
 	CHANGES="$(runhere git status -s)"
 	# Autocommit msg format is "Autocommit from <hostname>: X files changed"
 	if [ ${PUSH_HAS_COMMITS} -eq 0 ] && [ "${LAST_COMMIT_MSG[0]}" == "Autocommit" ] && [ "${LAST_COMMIT_MSG[1]}" == "from" ] && [ "${LAST_COMMIT_MSG[2]}" == "$(hostname):" ]; then
@@ -46,9 +50,8 @@ if [ ${WC_WAS_CLEAN} -ne 0 ]; then
 ${CHANGES}"
 	fi
 	CHANGES="$(echo "${CHANGES}" | sed -re '/^$/d' | LC_ALL=C sort -u)"
-	THIS_COMMIT_MSG=( "Autocommit from $(hostname): $(echo "${CHANGES}" | wc -l) files changed" "${CHANGES}" )
+	THIS_COMMIT_MSG=( "Autocommit from $(hostname): $(echo "${CHANGES}" | wc -l) files changed ($(date '+%Y-%m-%d %H:%M:%S'))" "${CHANGES}" )
 	report_cmd runhere git commit ${AMEND} -a "${THIS_COMMIT_MSG[@]/#/-m}"
-	set +x
 fi
 
 # Second, pull new code.
