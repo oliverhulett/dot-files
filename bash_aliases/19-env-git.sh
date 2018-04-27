@@ -33,7 +33,7 @@ function __custom_git_ps1()
 	if grep -qw "master" <(echo $wd) >/dev/null 2>&1 || ! grep -qw "$d" <(echo $wd) >/dev/null 2>&1; then
 		__git_ps1 "$@"
 	else
-		__git_ps1 "$@" "%s" | sed -re 's!(\w+:)?[/0-9a-zA-Z_#-]+( ?.*)?!\1\2!'
+		__git_ps1 "$@" " %s" | sed -re 's!(\w+:)?[/0-9a-zA-Z_#-]+( ?.*)?!\1\2!'
 	fi
 }
 

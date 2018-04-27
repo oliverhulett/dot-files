@@ -35,54 +35,33 @@ function repo()
 	echo "$dir"
 	cd "$dir"
 }
+alias get-repo-dir=get-repo-dir.sh
+alias repo-dir=get-repo-dir.sh
+
+function _repo_completion()
+{
+	local cur
+	cur=${COMP_WORDS[COMP_CWORD]}
+	COMPREPLY=()
+	echo
+	echo $COMP_CWORD
+	echo "${COMP_WORDS[@]}"
+	if [ ${COMP_CWORD} -le 1 ]; then
+		COMPREPLY=( $(compgen -W "$(printf "%s\n" ${HOME}/{repo,src}/* ${HOME}/{repo,src}/*/* | xargs -n1 basename)" -- ${cur}) )
+	else
+		IFS=$'\n'
+		for i in $(get-repo-dir.sh "${COMP_WORDS[@]:1:$((COMP_CWORD - 1))}"); do
+			COMPREPLY=( "${COMPREPLY[@]}" $(cd "$i" && compgen -o dirnames -- "${cur}") )
+		done
+	fi
+	echo ${COMPREPLY[@]}
+	echo
+}
+complete -F _repo_completion get-repo-dir.sh get-repo-dir repo-dir repo
+
 unalias clone 2>/dev/null
 function clone()
 {
 	clone.sh "$@"
 	repo "$(echo "${@##\~}" | tr [:upper:] [:lower:])"
-}
-alias get-repo-dir=get-repo-dir.sh
-alias repo-dir=get-repo-dir.sh
-
-function depo()
-{
-	REPO_DIR=
-	if [ $# -ge 3 -a -z "$REPO_DIR" ]; then
-		REPO_DIR="$(repo-dir "$1" "$2" "$3")"
-		if [ -d "$REPO_DIR" ]; then
-			shift 3
-		else
-			REPO_DIR=
-		fi
-	fi
-	if [ $# -ge 2 -a -z "$REPO_DIR" ]; then
-		REPO_DIR="$(repo-dir "$1" "$2")"
-		if [ -d "$REPO_DIR" ]; then
-			shift 2
-		else
-			REPO_DIR=
-		fi
-	fi
-	if [ $# -ge 1 -a -z "$REPO_DIR" ]; then
-		REPO_DIR="$(repo-dir "$1")"
-		if [ -d "$REPO_DIR" ]; then
-			shift
-		else
-			REPO_DIR=
-		fi
-	fi
-	if [ -z "$REPO_DIR" ]; then
-		REPO_DIR="$(get-project-root)"
-	fi
-	IMG_DIR="$(dirname "$REPO_DIR" | sed -re "s!${HOME}/!${HOME}/dot-files/images/!")"
-	IMG_NAME="$(cd "$IMG_DIR" && make name)"
-	if [ -z "$(docker images -q $IMG_NAME)" ]; then
-		( cd "$IMG_DIR" && make build )
-	fi
-	if ! grep -qw "$REPO_DIR" <(pwd -P) 2>/dev/null; then
-		echo "Changing directory: $REPO_DIR"
-		cd "$REPO_DIR"
-	fi
-	echo "Running docker image: $IMG_NAME -- $@"
-	docker-run.sh -v '/u01:/u01' $IMG_NAME "$@"
 }
