@@ -43,19 +43,17 @@ function _repo_completion()
 	local cur
 	cur=${COMP_WORDS[COMP_CWORD]}
 	COMPREPLY=()
-	echo
-	echo $COMP_CWORD
-	echo "${COMP_WORDS[@]}"
 	if [ ${COMP_CWORD} -le 1 ]; then
 		COMPREPLY=( $(compgen -W "$(printf "%s\n" ${HOME}/{repo,src}/* ${HOME}/{repo,src}/*/* | xargs -n1 basename)" -- ${cur}) )
+	elif [ ${COMP_CWORD} -eq 2 ] && [ -d "${HOME}/repo/${COMP_WORDS[1]}" -o -d "${HOME}/src/${COMP_WORDS[1]}" ]; then
+		COMPREPLY=( $(cd "${HOME}/repo/${COMP_WORDS[1]}" 2>/dev/null && compgen -o dirnames -- "${cur}") $(cd "${HOME}/src/${COMP_WORDS[1]}" 2>/dev/null && compgen -o dirnames -- "${cur}") )
 	else
 		IFS=$'\n'
 		for i in $(get-repo-dir.sh "${COMP_WORDS[@]:1:$((COMP_CWORD - 1))}"); do
 			COMPREPLY=( "${COMPREPLY[@]}" $(cd "$i" && compgen -o dirnames -- "${cur}") )
 		done
+		unset IFS
 	fi
-	echo ${COMPREPLY[@]}
-	echo
 }
 complete -F _repo_completion get-repo-dir.sh get-repo-dir repo-dir repo
 
