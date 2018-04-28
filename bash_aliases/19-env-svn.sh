@@ -1,5 +1,5 @@
 # shellcheck shell=bash
-## Useful svn environment setup.  Yes SWD still uses svn :(
+## Useful svn environment setup.  Who still uses SVN?
 
 function _svn_ps1()
 {

@@ -1,10 +1,9 @@
 #!/bin/bash
 ## Backup local files to another local directory that'll be synced to the cloud.
-## Version 1 will just use rsync to copy stuff as diffs/hard-link
-## Version 2 will compress and/or encrypt the backup directory.  I have to work a few things out before I can do that.
-## e.g. How does Google drive sync deal with the hard-links?  How does rsync deal with linking diffs on compressed and encrypted file systems.
+## TODO:  How does Google drive sync deal with the hard-links?  How does rsync deal with linking diffs on compressed and encrypted file systems.
 ## TODO:  Links, soft and hard...
 ## TODO:  Add second backup pass to copy contents of any symlinks backed-up by first pass.
+## TODO:  Compression and encryption
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 
@@ -187,7 +186,7 @@ function do_stats()
 	do_mount
 
 	report_cmd du -hscx $(_list_backups)
-	report_cmd du -hscx "${BACKUP_ARCHIVE}"
+	#report_cmd du -hscx "${BACKUP_ARCHIVE}"
 }
 
 if [ $# -eq 0 ]; then
