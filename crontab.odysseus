@@ -7,5 +7,6 @@ PATH=/home/ols/dot-files/bin:/usr/local/bin:/usr/bin:/bin
 
 * * * * * env >"${HOME}/.crontab.env"
 
+@reboot chronic.sh "${HOME}/dot-files/autocommit.sh"
 0 * * * * chronic.sh "${HOME}/dot-files/autocommit.sh"
 5 * * * * chronic.sh sudo "${HOME}/dot-files/backup.sh"

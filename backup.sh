@@ -11,16 +11,16 @@ source "${HERE}/lib/script_utils.sh"
 
 reentrance_check
 
-export LC_ALL=C
-RSYNC_ARGS=( -rpAXogthR --one-file-system --links --delete --delete-excluded --stats )
-BACKUP_ARCHIVE="${HOME}/etc/backups.tar.gz"
-BACKUP_DEST="${TMPDIR:-${TMP:-${HOME}/tmp}}/backups"
-BACKUP_DEST="${HOME}/etc/backups"
-
 # Get backup sources from files
 HOSTNAME="$(hostname -s | tr '[:upper:]' '[:lower:]')"
 FILES_FROM="${HERE}/backups.${HOSTNAME}"
 EXCLUDE_FROM="${HERE}/backups.${HOSTNAME}.exclude"
+
+export LC_ALL=C
+RSYNC_ARGS=( -rpAXogthR --one-file-system --links --delete --delete-excluded --stats )
+BACKUP_ARCHIVE="${HOME}/etc/backups.tar.gz"
+BACKUP_DEST="${TMPDIR:-${TMP:-${HOME}/tmp}}/backups"
+BACKUP_DEST="${HOME}/etc/backups/${HOSTNAME}/"
 
 function _archive_is_mounted()
 {
