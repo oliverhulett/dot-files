@@ -32,6 +32,9 @@ unalias repo 2>/dev/null
 function repo()
 {
 	dir="$(get-repo-dir.sh "$@" | head -n1)"
+	if [ -d "${dir}/master" ]; then
+		dir="${dir}/master"
+	fi
 	echo "$dir"
 	cd "$dir"
 }
@@ -57,9 +60,4 @@ function _repo_completion()
 }
 complete -F _repo_completion get-repo-dir.sh get-repo-dir repo-dir repo
 
-unalias clone 2>/dev/null
-function clone()
-{
-	clone.sh "$@"
-	repo "$(echo "${@##\~}" | tr [:upper:] [:lower:])"
-}
+alias clone=clone.sh

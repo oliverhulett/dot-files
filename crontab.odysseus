@@ -9,4 +9,4 @@ PATH=/home/ols/dot-files/bin:/usr/local/bin:/usr/bin:/bin
 
 @reboot chronic.sh "${HOME}/dot-files/autocommit.sh"
 0 * * * * chronic.sh "${HOME}/dot-files/autocommit.sh"
-5 * * * * chronic.sh sudo "${HOME}/dot-files/backup.sh"
+5 * * * * chronic.sh sudo -En "${HOME}/dot-files/backup.sh"

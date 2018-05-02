@@ -15,7 +15,7 @@ function generate_options()
 {
 	#echo >&2 "Generating options from: $*"
 	for r in "${roots[@]}"; do
-		for d in "${HOME}"/${r}/$(printf "%s" "${@/#//}"); do
+		for d in "${HOME}"/${r}/$(printf "%s" "${@/#//}" | tr '[:upper:]' '[:lower:]'); do
 			if [ -d "$d" ]; then
 				echo_clean_path "$d"
 			fi

@@ -9,6 +9,11 @@ GREEN="$(tput -T"${TERM:-dumb}" setaf 2 || true)"
 WHITE="$(tput -T"${TERM:-dumb}" bold || true)$(tput -T"${TERM:-dumb}" setaf 7 || true)"
 RESET="$(tput -T"${TERM:-dumb}" sgr0 || true)"
 
+function report_neutral()
+{
+	[ "${_SHUTILS_QUIET}" != "no" ] || echo -e "$*"
+}
+
 function report_good()
 {
 	[ "${_SHUTILS_QUIET}" != "no" ] || echo -e "${GREEN}" "$*" "${RESET}"
@@ -21,7 +26,7 @@ function report_bad()
 
 function report_cmd()
 {
-	[ "${_SHUTILS_QUIET}" != "no" ] || echo -e "${WHITE}" "$*" "${RESET}"
+	[ "${_SHUTILS_QUIET}" != "no" ] || echo -e "${WHITE}""\$ $*""${RESET}"
 	"$@"
 }
 
