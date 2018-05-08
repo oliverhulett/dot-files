@@ -31,6 +31,7 @@ else
 	shift
 fi
 shift
+NEW_TICKET="$(echo "${NEW_TICKET}" | tr '[:lower:]' '[:upper:]')"
 
 if [ "$FEATURE" == "true" ]; then
 	NEW_BRANCH="feature/$NEW_TICKET"
