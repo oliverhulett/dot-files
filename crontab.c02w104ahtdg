@@ -15,5 +15,5 @@ PATH=/Users/ohulett/dot-files/bin:/usr/local/bin:/usr/bin:/bin
 5 0-8,10,12,15,17-23 * * 1-5 chronic.sh sudo -n "${HOME}/dot-files/backup.sh"
 5 * * * 0,6 chronic.sh sudo -n "${HOME}/dot-files/backup.sh"
 
-0 12 * * * test -z "$(docker ps -qa)" || chronic.sh docker container kill $(docker ps -q) && chronic.sh docker container prune -f
+0 12 * * * test -z "$(docker ps -q)" || chronic.sh docker container kill $(docker ps -q) && chronic.sh docker container prune -f
 0 12 * * 1 sleep 1 && chronic.sh docker image prune -af
