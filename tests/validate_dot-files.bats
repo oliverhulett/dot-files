@@ -17,7 +17,7 @@ DF_SOURCED_SCRIPTS=(
 	bashrc
 	profile
 	trap_stack.sh
-	$(cd "${DOTFILES}" && echo bash_aliases/*)
+	$(cd "${DOTFILES}" && echo bash-aliases/*)
 )
 
 DF_CRONTABS=( $(cd "${DOTFILES}" && echo crontab.*) )
@@ -159,7 +159,7 @@ function setup()
 
 @test "Validate: dot-files-common contains minimum required set of files" {
 	MINIMUM_SET=(
-		.bash_aliases/30-aliases.sh
+		.bash-aliases/30-aliases.sh
 		.bash_logout
 		.bash_profile
 		.bashrc

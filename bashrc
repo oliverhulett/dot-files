@@ -8,7 +8,7 @@
 export PATH="${PATH:-/usr/local/bin:/usr/bin:/bin}"
 source "${HOME}/dot-files/bash_common.sh"
 export PATH="$(append_path "${PATH}" "/usr/local/bin" "/usr/bin" "/bin")"
-if reentered "${HOME}/.bashrc" "${HOME}/.bash_aliases"/*; then
+if reentered "${HOME}/.bashrc" "${HOME}/.bash-aliases"/*; then
 	return 0
 fi
 
@@ -33,7 +33,7 @@ function vim()
 	VUNDLE_LAST_UPDATED_MARKER="${HOME}/.vim/bundle/.last_updated"
 	if [ -z "$(find "${VUNDLE_LAST_UPDATED_MARKER}" -mtime -1 2>/dev/null)" ] || \
 		[ "$(command grep -P '^[ \t]*Plugin ' "${HOME}/.vimrc" | xargs -L1 | sort)" != "$(tail -n +2 "${VUNDLE_LAST_UPDATED_MARKER}")" ]; then
-		[ -e "${HOME}/.bash_aliases/49-setup-proxy.sh" ] && source "${HOME}/.bash_aliases/49-setup-proxy.sh" 2>/dev/null
+		[ -e "${HOME}/.bash-aliases/49-setup-proxy.sh" ] && source "${HOME}/.bash-aliases/49-setup-proxy.sh" 2>/dev/null
 		command vim +'silent! PluginInstall' +qall
 		date >"${VUNDLE_LAST_UPDATED_MARKER}"
 		command grep -P '^[ \t]*Plugin ' "${HOME}/.vimrc" | xargs -L1 | sort >>"${VUNDLE_LAST_UPDATED_MARKER}"
@@ -61,7 +61,7 @@ function set_local_paths()
 	export PATH="$(prepend_path "${PATH}" "${HOME}/dot-files/bin")"
 	export PATH="$(append_path "${PATH}" /usr/local/sbin /usr/sbin /sbin)"
 	shopt -s nullglob
-	for p in $(echo ${HOME}/.bash_aliases/*-profile.d-* | sort -n); do
+	for p in $(echo ${HOME}/.bash-aliases/*-profile.d-* | sort -n); do
 		source "$p"
 	done
 	unset p
@@ -115,16 +115,16 @@ shopt -s cdspell
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
-# We can clear some variables here that will be set/updated by the bash_aliases includes and used later.
+# We can clear some variables here that will be set/updated by the bash-aliases includes and used later.
 export PROMPT_FOO=
 
-if [ -d "$HOME/.bash_aliases" ]; then
-	for f in $(echo $HOME/.bash_aliases/* | sort -n); do
+if [ -d "$HOME/.bash-aliases" ]; then
+	for f in $(echo $HOME/.bash-aliases/* | sort -n); do
 		source "$f"
 	done
 	unset f
-elif [ -r "$HOME/.bash_aliases" ]; then
-	source "$HOME/.bash_aliases"
+elif [ -r "$HOME/.bash-aliases" ]; then
+	source "$HOME/.bash-aliases"
 fi
 
 set_local_paths

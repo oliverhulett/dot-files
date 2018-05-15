@@ -27,10 +27,10 @@ This is just a random assortment of TODO thoughts.  For more detailed TODOs, see
 * Come up with a mechanism for combining list files where lists are needed but need to be different between machines.
     * I'm thinking a naming or directory heirarchy that won't be too dissimilar to the Test/Task/CI idea.  Therefore also a tool/tools to view the heirarchy and show resolutions for various inputs.
 * Discovery mechanism for including environment setups.
-    * Sourcing .../09-env-proxy.sh is a common pattern in scripts that need to fetch stuff from the internet.  But they don't all do it in the same way (e.g. some source ${HOME}/.bash_aliases/... and some source $(dirname "${BASH_SOURCE[0]}")/bash_aliases)  Is there a "correct" way (testability) or should it depend on what they're doing?
+    * Sourcing .../09-env-proxy.sh is a common pattern in scripts that need to fetch stuff from the internet.  But they don't all do it in the same way (e.g. some source ${HOME}/.bash-aliases/... and some source $(dirname "${BASH_SOURCE[0]}")/bash-aliases)  Is there a "correct" way (testability) or should it depend on what they're doing?
     * Is there an easier way of including these bits that will provide a central place to update if we move the files?  Or should be just be testing file location?
     * Whatever it is has to work for scripts launched by a fully setup bash prompt and from a "clean" environment.
-    * `source` looks in $PATH if the file to source has no slashes in it.  Put bash_common.sh in path, source it to fetch a `source` wrapper that knows about ~/.bash_aliases and dot-files (maybe two wrappers)
+    * `source` looks in $PATH if the file to source has no slashes in it.  Put bash_common.sh in path, source it to fetch a `source` wrapper that knows about ~/.bash-aliases and dot-files (maybe two wrappers)
 
 * Test/Task/CI idea
     * Start with a directory hierarcy.

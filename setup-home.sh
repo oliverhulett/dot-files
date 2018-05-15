@@ -4,7 +4,7 @@ HERE="$(cd "$(dirname "$0")" && pwd -P)"
 source "${HERE}/bash_common.sh" 2>/dev/null && eval "${capture_output}" || true
 RELPATH="${HERE}/bin/relpath.sh"
 
-[ -e "${HOME}/.bash_aliases/49-setup-proxy.sh" ] && source "${HOME}/.bash_aliases/49-setup-proxy.sh" 2>/dev/null
+[ -e "${HOME}/.bash-aliases/49-setup-proxy.sh" ] && source "${HOME}/.bash-aliases/49-setup-proxy.sh" 2>/dev/null
 
 echo "Updating dot-files..."
 # Can't pull here, you risk changing this file

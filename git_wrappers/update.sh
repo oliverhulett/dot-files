@@ -6,8 +6,8 @@ source "${DOTFILES}/bash_common.sh" 2>/dev/null && eval "${capture_output}" || t
 
 ## Old versions of git play with the path.  Old versions of git are correlated with old versions of Centos, which means old versions of python.
 ## If we need a python venv in out bash setup, assume we need it here too.
-if [ -e "${HOME}/.bash_aliases/09-profile.d-pyvenv.sh" ]; then
-	source "${HOME}/.bash_aliases/09-profile.d-pyvenv.sh"
+if [ -e "${HOME}/.bash-aliases/09-profile.d-pyvenv.sh" ]; then
+	source "${HOME}/.bash-aliases/09-profile.d-pyvenv.sh"
 fi
 ## If we're using dependencies.json, check that it is sane.
 if [ -f ./dependencies.json ]; then
