@@ -152,26 +152,29 @@ unalias which 2>/dev/null
 function which()
 {
 	for arg in "$@"; do
+		_found_something="false"
 		if [ "${arg:0:1}" = "-" ]; then
 			continue
 		fi
-		for suffix in "" ".sh" ".py"; do
+		for suffix in "" ".sh" ".py" ".bash" ".js" ".tsx" ".ts"; do
 			if type "${arg}${suffix}" 2>/dev/null; then
 				arg="${arg}${suffix}"
 				break
 			fi
 		done
 		cmd="$arg"
-		case `type -t "$arg" 2>/dev/null` in
+		case $(type -t "$arg" 2>/dev/null) in
 			alias)
 				alias "$arg"
 				_find_alias_or_fn "$arg"
 				cmd="$(alias "$arg" | sed -re "s/^[^=]+=(.+)$/\1/;s/^["'"'"']//;s/["'"'"']$//;s/command //g;s/builtin //g;s/sudo //g;s/ +-[^ ]+//g") $cmd"
+				_found_something="true"
 				;;
 			keyword)
 				;;
 			function)
 				_find_alias_or_fn "$arg"
+				_found_something="true"
 				;;
 			builtin)
 				;;
@@ -185,6 +188,7 @@ function which()
 				if [ -e "$bin" ]; then
 					ls -hl "$bin"
 					file "$bin"
+					_found_something="true"
 				fi
 				newbin=$(readlink -n "$bin")
 				if [ -z "$newbin" ]; then
@@ -197,6 +201,7 @@ function which()
 			done
 			if [ -n "$bin" ]; then
 				v="$("$bin" --version 2>&1)"
+				echo
 				if [ $? -eq 0 ]; then
 					echo "$v"
 				else
@@ -205,7 +210,7 @@ function which()
 			fi
 			echo
 		done
-		if [ -z "$commands" ]; then
+		if [ "$_found_something" == "false" ]; then
 			command which "$@"
 #			command_not_found_handle "$arg" 2>/dev/null
 		fi

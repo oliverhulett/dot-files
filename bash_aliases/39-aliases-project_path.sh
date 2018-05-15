@@ -60,4 +60,9 @@ function _repo_completion()
 }
 complete -F _repo_completion get-repo-dir.sh get-repo-dir repo-dir repo
 
-alias clone=clone.sh
+unalias clone 2>/dev/null
+function clone()
+{
+	LINE="$(clone.sh "$@" | tee /dev/tty 2>/dev/null | tail -1)"
+	cd "${LINE}" 2>/dev/null
+}

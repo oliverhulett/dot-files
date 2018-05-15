@@ -125,9 +125,13 @@ CHECKOUT_PATH="${ROOT}/$(echo "$1" | tr '[:upper:]' '[:lower:]')/$(echo "$2" | t
 
 if [ -d "${CHECKOUT_PATH}/master" ]; then
 	report_good "There is already something checked out for $1/$2 at ${CHECKOUT_PATH}/master"
-	exit 0
+else
+	run_and_tell "Making repository directory: ${CHECKOUT_PATH}" mkdir --parents "${CHECKOUT_PATH}"
+	cd "${CHECKOUT_PATH}" && run_and_tell "Cloning $1/$2 from $SERVER" git clone --recursive "${SERVER}${PROJ}/${REPO}.git" master
 fi
-
-run_and_tell "Making repository directory: ${CHECKOUT_PATH}" mkdir --parents "${CHECKOUT_PATH}"
-cd "${CHECKOUT_PATH}" && run_and_tell "Cloning $1/$2 from $SERVER" git clone --recursive "${SERVER}${PROJ}/${REPO}.git" master
-get-repo-dir.sh "$1" "$2"
+d="$(get-repo-dir.sh "$1" "$2")"
+if [ -d "$d/master" ]; then
+	echo "$d/master"
+elif [ -d "$d" ]; then
+	echo "$d"
+fi
