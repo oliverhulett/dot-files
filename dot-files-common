@@ -19,7 +19,7 @@ bash_logout .bash_logout
 bash_profile .bash_profile
 bashrc .bashrc
 flake8 .config/flake8
-git_wrappers .git_wrappers
+git-wrappers .git-wrappers
 gitconfig .gitconfig
 gitignore .gitignore
 inputrc .inputrc

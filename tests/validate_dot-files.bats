@@ -163,7 +163,7 @@ function setup()
 		.bash_logout
 		.bash_profile
 		.bashrc
-		.git_wrappers
+		.git-wrappers
 		.gitconfig
 		.gitignore
 		.interactive_commands

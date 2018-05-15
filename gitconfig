@@ -6,28 +6,28 @@ path = ~/.gitconfig.local
 [alias]
 alias = config --get-regexp alias
 branches = branch -avv
-cleanall = "!f() { ~/.git_wrappers/cleanall.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
-cleanbranches = "!f() { ~/.git_wrappers/cleanbranches.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
-cleanignored = "!f() { ~/.git_wrappers/cleanignored.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
-cp = "!f() { ~/.git_wrappers/cp.sh \"$@\"; }; cd \"$GIT_PREFIX\" && f"
+cleanall = "!f() { ~/.git-wrappers/cleanall.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
+cleanbranches = "!f() { ~/.git-wrappers/cleanbranches.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
+cleanignored = "!f() { ~/.git-wrappers/cleanignored.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
+cp = "!f() { ~/.git-wrappers/cp.sh \"$@\"; }; cd \"$GIT_PREFIX\" && f"
 discard = reset --hard HEAD
 env = "!f() { env; }; cd \"$GIT_PREFIX\" && f"
-externals = "!f() { ~/.git_wrappers/tag_externals.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
+externals = "!f() { ~/.git-wrappers/tag_externals.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 find = log --all --full-history
 gresolve = "!f() { : git mergetool ; git mergetool --tool=kdiff3 -y \"$@\" && echo \"Removing kdiff3 original files.\" && find ./ \\( -name '*.BASE.*' -or -name '*.BACKUP.*' -or -name '*.LOCAL.*' -or -name '*.REMOTE.*' -or -name '*.orig' \\) -delete -print; }; cd \"$GIT_PREFIX\" && f"
 home = "!f() { pwd -P; }; f" ## Want to execute from the top level, not GIT_PREFIX
 ignore = "!f() { for i in \"$@\"; do echo \"$i\" >>.gitignore; done; echo \"$(LC_ALL=C sort -u .gitignore)\" >.gitignore; sed -re '/^$/d' -i .gitignore; git add .gitignore; }; cd \"$GIT_PREFIX\" && f"
-lg = "!f() { ~/.git_wrappers/log.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
+lg = "!f() { ~/.git-wrappers/log.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 mergeflict = "!f() { : git checkout ; git push; git pull --all && git fetch origin $1 && git merge FETCH_HEAD; }; f" ## Want to execute from top level, not GIT_PREFIX
 mine = "!f() { : git for-each-ref; git branch -vv; git for-each-ref --sort=-committerdate --format='#%(committerdate)#%(refname)#%(subject)' refs/remotes/origin/$(whoami) \"$@\" | column -ts'#'; }; f"
-mkbranch = "!f() { ~/.git_wrappers/mkbranch.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
+mkbranch = "!f() { ~/.git-wrappers/mkbranch.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 mvbranch = "!f() { : git checkout ; git branch -m \"$1\" \"$2\" && git push origin :\"$1\" && git push --set-upstream origin \"$2\"; }; f" ## Want to execute from top level, not GIT_PREFIX
-new = "!f() { ~/.git_wrappers/new.sh \"$@\"; }; cd \"$GIT_PREFIX\" && f"
+new = "!f() { ~/.git-wrappers/new.sh \"$@\"; }; cd \"$GIT_PREFIX\" && f"
 pullme = "!f() { : git pull; git pull --all --force --prune \"$@\"; git update; git cleanbranches; }; f" ## Want to execute from top level, not GIT_PREFIX
 pushtags = push --tags
 refs = for-each-ref refs/remotes/origin
 remotes = remote -v
-resolve = "!f() { : git add ; if [ $# -eq 0 ]; then set -- $(git diff --name-only --diff-filter=U); fi; ~/.git_wrappers/resolve.sh \"$@\"; read -n1 -p\"Resolved? [y/N]: \"; echo; if [ \"$(echo $REPLY | tr '[A-Z]' '[a-z]')\" == \"y\" ]; then git add \"$@\"; fi; }; cd \"$GIT_PREFIX\" && f"
+resolve = "!f() { : git add ; if [ $# -eq 0 ]; then set -- $(git diff --name-only --diff-filter=U); fi; ~/.git-wrappers/resolve.sh \"$@\"; read -n1 -p\"Resolved? [y/N]: \"; echo; if [ \"$(echo $REPLY | tr '[A-Z]' '[a-z]')\" == \"y\" ]; then git add \"$@\"; fi; }; cd \"$GIT_PREFIX\" && f"
 resolve-mine = "!f() { : git add ; if [ $# -eq 0 ]; then set -- $(git diff --name-only --diff-filter=U); fi; git checkout --ours \"$@\" && git add \"$@\"; }; cd \"$GIT_PREFIX\" && f"
 resolve-ours = !git resolve-mine
 resolve-theirs = "!f() { : git add ; if [ $# -eq 0 ]; then set -- $(git diff --name-only --diff-filter=U); fi; git checkout --theirs \"$@\" && git add \"$@\"; }; cd \"$GIT_PREFIX\" && f"
@@ -40,7 +40,7 @@ this = "!f() { git branch --no-color | sed -nre 's/^\\* //p'; }; f"
 ticket = "!f() { git branch --no-color | sed -nre 's/^\\* //p' | cut -d'_' -f1 | rev | cut -d'/' -f1 | rev; }; f"
 undo-commit = reset HEAD^
 unstage = reset HEAD
-update = "!f() { ~/.git_wrappers/update.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
+update = "!f() { ~/.git-wrappers/update.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 upstream = "!f() { remote=\"origin\"; if [ -n \"$1\" ]; then remote=\"$1\"; fi; git push --set-upstream \"$remote\" $(git this); }; f"
 when = "!f() { git for-each-ref --sort=-committerdate --format='%(authorname)#%(committerdate)#%(refname)#%(subject)' refs/remotes/origin/ \"$@\" | column -ts'#'; }; f"
 when-added = "!f() { : git log ; follow=; if [ $# -le 1 ]; then follow=\"--follow\"; fi; git log $follow --diff-filter=A --find-renames=40% -- \"$@\"; }; cd \"$GIT_PREFIX\" && f"
@@ -75,7 +75,7 @@ stat = true
 
 [core]
 pager = less -RFiMx4 -+S
-editor = ~/.git_wrappers/commit.sh
+editor = ~/.git-wrappers/commit.sh
 excludesfile = ~/.gitignore
 safecrlf = true
 abbrev = 11
