@@ -18,3 +18,6 @@ if [ -e "${HOME}/.sdmake/complete/sdmake.completion.bash" ]; then
 fi
 
 export PATH="$(append_path "${PATH}" $(echo "${PATH}" | sed -re 's/:/ /g'))"
+
+# Show metrics collected by sdmake.
+export SHOW_DEVMETRICS=true
