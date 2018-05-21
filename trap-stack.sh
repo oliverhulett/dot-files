@@ -21,13 +21,13 @@ function _stack_size()
 	eval 'echo ${#'"$1"'[@]}'
 }
 
-function _trap-stack()
+function _trap_stack()
 {
 	local sig=${1//[^a-zA-Z0-9]/_}
-	echo "__trap-stack_$sig"
+	echo "__trap_stack_$sig"
 }
 
-function _trap-stack_name_list()
+function _trap_stack_name_list()
 {
 	echo "__name$1"
 }
@@ -44,8 +44,8 @@ function _print_traps()
 		if [ $es != 0 ]; then
 			break
 		fi
-		local stack="$(_trap-stack "$sig")"
-		local name_list="$(_trap-stack_name_list "$stack")"
+		local stack="$(_trap_stack "$sig")"
+		local name_list="$(_trap_stack_name_list "$stack")"
 		local ref='echo "${'"${stack}"'[$idx]}"'
 		local nameref='echo "${'"__name${stack}"'[$idx]}"'
 		for (( idx=0 ; idx < $(_stack_size "${stack}") ; idx += 1 )); do
@@ -71,8 +71,8 @@ function _install_trap()
 	local sig="$3"
 	## For each signal, we have an array of traps and an array of names.
 	## The trap at a given index has the name given at the same index of the names array.
-	local stack="$(_trap-stack "$sig")"
-	local name_list="$(_trap-stack_name_list "$stack")"
+	local stack="$(_trap_stack "$sig")"
+	local name_list="$(_trap_stack_name_list "$stack")"
 	## There is also a named variable giving the index of that name in both arrays.
 	local lookup="${stack}_${NAME}"
 	## Here we have the name, so look up the index.  If the variable giving the index doesn't exist,
@@ -121,7 +121,7 @@ function _fire()
 	local _last_exit_status=$?
 	eval "${_hidex}"
 	local sig="$1"
-	local stack="$(_trap-stack "$sig")"
+	local stack="$(_trap_stack "$sig")"
 	local ref='echo "${'"${stack}"'[$idx]}"'
 	for (( idx=0 ; idx < $(_stack_size "${stack}") ; idx += 1 )); do
 		local spec="$(eval $ref)"
