@@ -12,3 +12,5 @@ PATH=/home/ols/dot-files/bin:/usr/local/bin:/usr/bin:/bin
 
 0 * * * * chronic.sh "${HOME}/dot-files/autocommit.sh"
 5 * * * * chronic.sh sudo -En "${HOME}/dot-files/backup.sh"
+
+0 12 * * * find "${HOME}/repo" "${HOME}/src" -type d -name master -exec chronic.sh git -C "{}" pullme \;
