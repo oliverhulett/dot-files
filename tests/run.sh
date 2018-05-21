@@ -12,11 +12,11 @@ function help()
 	echo
 	echo "Additional options:"
 	printf "  %- 14s %s\n"  "-l, --list" "List the test files that would be run with the given arguments."
-	printf "  %- 18s %s\n"  "-r, --parallel=N" "Run tests in parallel, using N processes.  Defaults to 2 * \`nproc's (2 * $(nproc))"
+	printf "  %- 18s %s\n"  "-n, --parallel=N" "Run tests in parallel, using N processes.  Defaults to 2 * \`nproc's (2 * $(nproc))"
 	echo
 }
 
-OPTS=$(getopt -o "chtvlr:" --long "count,help,tap,version,list,parallel:" -n "$(basename -- "$0")" -- "$@")
+OPTS=$(getopt -o "chtvln:" --long "count,help,tap,version,list,parallel:" -n "$(basename -- "$0")" -- "$@")
 es=$?
 if [ $es != 0 ]; then
 	help
@@ -58,7 +58,7 @@ while true; do
 			ARGS[${#ARGS[@]}]="$1"
 			shift
 			;;
-		-r | --parallel )
+		-n | --parallel )
 			if [ -n "$2" ] && command grep -qwE '^[0-9]+$' <(echo "$2") 2>/dev/null && [ "$2" -ne 0 ]; then
 				PARALLEL=$2
 			fi

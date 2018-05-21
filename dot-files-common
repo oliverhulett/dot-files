@@ -23,7 +23,7 @@ git-wrappers .git-wrappers
 gitconfig .gitconfig
 gitignore .gitignore
 inputrc .inputrc
-interactive_commands .interactive_commands
+interactive-commands .interactive-commands
 invoke.py .invoke.py
 profile .profile
 ssh.config .ssh/config

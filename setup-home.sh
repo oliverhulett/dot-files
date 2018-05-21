@@ -1,7 +1,7 @@
 #!/bin/bash
 
 HERE="$(cd "$(dirname "$0")" && pwd -P)"
-source "${HERE}/bash_common.sh" 2>/dev/null && eval "${capture_output}" || true
+source "${HERE}/bash-common.sh" 2>/dev/null && eval "${capture_output}" || true
 RELPATH="${HERE}/bin/relpath.sh"
 
 [ -e "${HOME}/.bash-aliases/49-setup-proxy.sh" ] && source "${HOME}/.bash-aliases/49-setup-proxy.sh" 2>/dev/null

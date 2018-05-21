@@ -11,12 +11,12 @@ DF_FILES=(
 )
 
 DF_SOURCED_SCRIPTS=(
-	bash_common.sh
+	bash-common.sh
 	bash_logout
 	bash_profile
 	bashrc
 	profile
-	trap_stack.sh
+	trap-stack.sh
 	$(cd "${DOTFILES}" && echo bash-aliases/*)
 )
 
@@ -47,7 +47,7 @@ DF_LISTS=(
 	dot-files.prometheus
 	eclipse-user-dictionary.txt
 	gitignore
-	interactive_commands
+	interactive-commands
 )
 
 function setup()
@@ -166,7 +166,7 @@ function setup()
 		.git-wrappers
 		.gitconfig
 		.gitignore
-		.interactive_commands
+		.interactive-commands
 		.profile
 		.profile
 		.vim

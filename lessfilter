@@ -25,7 +25,7 @@ fi
 
 
 # Apply redirection to the current shell
-source "${HOME}/dot-files/bash_common.sh"
+source "${HOME}/dot-files/bash-common.sh"
 exec 2>&${log_fd}
 log "$(callstack)"
 

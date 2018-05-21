@@ -3,6 +3,6 @@
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 
-source "${HERE}/lib/script_utils.sh"
+source "${HERE}/lib/script-utils.sh"
 
 reentrance_check

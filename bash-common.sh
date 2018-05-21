@@ -1,13 +1,11 @@
 # shellcheck shell=sh
 ## Common function used by bashrc and bash_alias/* files.
-## `source bash_common.sh` must be idempotent.
+## `source bash-common.sh` must be idempotent.
 # shellcheck disable=SC2016,SC2015
 
 _hidex='_setx=n; [[ $- == *x* ]] && _setx=y; set +x;'
-_hidex=
 eval "${_hidex}"
 _restorex='[ ${_setx:-n} == y ] && set -x; unset _setx;'
-_restorex=
 
 # Alias gnu utils installed on the mac with homebrew to their usual names.
 ## Do we need to detect mac-ness?
@@ -41,7 +39,7 @@ function _reentrance_hash()
 			command cat "$i" 2>/dev/null 1>&2
 		fi
 	done
-	command cat "${HOME}/dot-files/bash_common.sh" "$@" 2>/dev/null | md5sum
+	command cat "${HOME}/dot-files/bash-common.sh" "$@" 2>/dev/null | md5sum
 }
 
 function reentrance_check()
@@ -81,7 +79,7 @@ function dotlog()
 	echo "$(date '+%H:%M:%S.%N') [$$] [$(basename -- "$0")] [LOG   ] $*" >>"$(_logfile)"
 }
 
-builtin source "$(dirname "$(readlink -f "${BASH_SOURCE}")")/trap_stack.sh"
+builtin source "$(dirname "$(readlink -f "${BASH_SOURCE}")")/trap-stack.sh"
 
 function _echo_clean_path()
 {
@@ -210,7 +208,7 @@ setup_log_fd='{
 	fi;
 	eval "$_restorex";
 }'
-eval "${setup_log_fd}"
+#eval "${setup_log_fd}"
 capture_output='{
 	eval "$_hidex" 2>/dev/null;
 	eval "$setup_log_fd";

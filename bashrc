@@ -6,7 +6,7 @@
 # that can't tolerate any output.
 
 export PATH="${PATH:-/usr/local/bin:/usr/bin:/bin}"
-source "${HOME}/dot-files/bash_common.sh"
+source "${HOME}/dot-files/bash-common.sh"
 export PATH="$(append_path "${PATH}" "/usr/local/bin" "/usr/bin" "/bin")"
 if reentered "${HOME}/.bashrc" "${HOME}/.bash-aliases"/*; then
 	return 0
@@ -29,7 +29,7 @@ export EDITOR=vim
 export PAGER=less
 function vim()
 {
-	source "${HOME}/dot-files/bash_common.sh" 2>/dev/null || true
+	source "${HOME}/dot-files/bash-common.sh" 2>/dev/null || true
 	VUNDLE_LAST_UPDATED_MARKER="${HOME}/.vim/bundle/.last_updated"
 	if [ -z "$(find "${VUNDLE_LAST_UPDATED_MARKER}" -mtime -1 2>/dev/null)" ] || \
 		[ "$(command grep -P '^[ \t]*Plugin ' "${HOME}/.vimrc" | xargs -L1 | sort)" != "$(tail -n +2 "${VUNDLE_LAST_UPDATED_MARKER}")" ]; then
@@ -198,7 +198,7 @@ function _prompt_command()
 		set -- $(history 1)
 		# `history` outputs command count, then date, then time, then command
 		shift 3
-		if ! grep -qwE "$(sed -re 's/^\^?/^/' ${HOME}/.interactive_commands 2>/dev/null | paste -sd'|' -)" <(echo "$@") >/dev/null 2>/dev/null; then
+		if ! grep -qwE "$(sed -re 's/^\^?/^/' ${HOME}/.interactive-commands 2>/dev/null | paste -sd'|' -)" <(echo "$@") >/dev/null 2>/dev/null; then
 			PROMPT_TIMER='['
 			if [ ${_timer_show} -ge 3600 ]; then
 				PROMPT_TIMER="${PROMPT_TIMER}$((_timer_show / 3600))h "

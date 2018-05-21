@@ -1,7 +1,7 @@
 # shellcheck shell=bash
 ## Utilities for writing useful and user friendly scripts.  To be sourced.  Should be idempontent, only defines functions.
 
-source "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/../bash_common.sh"
+source "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/../bash-common.sh"
 
 _SHUTILS_QUIET="no"
 RED="$(tput -T"${TERM:-dumb}" setaf 1 || true)"

@@ -10,7 +10,7 @@
 #umask 022
 
 export PATH="${PATH:-/bin:/usr/bin}"
-source "${HOME}/dot-files/bash_common.sh"
+source "${HOME}/dot-files/bash-common.sh"
 export PATH="$(append_path "${PATH}" "/usr/local/bin" "/usr/bin" "/bin")"
 if reentered "${HOME}/.profile"; then
 	return 0

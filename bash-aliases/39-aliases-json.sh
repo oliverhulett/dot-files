@@ -2,7 +2,7 @@
 ## Validate JSON
 function jsoncheck()
 {
-	source "$(dirname "$(readlink -f "${BASH_SOURCE}")")/../bash_common.sh" 2>/dev/null && eval "${setup_log_fd}" || true
+	source "$(dirname "$(readlink -f "${BASH_SOURCE}")")/../bash-common.sh" 2>/dev/null && eval "${setup_log_fd}" || true
 	for f in "$@"; do
 		echo -n "Validating '$f': "
 		python -m json.tool "$f" >&${log_fd}
@@ -17,14 +17,14 @@ function jsoncheck()
 ## Pretty print JSON
 function jsonpretty()
 {
-	source "$(dirname "$(readlink -f "${BASH_SOURCE}")")/../bash_common.sh" 2>/dev/null && eval "${setup_log_fd}" || true
+	source "$(dirname "$(readlink -f "${BASH_SOURCE}")")/../bash-common.sh" 2>/dev/null && eval "${setup_log_fd}" || true
 	for f in "$@"; do
 		python -m json.tool "$f"
 	done
 }
 function jsonprettyinline()
 {
-	source "$(dirname "$(readlink -f "${BASH_SOURCE}")")/../bash_common.sh" 2>/dev/null && eval "${setup_log_fd}" || true
+	source "$(dirname "$(readlink -f "${BASH_SOURCE}")")/../bash-common.sh" 2>/dev/null && eval "${setup_log_fd}" || true
 	for f in "$@"; do
 		python -m json.tool "$f" >&${log_fd} && echo "$(python -m json.tool "$f")" >"$f"
 	done
@@ -33,7 +33,7 @@ function jsonprettyinline()
 ## Validate YAML
 function yamlcheck()
 {
-	source "$(dirname "$(readlink -f "${BASH_SOURCE}")")/../bash_common.sh" 2>/dev/null && eval "${setup_log_fd}" || true
+	source "$(dirname "$(readlink -f "${BASH_SOURCE}")")/../bash-common.sh" 2>/dev/null && eval "${setup_log_fd}" || true
 	for f in "$@"; do
 		echo -n "Validating '$f': "
 		python >&${log_fd} <<-EOF
@@ -56,7 +56,7 @@ function yamlcheck()
 ## Pretty print YAML
 function yamlpretty()
 {
-	source "$(dirname "$(readlink -f "${BASH_SOURCE}")")/../bash_common.sh" 2>/dev/null && eval "${setup_log_fd}" || true
+	source "$(dirname "$(readlink -f "${BASH_SOURCE}")")/../bash-common.sh" 2>/dev/null && eval "${setup_log_fd}" || true
 	for f in "$@"; do
 		python <<-EOF
 			import sys
@@ -71,7 +71,7 @@ function yamlpretty()
 }
 function yamlprettyinline()
 {
-	source "$(dirname "$(readlink -f "${BASH_SOURCE}")")/../bash_common.sh" 2>/dev/null && eval "${setup_log_fd}" || true
+	source "$(dirname "$(readlink -f "${BASH_SOURCE}")")/../bash-common.sh" 2>/dev/null && eval "${setup_log_fd}" || true
 	for f in "$@"; do
 		python >&${log_fd} <<-EOF
 			from ruamel.yaml import YAML

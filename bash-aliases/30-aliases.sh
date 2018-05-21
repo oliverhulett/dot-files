@@ -1,7 +1,7 @@
 # shellcheck shell=bash
 # Aliases
 # shellcheck disable=SC1090
-source "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/../bash_common.sh"
+source "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/../bash-common.sh"
 
 alias lssc='lss --color=none'
 alias lsc='lss --color=none'
@@ -142,9 +142,9 @@ unalias _find_alias_or_fn 2>/dev/null
 function _find_alias_or_fn()
 {
 	(
-		command grep -lR -E "^[^#]*\balias[[:space:]]+${arg}=" ~/.bashrc ~/.bash_profile ~/.bash-aliases ~/dot-files/bash_common.sh
-		command grep -lR -E "^[^#]*\bfunction[[:space:]]+${arg}[[:space:]]*(\\(\\))?" ~/.bashrc ~/.bash_profile ~/.bash-aliases ~/dot-files/bash_common.sh
-		command grep -lR -E "^[^#]*(\bfunction)?[[:space:]]+${arg}[[:space:]]*\\(\\)" ~/.bashrc ~/.bash_profile ~/.bash-aliases ~/dot-files/bash_common.sh
+		command grep -lR -E "^[^#]*\balias[[:space:]]+${arg}=" ~/.bashrc ~/.bash_profile ~/.bash-aliases ~/dot-files/bash-common.sh
+		command grep -lR -E "^[^#]*\bfunction[[:space:]]+${arg}[[:space:]]*(\\(\\))?" ~/.bashrc ~/.bash_profile ~/.bash-aliases ~/dot-files/bash-common.sh
+		command grep -lR -E "^[^#]*(\bfunction)?[[:space:]]+${arg}[[:space:]]*\\(\\)" ~/.bashrc ~/.bash_profile ~/.bash-aliases ~/dot-files/bash-common.sh
 	) | sort -u
 }
 

@@ -2,7 +2,7 @@
 
 HERE="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
 DOTFILES="$(dirname "${HERE}")"
-source "${DOTFILES}/bash_common.sh" 2>/dev/null && eval "${capture_output}" || true
+source "${DOTFILES}/bash-common.sh" 2>/dev/null && eval "${capture_output}" || true
 
 if [ $# -eq 1 ]; then
 	SRC="$(pwd)"
