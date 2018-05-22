@@ -4,6 +4,7 @@ bash-aliases/09-profile.d-jetbrains.sh .bash-aliases/09-profile.d-jetbrains.sh
 bash-aliases/28-completion-docker.sh .bash-aliases/28-completion-docker.sh
 bash-aliases/28-completion-docker_compose.sh .bash-aliases/28-completion-docker_compose.sh
 bash-aliases/29-completion-laas.sh .bash-aliases/29-completion-laas.sh
+bash-aliases/39-aliases-atlassian.sh .bash-aliases/39-aliases-atlassian.sh
 bash-aliases/39-aliases-gradle.sh .bash-aliases/39-aliases-gradle.sh
 bash-aliases/39-aliases-project_path.sh .bash-aliases/39-aliases-project_path.sh
 gitconfig.atlassian .gitconfig.local
