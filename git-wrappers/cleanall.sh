@@ -18,6 +18,12 @@ function cleanempty()
 if [ -x ./build.py ]; then
 	echo "Cleaning build."
 	./build.py -t all -c
+elif [ -x ./gradlew ]; then
+	echo "Cleaning build."
+	./gradlew clean
+elif [ -e ./pom.xml ]; then
+	echo "Cleaning build."
+	mvn clean
 fi
 
 git update --clean

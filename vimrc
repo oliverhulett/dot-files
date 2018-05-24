@@ -1,5 +1,6 @@
 set nocompatible
 syntax enable
+set encoding=utf-8
 
 " Vundle stuff {{{
 

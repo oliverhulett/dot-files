@@ -14,10 +14,11 @@ trap 'rm -f "$tmp"' EXIT
 "$@" >"$tmp" 2>&1
 ret=$?
 if [ "$ret" -ne 0 ]; then
-	command cat "$tmp"
 	echo
-	echo "Exiting: $*"
+	echo "Ran: $*"
 	echo "Exit code: $ret"
+	echo
+	command cat "$tmp"
 else
 	echo "$tmp" | while read -r; do
 		dotlog "${REPLY}"

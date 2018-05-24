@@ -39,7 +39,7 @@ case "$1" in
 	*)
 		pygmentize -f terminal "$1"
 		exit_status=$?
-		log "Pygmentizing $1 for less: pygmentize -f terminal $1; Returned: $exit_status"
+		log "Pygmentized $1 for less: pygmentize -f terminal $1; Returned: $exit_status"
 		;;
 esac
 exit $exit_status
