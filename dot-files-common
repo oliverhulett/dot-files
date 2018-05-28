@@ -5,6 +5,7 @@ bash-aliases/19-env-shellcheck.sh .bash-aliases/19-env-shellcheck.sh
 bash-aliases/19-env-svn.sh .bash-aliases/19-env-svn.sh
 bash-aliases/20-completion.sh .bash-aliases/20-completion.sh
 bash-aliases/29-completion-pyinvoke.sh .bash-aliases/29-completion-pyinvoke.sh
+bash-aliases/29-completion-wrappers.sh .bash-aliases/29-completion-wrappers.sh
 bash-aliases/30-aliases.sh .bash-aliases/30-aliases.sh
 bash-aliases/39-aliases-emptydir.sh .bash-aliases/39-aliases-emptydir.sh
 bash-aliases/39-aliases-find.sh .bash-aliases/39-aliases-find.sh

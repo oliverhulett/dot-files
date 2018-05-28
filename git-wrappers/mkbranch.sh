@@ -77,7 +77,7 @@ else
 	sleep 1
 fi
 
-git pullme
+git pullme --force
 git fetch origin ${CURR_BRANCH}
 
 ( cd .. && git new-workdir "${MASTER_DIR}" "${NEW_DIR}" "${CURR_BRANCH}" )

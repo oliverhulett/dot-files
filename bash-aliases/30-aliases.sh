@@ -203,11 +203,12 @@ function which()
 			done
 			if [ -n "$bin" ]; then
 				v="$("$bin" --version 2>&1)"
+				rv=$?
 				echo
-				if [ $? -eq 0 ]; then
+				if [ $rv -eq 0 ]; then
 					echo "$v"
 				else
-					echo "$bin --version failed"
+					echo "$(basename -- "$bin") --version failed"
 				fi
 			fi
 			echo

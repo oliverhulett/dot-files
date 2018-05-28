@@ -38,7 +38,7 @@ echo "Updating repo and externals from upstream."
 set -x
 stashes=$(git stash list | wc -l)
 git stash --include-untracked
-git pull
+git pullme --force
 if [ $stashes -ne $(git stash list | wc -l) ]; then
 	git stash pop stash@{$stashes}
 fi
