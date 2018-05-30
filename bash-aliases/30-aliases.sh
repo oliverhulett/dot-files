@@ -92,6 +92,7 @@ alias sursync-a='sudo rsync -zvvpPAXrogthlm'
 alias sursync-ca='sudo rsync -zvvpPAXrogthlcm'
 alias time="$(per_os -m "/usr/local/bin/time" "/usr/bin/time")"
 alias top="$(per_os -m "top -o cpu" "top -c")"
+alias tt="tt.sh"
 
 export LESS='-RFXiMx4'
 alias less="less ${LESS}"
