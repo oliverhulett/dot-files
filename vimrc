@@ -175,13 +175,28 @@ nnoremap Q gqap
 
 " }}}
 
+" Shortcuts and re-mappings - functions {{{
+
+" Append modeline after last line in buffer.
+" Use substitute() instead of printf() to handle '%%s' modeline in LaTeX
+" files.
+function! AppendModeline()
+	let l:modeline = printf(" vim: set ts=%d sw=%d tw=%d %set :",
+		\ &tabstop, &shiftwidth, &textwidth, &expandtab ? '' : 'no')
+	let l:modeline = substitute(&commentstring, "%s", l:modeline, "")
+	call append(line("$"), l:modeline)
+endfunction
+nnoremap <silent> <Leader>ml :call AppendModeline()<CR>
+
+" }}}
+
 " Personalise {{{
 
 set copyindent
 set foldlevel=99
 set hlsearch
 set incsearch
-set modelines=1
+set modelines=10
 set noautoindent
 set nobackup
 set noexpandtab
@@ -379,6 +394,8 @@ endfunction
 " Python, JSON, and Yaml should use spaces instead of tabs.
 autocmd Filetype dosini setlocal noautoindent
 autocmd Filetype gitconfig setlocal noautoindent
+autocmd Filetype groovy setlocal expandtab
+autocmd Filetype java setlocal expandtab
 autocmd Filetype javascript setlocal expandtab
 autocmd Filetype json setlocal expandtab
 autocmd Filetype markdown setlocal expandtab

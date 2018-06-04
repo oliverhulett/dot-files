@@ -12,13 +12,14 @@ source "$(dirname ${HERE})/lib/script-utils.sh"
 
 function print_usage()
 {
-	echo "$(basename -- "$0") [-a] [-s <server>] <project> <repo>"
+	echo "$(basename -- "$0") [-a] [-s <server>] [-r (src|repo)] <project> <repo>"
 	echo "  Clone a repository into the correct place and do some project setup things..."
 	echo "  -a  Check all servers and report ambiguous repositories."
 	echo "  -s  Checkout from the given server."
+	echo "  -r  Checkout root."
 }
 
-OPTS=$(getopt -o "has:" --long "help,all,server:" -n "$(basename -- "$0")" -- "$@")
+OPTS=$(getopt -o "has:r:" --long "help,all,server:,root:" -n "$(basename -- "$0")" -- "$@")
 es=$?
 if [ $es != 0 ]; then
 	print_usage >&2
@@ -27,6 +28,7 @@ fi
 
 CHECK_ALL="false"
 SERVER=
+ROOT=
 eval set -- "${OPTS}"
 while true; do
 	case "$1" in
@@ -50,10 +52,30 @@ while true; do
 				"github" | "github.com" | "gh" | "g" )
 					SERVER="${GITHUB}"
 					;;
-				"*" )
+				* )
 					echo >&2 "Unknown server: $1"
 					print_usage >&2
 					exit 1
+			esac
+			shift
+			;;
+		-r | --root )
+			shift
+			case "$(echo "$1" | tr '[:upper:]' '[:lower:]')" in
+				"repo" | "r" )
+					ROOT="${HOME}/repo"
+					;;
+				"src" | "s" )
+					ROOT="${HOME}/src"
+					;;
+				* )
+					if [ -d "${HOME}/$1" ]; then
+						ROOT="${HOME}/$1"
+					else
+						echo >&2 "Unknown root directory: $1"
+						print_usage >&2
+						exit 1
+					fi
 			esac
 			shift
 			;;
@@ -117,9 +139,11 @@ if [ -z "$SERVER" ]; then
 	exit 1
 fi
 
-ROOT="${HOME}/repo"
-if [ "$SERVER" == "$GITHUB" ]; then
-	ROOT="${HOME}/src"
+if [ -z "${ROOT}" ]; then
+	ROOT="${HOME}/repo"
+	if [ "$SERVER" == "$GITHUB" ] || [ "$(echo "$1" | tr '[:upper:]' '[:lower:]')" == "oliverhulett" ]; then
+		ROOT="${HOME}/src"
+	fi
 fi
 CHECKOUT_PATH="${ROOT}/$(echo "$1" | tr '[:upper:]' '[:lower:]')/$(echo "$2" | tr '[:upper:]' '[:lower:]')"
 
