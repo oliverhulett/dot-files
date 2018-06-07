@@ -40,7 +40,7 @@ function _shutils_cleanup()
 function reentrance_check()
 {
 	local name="${1:-$(basename -- "$0" .sh)}"
-	_SHUTILS_LOCK_DIR="${TMPDIR:-${TMP:-${HOME}}}/.${name}.lock.d"
+	_SHUTILS_LOCK_DIR="${TMPDIR:-${TMP:-/tmp}}/.${name}.lock.d"
 	report_good "Using lock directory: ${_SHUTILS_LOCK_DIR}"
 	if ! mkdir "${_SHUTILS_LOCK_DIR}" 2>/dev/null; then
 		## Lock dir already existed, look for running instance
