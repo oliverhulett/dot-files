@@ -7,12 +7,12 @@ export HERE DOTFILES PATH
 
 function help()
 {
-	bats --help
+	"${HERE}/x_helpers/bats/bin/bats" --help
 	echo "Pretty mode doesn't work here, until I can capture and aggregate the summaries."
 	echo
 	echo "Additional options:"
-	printf "  %- 14s %s\n"  "-l, --list" "List the test files that would be run with the given arguments."
-	printf "  %- 18s %s\n"  "-n, --parallel=N" "Run tests in parallel, using N processes.  Defaults to 2 * \`nproc's (2 * $(nproc))"
+	printf '  %- 14s %s\n'  "-l, --list" "List the test files that would be run with the given arguments."
+	printf '  %- 18s %s\n'  "-n, --parallel=N" "Run tests in parallel, using N processes.  Defaults to 2 * \`nproc's (2 * $(nproc))"
 	echo
 }
 
@@ -36,7 +36,7 @@ while true; do
 			exit
 			;;
 		-v | --version )
-			bats --version
+			"${HERE}/x_helpers/bats/bin/bats" --version
 			exit
 			;;
 		-c | --count )
@@ -48,13 +48,13 @@ while true; do
 			shift
 			;;
 		-t | --tap )
-			ARGS=( ${ARGS[@]/$1} )
+			ARGS=( "${ARGS[@]/$1}" )
 			ARGS[${#ARGS[@]}]="$1"
 			shift
 			;;
 		-p | --pretty )
 			TAP="false"
-			ARGS=( ${ARGS[@]/$1} )
+			ARGS=( "${ARGS[@]/$1}" )
 			ARGS[${#ARGS[@]}]="$1"
 			shift
 			;;
@@ -81,11 +81,11 @@ function get_all_test_files()
 set -- $(get_all_test_files "$@")
 
 if [ "${COUNT}" == "true" ]; then
-	bats --count "$@"
+	"${HERE}/x_helpers/bats/bin/bats" --count "$@"
 	exit
 fi
 
-NUM_TESTS=$(bats --count "$@")
+NUM_TESTS=$("${HERE}/x_helpers/bats/bin/bats" --count "$@")
 if [ "$#" -lt "${PARALLEL}" ]; then
 	PARALLEL=$#
 fi
@@ -104,13 +104,13 @@ if [ "${PARALLEL}" -eq 1 ]; then
 fi
 if [ "${LIST}" == "true" ]; then
 	echo "Running ${NUM_TESTS} ${TESTS} in $# ${FILES} using at most ${PARALLEL} ${PROCESSES}"
-	printf "%s\n" "$@"
+	printf '%s\n' "$@"
 	exit
 else
 	echo "Running ${NUM_TESTS} ${TESTS} in $# ${FILES} using at most ${PARALLEL} ${PROCESSES}"
 fi
 
-TD="/tmp/bats/$(date '+%Y%m%d-%H%M%S').$$.${RANDOM}"
+TD="${TMPDIR:-${TMP:-/tmp}}/bats/$(date '+%Y%m%d-%H%M%S').$$.${RANDOM}"
 rm -rf "${TD}"
 mkdir --parents "${TD}"
 
@@ -122,35 +122,37 @@ for a in "$@"; do
 	fi
 done
 
-TIME=( $(command which time) -f "\n%E (%P)  User: %U secs  Sys: %S secs\nMax Mem: %M kb\nCtx Sw: %w (Inv: %c)\nFS in: %I  FS out: %O" )
+TIME=( "$(command which time)" -f '\n%E (%P)  User: %U secs  Sys: %S secs\nMax Mem: %M kb\nCtx Sw: %w (Inv: %c)\nFS in: %I  FS out: %O' )
 
 # Can't actually be false for the moment, maybe later we'll add \`bats --pretty' mode back in...
+# @formatter:off
 if [ "${TAP}" == "true" ]; then
-	printf " % ${WIDTH}s %s\n" ":" "1..${NUM_TESTS}"
-	printf "%s\0" "$@" | stdbuf -oL "${TIME[@]}" xargs -r0 -n 1 -P "${PARALLEL}" -I{} sh -c "
+	printf ' % '"${WIDTH}"'s %s\n' ":" "1..${NUM_TESTS}"
+	# shellcheck disable=SC2016
+	printf '%s\0' "$@" | stdbuf -oL "${TIME[@]}" xargs -r0 -n 1 -P "${PARALLEL}" -I{} sh -c "
 		export FN=\"\$(basename -- \"{}\" .bats)\";
 		export TD=\"${TD}/\${FN}\";
 		mkdir \"\$TD\";
 		export TMPDIR=\"\$TD\";
 		export BATS_TMPDIR=\"\$TD\";
 		export BATS_MOCK_TMPDIR=\"\$TD\";
-		bats ${ARGS[*]} {} | sed -nre \"2,\\\$s/^/\$(printf \"%- ${WIDTH}s\" \"\${FN}\"): /p\";
+		${HERE}/x_helpers/bats/bin/bats ${ARGS[*]} {} | sed -nre \"2,\\\$s/^/\$(printf \"%- ${WIDTH}s\" \"\${FN}\"): /p\";
 	" | stdbuf -oL perl -e '
-		$| = 1;
-		my $cnt = 0;
-		my $success = 0;
-		my $skip = 0;
-		my $failure = 0;
-		while (<STDIN>) {
-			if (m/^(.{'${WIDTH}'}: )((not )?ok )([0-9]+)(( # skip \()?.+)$/) {
-				$cnt++;
-				my $colour = "";
-				my $file = $1;
-				my $result = $2;
-				my $name = $5;
-				if ($result =~ /^not ok $/) {
-					$failure++;
-					$colour = "\e[31m";
+	$| = 1;
+	my $cnt = 0;
+	my $success = 0;
+	my $skip = 0;
+	my $failure = 0;
+	while (<STDIN>) {
+		if (m/^(.{'"${WIDTH}"'}: )((not )?ok )([0-9]+)(( # skip \()?.+)$/) {
+					$cnt++;
+					my $colour = "";
+					my $file = $1;
+					my $result = $2;
+					my $name = $5;
+					if ($result =~ /^not ok $/) {
+						$failure++;
+						$colour = "\e[31m";
 				} elsif ($name =~ /^ # skip \(/) {
 					$skip++;
 					$colour = "\e[34m";
@@ -172,3 +174,4 @@ if [ "${TAP}" == "true" ]; then
 		exit $failure
 	'
 fi
+# @formatter:on
