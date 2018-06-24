@@ -97,7 +97,7 @@ alias tt="tt.sh"
 
 export LESS='-RFXiMx4'
 alias less="less ${LESS}"
-export LESSOPEN="|$(per_os -m "/usr/local/bin/lesspipe.sh" "/usr/bin/lesspipe.sh") %s"
+export LESSOPEN="|$(per_os -m "/usr/local/bin/lesspipe.sh" "/usr/bin/lesspipe") %s"
 
 GREP_ARGS="$(per_os -w "" -- "--exclude-dir='.svn' --exclude-dir='.git' --color=always")"
 GREP_ARGS_NC="$(per_os -w "" -- "--exclude-dir='.svn' --exclude-dir='.git' --color=never")"
