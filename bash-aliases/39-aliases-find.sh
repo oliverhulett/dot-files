@@ -22,7 +22,7 @@ function safefind
 	fi
 	declare -a DIRS
 	while [ $# -gt 0 ]; do
-		if [ -z "`echo ${1:0:1} | tr -d '()!,-'`" ]; then
+		if [ -z "$(echo "${1:0:1}" | tr -d '()!,-')" ]; then
 			break
 		else
 			DIRS[${#DIRS[@]}]="$1"
@@ -32,7 +32,7 @@ function safefind
 	if [ ${#DIRS[@]} -eq 0 ]; then
 		DIRS[0]="./"
 	fi
-	find $dashh $dashl $dashp "${DIRS[@]}" -nowarn -not \( -name '.git' -prune -or -name '.svn' -prune -or -name '.venv' -prune -or -name '.virtualenv' -prune \) \( "$@" \)
+	find $dashh $dashl $dashp "${DIRS[@]}" -nowarn -not \( -name '.git' -prune -or -name '.svn' -prune -or -name '.venv' -prune -or -name '.virtualenv' -prune -or -name 'node_modules' \) \( "$@" \)
 }
 
 unalias findin 2>/dev/null
@@ -44,7 +44,7 @@ function findin
 	for arg in "$@"; do
 		if [ -d "$arg" ]; then
 			DIRS[${#DIRS[@]}]="$arg"
-		elif echo $arg | ngrep -qE '^\.[a-zA-Z0-9\*]{1,7}$' >/dev/null 2>&1; then
+		elif echo "$arg" | ngrep -qE '^\.[a-zA-Z0-9\*]{1,7}$' >/dev/null 2>&1; then
 			EXTS[${#EXTS[@]}]="-or"
 			EXTS[${#EXTS[@]}]="-iname"
 			EXTS[${#EXTS[@]}]="*$arg"
@@ -65,7 +65,7 @@ function findin
 		done
 		declare -a EXTS
 	fi
-	if [ -z "$EXTS" ]; then
+	if [ -z "${EXTS[*]}" ]; then
 		EXTS[${#EXTS[@]}]="-or"
 		EXTS[${#EXTS[@]}]="-iname"
 		EXTS[${#EXTS[@]}]='*.mak'
@@ -77,6 +77,6 @@ function findin
 		EXTS[${#EXTS[@]}]='*.h*'
 	fi
 
-	echo "Looking for ${PATS[@]} in ${DIRS[@]} (-iname 'Makefile' -or -iname 'Jamfile' ${EXTS[@]})"
+	echo "Looking for ${PATS[*]} in ${DIRS[*]} (-iname 'Makefile' -or -iname 'Jamfile' ${EXTS[*]})"
 	safefind "${DIRS[@]}" -type f -not -name '*~' \( -iname 'Makefile' -or -iname Jamfile "${EXTS[@]}" \) -print0 | xargs -0 grep -n --color=always -E "${PATS[@]}"
 }
