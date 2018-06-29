@@ -8,4 +8,5 @@ bash-aliases/29-completion-runjs.sh .bash-aliases/29-completion-runjs.sh
 bash-aliases/39-aliases-atlassian.sh .bash-aliases/39-aliases-atlassian.sh
 bash-aliases/39-aliases-gradle.sh .bash-aliases/39-aliases-gradle.sh
 bash-aliases/39-aliases-project_path.sh .bash-aliases/39-aliases-project_path.sh
+docker-container-noprune.c02w104ahtdg .docker-container-noprune.c02w104ahtdg
 gitconfig.atlassian .gitconfig.local
