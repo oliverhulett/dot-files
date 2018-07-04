@@ -23,6 +23,6 @@ function killprocs()
 			done
 		fi
 	else
-		echo "No processes found matching patterns: $@"
+		echo "No processes found matching patterns: $*"
 	fi
 }

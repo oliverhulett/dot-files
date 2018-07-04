@@ -84,6 +84,7 @@ alias iotop='sudo iotop'
 alias mount="$(per_os -l "mount -l" "mount")"
 alias nethogs='sudo nethogs'
 alias netstat-a="$(per_os -m "netstat -an -ptcp" "netstat -lnp")"
+alias pgrep='pgrep -fl'
 alias rsync-a='rsync -zvvpPAXrogthlm'
 alias rsync-ca='rsync -zvvpPAXrogthlcm'
 alias sdiff='sdiff --strip-trailing-cr -bB'
@@ -170,7 +171,7 @@ function which()
 			alias)
 				alias "$arg"
 				_find_alias_or_fn "$arg"
-				cmd="$(alias "$arg" | sed -re "s/^[^=]+=(.+)$/\1/;s/^["'"'"']//;s/["'"'"']$//;s/command //g;s/builtin //g;s/sudo //g;s/ +-[^ ]+//g") $cmd"
+				cmd="$(alias "$arg" | sed -re 's/^[^=]+=(.+)$/\1/;s/^["'"'"']//;s/["'"'"']$//;s/command //g;s/builtin //g;s/sudo //g;s/ +-[^ ]+//g;s/^([^ ]+).*/\1/') $cmd"
 				_found_something="true"
 				;;
 			keyword)
@@ -185,7 +186,7 @@ function which()
 				;;
 		esac
 		echo
-		commands=$(command which -a $(echo $cmd | tr ' ' '\n' | sort -u) 2>/dev/null)
+		commands="$(command which -a $(echo $cmd | tr ' ' '\n' | sort -u) 2>/dev/null)"
 		for bin in $commands; do
 			while [ -n "$bin" ]; do
 				if [ -e "$bin" ]; then

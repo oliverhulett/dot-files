@@ -18,5 +18,5 @@ PATH=/Users/ohulett/dot-files/bin:/usr/local/bin:/usr/bin:/bin
 0 12 * * * find "${HOME}/repo" "${HOME}/src" -type d -name master -exec chronic.sh git -C "{}" pullme \;
 
 0 12 * * * chronic.sh docker run --rm --privileged alpine hwclock -s
-0 12 * * * sleep 1 && chronic.sh docker container rm -fv "$(if [ -e "${HOME}/.docker-container-noprune" ]; then docker container ls -aq | command grep -v -E "$(docker container ls -aq --filter $(paste -sd " --filter " <"${HOME}/.docker-container-noprune") | paste -sd '|')"; else docker container ls -aq; fi)"
-0 12 * * 1 sleep 10 && chronic.sh docker image rm -fv "$(if [ -e "${HOME}/.docker-image-noprune" ]; then docker image ls -aq | command grep -v -E "$(docker image ls -aq --filter $(paste -sd " --filter " <"${HOME}/.docker-image-noprune") | paste -sd '|')"; else docker image ls -aq; fi)"
+0 12 * * * sleep 1 && chronic.sh docker container rm -fv $(if [ -e "${HOME}/.docker-container-noprune" ]; then docker container ls -aq | command grep -v -E "$(docker container ls -aq --filter $(paste -sd " --filter " <"${HOME}/.docker-container-noprune") | paste -sd '|')"; else docker container ls -aq; fi)
+0 12 * * 1 sleep 10 && chronic.sh docker image rm -f $(if [ -e "${HOME}/.docker-image-noprune" ]; then docker image ls -aq | command grep -v -E "$(docker image ls -aq --filter $(paste -sd " --filter " <"${HOME}/.docker-image-noprune") | paste -sd '|')"; else docker image ls -aq; fi)
