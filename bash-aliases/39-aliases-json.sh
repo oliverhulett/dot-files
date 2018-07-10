@@ -62,8 +62,9 @@ function yamlpretty()
 			import sys
 			from ruamel.yaml import YAML
 			yaml = YAML(typ='rt')
-			yaml.top_level_colon_align = True
 			yaml.preserve_quotes = True
+			yaml.top_level_colon_align = False
+			yaml.width = 120
 			doc = yaml.load(open("$f", 'r').read())
 			yaml.dump(doc, sys.stdout)
 		EOF
@@ -76,8 +77,9 @@ function yamlprettyinline()
 		python >&${log_fd} <<-EOF
 			from ruamel.yaml import YAML
 			yaml = YAML(typ='rt')
-			yaml.top_level_colon_align = True
 			yaml.preserve_quotes = True
+			yaml.top_level_colon_align = False
+			yaml.width = 120
 			doc = yaml.load(open("$f", 'r').read())
 			yaml.dump(doc, open("$f", 'w'))
 		EOF
