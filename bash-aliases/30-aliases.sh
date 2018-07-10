@@ -78,6 +78,7 @@ alias cp="$(per_os -w "cp --preserve" "cp --preserve=all")"
 alias diff='diff -wB'
 alias eject='eject -T'
 alias file='file -krz'
+alias formatter='bash <(curl -sS https://bitbucket.org/oliverhulett/formatter/raw/master/run.sh)'
 alias fuser='sudo fuser -vau'
 alias ifconfig="$(per_os -w "ipconfig" "sudo /sbin/ifconfig")"
 alias iotop='sudo iotop'
@@ -85,6 +86,7 @@ alias mount="$(per_os -l "mount -l" "mount")"
 alias nethogs='sudo nethogs'
 alias netstat-a="$(per_os -m "netstat -an -ptcp" "netstat -lnp")"
 alias pgrep='pgrep -fl'
+alias pretty='bash <(curl -sS https://bitbucket.org/oliverhulett/formatter/raw/master/run.sh)'
 alias rsync-a='rsync -zvvpPAXrogthlm'
 alias rsync-ca='rsync -zvvpPAXrogthlcm'
 alias sdiff='sdiff --strip-trailing-cr -bB'

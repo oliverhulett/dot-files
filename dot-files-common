@@ -9,7 +9,6 @@ bash-aliases/29-completion-wrappers.sh .bash-aliases/29-completion-wrappers.sh
 bash-aliases/30-aliases.sh .bash-aliases/30-aliases.sh
 bash-aliases/39-aliases-emptydir.sh .bash-aliases/39-aliases-emptydir.sh
 bash-aliases/39-aliases-find.sh .bash-aliases/39-aliases-find.sh
-bash-aliases/39-aliases-json.sh .bash-aliases/39-aliases-json.sh
 bash-aliases/39-aliases-links.sh .bash-aliases/39-aliases-links.sh
 bash-aliases/39-aliases-proc.sh .bash-aliases/39-aliases-proc.sh
 bash-aliases/39-aliases-sed_1_liners.sh .bash-aliases/39-aliases-sed_1_liners.sh
