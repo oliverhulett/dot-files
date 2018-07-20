@@ -10,3 +10,4 @@ bash-aliases/39-aliases-gradle.sh .bash-aliases/39-aliases-gradle.sh
 bash-aliases/39-aliases-project_path.sh .bash-aliases/39-aliases-project_path.sh
 docker-container-noprune.c02w104ahtdg .docker-container-noprune
 gitconfig.atlassian .gitconfig.local
+gradle.properties.c02w104ahtdg .gradle/gradle.properties
