@@ -208,6 +208,7 @@ set ruler
 set scrolloff=10
 set shiftwidth=4
 set showmatch
+set showmode
 set smartcase
 set smarttab
 set spell spelllang=en_gb
