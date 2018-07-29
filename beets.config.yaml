@@ -2,13 +2,15 @@ library: ~/Music/library.db
 directory: ~/Music
 plugins:
   #- gmusic
-  #- replaygain
   #- lyrics
+  #- replaygain
 - chroma
 - convert
+- duplicates
 - edit
 - fetchart
 - lastimport
+- missing
 - random
 - the
 
@@ -18,18 +20,18 @@ import:
   link: no
   hardlink: no
   resume: ask
-  incremental: no
+  incremental: yes
   log: ~/.cache/beets.log
   autotag: yes
-  from_scratch: yes
+  from_scratch: no
   default_action: apply
   detail: yes
-  duplicate_action: ask
+  duplicate_action: keep
 
 paths:
-  default: Sorted/Albums/Music.%lower{${format}}/%the{${albumartist}}/%if{${year},${year}-}${album}%aunique{}/%if{${disc} > 1,Disc_${disc}}/%if{${track},${track}-}$title
-  singleton: Sorted/Single/Music.%lower{${format}}/%if{${year},${year}-}%the{${artist}}/${title}
-  comp: Sorted/Comp/Music.%lower{${format}}/%if{${year},${year}-}${album}%aunique{}/%if{${disc} > 1,Disc_${disc}}/%if{${track},${track}-}%if{${artist},%the{${artist}}-}${title}
+  default: Sorted/the{${albumartist}}/%if{${year},${year}-}${album}%aunique{}/%if{${disc} != "01",Disc_${disc}}/%if{${track},${track}-}$title
+  singleton: Sorted/if{${year},${year}-}%the{${artist}}/${title}
+  comp: Sorted/if{${year},${year}-}${album}%aunique{}/%if{${disc} != "01",Disc_${disc}}/%if{${track},${track}-}%if{${artist},%the{${artist}}-}${title}
 
 clutter: [Thumbs.DB, .DS_Store, cover.jpg, cover.png]
 ignore:
