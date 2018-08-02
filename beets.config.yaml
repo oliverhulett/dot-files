@@ -29,9 +29,9 @@ import:
   duplicate_action: keep
 
 paths:
-  default: Sorted/the{${albumartist}}/%if{${year},${year}-}${album}%aunique{}/%if{${disc} != "01",Disc_${disc}}/%if{${track},${track}-}$title
-  singleton: Sorted/if{${year},${year}-}%the{${artist}}/${title}
-  comp: Sorted/if{${year},${year}-}${album}%aunique{}/%if{${disc} != "01",Disc_${disc}}/%if{${track},${track}-}%if{${artist},%the{${artist}}-}${title}
+  default: Sorted/Music.%lower{${format}}/%the{${albumartist}}/%if{${year},${year}-}${album}/%if{${disctotal} = 1,Disc_${disc}}/%if{${track},${track}-}$title
+  singleton: Sorted/Music.%lower{${format}}/%if{${year},${year}-}%the{${artist}}/${title}
+  comp: Sorted/Music.%lower{${format}}/%if{${year},${year}-}${album}/%if{${disctotal} = 1,,Disc_${disc}}/%if{${track},${track}-}%if{${artist},%the{${artist}}-}${title}
 
 clutter: [Thumbs.DB, .DS_Store, cover.jpg, cover.png]
 ignore:
