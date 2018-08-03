@@ -9,6 +9,7 @@ plugins:
 - duplicates
 - edit
 - fetchart
+- inline
 - lastimport
 - missing
 - random
@@ -20,20 +21,24 @@ import:
   link: no
   hardlink: no
   resume: ask
-  incremental: yes
+  incremental: no
   log: ~/.cache/beets.log
   autotag: yes
-  from_scratch: no
+  from_scratch: yes
   default_action: apply
   detail: yes
   duplicate_action: keep
 
-paths:
-  default: Sorted/Music.%lower{${format}}/%the{${albumartist}}/%if{${year},${year}-}${album}/%if{${disctotal} = 1,Disc_${disc}}/%if{${track},${track}-}$title
-  singleton: Sorted/Music.%lower{${format}}/%if{${year},${year}-}%the{${artist}}/${title}
-  comp: Sorted/Music.%lower{${format}}/%if{${year},${year}-}${album}/%if{${disctotal} = 1,,Disc_${disc}}/%if{${track},${track}-}%if{${artist},%the{${artist}}-}${title}
+pathfields:
+  always_format: u'%s' % (format,) if format is not None and format != '' else path[:-3]
+  disc_and_track: u'%02i.%02i' % (disc, track) if disctotal > 1 else u'%02i' % (track)
 
-clutter: [Thumbs.DB, .DS_Store, cover.jpg, cover.png]
+paths:
+  default: Sorted/Music/%the{${albumartist}}/%if{${year},${year}-}${album}/%if{${track},${disc_and_track}-}$title
+  singleton: Sorted/Music/%if{${year},${year}-}%the{${artist}}/${title}
+  comp: Sorted/Music/%if{${year},${year}-}${album}/%if{${track},${disc_and_track}-}%if{${artist},%the{${artist}}-}${title}
+
+clutter: [Thumbs.DB, .DS_Store, cover.*]
 ignore:
 - .*
 - '*~'

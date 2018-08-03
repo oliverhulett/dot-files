@@ -60,3 +60,5 @@ if [ -e "${HOME}/etc/git.passwds" ]; then
 	done
 	chmod 0600 "${GIT_CREDS}"
 fi
+
+cp -uv "${HERE}/git-wrappers/pre-push" "${HERE}/.git/hooks/pre-push"

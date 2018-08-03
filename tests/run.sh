@@ -175,3 +175,5 @@ if [ "${TAP}" == "true" ]; then
 	'
 fi
 # @formatter:on
+
+cp -uv "${DOTFILES}/git-wrappers/pre-push" "${DOTFILES}/.git/hooks/pre-push"

@@ -26,7 +26,6 @@ DF_EXES=(
 	autocommit.sh
 	backup.sh
 	lessfilter
-	nansible.sh
 	setup-home.sh
 )
 

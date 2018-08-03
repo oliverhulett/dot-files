@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # This file is part of beets.
 # Copyright (c) 2014, Thomas Scholtes.
 #
