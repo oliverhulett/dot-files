@@ -21,7 +21,7 @@ import:
   link: no
   hardlink: no
   resume: ask
-  incremental: no
+  incremental: yes
   log: ~/.cache/beets.log
   autotag: yes
   from_scratch: yes
@@ -30,13 +30,18 @@ import:
   duplicate_action: keep
 
 pathfields:
-  always_format: u'%s' % (format,) if format is not None and format != '' else path[:-3]
+  always_format: u'%s' % (format,) if format is not None and format != '' else path[-3:]
   disc_and_track: u'%02i.%02i' % (disc, track) if disctotal > 1 else u'%02i' % (track)
 
 paths:
-  default: Sorted/Music/%the{${albumartist}}/%if{${year},${year}-}${album}/%if{${track},${disc_and_track}-}$title
-  singleton: Sorted/Music/%if{${year},${year}-}%the{${artist}}/${title}
-  comp: Sorted/Music/%if{${year},${year}-}${album}/%if{${track},${disc_and_track}-}%if{${artist},%the{${artist}}-}${title}
+  default: Sorted/Music.%lower{${always_format}}/%the{${albumartist}}/%if{${year},${year}-}${album}/%if{${track},${disc_and_track}-}$title
+  singleton: Sorted/Music.%lower{${always_format}}/%if{${year},${year}-}%the{${artist}}/${title}
+  comp: Sorted/Music.%lower{${always_format}}/%if{${year},${year}-}${album}/%if{${track},${disc_and_track}-}%if{${artist},%the{${artist}}-}${title}
+
+duplicates:
+  full: no
+  path: no
+  merge: yes
 
 clutter: [Thumbs.DB, .DS_Store, cover.*]
 ignore:
@@ -57,14 +62,21 @@ replace:
   ^-: _
   '[^a-zA-Z0-9-.]+': _
 path_sep_replace: _
-asciify_paths: yes
-art_filename: cover
-
 threaded: yes
 timeout: 5.0
-per_disc_numbering: yes
 verbose: 0
+
 original_date: yes
+per_disc_numbering: yes
+
+asciify_paths: yes
+art_filename: '${album}.cover'
+sort_case_insensitive: yes
+sort_item: 'albumartist+ album+ disc+ track+'
+sort_album: 'albumartist+ year+ album+'
+format_item: '%if{${singleton},,${album}$, disc ${disc} of ${disctotal}$, track ${track} of ${tracktotal}$, }${title}, by
+  ${artist}, format ${format}, path ${path}'
+format_album: '${album}, by ${albumartist}, ${disctotal} discs'
 
 lastfm:
   user: dontpanic
