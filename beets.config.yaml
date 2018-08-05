@@ -14,6 +14,7 @@ plugins:
 - missing
 - random
 - the
+- web
 
 import:
   move: yes
