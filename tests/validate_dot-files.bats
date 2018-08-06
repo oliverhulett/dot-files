@@ -29,7 +29,16 @@ DF_EXES=(
 	setup-home.sh
 )
 
+DF_DOTFILES=(
+	dot-files-common
+	dot-files.c02w104ahtdg
+	dot-files.loki
+	dot-files.odysseus
+	dot-files.prometheus
+)
+
 DF_LISTS=(
+	"${DF_DOTFILES[@]}"
 	.gitignore
 	backups.c02w104ahtdg
 	backups.c02w104ahtdg.exclude
@@ -39,11 +48,6 @@ DF_LISTS=(
 	backups.odysseus.exclude
 	backups.prometheus
 	backups.prometheus.exclude
-	dot-files-common
-	dot-files.c02w104ahtdg
-	dot-files.loki
-	dot-files.odysseus
-	dot-files.prometheus
 	eclipse-user-dictionary.txt
 	gitignore
 	interactive-commands
@@ -132,10 +136,8 @@ function setup()
 }
 
 @test "Validate: dot-files exist" {
-	FILES=( dot-files.loki dot-files.odysseus dot-files.prometheus )
-
 	shopt -s nullglob
-	for l in "${FILES[@]}"; do
+	for l in "${DF_DOTFILES[@]}"; do
 		while read -r f _; do
 			if [ ! -e "${DOTFILES}/$f" ]; then
 				fail "Expected dot-file does not exist: $f (from $l)"
@@ -145,9 +147,10 @@ function setup()
 }
 
 @test "Validate: dot-files do not overwrite dot-files-common" {
-	FILES=( dot-files.loki dot-files.odysseus dot-files.prometheus )
-
-	for l in "${FILES[@]}"; do
+	for l in "${DF_DOTFILES[@]}"; do
+		if [ "$l" == "dot-files-common" ]; then
+			continue
+		fi
 		while read -r _ DEST; do
 			if grep -qw "${DEST}" <(cut -d' ' -f2 "${DOTFILES}/dot-files-common"); then
 				fail "Specific dot-file overwrites destination from dot-files-common: ${DEST} (from $l)"

@@ -176,4 +176,7 @@ if [ "${TAP}" == "true" ]; then
 fi
 # @formatter:on
 
-cp -uv "${DOTFILES}/git-wrappers/pre-push" "${DOTFILES}/.git/hooks/pre-push"
+if [ ! -e "${DOTFILES}/.git/hooks/pre-push" ] || [ ! "${DOTFILES}/.git/hooks/pre-push" -ef "${DOTFILES}/git-wrappers/pre-push.sh" ]; then
+	rm -f "${DOTFILES}/.git/hooks/pre-push" || true
+	ln -sv "${DOTFILES}/git-wrappers/pre-push.sh" "${DOTFILES}/.git/hooks/pre-push"
+fi

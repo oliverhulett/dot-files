@@ -61,4 +61,7 @@ if [ -e "${HOME}/etc/git.passwds" ]; then
 	chmod 0600 "${GIT_CREDS}"
 fi
 
-cp -uv "${HERE}/git-wrappers/pre-push" "${HERE}/.git/hooks/pre-push"
+if [ ! -e "${HERE}/.git/hooks/pre-push" ] || [ ! "${HERE}/.git/hooks/pre-push" -ef "${HERE}/git-wrappers/pre-push.sh" ]; then
+	rm -f "${HERE}/.git/hooks/pre-push" || true
+	ln -sv "${HERE}/git-wrappers/pre-push.sh" "${HERE}/.git/hooks/pre-push"
+fi
