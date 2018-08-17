@@ -5,14 +5,15 @@ set -e
 cp -nv "$@"
 
 declare -a toadd
+dest="${*:$#}"
 for arg in "${@:1:$# - 1}"; do
 	if [ "${arg:0:1}" != "-" ]; then
-		toadd[${#toadd[@]}]="${@:$#}/$(basename -- $arg)"
+		toadd[${#toadd[@]}]="${dest}/$(basename -- "$arg")"
 	fi
 done
 
 if [ ${#toadd[@]} -eq 1 ] && [ ! -d "${toadd[0]}" ]; then
-	toadd=( "${@:$#}" )
+	toadd=( "${dest}" )
 fi
 
 git add -v --ignore-removal --ignore-errors "${toadd[@]}"
