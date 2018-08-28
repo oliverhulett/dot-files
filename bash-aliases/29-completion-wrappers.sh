@@ -17,4 +17,5 @@ function _wrapped_completion()
 
 complete -F _wrapped_completion chronic chronic.sh
 complete -F _wrapped_completion step step.sh
+complete -F _wrapped_completion timer timer.sh
 complete -F _wrapped_completion tt tt.sh
