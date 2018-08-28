@@ -17,6 +17,10 @@ if [ -e "${HOME}/.sdmake/complete/sdmake.completion.bash" ]; then
 	source "${HOME}/.sdmake/complete/sdmake.completion.bash"
 fi
 
+if [ -e "${HOME}/.jmake/jmake2_completion" ]; then
+	source "${HOME}/.jmake/jmake2_completion"
+fi
+
 export PATH="$(append_path "${PATH}" $(echo "${PATH}" | sed -re 's/:/ /g'))"
 
 # Show metrics collected by sdmake.
