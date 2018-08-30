@@ -23,5 +23,5 @@ fi
 
 export PATH="$(append_path "${PATH}" $(echo "${PATH}" | sed -re 's/:/ /g'))"
 
-# Show metrics collected by sdmake.
-export SHOW_DEVMETRICS=true
+# Show metrics collected by volt.
+export SHOW_DEVMETRICS=false
