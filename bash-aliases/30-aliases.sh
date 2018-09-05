@@ -101,6 +101,9 @@ export LESS='-RFXiMx4'
 alias less="less ${LESS}"
 export LESSOPEN="|$(per_os -m "/usr/local/bin/lesspipe.sh" "/usr/bin/lesspipe") %s"
 
+alias ack="command ack --ignore-dir=target --ignore-dir=.git --ignore-dir=.svn"
+
+
 GREP_ARGS="$(per_os -w "" -- "--exclude-dir='.svn' --exclude-dir='.git' --color=always")"
 GREP_ARGS_NC="$(per_os -w "" -- "--exclude-dir='.svn' --exclude-dir='.git' --color=never")"
 alias grep="command grep ${GREP_ARGS} -nT"
