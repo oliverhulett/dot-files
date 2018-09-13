@@ -7,7 +7,11 @@ function _run_completion()
 	_get_comp_words_by_ref -n : cur prev
 	nb_colon=$(grep -o ":" <<< "$COMP_LINE" | wc -l)
 
-	COMPREPLY=( $(compgen -W '$(run --compbash --compgen "$((COMP_CWORD - (nb_colon * 2)))" "$prev" "${COMP_LINE}")' -- "$cur") )
+	RUN_CMD="run"
+	if [ -x "./node_modules/.bin/run" ]; then
+		RUN_CMD="./node_modules/.bin/run"
+	fi
+	COMPREPLY=( $(compgen -W '$(${RUN_CMD} --compbash --compgen "$((COMP_CWORD - (nb_colon * 2)))" "$prev" "${COMP_LINE}")' -- "$cur") )
 
 	__ltrim_colon_completions "$cur"
 }
