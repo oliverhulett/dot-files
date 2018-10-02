@@ -1,4 +1,4 @@
-# shellcheck shell=sh
+# shellcheck shell=bash
 ## Common function used by bashrc and bash_alias/* files.
 ## `source bash-common.sh` must be idempotent.
 # shellcheck disable=SC2016,SC2015
@@ -6,18 +6,6 @@
 _hidex='_setx=n; [[ $- == *x* ]] && _setx=y; set +x;'
 eval "${_hidex}"
 _restorex='[ ${_setx:-n} == y ] && set -x; unset _setx;'
-
-# Alias gnu utils installed on the mac with homebrew to their usual names.
-## Do we need to detect mac-ness?
-## This should work on linux too (mostly it'll be a no-op, worst case it create some useless links)
-for f in /usr/local/bin/g*; do
-	g="$(basename -- "$f")"
-	if [ "$g" != 'g[' ] && [ ! -e "/usr/local/bin/${g:1}" ]; then
-		( cd /usr/local/bin/ && ln -s "$g" "${g:1}" 2>/dev/null )
-	fi
-done
-# Doesn't work, for some reason.
-rm '/usr/local/bin/[' 2>/dev/null || true
 
 export DEBUG_BASHRC="${DEBUG_BASHRC:-*}"
 function source()
@@ -28,6 +16,7 @@ function source()
 	es=$?
 	DEBUG_BASHRC="${DEBUG_BASHRC%\*}"
 	dotlog "${DEBUG_BASHRC} - ~source $*"
+	return $es
 }
 
 function _reentrance_hash()
