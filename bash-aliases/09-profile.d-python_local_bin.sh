@@ -5,8 +5,3 @@ if [ -e "${HOME}/.local/bin" ]; then
 	source "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/../bash-common.sh"
 	PATH="$(prepend_path "${PATH}" "${HOME}/.local/bin")"
 fi
-if [ -d "/usr/local/opt/python/libexec/bin" ]; then
-	# shellcheck disable=SC1090
-	source "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/../bash-common.sh"
-	PATH="$(prepend_path "${PATH}" "/usr/local/opt/python/libexec/bin")"
-fi
