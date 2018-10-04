@@ -20,8 +20,8 @@ if [ "$ret" -ne 0 ]; then
 	echo
 	command cat "$tmp"
 else
-	echo "$tmp" | while read -r; do
-		dotlog "${REPLY}"
-	done
+	while read -r; do
+		dotlog "[$(basename -- "$1")] ${REPLY}"
+	done <"$tmp"
 fi
 exit $ret
