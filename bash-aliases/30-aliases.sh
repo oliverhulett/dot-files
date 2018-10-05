@@ -226,3 +226,30 @@ function which()
 #		echo
 	done
 }
+
+function complete() {
+	dashp="no"
+	if grep -qE '(^| )-[[:alnum:]]*p[[:alnum:]]*( |$)' <(echo "$*"); then
+		dashp="yes"
+	fi
+	if ! grep -qE '(^| )--?[^ ]' <(echo "$*"); then
+		read -rsn1 -t5 -p "You issued 'complete' without any flags, this will clear completion for the given commands.  Are you sure you want to do this?  [Y/n - I meant to use the -p flag]"
+		if [ "${REPLY,,}" == "n" ]; then
+			dashp="yes"
+			set -- -p "$@"
+		fi
+		echo
+	fi
+	if [ "${dashp}" == "yes" ]; then
+		OUT="$(command complete "$@")"
+		echo "${OUT}"
+		fn="$(echo "${OUT}" | sed -nre 's/^complete -F ([^ ]+) .+/\1/p')"
+		if [ -n "$fn" ]; then
+			echo
+			# shellcheck disable=SC2230 - which is non-standard, use command -v instead
+			which "$fn"
+		fi
+	else
+		command complete "$@"
+	fi
+}
