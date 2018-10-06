@@ -79,6 +79,7 @@ excludesfile = ~/.gitignore
 safecrlf = true
 abbrev = 11
 whitespace = trailing-space,space-before-tab
+attributesfile = ~/.gitattributes
 
 [log]
 date = local
@@ -102,7 +103,7 @@ fetch = refs/heads/*:refs/remotes/origin/*
 fetch = refs/tags/*:refs/tags/*
 
 [diff "nodiff"]
-command = /usr/bin/true
+command = true
 
 [diff]
 renames = copies

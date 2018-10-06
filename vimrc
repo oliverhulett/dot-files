@@ -16,6 +16,7 @@ try
 	Plugin 'djoshea/vim-autoread'
 	Plugin 'godlygeek/tabular'
 	Plugin 'kawaz/batscheck.vim'
+	Plugin 'leafgarland/typescript-vim'
 	Plugin 'lifepillar/vim-cheat40'
 	Plugin 'myint/syntastic-extras'
 	Plugin 'ntpeters/vim-better-whitespace'
