@@ -18,7 +18,8 @@ function sortinline()
 		fi
 	done
 	for f in "${FILES[@]}"; do
-		echo "sort ${ARGS[@]} $f"
+		echo "sort ${ARGS[*]} $f"
+		# shellcheck disable=SC2005 - Useless echo? Instead of 'echo $(cmd)', just use 'cmd'.
 		echo "$(sort "${ARGS[@]}" "$f")" >"$f"
 	done
 	if [ "$KEEP_BLANK" == "no" ]; then
@@ -45,7 +46,8 @@ function uniqinline()
 		fi
 	done
 	for f in "${FILES[@]}"; do
-		echo "uniq ${ARGS[@]} $f"
+		echo "uniq ${ARGS[*]} $f"
+		# shellcheck disable=SC2005 - Useless echo? Instead of 'echo $(cmd)', just use 'cmd'.
 		echo "$(uniq "${ARGS[@]}" "$f")" >"$f"
 	done
 	if [ "$KEEP_BLANK" == "no" ]; then
@@ -66,7 +68,7 @@ function cleaninline()
 		fi
 	done
 	for f in "${FILES[@]}"; do
-		echo "sed -re '/^$/d' ${ARGS[@]} -i $f"
+		echo "sed -re '/^$/d' ${ARGS[*]} -i $f"
 		sed -re '/^$/d' "${ARGS[@]}" -i "$f"
 	done
 }
@@ -91,7 +93,8 @@ function unexpandinline()
 		ARGS[${#ARGS[@]}]="-t4"
 	fi
 	for f in "${FILES[@]}"; do
-		echo "unexpand ${ARGS[@]} $f"
+		echo "unexpand ${ARGS[*]} $f"
+		# shellcheck disable=SC2005 - Useless echo? Instead of 'echo $(cmd)', just use 'cmd'.
 		echo "$(unexpand "${ARGS[@]}" "$f")" >"$f"
 	done
 }
@@ -116,7 +119,8 @@ function expandinline()
 		ARGS[${#ARGS[@]}]="-t4"
 	fi
 	for f in "${FILES[@]}"; do
-		echo "expand ${ARGS[@]} $f"
+		echo "expand ${ARGS[*]} $f"
+		# shellcheck disable=SC2005 - Useless echo? Instead of 'echo $(cmd)', just use 'cmd'.
 		echo "$(expand "${ARGS[@]}" "$f")" >"$f"
 	done
 }
@@ -134,7 +138,7 @@ function list()
 		fi
 	done
 	FILE=""
-	if [ ! -f "${LIST[0]}" -a -f "${LIST[$((${#LIST[@]} - 1))]}" ]; then
+	if [ ! -f "${LIST[0]}" ] && [ -f "${LIST[$((${#LIST[@]} - 1))]}" ]; then
 		FILE="${LIST[$((${#LIST[@]} - 1))]}"
 		LIST=( "${LIST[@]:0:$((${#LIST[@]} - 1))}" )
 	else
@@ -147,4 +151,30 @@ function list()
 		echo "$l" >>"${FILE}"
 	done
 	sortinline -u "${FILE}"
+}
+
+unalias joinby 2>/dev/null
+function joinby()
+{
+	d="$1"
+	shift
+	echo -n "$1"
+	shift
+	printf "%s" "${@/#/$d}"
+}
+
+unalias prefix 2>/dev/null
+function prefix()
+{
+	d="$1"
+	shift
+	printf "%s" "${@/#/$d}"
+}
+
+unalias suffix 2>/dev/null
+function suffix()
+{
+	d="$1"
+	shift
+	printf "%s" "${@/%/$d}"
 }

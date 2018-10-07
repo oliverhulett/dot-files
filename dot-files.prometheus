@@ -1,3 +1,3 @@
-bash-aliases/39-aliases-insync_trash.sh .bash-aliases/39-aliases-insync_trash.sh
-bash-aliases/39-aliases-ubuntu.sh .bash-aliases/39-aliases-ubuntu.sh
+bash-aliases/35-aliases-insync_trash.sh .bash-aliases/35-aliases-insync_trash.sh
+bash-aliases/35-aliases-ubuntu.sh .bash-aliases/35-aliases-ubuntu.sh
 gitconfig.github .gitconfig.local

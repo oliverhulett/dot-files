@@ -198,7 +198,7 @@ function _prompt_command()
 		set -- $(history 1)
 		# `history` outputs command count, then date, then time, then command
 		shift 3
-		if ! grep -qwE "$(sed -re 's/^\^?/^/' ${HOME}/.interactive-commands 2>/dev/null | paste -sd'|' -)" <(echo "$@") >/dev/null 2>/dev/null; then
+		if ! grep -qwE "$(sed -re 's/^\^?/^/' "${HOME}/.interactive-commands" 2>/dev/null | paste -sd'|' -)" <(echo "$@") >/dev/null 2>/dev/null; then
 			PROMPT_TIMER='['
 			if [ ${_timer_show} -ge 3600 ]; then
 				PROMPT_TIMER="${PROMPT_TIMER}$((_timer_show / 3600))h "
@@ -217,9 +217,10 @@ function _prompt_command()
 
 	PROMPT="${PROMPT_COLOUR} ${PROMPT_TIMER}${PROMPT_EXIT}${PROMPT_FOO} ${PROMPT_DOLLAR} "
 
-	if echo $PS1 | command grep -q '\\' >/dev/null 2>/dev/null || echo $PS1 | command grep -q '\$' >/dev/null 2>/dev/null; then
+	if echo "$PS1" | command grep -q "\\" >/dev/null 2>/dev/null || echo "$PS1" | command grep -q '\$' >/dev/null 2>/dev/null; then
 		# If it looks like a prompt, we're going to replace it...
-		USER_CUSTOM_FRONT="$(echo $PS1 | sed -nre "s!(.*)$(printf "%q" "${PROMPT_COLOUR}").*!\1!p")"
+		# shellcheck disable=SC2086 - Don't quote $PS1, we want to squash spaces in custom user prefixes.
+		USER_CUSTOM_FRONT="$(echo $PS1 | sed -nre "s!(.*)$(printf "%q" "${PROMPT_COLOUR}").*!\\1!p")"
 	else
 		# ...otherwise we'll use it as a custom prefix.
 		USER_CUSTOM_FRONT="$PS1"

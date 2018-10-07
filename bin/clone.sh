@@ -8,7 +8,7 @@ GITHUB="https://github.com/"
 SERVERS=( "$STASH" "$BITBUCKET" "$GITHUB" )
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
-source "$(dirname ${HERE})/lib/script-utils.sh"
+source "$(dirname "${HERE}")/lib/script-utils.sh"
 
 function print_usage()
 {

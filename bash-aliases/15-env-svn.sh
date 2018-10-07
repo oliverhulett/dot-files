@@ -50,5 +50,5 @@ function _svn_ps1()
 if [ "$TERM" == "cygwin" ]; then
 	export PROMPT_FOO="${PROMPT_FOO}"'\[\e[1;34m\]$(_svn_ps1 2>/dev/null)\[\e[0m\]'
 else
-	export PROMPT_FOO="${PROMPT_FOO}"'\[$(tput bold)\]\[$(tput setaf 4)\]$(_svn_ps1 2>/dev/null)\[$(tput sgr0)\]\[$(tput dim)\]'
+	export PROMPT_FOO="${PROMPT_FOO}"'\[$(tput bold)\]\[$(tput setaf 4)\]$(_svn_ps1 2>/dev/null)\[$(tput sgr0)\]'
 fi

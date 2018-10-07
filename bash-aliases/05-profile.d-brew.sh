@@ -23,3 +23,6 @@ fi
 
 source "$(brew --prefix)/etc/bash_completion"
 source "$(brew --prefix)/etc/profile.d"/*.sh
+
+PATH="$(append_path "${PATH}" "/usr/local/opt/gettext/bin")"
+export PATH

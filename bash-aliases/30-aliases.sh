@@ -1,6 +1,7 @@
 # shellcheck shell=bash
 # Aliases
 # shellcheck disable=SC1090
+# shellcheck disable=SC2139 - This expands when defined, not when used. Consider escaping.
 source "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/../bash-common.sh"
 
 alias lssc='lss --color=none'
@@ -26,7 +27,7 @@ function lsl
 	# With -l, No -B
 	command ls -AlhF --color=always "$@"
 }
-alias ls='lss '
+alias ls='lss'
 
 function per_os()
 {
@@ -72,8 +73,8 @@ function per_os()
 	echo "$1"
 }
 
+
 alias chmod='chmod -c'
-alias chronic='chronic.sh'
 alias cp="$(per_os -w "cp --preserve" "cp --preserve=all")"
 alias diff='diff -wB'
 alias eject='eject -T'
@@ -84,29 +85,20 @@ alias ifconfig="$(per_os -w "ipconfig" "sudo /sbin/ifconfig")"
 alias iotop='sudo iotop'
 alias mount="$(per_os -l "mount -l" "mount")"
 alias nethogs='sudo nethogs'
-alias netstat-a="$(per_os -m "netstat -an -ptcp" "netstat -lnp")"
+alias netstat="$(per_os -m "netstat -an -ptcp" "netstat -lnp")"
 alias pgrep='pgrep -fl'
+alias port='sudo port'
 alias pretty='bash <(curl -sS https://bitbucket.org/oliverhulett/formatter/raw/master/run.sh)'
-alias rsync-a='rsync -zvvpPAXrogthlm'
-alias rsync-ca='rsync -zvvpPAXrogthlcm'
+alias rsync='rsync -zvvpPAXrogthlm'
 alias sdiff='sdiff --strip-trailing-cr -bB'
 alias sudo='sudo -E'
-alias sursync-a='sudo rsync -zvvpPAXrogthlm'
-alias sursync-ca='sudo rsync -zvvpPAXrogthlcm'
 alias time="$(per_os -m "/usr/local/bin/time" "/usr/bin/time")"
 alias top="$(per_os -m "top -o cpu" "top -c")"
-alias tt="tt.sh"
 
 export LESS='-RFXiMx4'
 alias less="less ${LESS}"
-export LESSOPEN="|$(per_os -m "/usr/local/bin/lesspipe.sh" "/usr/bin/lesspipe") %s"
-
-alias ack="command ack --ignore-dir=target --ignore-dir=node_modules --ignore-dir=.venv --ignore-dir=.git --ignore-dir=.svn"
-
-GREP_ARGS="$(per_os -w "" -- "--exclude-dir='.svn' --exclude-dir='.git' --color=always")"
-GREP_ARGS_NC="$(per_os -w "" -- "--exclude-dir='.svn' --exclude-dir='.git' --color=never")"
-alias grep="command grep ${GREP_ARGS} -nT"
-alias ngrep="command grep ${GREP_ARGS_NC}"
+LESSOPEN="|$(per_os -m "/usr/local/bin/lesspipe.sh" "/usr/bin/lesspipe") %s"
+export LESSOPEN
 
 alias poweroff='sudo shutdown -hP'
 alias powerdown='sudo shutdown -hP'
@@ -132,27 +124,13 @@ function cat
 	done
 }
 
-unalias joinby 2>/dev/null
-function joinby()
-{
-	d="$1"
-	if [ ${#1} -eq 1 ]; then
-		shift
-	else
-		d=","
-	fi
-	echo -n "$1"
-	shift
-	printf "%s" "${@/#/$d}"
-}
-
 unalias _find_alias_or_fn 2>/dev/null
 function _find_alias_or_fn()
 {
 	(
-		command grep -lR -E "^[^#]*\balias[[:space:]]+${arg}=" ~/.bashrc ~/.bash_profile ~/.bash-aliases ~/dot-files/bash-common.sh
-		command grep -lR -E "^[^#]*\bfunction[[:space:]]+${arg}[[:space:]]*(\\(\\))?" ~/.bashrc ~/.bash_profile ~/.bash-aliases ~/dot-files/bash-common.sh
-		command grep -lR -E "^[^#]*(\bfunction)?[[:space:]]+${arg}[[:space:]]*\\(\\)" ~/.bashrc ~/.bash_profile ~/.bash-aliases ~/dot-files/bash-common.sh
+		command grep -lR -E "^[^#]*\\balias[[:space:]]+${arg}=" ~/.bashrc ~/.bash_profile ~/.bash-aliases ~/dot-files/bash-common.sh
+		command grep -lR -E "^[^#]*\\bfunction[[:space:]]+${arg}[[:space:]]*(\\(\\))?" ~/.bashrc ~/.bash_profile ~/.bash-aliases ~/dot-files/bash-common.sh
+		command grep -lR -E "^[^#]*(\\bfunction)?[[:space:]]+${arg}[[:space:]]*\\(\\)" ~/.bashrc ~/.bash_profile ~/.bash-aliases ~/dot-files/bash-common.sh
 	) | sort -u
 }
 
@@ -190,6 +168,7 @@ function which()
 				;;
 		esac
 		echo
+		# shellcheck disable=SC2086,SC2046 - Double quote to prevent globbing and word splitting.
 		commands="$(command which -a $(echo $cmd | tr ' ' '\n' | sort -u) 2>/dev/null)"
 		for bin in $commands; do
 			while [ -n "$bin" ]; do

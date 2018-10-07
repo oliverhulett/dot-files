@@ -42,6 +42,6 @@ if type -t __git_ps1 >/dev/null 2>&1; then
 	if [ "$TERM" == "cygwin" ]; then
 		export PROMPT_FOO="${PROMPT_FOO}"'\[\e[1;34m\]$(__custom_git_ps1 2>/dev/null)\[\e[0m\]'
 	else
-		export PROMPT_FOO="${PROMPT_FOO}"'\[$(tput bold)\]\[$(tput setaf 4)\]$(__custom_git_ps1 2>/dev/null)\[$(tput sgr0)\]\[$(tput dim)\]'
+		export PROMPT_FOO="${PROMPT_FOO}"'\[$(tput bold)\]\[$(tput setaf 4)\]$(__custom_git_ps1 2>/dev/null)\[$(tput sgr0)\]'
 	fi
 fi
