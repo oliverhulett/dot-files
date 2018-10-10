@@ -6,6 +6,7 @@ bash-aliases/15-env-svn.sh .bash-aliases/15-env-svn.sh
 bash-aliases/20-completion.sh .bash-aliases/20-completion.sh
 bash-aliases/24-completion-docker.sh .bash-aliases/24-completion-docker.sh
 bash-aliases/24-completion-docker_compose.sh .bash-aliases/24-completion-docker_compose.sh
+bash-aliases/25-completion-pipenv.sh .bash-aliases/25-completion-pipenv.sh
 bash-aliases/25-completion-pyinvoke.sh .bash-aliases/25-completion-pyinvoke.sh
 bash-aliases/25-completion-wrappers.sh .bash-aliases/25-completion-wrappers.sh
 bash-aliases/30-aliases.sh .bash-aliases/30-aliases.sh

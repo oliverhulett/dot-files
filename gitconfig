@@ -22,6 +22,8 @@ mergeflict = "!f() { : git checkout ; git push; git pull --all --force && git fe
 mine = "!f() { : git for-each-ref; git branch -vv; git for-each-ref --sort=-committerdate --format='#%(committerdate)#%(refname)#%(subject)' refs/remotes/origin/$(whoami) \"$@\" | column -ts'#'; }; f"
 mkbranch = "!f() { ~/.git-wrappers/mkbranch.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 mvbranch = "!f() { : git checkout ; git branch -m \"$1\" \"$2\" && git push origin :\"$1\" && git push --set-upstream origin \"$2\"; }; f" ## Want to execute from top level, not GIT_PREFIX
+mylastcommit = "!f() { git log -1 --author=\"$(whoami)\" \"$@\"; }; f" ## Want to execut from the top level, not GIT_PREFIX
+mylasthash = "!f() { git log -1 --author=\"$(whoami)\" --format=\"%h\" \"$@\"; }; f" ## Want to execut from the top level, not GIT_PREFIX
 new = "!f() { ~/.git-wrappers/new.sh \"$@\"; }; cd \"$GIT_PREFIX\" && f"
 pullme = "!f() { : git pull; git pull --all --force --prune \"$@\"; git update; git cleanbranches; }; f" ## Want to execute from top level, not GIT_PREFIX
 pushtags = push --tags
