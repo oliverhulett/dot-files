@@ -5,6 +5,7 @@ function _container_alias()
 	NAME="$1"
 	shift
 	if [ -z "$(docker container list -q --filter="Name=${NAME}")" ]; then
+		docker pull "${NAME}"
 		docker run --rm -d --name "${NAME}" "$@"
 	fi
 	docker container list --filter="Name=${NAME}"
