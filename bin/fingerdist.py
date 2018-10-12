@@ -38,6 +38,12 @@ for i, fp1 in enumerate(fps):
             continue
         file1, array1 = fp1
         file2, array2 = fp2
+        if len(array1) == 0:
+            print "FAILED: No fingerprint for {}".format(file1), file1, file2
+            continue
+        if len(array2) == 0:
+            print "FAILED: No fingerprint for {}".format(file2), file1, file2
+            continue
         error = 0
         for x, y in zip(array1, array2):
             error += popcnt(x ^ y)
