@@ -125,9 +125,10 @@ done
 TIME=( "$(command which time)" -f '\n%E (%P)  User: %U secs  Sys: %S secs\nMax Mem: %M kb\nCtx Sw: %w (Inv: %c)\nFS in: %I  FS out: %O' )
 
 # Can't actually be false for the moment, maybe later we'll add \`bats --pretty' mode back in...
-# @formatter:off
+retval=127
 if [ "${TAP}" == "true" ]; then
 	printf ' % '"${WIDTH}"'s %s\n' ":" "1..${NUM_TESTS}"
+	# @formatter:off
 	# shellcheck disable=SC2016
 	printf '%s\0' "$@" | stdbuf -oL "${TIME[@]}" xargs -r0 -n 1 -P "${PARALLEL}" -I{} sh -c "
 		export FN=\"\$(basename -- \"{}\" .bats)\";
@@ -173,10 +174,13 @@ if [ "${TAP}" == "true" ]; then
 		print "Ran " . $cnt . $tests . ": " . $success . " succeeded; " . $skip . " skipped; " . $failure . " failed.\n";
 		exit $failure
 	'
+	# @formatter:on
+	retval=$?
 fi
-# @formatter:on
 
 if [ ! -e "${DOTFILES}/.git/hooks/pre-push" ] || [ ! "${DOTFILES}/.git/hooks/pre-push" -ef "${DOTFILES}/git-wrappers/pre-push.sh" ]; then
 	rm -f "${DOTFILES}/.git/hooks/pre-push" || true
 	ln -sv "${DOTFILES}/git-wrappers/pre-push.sh" "${DOTFILES}/.git/hooks/pre-push"
 fi
+
+exit $retval

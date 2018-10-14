@@ -178,3 +178,11 @@ function suffix()
 	shift
 	printf "%s" "${@/%/$d}"
 }
+
+unalias inarray 2>/dev/null
+function inarray()
+{
+	pat="$1"
+	shift
+	printf '%s\n' "$@" | grep -qwE "^${pat}$"
+}

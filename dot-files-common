@@ -19,6 +19,7 @@ bash-aliases/35-aliases-site_packages.sh .bash-aliases/35-aliases-site_packages.
 bash-aliases/35-aliases-sort_unique.sh .bash-aliases/35-aliases-sort_unique.sh
 bash-aliases/35-aliases-spell.sh .bash-aliases/35-aliases-spell.sh
 bash-aliases/36-aliases-ignore_dirs.sh .bash-aliases/36-aliases-ignore_dirs.sh
+bash-aliases/36-aliases-pipsi.sh .bash-aliases/36-aliases-pipsi.sh
 bash_logout .bash_logout
 bash_profile .bash_profile
 bashrc .bashrc
