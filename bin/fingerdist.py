@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import sys
 import chromaprint
+import acoustid
 
 
 popcnt_table_8bit = [
@@ -24,7 +25,12 @@ def popcnt(x):
             popcnt_table_8bit[(x >> 24) & 0xFF])
 
 
-in_file = sys.argv[1] if len(sys.argv) > 1 else sys.stdin
+if len(sys.argv) != 3:
+    print "fingerdist.py <fingerprints.txt> <track.ogg>"
+    print "  Requires exactly two arguments"
+    sys.exit(1)
+
+in_file = sys.argv[1]
 
 fps = []
 for line in open(in_file).readlines():
@@ -32,20 +38,15 @@ for line in open(in_file).readlines():
         encoded, filename = line.split(' ', 1)
         fps.append((filename.strip(), chromaprint.decode_fingerprint(encoded.strip())[0]))
 
-for i, fp1 in enumerate(fps):
-    for j, fp2 in enumerate(fps):
-        if i == j:
-            continue
-        file1, array1 = fp1
-        file2, array2 = fp2
-        if len(array1) == 0:
-            print "FAILED: No fingerprint for {}".format(file1), file1, file2
-            continue
-        if len(array2) == 0:
-            print "FAILED: No fingerprint for {}".format(file2), file1, file2
-            continue
-        error = 0
-        for x, y in zip(array1, array2):
-            error += popcnt(x ^ y)
-        print error / 32.0 / min(len(array1), len(array2)), file1, file2
-    print
+data = chromaprint.decode_fingerprint(acoustid.fingerprint_file(sys.argv[2])[1].decode("utf-8"))[0]
+if len(data) == 0:
+    print "FAILED to generate fingerprint:", sys.argv[2]
+
+for j, fp in enumerate(fps):
+    filename, array = fp
+    if len(array) == 0:
+        continue
+    error = 0
+    for x, y in zip(data, array):
+        error += popcnt(x ^ y)
+    print error / 32.0 / min(len(data), len(array)), filename
