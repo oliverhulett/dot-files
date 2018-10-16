@@ -9,7 +9,7 @@ branches = branch -avv
 cleanall = "!f() { ~/.git-wrappers/cleanall.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 cleanbranches = "!f() { ~/.git-wrappers/cleanbranches.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 cleanignored = "!f() { ~/.git-wrappers/cleanignored.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
-commitme = "!f() { git commit \"$@\" -m \"$(git ticket)\"; }; cd \"$GIT_PREFIX\" && f"
+commitme = "!f() { git commit -m \"$(git ticket)\" \"$@\"; }; cd \"$GIT_PREFIX\" && f"
 cp = "!f() { ~/.git-wrappers/cp.sh \"$@\"; }; cd \"$GIT_PREFIX\" && f"
 discard = reset --hard HEAD
 env = "!f() { env; }; cd \"$GIT_PREFIX\" && f"
@@ -22,8 +22,8 @@ mergeflict = "!f() { : git checkout ; git push; git pull --all --force && git fe
 mine = "!f() { : git for-each-ref; git branch -vv; git for-each-ref --sort=-committerdate --format='#%(committerdate)#%(refname)#%(subject)' refs/remotes/origin/$(whoami) \"$@\" | column -ts'#'; }; f"
 mkbranch = "!f() { ~/.git-wrappers/mkbranch.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 mvbranch = "!f() { : git checkout ; git branch -m \"$1\" \"$2\" && git push origin :\"$1\" && git push --set-upstream origin \"$2\"; }; f" ## Want to execute from top level, not GIT_PREFIX
-mylastcommit = "!f() { git log -1 --author=\"$(whoami)\" \"$@\"; }; f" ## Want to execut from the top level, not GIT_PREFIX
-mylasthash = "!f() { git log -1 --author=\"$(whoami)\" --format=\"%h\" \"$@\"; }; f" ## Want to execut from the top level, not GIT_PREFIX
+mylastcommit = "!f() { : git log; if [ $# -eq 0 ]; then set -- master; fi; git log -1 --author=\"$(whoami)\" \"$@\"; }; f" ## Want to execut from the top level, not GIT_PREFIX
+mylasthash = "!f() { : git log; if [ $# -eq 0 ]; then set -- master; fi; git log -1 --author=\"$(whoami)\" --format=\"%h\" \"$@\"; }; f" ## Want to execut from the top level, not GIT_PREFIX
 new = "!f() { ~/.git-wrappers/new.sh \"$@\"; }; cd \"$GIT_PREFIX\" && f"
 pullme = "!f() { : git pull; git pull --all --force --prune \"$@\"; git update; git cleanbranches; }; f" ## Want to execute from top level, not GIT_PREFIX
 pushtags = push --tags
@@ -39,7 +39,7 @@ rmtag = "!f() { for t in \"$@\"; do git tag -d $t && git push origin :refs/tags/
 search = log -S
 tags = "!f() { if [ $# -eq 0 ]; then set -- 5; fi; count=\"--lines=$1\"; if [ \"$1\" == \"-a\" -o \"$1\" == \"--all\" ]; then count=\"--lines=-0\"; fi; git for-each-ref --format='%(taggerdate:raw)%(committerdate:raw)$%(taggerdate)%(committerdate)$%(refname:short)$%(authorname)%(*authorname)$%(subject)' refs/tags | sort -rn | cut -d'$' -f2- | head $count | column -ts'$'; }; f"
 this = "!f() { git branch --no-color | sed -nre 's/^\\* //p'; }; f"
-ticket = "!f() { git branch --no-color | sed -nre 's/^\\* //p' | cut -d'/' -f2; }; f"
+ticket = "!f() { THIS=\"$(git this)\"; if [ \"${THIS#issue}\" != \"${THIS}\" ]; then FIELD=3; else FIELD=2; fi; echo \"${THIS}\" | cut -d'/' -f${FIELD} | sed -re 's/([^_]+).+/\\1/'; }; f"
 undo-commit = reset HEAD^
 unstage = reset HEAD
 update = "!f() { ~/.git-wrappers/update.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX

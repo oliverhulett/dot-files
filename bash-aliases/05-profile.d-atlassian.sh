@@ -21,6 +21,7 @@ fi
 
 if [ -e "${HOME}/.jmake/jmake2_completion" ]; then
 	source "${HOME}/.jmake/jmake2_completion"
+	complete -F _complete_jmake2 -o default ./jmake jmake
 fi
 
 export PATH="$(append_path "${PATH}" $(echo "${PATH}" | sed -re 's/:/ /g'))"
