@@ -8,6 +8,11 @@ alias vgrok='ngrok start jira-exploratory-development &'
 ## JMake doesn't like MAVEN_OPTS being set.  :(
 #export MAVEN_OPTS="${MAVEN_OPTS} -Djansi.force=true"
 
+function jira-autocomplete()
+{
+	repo jira && ./jmake autocomplete && mv jmake2_completion ~/.jmake/
+}
+
 function jira-deps()
 {
 	repo jira && mvn dependency:resolve
