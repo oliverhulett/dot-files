@@ -26,8 +26,8 @@ def popcnt(x):
 
 
 if len(sys.argv) != 3:
-    print "fingerdist.py <fingerprints.txt> <track.ogg>"
-    print "  Requires exactly two arguments"
+    print >>sys.stderr, "fingerdist.py <fingerprints.txt> <track.ogg>"
+    print >>sys.stderr, "  Requires exactly two arguments"
     sys.exit(1)
 
 in_file = sys.argv[1]
@@ -37,10 +37,14 @@ for line in open(in_file).readlines():
     if not line.startswith('FAILED:'):
         encoded, filename = line.split(' ', 1)
         fps.append((filename.strip(), chromaprint.decode_fingerprint(encoded.strip())[0]))
-
-data = chromaprint.decode_fingerprint(acoustid.fingerprint_file(sys.argv[2])[1].decode("utf-8"))[0]
+try:
+    data = chromaprint.decode_fingerprint(acoustid.fingerprint_file(sys.argv[2])[1].decode("utf-8"))[0]
+except:
+    print >>sys.stderr, "FAILED to generate fingerprint:", sys.argv[2]
+    sys.exit(1)
 if len(data) == 0:
-    print "FAILED to generate fingerprint:", sys.argv[2]
+    print >>sys.stderr, "FAILED to generate fingerprint:", sys.argv[2]
+    sys.exit(1)
 
 for j, fp in enumerate(fps):
     filename, array = fp
