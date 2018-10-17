@@ -85,6 +85,9 @@ function find
 	if [ ${#DIRS[@]} -eq 0 ]; then
 		DIRS[0]="./"
 	fi
+	if [ $# -eq 0 ]; then
+		set -- -true
+	fi
 	command find $dashh $dashl $dashp "${DIRS[@]}" -nowarn -not \( -name $(joinby " -prune -or -name " $(_generate_dirs_to_skip)) -prune \) \( "$@" \)
 }
 
