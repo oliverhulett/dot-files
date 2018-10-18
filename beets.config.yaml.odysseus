@@ -3,6 +3,8 @@ plugins:
   #- gmusic
   #- lyrics
   #- replaygain
+- acousticbrainz
+- absubmit
 - chroma
 - convert
 - duplicates
@@ -83,3 +85,6 @@ format_album: '${album}, by ${albumartist}, ${disctotal} discs'
 
 lastfm:
   user: dontpanic
+
+absubmit:
+  auto: yes

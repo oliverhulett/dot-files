@@ -5,5 +5,4 @@ bash-aliases/35-aliases-insync_trash.sh .bash-aliases/35-aliases-insync_trash.sh
 bash-aliases/35-aliases-kodi.sh .bash-aliases/35-aliases-kodi.sh
 bash-aliases/35-aliases-loki.sh .bash-aliases/35-aliases-loki.sh
 bash-aliases/35-aliases-ubuntu.sh .bash-aliases/35-aliases-ubuntu.sh
-beets.config.yaml.loki .config/beets/config.yaml
 gitconfig.github .gitconfig.local
