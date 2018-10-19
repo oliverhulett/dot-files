@@ -9,7 +9,7 @@ branches = branch -avv
 cleanall = "!f() { ~/.git-wrappers/cleanall.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 cleanbranches = "!f() { ~/.git-wrappers/cleanbranches.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 cleanignored = "!f() { ~/.git-wrappers/cleanignored.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
-commitme = "!f() { git commit -m \"$(git ticket)\" \"$@\"; }; cd \"$GIT_PREFIX\" && f"
+commitme = "!f() { : git commit; TICKET_MSG=; if [ -n \"$(git ticket)\" ]; then TICKET_MSG=\"-m '$(git ticket)'\"; fi; git commit ${TICKET_MSG} \"$@\"; }; cd \"$GIT_PREFIX\" && f"
 cp = "!f() { ~/.git-wrappers/cp.sh \"$@\"; }; cd \"$GIT_PREFIX\" && f"
 discard = reset --hard HEAD
 env = "!f() { env; }; cd \"$GIT_PREFIX\" && f"
@@ -39,7 +39,7 @@ rmtag = "!f() { for t in \"$@\"; do git tag -d $t && git push origin :refs/tags/
 search = log -S
 tags = "!f() { if [ $# -eq 0 ]; then set -- 5; fi; count=\"--lines=$1\"; if [ \"$1\" == \"-a\" -o \"$1\" == \"--all\" ]; then count=\"--lines=-0\"; fi; git for-each-ref --format='%(taggerdate:raw)%(committerdate:raw)$%(taggerdate)%(committerdate)$%(refname:short)$%(authorname)%(*authorname)$%(subject)' refs/tags | sort -rn | cut -d'$' -f2- | head $count | column -ts'$'; }; f"
 this = "!f() { git branch --no-color | sed -nre 's/^\\* //p'; }; f"
-ticket = "!f() { THIS=\"$(git this)\"; if [ \"${THIS#issue}\" != \"${THIS}\" ]; then FIELD=3; else FIELD=2; fi; echo \"${THIS}\" | cut -d'/' -f${FIELD} | sed -re 's/([^_]+).+/\\1/'; }; f"
+ticket = "!f() { THIS=\"$(git this)\"; if [ \"${THIS}\" == \"master\" ]; then return; fi; if [ \"${THIS#issue}\" != \"${THIS}\" ]; then FIELD=3; else FIELD=2; fi; echo \"${THIS}\" | cut -d'/' -f${FIELD} | sed -re 's/([^_]+).*/\\1/'; }; f"
 undo-commit = reset HEAD^
 unstage = reset HEAD
 update = "!f() { ~/.git-wrappers/update.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
