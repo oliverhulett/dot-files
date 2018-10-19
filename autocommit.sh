@@ -29,6 +29,10 @@ report_cmd runhere git diff --quiet --exit-code && report_cmd runhere git diff -
 WC_WAS_CLEAN=$?
 report_good "Working copy was clean: 0 == ${WC_WAS_CLEAN}"
 
+report_good
+report_good "Fetching new code from origin..."
+report_cmd runhere git fetch
+
 test -n "$(runhere git log master..origin/master --oneline)"
 PULL_HAS_COMMITS=$?
 report_good "Pull has commits: 0 == ${PULL_HAS_COMMITS}"

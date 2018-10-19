@@ -3,18 +3,23 @@ plugins:
   #- gmusic
   #- lyrics
   #- replaygain
-- acousticbrainz
 - absubmit
+- acousticbrainz
 - chroma
 - convert
 - duplicates
 - edit
 - fetchart
+- info
 - inline
 - lastimport
+- mbsync
 - missing
+- rewrite
 - random
+- scrub
 - the
+- types
 - web
 
 import:
