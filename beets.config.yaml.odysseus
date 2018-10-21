@@ -9,6 +9,7 @@ plugins:
 - convert
 - duplicates
 - edit
+- export
 - fetchart
 - info
 - inline
