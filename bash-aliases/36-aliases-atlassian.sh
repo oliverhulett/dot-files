@@ -8,6 +8,17 @@ alias vgrok='ngrok start jira-exploratory-development &'
 ## JMake doesn't like MAVEN_OPTS being set.  :(
 #export MAVEN_OPTS="${MAVEN_OPTS} -Djansi.force=true"
 
+function idea()
+{
+	replacelink "$(command ls -d /Applications/IntelliJ\ IDEA* -t1c | head -n1)" /Applications/IntelliJ_IDEA.app
+	replacelink "$(command ls -d /Users/ohulett/Library/Caches/IntelliJIdea*.* -t1c | head -n1)" /Users/ohulett/Library/Caches/IntelliJIdea
+	replacelink "$(command ls -d /Users/ohulett/Library/Preferences/IntelliJIdea*.* -t1c | head -n1)" /Users/ohulett/Library/Preferences/IntelliJIdea
+	if [ $# -eq 0 ]; then
+		set -- .
+	fi
+	command idea "$@"
+}
+
 function jira-autocomplete()
 {
 	repo jira && ./jmake autocomplete && mv jmake2_completion ~/.jmake/

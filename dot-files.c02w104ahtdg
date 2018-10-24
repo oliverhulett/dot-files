@@ -4,9 +4,9 @@ bash-aliases/05-profile.d-jetbrains.sh .bash-aliases/05-profile.d-jetbrains.sh
 bash-aliases/06-profile.d-macports.sh .bash-aliases/06-profile.d-macports.sh
 bash-aliases/25-completion-laas.sh .bash-aliases/25-completion-laas.sh
 bash-aliases/25-completion-runjs.sh .bash-aliases/25-completion-runjs.sh
-bash-aliases/35-aliases-atlassian.sh .bash-aliases/35-aliases-atlassian.sh
 bash-aliases/35-aliases-gradle.sh .bash-aliases/35-aliases-gradle.sh
 bash-aliases/35-aliases-project_path.sh .bash-aliases/35-aliases-project_path.sh
+bash-aliases/36-aliases-atlassian.sh .bash-aliases/36-aliases-atlassian.sh
 docker-container-noprune.c02w104ahtdg .docker-container-noprune
 gitconfig.atlassian .gitconfig.local
 gradle.properties.c02w104ahtdg .gradle/gradle.properties
