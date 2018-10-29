@@ -8,16 +8,16 @@ function cleanempty()
 {
 	echo "Removing broken symlinks and empty directories."
 	find -L ./ -xdev -not \( -name '.git' -prune -or -name '.svn' -prune \) -type l -not -name 'build.py' -delete -print
-	find ./ -xdev -not \( -name '.git' -prune -or -name '.svn' -prune \) -type d | while read; do
+	find ./ -xdev -not \( -name '.git' -prune -or -name '.svn' -prune \) -type d | while read -r; do
 		if [ "$(command ls -BAUn "$REPLY")" == "total 0" ]; then
 			rmdir -pv "$REPLY" 2>/dev/null
 		fi
 	done
 }
 
-if [ -x ./build.py ]; then
-	echo "Cleaning build."
-	./build.py -t all -c
+if [ -x ./jmake ]; then
+	echo "Cleaning Jira."
+	./jmake clean
 elif [ -x ./gradlew ]; then
 	echo "Cleaning build."
 	./gradlew clean
