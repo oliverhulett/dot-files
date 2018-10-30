@@ -22,11 +22,13 @@ function idea()
 function jira-autocomplete()
 {
 	repo jira && ./jmake autocomplete && mv jmake2_completion ~/.jmake/
+	echo 'source ~/.jmake/jmake2_completion'
+	source ~/.jmake/jmake2_completion
 }
 
 function jira-deps()
 {
-	repo jira && mvn dependency:resolve
+	repo jira && mvn dependency:resolve -U
 }
 
 function jira-released()
