@@ -2,6 +2,7 @@
 *.sublime-workspace
 *.swp
 *~
+.classpath
 .cproject
 .externalToolBuilders
 .idea

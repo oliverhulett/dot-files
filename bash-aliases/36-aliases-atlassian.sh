@@ -37,12 +37,14 @@ function jira-released()
 	git pullme
 	echo
 	echo "Re-basing vertigo-release"
-	( repo jira vertigo-release && git pullme ) >/dev/null
+	( repo jira vertigo-release && git pullme ) >/dev/null 2>/dev/null
 	echo "Re-basing vertigo-prod"
-	( repo jira vertigo-prod && git pullme ) >/dev/null
+	( repo jira vertigo-prod && git pullme ) >/dev/null 2>/dev/null
 	echo
 	HASH="${1:-$(git mylasthash)}"
+	git log "${HASH}^!"
+	echo
 	echo "Branches containing ${HASH}"
 	git branch --contains "${HASH}"
-	cd - || return 1
+	cd - >/dev/null || return 1
 }
