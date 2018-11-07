@@ -21,9 +21,9 @@ function idea()
 
 function jira-autocomplete()
 {
-	repo jira && ./jmake autocomplete && mv jmake2_completion ~/.jmake/
-	echo 'source ~/.jmake/jmake2_completion'
-	source ~/.jmake/jmake2_completion
+	repo jira && ./jmake autocomplete --force --output ~/.local/share/bash-completion/completions/jmake
+	echo 'source ~/.local/share/bash-completion/completions/jmake'
+	source ~/.local/share/bash-completion/completions/jmake
 }
 
 function jira-deps()

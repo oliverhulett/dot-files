@@ -15,13 +15,9 @@ if [ -d "${ATLASSIAN_SCRIPTS}" ]; then
 	source "${ATLASSIAN_SCRIPTS}/sourceme.sh"
 fi
 
-if [ -e "${HOME}/.sdmake/complete/sdmake.completion.bash" ]; then
-	source "${HOME}/.sdmake/complete/sdmake.completion.bash"
-fi
-
-if [ -e "${HOME}/.jmake/jmake2_completion" ]; then
-	source "${HOME}/.jmake/jmake2_completion"
-	complete -F _complete_jmake2 -o default ./jmake jmake
+if [ -e "${HOME}/.local/share/bash-completion/completions/jmake" ]; then
+	source "${HOME}/.local/share/bash-completion/completions/jmake"
+	complete -F _complete_jmake -o default ./jmake jmake
 fi
 
 export PATH="$(append_path "${PATH}" $(echo "${PATH}" | sed -re 's/:/ /g'))"

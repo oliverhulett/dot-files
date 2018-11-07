@@ -15,6 +15,7 @@ try
 	Plugin 'altercation/vim-colors-solarized'
 	Plugin 'djoshea/vim-autoread'
 	Plugin 'godlygeek/tabular'
+	Plugin 'integralist/vim-mypy'
 	Plugin 'kawaz/batscheck.vim'
 	Plugin 'leafgarland/typescript-vim'
 	Plugin 'lifepillar/vim-cheat40'
