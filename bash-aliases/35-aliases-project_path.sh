@@ -35,8 +35,12 @@ function repo()
 	if [ -d "${dir}/master" ]; then
 		dir="${dir}/master"
 	fi
-	echo "$dir"
-	cd "$dir"
+	if [ -d "${dir}" ]; then
+		echo "$dir"
+		cd "$dir" || return 1
+	else
+		return 1
+	fi
 }
 alias get-repo-dir=get-repo-dir.sh
 alias repo-dir=get-repo-dir.sh
@@ -64,5 +68,5 @@ unalias clone 2>/dev/null
 function clone()
 {
 	LINE="$(clone.sh "$@" | tee /dev/tty 2>/dev/null | tail -1)"
-	cd "${LINE}" 2>/dev/null
+	cd "${LINE}" 2>/dev/null || return 1
 }
