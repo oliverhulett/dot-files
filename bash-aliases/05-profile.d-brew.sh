@@ -2,7 +2,7 @@
 ## Source things from the brew prefix etc/ dir.
 # shellcheck disable=SC1090
 
-if reentered "${HOME}/.bash-aliases/09-profile.d-brew.sh"; then
+if reentered "${HOME}/.bash-aliases/05-profile.d-brew.sh"; then
 	return 0
 fi
 

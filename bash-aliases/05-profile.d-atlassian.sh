@@ -2,13 +2,15 @@
 # Things for the mac.
 # shellcheck disable=SC2155,SC1090
 
-if reentered "${HOME}/.bash-aliases/09-profile.d-atlassian.sh"; then
+if reentered "${HOME}/.bash-aliases/05-profile.d-atlassian.sh"; then
 	return 0
 fi
 
 export JAVA_HOME="$(/usr/libexec/java_home -v 1.8)"
 export NVM_DIR="${HOME}/.nvm"
 source "$(brew --prefix nvm)/nvm.sh"
+
+export JIRA_HOME="$(get-repo-dir.sh jiracloud jira master)"
 
 export ATLASSIAN_SCRIPTS="${HOME}/repo/atlassian/atlassian-scripts/master"
 if [ -d "${ATLASSIAN_SCRIPTS}" ]; then
