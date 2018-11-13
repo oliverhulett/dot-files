@@ -73,10 +73,10 @@ function per_os()
 	echo "$1"
 }
 
-
 alias chmod='chmod -c'
 alias cp="$(per_os -w "cp --preserve" "cp --preserve=all")"
 alias diff='diff -wB'
+alias eclimd="$(per_os -m "/Applications/Eclipse.app/Contents/Eclipse/eclimd" "eclimd") --background"
 alias eject='eject -T'
 alias file='file -krz'
 alias formatter='bash <(curl -sS https://bitbucket.org/oliverhulett/formatter/raw/master/run.sh)'

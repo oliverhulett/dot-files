@@ -1,3 +1,5 @@
 *.add.spl
 *.pyc
 vim/bundle/*
+vim/eclim/
+vim/plugin/eclim.vim

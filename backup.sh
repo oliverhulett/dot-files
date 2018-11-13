@@ -20,7 +20,7 @@ export LC_ALL=C
 RSYNC_ARGS=( -rpAXogthR --one-file-system --links --delete --delete-excluded --stats )
 BACKUP_ARCHIVE="${HOME}/etc/backups.tar.gz"
 BACKUP_DEST="${TMPDIR:-${TMP:-${HOME}/tmp}}/backups"
-BACKUP_DEST="${HOME}/etc/backups/${HOSTNAME}/"
+BACKUP_DEST="${HOME}/.backups/${HOSTNAME}/"
 
 function _archive_is_mounted()
 {

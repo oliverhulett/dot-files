@@ -11,8 +11,8 @@ PATH=/Users/ohulett/dot-files/bin:/usr/local/bin:/usr/bin:/bin
 0 0-8,10,12,15,17-23 * * 1-5 chronic.sh nice "${HOME}/dot-files/autocommit.sh"
 0 * * * 0,6 chronic.sh nice "${HOME}/dot-files/autocommit.sh"
 
-@reboot chronic.sh nice sudo -n "${HOME}/dot-files/backup.sh"
-5 0-8,10,12,15,17-23 * * 1-5 chronic.sh nice sudo -n "${HOME}/dot-files/backup.sh"
+#@reboot chronic.sh nice sudo -n "${HOME}/dot-files/backup.sh"
+#5 0-8,10,12,15,17-23 * * 1-5 chronic.sh nice sudo -n "${HOME}/dot-files/backup.sh"
 
 0 12 * * * nice find "${HOME}/repo" "${HOME}/src" -type d -name master -exec chronic.sh git -C "{}" pullme \;
 
