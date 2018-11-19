@@ -17,13 +17,14 @@ find = log --all --full-history
 gresolve = "!f() { : git mergetool ; git mergetool --tool=kdiff3 -y \"$@\" && echo \"Removing kdiff3 original files.\" && find ./ \\( -name '*.BASE.*' -or -name '*.BACKUP.*' -or -name '*.LOCAL.*' -or -name '*.REMOTE.*' -or -name '*.orig' \\) -delete -print; }; cd \"$GIT_PREFIX\" && f"
 home = "!f() { pwd -P; }; f" ## Want to execute from the top level, not GIT_PREFIX
 ignore = "!f() { for i in \"$@\"; do echo \"$i\" >>.gitignore; done; echo \"$(LC_ALL=C sort -u .gitignore)\" >.gitignore; sed -re '/^$/d' -i .gitignore; git add .gitignore; }; cd \"$GIT_PREFIX\" && f"
-lg = "!f() { ~/.git-wrappers/log.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
-mergeflict = "!f() { : git checkout ; git push; git pull --all --force && git fetch origin $1 && git merge FETCH_HEAD; }; f" ## Want to execute from top level, not GIT_PREFIX
-mine = "!f() { : git for-each-ref; git branch -vv; git for-each-ref --sort=-committerdate --format='#%(committerdate)#%(refname)#%(subject)' refs/remotes/origin/$(whoami) \"$@\" | column -ts'#'; }; f"
+lg = "!f() { ~/.git-wrappers/log.sh \"$@\"; }; cd \"${GIT_PREFIX}\" && f"
+mergeflict = "!f() { : git checkout ; git push; git pull --all --force && git fetch origin $1 && git merge FETCH_HEAD; }; cd \"${GIT_PREFIX}\" && f"
+mine = "!f() { : git for-each-ref; git branch -vv; git for-each-ref --sort=-committerdate --format='#%(committerdate)#%(refname)#%(subject)' refs/remotes/origin/$(whoami) \"$@\" | column -ts'#'; }; f" ## Want to execute from top level, not GIT_PREFIX
 mkbranch = "!f() { ~/.git-wrappers/mkbranch.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 mvbranch = "!f() { : git checkout ; git branch -m \"$1\" \"$2\" && git push origin :\"$1\" && git fetch --prune && git push --set-upstream origin \"$2\"; }; f" ## Want to execute from top level, not GIT_PREFIX
-mylastcommit = "!f() { : git log; if [ $# -eq 0 ]; then set -- master; fi; git log -1 --author=\"$(whoami)\" \"$@\"; }; f" ## Want to execut from the top level, not GIT_PREFIX
-mylasthash = "!f() { : git log; if [ $# -eq 0 ]; then set -- master; fi; git log -1 --author=\"$(whoami)\" --format=\"%h\" \"$@\"; }; f" ## Want to execut from the top level, not GIT_PREFIX
+mycommits = "!f() { : git log; if [ $# -eq 0 ]; then set -- master; fi; git log --author=\"$(whoami)\" \"$@\"; }; cd \"${GIT_PREFIX}\" && f"
+mylastcommit = "!f() { : git log; if [ $# -eq 0 ]; then set -- master; fi; git log -1 --author=\"$(whoami)\" \"$@\"; }; cd \"${GIT_PREFIX}\" && f"
+mylasthash = "!f() { : git log; if [ $# -eq 0 ]; then set -- master; fi; git log -1 --author=\"$(whoami)\" --format=\"%h\" \"$@\"; }; cd \"${GIT_PREFIX}\" && f"
 new = "!f() { ~/.git-wrappers/new.sh \"$@\"; }; cd \"$GIT_PREFIX\" && f"
 pullme = "!f() { : git pull; git pull --all --force --prune \"$@\"; git update; git cleanbranches; }; f" ## Want to execute from top level, not GIT_PREFIX
 pushtags = push --tags
@@ -35,18 +36,18 @@ resolve-ours = !git resolve-mine
 resolve-theirs = "!f() { : git add ; if [ $# -eq 0 ]; then set -- $(git diff --name-only --diff-filter=U); fi; git checkout --theirs \"$@\" && git add \"$@\"; }; cd \"$GIT_PREFIX\" && f"
 resolved = "!f() { : git add ; if [ $# -eq 0 ]; then set -- $(git diff --name-only --diff-filter=U); fi; git add \"$@\"; }; cd \"$GIT_PREFIX\" && f"
 rmbranch = "!f() { : git checkout ; dashd=\"-d\"; if [ \"$1\" == \"-D\" ]; then dashd=\"-D\"; shift; fi; for b in \"$@\"; do git branch $dashd \"$b\"; git push origin --delete \"$b\"; done; git pull --prune; }; f" ## Want to execute from top level, not GIT_PREFIX
-rmtag = "!f() { for t in \"$@\"; do git tag -d $t && git push origin :refs/tags/$t; done; }; f"
+rmtag = "!f() { for t in \"$@\"; do git tag -d $t && git push origin :refs/tags/$t; done; }; f" ## Want to execute from top level, not GIT_PREFIX
 search = log -S
-tags = "!f() { if [ $# -eq 0 ]; then set -- 5; fi; count=\"--lines=$1\"; if [ \"$1\" == \"-a\" -o \"$1\" == \"--all\" ]; then count=\"--lines=-0\"; fi; git for-each-ref --format='%(taggerdate:raw)%(committerdate:raw)$%(taggerdate)%(committerdate)$%(refname:short)$%(authorname)%(*authorname)$%(subject)' refs/tags | sort -rn | cut -d'$' -f2- | head $count | column -ts'$'; }; f"
-this = "!f() { git branch --no-color | sed -nre 's/^\\* //p'; }; f"
-ticket = "!f() { THIS=\"$(git this)\"; if [ \"${THIS}\" != \"master\" ]; then if [ \"${THIS#issue}\" != \"${THIS}\" ] && [ -n \"$(echo \"${THIS}\" | cut -d/ -f3)\" ]; then FIELD=3; else FIELD=2; fi; echo \"${THIS}\" | cut -d'/' -f${FIELD} | sed -nre 's/^([A-Z0-9]+-[0-9]+).*/\\1/p'; fi; }; f"
+tags = "!f() { if [ $# -eq 0 ]; then set -- 5; fi; count=\"--lines=$1\"; if [ \"$1\" == \"-a\" -o \"$1\" == \"--all\" ]; then count=\"--lines=-0\"; fi; git for-each-ref --format='%(taggerdate:raw)%(committerdate:raw)$%(taggerdate)%(committerdate)$%(refname:short)$%(authorname)%(*authorname)$%(subject)' refs/tags | sort -rn | cut -d'$' -f2- | head $count | column -ts'$'; }; f" ## Want to execute from top level, not GIT_PREFIX
+this = "!f() { git branch --no-color | sed -nre 's/^\\* //p'; }; f" ## Want to execute from top level, not GIT_PREFIX
+ticket = "!f() { THIS=\"$(git this)\"; if [ \"${THIS}\" != \"master\" ]; then if [ \"${THIS#issue}\" != \"${THIS}\" ] && [ -n \"$(echo \"${THIS}\" | cut -d/ -f3)\" ]; then FIELD=3; else FIELD=2; fi; echo \"${THIS}\" | cut -d'/' -f${FIELD} | sed -nre 's/^([A-Z0-9]+-[0-9]+).*/\\1/p'; fi; }; f" ## Want to execute from top level, not GIT_PREFIX
 undo-commit = reset HEAD^
 unstage = reset HEAD
 update = "!f() { ~/.git-wrappers/update.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
-upstream = "!f() { remote=\"origin\"; if [ -n \"$1\" ]; then remote=\"$1\"; fi; git push --set-upstream \"$remote\" $(git this); }; f"
+upstream = "!f() { remote=\"origin\"; if [ -n \"$1\" ]; then remote=\"$1\"; fi; git push --set-upstream \"$remote\" $(git this); }; f" ## Want to execute from top level, not GIT_PREFIX
 when = "!f() { git for-each-ref --sort=-committerdate --format='%(authorname)#%(committerdate)#%(refname)#%(subject)' refs/remotes/origin/ \"$@\" | column -ts'#'; }; f"
 when-added = "!f() { : git log ; follow=; if [ $# -le 1 ]; then follow=\"--follow\"; fi; git log $follow --diff-filter=A --find-renames=40% -- \"$@\"; }; cd \"$GIT_PREFIX\" && f"
-which = "!f() { for i in \"$@\"; do echo -n \"$i is: \"; git config alias.$i; done; }; f"
+which = "!f() { for i in \"$@\"; do echo -n \"$i is: \"; git config alias.$i; done; }; f" ## Want to execute from top level, not GIT_PREFIX
 who = "!f() { git for-each-ref --sort=-authorname --format='%(authorname)#%(committerdate)#%(refname)#%(subject)' refs/remotes/origin/ \"$@\" | column -ts'#'; }; f"
 
 [add]
