@@ -95,7 +95,7 @@ alias sudo='sudo -E'
 alias time="$(per_os -m "/usr/local/bin/time" "/usr/bin/time")"
 alias top="$(per_os -m "top -o cpu" "top -c")"
 
-export LESS='-RFXiMx4'
+export LESS='-NRFXiMx4'
 alias less="less ${LESS}"
 LESSOPEN="|$(per_os -m "/usr/local/bin/lesspipe.sh" "/usr/bin/lesspipe") %s"
 export LESSOPEN
