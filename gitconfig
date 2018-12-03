@@ -27,7 +27,9 @@ mylastcommit = "!f() { : git log; if [ $# -eq 0 ]; then set -- master; fi; git l
 mylasthash = "!f() { : git log; if [ $# -eq 0 ]; then set -- master; fi; git log -1 --author=\"$(whoami)\" --format=\"%h\" \"$@\"; }; cd \"${GIT_PREFIX}\" && f"
 new = "!f() { ~/.git-wrappers/new.sh \"$@\"; }; cd \"$GIT_PREFIX\" && f"
 pullme = "!f() { : git pull; git pull --all --force --prune \"$@\"; git update; git cleanbranches; }; f" ## Want to execute from top level, not GIT_PREFIX
+pushme = push
 pushtags = push --tags
+pushyou = push
 refs = for-each-ref refs/remotes/origin
 remotes = remote -v
 resolve = "!f() { : git add ; if [ $# -eq 0 ]; then set -- $(git diff --name-only --diff-filter=U); fi; ~/.git-wrappers/resolve.sh \"$@\"; read -n1 -p\"Resolved? [y/N]: \"; echo; if [ \"$(echo $REPLY | tr '[A-Z]' '[a-z]')\" == \"y\" ]; then git add \"$@\"; fi; }; cd \"$GIT_PREFIX\" && f"
