@@ -17,7 +17,7 @@ find = log --all --full-history
 gresolve = "!f() { : git mergetool ; git mergetool --tool=kdiff3 -y \"$@\" && echo \"Removing kdiff3 original files.\" && find ./ \\( -name '*.BASE.*' -or -name '*.BACKUP.*' -or -name '*.LOCAL.*' -or -name '*.REMOTE.*' -or -name '*.orig' \\) -delete -print; }; cd \"$GIT_PREFIX\" && f"
 home = "!f() { pwd -P; }; f" ## Want to execute from the top level, not GIT_PREFIX
 ignore = "!f() { for i in \"$@\"; do echo \"$i\" >>.gitignore; done; echo \"$(LC_ALL=C sort -u .gitignore)\" >.gitignore; sed -re '/^$/d' -i .gitignore; git add .gitignore; }; cd \"$GIT_PREFIX\" && f"
-inrelease = "!f() { : git merge-base; MY_HASH=\"$(git mylasthash)\"; if [ $# -eq 2 ]; then MY_HASH=\"$1\"; shift; fi; RELEASE_HASH=\"$1\"; shift; if git merge-base --is-ancestor \"${MY_HASH}\" \"${RELEASE_HASH}\" \"$@\"; then rv=$?; echo \"Yes\"; return $rv; else rv=$?; echo \"No\"; return $rv; fi; }; cd \"${GIT_PREFIX}\" && f"
+inrelease = "!f() { : git merge-base; git fetch origin master; MY_HASH=\"$(git mylasthash)\"; if [ $# -eq 2 ]; then MY_HASH=\"$1\"; shift; fi; RELEASE_HASH=\"$1\"; shift; if git merge-base --is-ancestor \"${MY_HASH}\" \"${RELEASE_HASH}\" \"$@\"; then rv=$?; echo \"Yes\"; return $rv; else rv=$?; echo \"No\"; return $rv; fi; }; cd \"${GIT_PREFIX}\" && f"
 lg = "!f() { ~/.git-wrappers/log.sh \"$@\"; }; cd \"${GIT_PREFIX}\" && f"
 mergeflict = "!f() { : git checkout ; git push; git pull --all --force && git fetch origin $1 && git merge FETCH_HEAD; }; cd \"${GIT_PREFIX}\" && f"
 mine = "!f() { : git for-each-ref; git branch -vv; git for-each-ref --sort=-committerdate --format='#%(committerdate)#%(refname)#%(subject)' refs/remotes/origin/$(whoami) \"$@\" | column -ts'#'; }; f" ## Want to execute from top level, not GIT_PREFIX
