@@ -196,6 +196,13 @@ nnoremap <silent> <Leader>ml :call AppendModeline()<CR>
 
 set copyindent
 set foldlevel=99
+set formatoptions+=n
+set formatoptions+=q
+set formatoptions-=a
+set formatoptions-=c
+set formatoptions-=o
+set formatoptions-=r
+set formatoptions-=t
 set hlsearch
 set incsearch
 set modelines=10
