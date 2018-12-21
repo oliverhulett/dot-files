@@ -33,7 +33,6 @@ function vim()
 	VUNDLE_LAST_UPDATED_MARKER="${HOME}/.vim/bundle/.last_updated"
 	if [ -z "$(find "${VUNDLE_LAST_UPDATED_MARKER}" -mtime -1 2>/dev/null)" ] || \
 		[ "$(command grep -P '^[ \t]*Plugin ' "${HOME}/.vimrc" | xargs -L1 | sort)" != "$(tail -n +2 "${VUNDLE_LAST_UPDATED_MARKER}")" ]; then
-		[ -e "${HOME}/.bash-aliases/49-setup-proxy.sh" ] && source "${HOME}/.bash-aliases/49-setup-proxy.sh" 2>/dev/null
 		command vim +'silent! PluginInstall' +qall
 		date >"${VUNDLE_LAST_UPDATED_MARKER}"
 		command grep -P '^[ \t]*Plugin ' "${HOME}/.vimrc" | xargs -L1 | sort >>"${VUNDLE_LAST_UPDATED_MARKER}"

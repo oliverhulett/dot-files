@@ -1,5 +1,6 @@
 bash-aliases/05-profile.d-atlassian.sh .bash-aliases/05-profile.d-atlassian.sh
 bash-aliases/05-profile.d-brew.sh .bash-aliases/05-profile.d-brew.sh
+bash-aliases/05-profile.d-cargo.sh .bash-aliases/05-profile.d-cargo.sh
 bash-aliases/05-profile.d-jetbrains.sh .bash-aliases/05-profile.d-jetbrains.sh
 bash-aliases/06-profile.d-macports.sh .bash-aliases/06-profile.d-macports.sh
 bash-aliases/25-completion-laas.sh .bash-aliases/25-completion-laas.sh

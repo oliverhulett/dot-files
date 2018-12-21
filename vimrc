@@ -12,17 +12,22 @@ try
 	Plugin 'VundleVim/Vundle.vim'
 
 	Plugin 'ConradIrwin/vim-bracketed-paste'
+	Plugin 'Valloric/YouCompleteMe'
+	Plugin 'Xuyuanp/nerdtree-git-plugin'
 	Plugin 'altercation/vim-colors-solarized'
+	Plugin 'ap/vim-buftabline'
 	Plugin 'djoshea/vim-autoread'
 	Plugin 'godlygeek/tabular'
 	Plugin 'integralist/vim-mypy'
 	Plugin 'kawaz/batscheck.vim'
 	Plugin 'leafgarland/typescript-vim'
 	Plugin 'lifepillar/vim-cheat40'
+	Plugin 'liuchengxu/vim-which-key'
 	Plugin 'myint/syntastic-extras'
 	Plugin 'ntpeters/vim-better-whitespace'
 	Plugin 'plasticboy/vim-markdown'
 	Plugin 'reedes/vim-litecorrect'
+	Plugin 'scrooloose/nerdtree'
 	Plugin 'vim-scripts/bats.vim'
 	Plugin 'vim-scripts/wordlist.vim'
 	Plugin 'vim-syntastic/syntastic'
@@ -70,6 +75,20 @@ let g:syntastic_python_checkers = ['flake8']
 " Shellcheck syntastic options
 let g:syntastic_sh_shellcheck_args = '-x'
 
+" By default timeoutlen is 1000 ms
+set timeoutlen=500
+
+nmap <silent> <leader>t :NERDTreeToggle<CR>
+let g:NERDTreeNodeDelimiter = "\u00a0"
+" Start NerdTree when vim starts
+" autocmd vimenter * NERDTree
+
+" How can I open a NERDTree automatically when vim starts up if no files were specified?
+autocmd StdinReadPre * let s:std_in=1
+autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
+" How can I open NERDTree automatically when vim starts up on opening a directory?
+autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | endif
+
 " }}}
 
 " Terminal and local setup {{{
@@ -86,6 +105,7 @@ set swapsync=
 
 " Don't remember highlighting.
 set viminfo^=h
+set mouse=a
 
 " Split window below and right by default.
 set splitbelow
@@ -174,6 +194,12 @@ vnoremap su :sort u<CR>
 " Use Q for formatting the current paragraph (or selection)
 vnoremap Q gq
 nnoremap Q gqap
+
+if exists(":Tabularize")
+	nmap <Leader>a= :Tabularize /=<CR>
+	vmap <Leader>a= :Tabularize /=<CR>
+endif
+
 
 " }}}
 
