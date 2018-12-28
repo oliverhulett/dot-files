@@ -76,6 +76,9 @@ let g:syntastic_java_checkers = []
 " Shellcheck syntastic options
 let g:syntastic_sh_shellcheck_args = '-x'
 
+" YouCompleteMe
+let g:ycm_always_populate_location_list = 1
+
 " By default timeoutlen is 1000 ms
 set timeoutlen=500
 
