@@ -12,22 +12,26 @@ try
 	Plugin 'VundleVim/Vundle.vim'
 
 	Plugin 'ConradIrwin/vim-bracketed-paste'
+	Plugin 'RRethy/vim-illuminate'
 	Plugin 'Valloric/YouCompleteMe'
 	Plugin 'Xuyuanp/nerdtree-git-plugin'
 	Plugin 'altercation/vim-colors-solarized'
 	Plugin 'ap/vim-buftabline'
 	Plugin 'djoshea/vim-autoread'
 	Plugin 'godlygeek/tabular'
+	Plugin 'inside/vim-search-pulse'
 	Plugin 'integralist/vim-mypy'
 	Plugin 'kawaz/batscheck.vim'
 	Plugin 'leafgarland/typescript-vim'
 	Plugin 'lifepillar/vim-cheat40'
+	Plugin 'lilydjwg/colorizer'
 	Plugin 'liuchengxu/vim-which-key'
 	Plugin 'myint/syntastic-extras'
 	Plugin 'ntpeters/vim-better-whitespace'
 	Plugin 'plasticboy/vim-markdown'
 	Plugin 'reedes/vim-litecorrect'
 	Plugin 'scrooloose/nerdtree'
+	Plugin 'terryma/vim-smooth-scroll'
 	Plugin 'vim-scripts/bats.vim'
 	Plugin 'vim-scripts/wordlist.vim'
 	Plugin 'vim-syntastic/syntastic'
@@ -92,6 +96,12 @@ autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 " How can I open NERDTree automatically when vim starts up on opening a directory?
 autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | endif
+
+" Smooth scroll
+noremap <silent> <c-u> :call smooth_scroll#up(&scroll, 0, 2)<CR>
+noremap <silent> <c-d> :call smooth_scroll#down(&scroll, 0, 2)<CR>
+noremap <silent> <c-b> :call smooth_scroll#up(&scroll*2, 0, 4)<CR>
+noremap <silent> <c-f> :call smooth_scroll#down(&scroll*2, 0, 4)<CR>
 
 " }}}
 
