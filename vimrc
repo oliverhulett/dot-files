@@ -64,8 +64,6 @@ endif
 
 " Plugin setup {{{
 
-EclimDisable
-
 " From ntpeters/vim-better-whitespace: Strip white-space on save.
 autocmd BufEnter * silent! EnableStripWhitespaceOnSave
 
