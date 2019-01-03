@@ -13,6 +13,7 @@ try
 
 	Plugin 'ConradIrwin/vim-bracketed-paste'
 	Plugin 'RRethy/vim-illuminate'
+
 	Plugin 'Valloric/YouCompleteMe'
 	Plugin 'Xuyuanp/nerdtree-git-plugin'
 	Plugin 'altercation/vim-colors-solarized'
