@@ -18,6 +18,7 @@ try
 	Plugin 'Xuyuanp/nerdtree-git-plugin'
 	Plugin 'altercation/vim-colors-solarized'
 	Plugin 'ap/vim-buftabline'
+	Plugin 'chaoren/vim-wordmotion'
 	Plugin 'djoshea/vim-autoread'
 	Plugin 'godlygeek/tabular'
 	Plugin 'inside/vim-search-pulse'
