@@ -15,7 +15,7 @@ PATH=/Users/ohulett/dot-files/bin:/usr/local/bin:/usr/bin:/bin
 #5 0-8,10,12,15,17-23 * * 1-5 chronic.sh nice sudo -n "${HOME}/dot-files/backup.sh"
 
 0 12 * * * nice find "${HOME}/repo" "${HOME}/src" -type d -name master -exec chronic.sh git -C "{}" pullme \; -exec chronic.sh git -C "{}" prune \;
-10 12 * * * nice chronic.sh git -c "${HOME}/repo/jiracloud/jira/master" gc --aggressive
+10 12 * * * nice chronic.sh git -C "${HOME}/repo/jiracloud/jira/master" gc --aggressive
 
 0 12 * * * chronic.sh docker run --rm --privileged alpine hwclock -s
 0 12 * * 1 BACKUP_DIR="${HOME}/etc/volt/monarch-database-backups"; mkdir --parents "${BACKUP_DIR}"; for i in $(docker ps -a -f 'Name=monarch-staging-*' --format '{{.Names}}' 2>/dev/null); do chronic.sh docker start $i; docker exec  -t "$i" pg_dumpall -U postgres >"${BACKUP_DIR}/${i}.sql"; done
