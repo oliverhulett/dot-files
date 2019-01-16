@@ -9,7 +9,7 @@ branches = branch -avv
 cleanall = "!f() { ~/.git-wrappers/cleanall.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 cleanbranches = "!f() { ~/.git-wrappers/cleanbranches.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 cleanignored = "!f() { ~/.git-wrappers/cleanignored.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
-commitme = "!f() { : git commit; TICKET_MSG=(); if [ -n \"$(git ticket)\" ]; then TICKET_MSG=(-m \"$(git ticket)\"); fi; git commit \"${TICKET_MSG[@]}\" \"$@\"; }; cd \"$GIT_PREFIX\" && f"
+commitme = "!f() { : git commit; ~/.git-wrappers/commitme.sh \"$@\"; }; cd \"$GIT_PREFIX\" && f"
 cp = "!f() { ~/.git-wrappers/cp.sh \"$@\"; }; cd \"$GIT_PREFIX\" && f"
 discard = reset --hard HEAD
 env = "!f() { env; }; cd \"$GIT_PREFIX\" && f"
