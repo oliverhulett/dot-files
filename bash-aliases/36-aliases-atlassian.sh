@@ -10,13 +10,35 @@ alias vgrok='ngrok start jira-exploratory-development &'
 
 function idea()
 {
-	replacelink "$(command ls -d /Applications/IntelliJ\ IDEA* -t1c | head -n1)" /Applications/IntelliJ_IDEA.app
-	replacelink "$(command ls -d /Users/ohulett/Library/Caches/IntelliJIdea*.* -t1c | head -n1)" /Users/ohulett/Library/Caches/IntelliJIdea
-	replacelink "$(command ls -d /Users/ohulett/Library/Preferences/IntelliJIdea*.* -t1c | head -n1)" /Users/ohulett/Library/Preferences/IntelliJIdea
-	if [ $# -eq 0 ]; then
-		set -- .
+	DIR=
+	VER=
+	for a in "$@"; do
+		if [ "$a" == "ls" ]; then
+			lsl -d {/Applications,~/Library/Preferences,~/Library/Caches}/IntelliJ*
+			return
+		fi
+		if [ -z "${DIR}" ] && [ -d "$a" ]; then
+			DIR="$a"
+			continue
+		fi
+		if [ -z "$VER" ]; then
+			if [ "${a,,}" == "latest" ]; then
+				VER="$(command ls -d /Applications/IntelliJ\ IDEA* -t1c 2>/dev/null | head -n1 2>/dev/null)"
+			elif [ "${a,,}" == "stable" ]; then
+				VER="$(command ls -d /Applications/IntelliJ\ IDEA.app -t1c | head -n1)"
+			else
+				VER="$(command ls -d /Applications/IntelliJ\ IDEA\ "$a"* -t1c 2>/dev/null | head -n1 2>/dev/null)"
+			fi
+		fi
+	done
+	if [ -n "$VER" ]; then
+		replacelink "${VER}" /Applications/IntelliJ_IDEA.app
 	fi
-	command idea "$@"
+	if [ -z "${DIR}" ]; then
+		DIR="$(pwd -P)"
+	fi
+	echo "$(command which --skip-function --skip-alias idea)" "${DIR}"
+	command idea "${DIR}"
 }
 
 function jira-autocomplete()
