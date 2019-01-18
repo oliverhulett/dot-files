@@ -33,6 +33,9 @@ function idea()
 	done
 	if [ -n "$VER" ]; then
 		replacelink "${VER}" /Applications/IntelliJ_IDEA.app
+		IDEA_VER="$(jq '.version' /Applications/IntelliJ_IDEA.app/Contents/Resources/product-info.json | sed -nre 's/^"([0-9]+.[0-9]).+/\1/p')"
+		replacelink "$(command ls -d "${HOME}/Library/Preferences/IntelliJIdea${IDEA_VER}" -t1c 2>/dev/null | head -n1 2>/dev/null)" ~/Library/Preferences/IntelliJ_IDEA
+		replacelink "$(command ls -d "${HOME}/Library/Caches/IntelliJIdea${IDEA_VER}" -t1c 2>/dev/null | head -n1 2>/dev/null)" ~/Library/Caches/IntelliJ_IDEA
 	fi
 	if [ -z "${DIR}" ]; then
 		DIR="$(pwd -P)"

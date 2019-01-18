@@ -15,9 +15,9 @@ if [ -n "${TICKET}" ]; then
 			ARGS[${#ARGS[@]}]="$a"
 			NEXT_IS_FIRST_MSG="yes"
 		else
-			NEW_ARG="$(echo "$a" | sed -nre 's/^(--message=["'"'"']?)(.+)(["'"'"']?)$/\1'"${TICKET}: "'\2\3/p')"
+			NEW_ARG="$(echo "$a" | sed -nre 's/^(--message=)(.+)()$/\1'"${TICKET}: "'\2\3/p')"
 			if [ -z "${NEW_ARG}" ]; then
-				NEW_ARG="$(echo "$a" | sed -nre 's/^(-[a-zA-Z0-9]*m["'"'"']?)(.+)(["'"'"']?)$/\1'"${TICKET}: "'\2\3/p')"
+				NEW_ARG="$(echo "$a" | sed -nre 's/^(-[a-ln-zA-Z0-9]*m)(.+)()$/\1'"${TICKET}: "'\2\3/p')"
 			fi
 			if [ -n "${NEW_ARG}" ] && [ "$a" != "${NEW_ARG}" ]; then
 				ARGS[${#ARGS[@]}]="${NEW_ARG}"
