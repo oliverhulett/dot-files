@@ -121,7 +121,6 @@ set swapsync=
 
 " Don't remember highlighting.
 set viminfo^=h
-set mouse=a
 
 " Split window below and right by default.
 set splitbelow

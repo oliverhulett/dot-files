@@ -134,6 +134,38 @@ function _find_alias_or_fn()
 	) | sort -u
 }
 
+function where()
+{
+	for arg in "$@"; do
+		if [ "${arg:0:1}" = "-" ]; then
+			continue
+		fi
+		for suffix in "" ".sh" ".py" ".bash" ".js" ".tsx" ".ts"; do
+			if type "${arg}${suffix}" 2>/dev/null >/dev/null; then
+				arg="${arg}${suffix}"
+				break
+			fi
+		done
+		cmd="$arg"
+		case $(type -t "$arg" 2>/dev/null) in
+			alias)
+				_find_alias_or_fn "$arg"
+				;;
+			keyword)
+				;;
+			function)
+				_find_alias_or_fn "$arg"
+				;;
+			builtin)
+				;;
+			*)
+				# shellcheck disable=SC2086,SC2046 - Double quote to prevent globbing and word splitting.
+				command which -a $(echo $cmd | tr ' ' '\n' | sort -u) 2>/dev/null
+				;;
+		esac
+	done
+}
+
 unalias which 2>/dev/null
 function which()
 {
@@ -149,24 +181,7 @@ function which()
 			fi
 		done
 		cmd="$arg"
-		case $(type -t "$arg" 2>/dev/null) in
-			alias)
-				alias "$arg"
-				_find_alias_or_fn "$arg"
-				cmd="$(alias "$arg" | sed -re 's/^[^=]+=(.+)$/\1/;s/^["'"'"']//;s/["'"'"']$//;s/command //g;s/builtin //g;s/sudo //g;s/ +-[^ ]+//g;s/^([^ ]+).*/\1/') $cmd"
-				_found_something="true"
-				;;
-			keyword)
-				;;
-			function)
-				_find_alias_or_fn "$arg"
-				_found_something="true"
-				;;
-			builtin)
-				;;
-			*)
-				;;
-		esac
+		where "$arg"
 		echo
 		# shellcheck disable=SC2086,SC2046 - Double quote to prevent globbing and word splitting.
 		commands="$(command which -a $(echo $cmd | tr ' ' '\n' | sort -u) 2>/dev/null)"
