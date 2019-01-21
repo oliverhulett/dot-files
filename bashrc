@@ -164,7 +164,7 @@ function _prompt_command()
 {
 	local _last_exit_status=$?
 
-	eval "${_hidex}"
+#	eval "${_hidex}"
 
 	# Whenever displaying the prompt, write the previous line to disk
 	history -a
@@ -197,7 +197,10 @@ function _prompt_command()
 		set -- $(history 1)
 		# `history` outputs command count, then date, then time, then command
 		shift 3
-		if ! grep -qwE "$(sed -re 's/^\^?/^/' "${HOME}/.interactive-commands" 2>/dev/null | paste -sd'|' -)" <(echo "$@") >/dev/null 2>/dev/null; then
+		if [ -z "${GREP_MATCH}" ] || file-changed "${HOME}/.interactive-commands"; then
+			GREP_MATCH="$(sed -re 's/^\^?/^/' "${HOME}/.interactive-commands" 2>/dev/null | paste -sd'|' -)"
+		fi
+		if ! ( echo "$@" | grep -qwE "${GREP_MATCH}" >/dev/null 2>/dev/null ); then
 			PROMPT_TIMER='['
 			if [ ${_timer_show} -ge 3600 ]; then
 				PROMPT_TIMER="${PROMPT_TIMER}$((_timer_show / 3600))h "
@@ -226,6 +229,8 @@ function _prompt_command()
 	fi
 	export PS1=" ${USER_CUSTOM_FRONT}${PROMPT}"
 	printf '%*s\n' ${COLUMNS} "$(date)"
-	eval "${_restorex}"
+#	eval "${_restorex}"
 }
 export PROMPT_COMMAND=_prompt_command
+# Add timestamps to bash tracing prompt.  The first character is repeated to indicate nesting, so that has to remain '+'.
+export PS4='+ \t '

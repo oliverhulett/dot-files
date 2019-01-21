@@ -55,6 +55,11 @@ function reentered()
 	reentrance_check "$(basename -- "$(readlink -f "$(caller 0 | cut -d' ' -f3-)")")" "$@"
 }
 
+function file-changed()
+{
+	reentered "$@"
+}
+
 function _logfile()
 {
 	LOG_DIR="${HOME}/.dotlogs"
