@@ -4,6 +4,7 @@
 path = ~/.gitconfig.local
 
 [alias]
+ack = grep --break --heading --line-number
 alias = config --get-regexp alias
 branches = branch -avv
 cleanall = "!f() { ~/.git-wrappers/cleanall.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
@@ -131,3 +132,8 @@ clean = sed -r -e 's/^\\s+([a-zA-Z0-9_-]+)\\s+=\\s+/\\1 = /' -e 's/^\\s+/\t/' -e
 
 [fetch]
 prune = true
+
+[color "grep"]
+linenumber = bold yellow
+filename = bold green
+match = reverse yellow
