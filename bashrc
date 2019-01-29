@@ -1,13 +1,14 @@
+# shellcheck shell=bash
 # /home/ols/.bashrc:
 #
 # This file is sourced by all *interactive* bash shells on startup,
 # including some apparently interactive shells such as scp and rcp
 # that can't tolerate any output.
 
-export PATH="${PATH:-/bin:/usr/bin}"
-source "${HOME}/dot-files/bash_common.sh"
-export PATH="$(append_path "/bin" "/usr/bin")"
-if reentered "${HOME}/.bashrc" "${HOME}/.bash_aliases"/*; then
+export PATH="${PATH:-/usr/local/bin:/usr/bin:/bin}"
+source "${HOME}/dot-files/bash-common.sh"
+export PATH="$(append_path "${PATH}" "/usr/local/bin" "/usr/bin" "/bin")"
+if reentered "${HOME}/.bashrc" "${HOME}/.bash-aliases"/*; then
 	return 0
 fi
 
@@ -23,26 +24,25 @@ fi
 
 #export BASH_ENV="${HOME}/.bashrc"
 
-export VISUAL=$(command which vim 2>/dev/null)
-export EDITOR=$VISUAL
-export PAGER=$(command which less 2>/dev/null)
-unalias edt 2>/dev/null
-function edt()
+export VISUAL=vim
+export EDITOR=vim
+export PAGER=less
+function vim()
 {
-	source "${HOME}/dot-files/bash_common.sh" 2>/dev/null || true
+	source "${HOME}/dot-files/bash-common.sh" 2>/dev/null || true
 	VUNDLE_LAST_UPDATED_MARKER="${HOME}/.vim/bundle/.last_updated"
 	if [ -z "$(find "${VUNDLE_LAST_UPDATED_MARKER}" -mtime -1 2>/dev/null)" ] || \
 		[ "$(command grep -P '^[ \t]*Plugin ' "${HOME}/.vimrc" | xargs -L1 | sort)" != "$(tail -n +2 "${VUNDLE_LAST_UPDATED_MARKER}")" ]; then
-		[ -e "${HOME}/.bash_aliases/49-setup-proxy.sh" ] && source "${HOME}/.bash_aliases/49-setup-proxy.sh" 2>/dev/null
-		vim +'silent! PluginInstall' +qall
+		command vim +'silent! PluginInstall' +qall
 		date >"${VUNDLE_LAST_UPDATED_MARKER}"
 		command grep -P '^[ \t]*Plugin ' "${HOME}/.vimrc" | xargs -L1 | sort >>"${VUNDLE_LAST_UPDATED_MARKER}"
 	fi
-	vim "${VUNDLE_UPDATE_CMDS[@]}" "$@"
+	command vim "${VUNDLE_UPDATE_CMDS[@]}" "$@"
 	es=$?
-	log "Command=edt Seconds=$((SECONDS - _timer)) Returned=$es CWD=$(pwd) Files={$*}"
+	dotlog "Command=vim Seconds=$((SECONDS - _timer)) Returned=$es CWD=$(pwd) Files={$*}"
 	return $es
 }
+alias edt=vim
 
 export HISTCONTROL="ignoredups"
 export HISTIGNORE="[   ]*:&:bg:fg:sh:exit:history"
@@ -51,19 +51,19 @@ export HISTSIZE=10000
 
 function set_local_paths()
 {
+	if [ -d "${HOME}/bin" ]; then
+		export PATH="$(prepend_path "${PATH}" "${HOME}/bin")"
+	fi
+	if [ -d "$HOME/sbin" ]; then
+		export PATH="$(prepend_path "${PATH}" "${HOME}/sbin")"
+	fi
+	export PATH="$(prepend_path "${PATH}" "${HOME}/dot-files/bin")"
+	export PATH="$(append_path "${PATH}" /usr/local/sbin /usr/sbin /sbin)"
 	shopt -s nullglob
-	for p in $(echo ${HOME}/.bash_aliases/*-profile.d-* | sort -n); do
+	for p in $(echo ${HOME}/.bash-aliases/*-profile.d-* | sort -n); do
 		source "$p"
 	done
 	unset p
-	if [ -d "${HOME}/bin" ]; then
-		export PATH="$(prepend_path "${HOME}/bin")"
-	fi
-	if [ -d "$HOME/sbin" ]; then
-		export PATH="$(prepend_path "${HOME}/sbin")"
-	fi
-	export PATH="$(prepend_path "${HOME}/dot-files/bin")"
-	export PATH="$(append_path /usr/local/sbin /usr/sbin /sbin)"
 	shopt -u nullglob
 }
 
@@ -114,16 +114,16 @@ shopt -s cdspell
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
-# We can clear some variables here that will be set/updated by the bash_aliases includes and used later.
+# We can clear some variables here that will be set/updated by the bash-aliases includes and used later.
 export PROMPT_FOO=
 
-if [ -d "$HOME/.bash_aliases" ]; then
-	for f in $(echo $HOME/.bash_aliases/* | sort -n); do
+if [ -d "$HOME/.bash-aliases" ]; then
+	for f in $(echo $HOME/.bash-aliases/* | sort -n); do
 		source "$f"
 	done
 	unset f
-elif [ -r "$HOME/.bash_aliases" ]; then
-	source "$HOME/.bash_aliases"
+elif [ -r "$HOME/.bash-aliases" ]; then
+	source "$HOME/.bash-aliases"
 fi
 
 set_local_paths
@@ -164,7 +164,7 @@ function _prompt_command()
 {
 	local _last_exit_status=$?
 
-	eval "${_hidex}"
+#	eval "${_hidex}"
 
 	# Whenever displaying the prompt, write the previous line to disk
 	history -a
@@ -172,7 +172,7 @@ function _prompt_command()
 	if [ "$TERM" == "cygwin" ]; then
 		PROMPT_COLOUR='\[\e[31m\]\u@\h \[\e[33m\]\w\[\e[0m\]'
 		PROMPT_DOLLAR='\n\$'
-	elif [ -z "${HOSTNAME/op??nx??[0-9][0-9][0-9][0-9]*}" ]; then
+	elif [ "$(echo "${HOSTNAME}" | tr '[:upper:]' '[:lower:]')" == "loki" ]; then
 		PROMPT_COLOUR='\[\e[31m\]\u@\h \[\e[33m\]\w\[\e[0m\]'
 		PROMPT_DOLLAR='\$'
 	else
@@ -197,22 +197,40 @@ function _prompt_command()
 		set -- $(history 1)
 		# `history` outputs command count, then date, then time, then command
 		shift 3
-		if ! grep -qwE "$(sed -re 's/^\^?/^/' ${HOME}/.interactive_commands 2>/dev/null | paste -sd'|' -)" <(echo "$@") >/dev/null 2>/dev/null; then
-			PROMPT_TIMER='['"${_timer_show}s"'] '
+		if [ -z "${GREP_MATCH}" ] || file-changed "${HOME}/.interactive-commands"; then
+			GREP_MATCH="$(sed -re 's/^\^?/^/' "${HOME}/.interactive-commands" 2>/dev/null | paste -sd'|' -)"
+		fi
+		if ! ( echo "$@" | grep -qwE "${GREP_MATCH}" >/dev/null 2>/dev/null ); then
+			PROMPT_TIMER='['
+			if [ ${_timer_show} -ge 3600 ]; then
+				PROMPT_TIMER="${PROMPT_TIMER}$((_timer_show / 3600))h "
+				_timer_show=$((_timer_show % 3600))
+				if [ ${_timer_show} -lt 60 ]; then
+					PROMPT_TIMER="${PROMPT_TIMER}0m "
+				fi
+			fi
+			if [ ${_timer_show} -ge 60 ]; then
+				PROMPT_TIMER="${PROMPT_TIMER}$((_timer_show / 60))m "
+				_timer_show=$((_timer_show % 60))
+			fi
+			PROMPT_TIMER="${PROMPT_TIMER}${_timer_show}s"'] '
 		fi
 	fi
 
 	PROMPT="${PROMPT_COLOUR} ${PROMPT_TIMER}${PROMPT_EXIT}${PROMPT_FOO} ${PROMPT_DOLLAR} "
 
-	if echo $PS1 | command grep -q '\\' >/dev/null 2>/dev/null || echo $PS1 | command grep -q '\$' >/dev/null 2>/dev/null; then
+	if echo "$PS1" | command grep -q "\\" >/dev/null 2>/dev/null || echo "$PS1" | command grep -q '\$' >/dev/null 2>/dev/null; then
 		# If it looks like a prompt, we're going to replace it...
-		USER_CUSTOM_FRONT="$(echo $PS1 | sed -nre "s!(.*)$(printf "%q" "${PROMPT_COLOUR}").*!\1!p")"
+		# shellcheck disable=SC2086 - Don't quote $PS1, we want to squash spaces in custom user prefixes.
+		USER_CUSTOM_FRONT="$(echo $PS1 | sed -nre "s!(.*)$(printf "%q" "${PROMPT_COLOUR}").*!\\1!p")"
 	else
 		# ...otherwise we'll use it as a custom prefix.
 		USER_CUSTOM_FRONT="$PS1"
 	fi
-	export PS1="${USER_CUSTOM_FRONT}${PROMPT}"
-	echo
-	eval "${_restorex}"
+	export PS1=" ${USER_CUSTOM_FRONT}${PROMPT}"
+	printf '%*s\n' ${COLUMNS} "$(date)"
+#	eval "${_restorex}"
 }
 export PROMPT_COMMAND=_prompt_command
+# Add timestamps to bash tracing prompt.  The first character is repeated to indicate nesting, so that has to remain '+'.
+export PS4='+ \t '

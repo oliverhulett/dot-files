@@ -1,7 +1,6 @@
-" vim:foldmethod=marker:foldlevel=0
-
 set nocompatible
 syntax enable
+set encoding=utf-8
 
 " Vundle stuff {{{
 
@@ -13,14 +12,28 @@ try
 	Plugin 'VundleVim/Vundle.vim'
 
 	Plugin 'ConradIrwin/vim-bracketed-paste'
+	Plugin 'RRethy/vim-illuminate'
+
+	Plugin 'Valloric/YouCompleteMe'
+	Plugin 'Xuyuanp/nerdtree-git-plugin'
 	Plugin 'altercation/vim-colors-solarized'
+	Plugin 'ap/vim-buftabline'
+	Plugin 'chaoren/vim-wordmotion'
+	Plugin 'djoshea/vim-autoread'
 	Plugin 'godlygeek/tabular'
+	Plugin 'inside/vim-search-pulse'
+	Plugin 'integralist/vim-mypy'
 	Plugin 'kawaz/batscheck.vim'
+	Plugin 'leafgarland/typescript-vim'
 	Plugin 'lifepillar/vim-cheat40'
+	Plugin 'lilydjwg/colorizer'
+	Plugin 'liuchengxu/vim-which-key'
 	Plugin 'myint/syntastic-extras'
 	Plugin 'ntpeters/vim-better-whitespace'
 	Plugin 'plasticboy/vim-markdown'
 	Plugin 'reedes/vim-litecorrect'
+	Plugin 'scrooloose/nerdtree'
+	Plugin 'terryma/vim-smooth-scroll'
 	Plugin 'vim-scripts/bats.vim'
 	Plugin 'vim-scripts/wordlist.vim'
 	Plugin 'vim-syntastic/syntastic'
@@ -65,8 +78,32 @@ let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 0
 " Syntastic checkers
 let g:syntastic_python_checkers = ['flake8']
+let g:syntastic_java_checkers = []
 " Shellcheck syntastic options
 let g:syntastic_sh_shellcheck_args = '-x'
+
+" YouCompleteMe
+let g:ycm_always_populate_location_list = 1
+
+" By default timeoutlen is 1000 ms
+set timeoutlen=500
+
+nmap <silent> <leader>t :NERDTreeToggle<CR>
+let g:NERDTreeNodeDelimiter = "\u00a0"
+" Start NerdTree when vim starts
+" autocmd vimenter * NERDTree
+
+" How can I open a NERDTree automatically when vim starts up if no files were specified?
+autocmd StdinReadPre * let s:std_in=1
+autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
+" How can I open NERDTree automatically when vim starts up on opening a directory?
+autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | endif
+
+" Smooth scroll
+noremap <silent> <c-u> :call smooth_scroll#up(&scroll, 0, 2)<CR>
+noremap <silent> <c-d> :call smooth_scroll#down(&scroll, 0, 2)<CR>
+noremap <silent> <c-b> :call smooth_scroll#up(&scroll*2, 0, 4)<CR>
+noremap <silent> <c-f> :call smooth_scroll#down(&scroll*2, 0, 4)<CR>
 
 " }}}
 
@@ -136,20 +173,25 @@ nnoremap <C-q> :q<CR>
 nnoremap j gj
 nnoremap k gk
 
-" Ctrl+j as the opposite of Shift+j;  Insert a new line without entering insert mode.
+" Shift+k as the opposite of Shift+j;  Insert a new line without entering insert mode.
 nnoremap J mzJ`z
-nnoremap <C-J> mzi<CR><ESC>`z$
+nnoremap K mzi<CR><ESC>`z$
 
 " Ctrl+o to replicate o without entering insert mode.
-nnoremap <C-O> mzo<ESC>`z
-nnoremap <C-I> mzO<ESC>`z
+nnoremap <C-O> mzo<ESC>`zj
+nnoremap <C-I> mzO<ESC>`zk
+
+" Split navigation; Ctrl+{j,k,l,h} to move between splits.
+nnoremap <C-j> <C-W><C-J>
+nnoremap <C-k> <C-W><C-K>
+nnoremap <C-l> <C-W><C-L>
+nnoremap <C-h> <C-W><C-H>
 
 " }}}
 
 " Shortcuts and re-mappings - highlighting {{{
 
 " Shortcut to substitute.  In visual mode yank selection first.
-noremap <C-h> :%s/
 noremap <C-f> :%s/<C-r>///gc<left><left><left>
 vnoremap <C-f> y:%s/<C-r>///gc<left><left><left>
 
@@ -168,14 +210,43 @@ vnoremap su :sort u<CR>
 vnoremap Q gq
 nnoremap Q gqap
 
+if exists(":Tabularize")
+	nmap <Leader>a= :Tabularize /=<CR>
+	vmap <Leader>a= :Tabularize /=<CR>
+endif
+
+
+" }}}
+
+" Shortcuts and re-mappings - functions {{{
+
+" Append modeline after last line in buffer.
+" Use substitute() instead of printf() to handle '%%s' modeline in LaTeX
+" files.
+function! AppendModeline()
+	let l:modeline = printf(" vim: set ts=%d sw=%d tw=%d %set :",
+		\ &tabstop, &shiftwidth, &textwidth, &expandtab ? '' : 'no')
+	let l:modeline = substitute(&commentstring, "%s", l:modeline, "")
+	call append(line("$"), l:modeline)
+endfunction
+nnoremap <silent> <Leader>ml :call AppendModeline()<CR>
+
 " }}}
 
 " Personalise {{{
 
 set copyindent
+set foldlevel=99
+set formatoptions+=n
+set formatoptions+=q
+set formatoptions-=a
+set formatoptions-=c
+set formatoptions-=o
+set formatoptions-=r
+set formatoptions-=t
 set hlsearch
 set incsearch
-set modelines=1
+set modelines=10
 set noautoindent
 set nobackup
 set noexpandtab
@@ -187,6 +258,7 @@ set ruler
 set scrolloff=10
 set shiftwidth=4
 set showmatch
+set showmode
 set smartcase
 set smarttab
 set spell spelllang=en_gb
@@ -246,8 +318,8 @@ nnoremap <leader>kj :lnext<CR>
 " Spelling {{{
 
 " Shortcut keys to turn on spell-checking.
-nnoremap <C-l> :setlocal spell! spelllang=en_gb<CR>
-inoremap <C-l> <C-g>u<ESC>[s
+nnoremap <C-a> :setlocal spell! spelllang=en_gb<CR>
+inoremap <C-a> <C-g>u<ESC>[s
 nnoremap <leader>lk ]s
 nnoremap <leader>sj z=<C-g>u
 nnoremap <leader>a :spellrepall<CR>
@@ -311,7 +383,7 @@ set statusline+=%*
 
 " Syntastic warnings
 set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%{exists('g:loaded_syntastic')?SyntasticStatuslineFlag():''}
 set statusline+=%*
 
 " left/right separator
@@ -373,6 +445,8 @@ endfunction
 " Python, JSON, and Yaml should use spaces instead of tabs.
 autocmd Filetype dosini setlocal noautoindent
 autocmd Filetype gitconfig setlocal noautoindent
+autocmd Filetype groovy setlocal expandtab
+autocmd Filetype java setlocal expandtab
 autocmd Filetype javascript setlocal expandtab
 autocmd Filetype json setlocal expandtab
 autocmd Filetype markdown setlocal expandtab

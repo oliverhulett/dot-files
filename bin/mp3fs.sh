@@ -26,8 +26,9 @@
 
 function usage
 {
-	echo "Usage:  `basename $0` <src_root> [<dest_root>]"
-	echo "        <src_root> is used as <dest_root> if the latter is omitted."
+	echo "Usage:  $(basename -- "$0") [-c|--compilation] <src_root> [<dest_root>]"
+	echo "		-c|--compilation  Force compilation format."
+	echo "		<src_root> is used as <dest_root> if the latter is omitted."
 	if [ -n "$*" ]; then
 		echo "$*"
 	fi
@@ -36,6 +37,12 @@ function usage
 if [ $# -lt 1 ]; then
 	usage "Incorrect number of arguments."
 	exit 1
+fi
+
+FORCE_COMPILATION="false"
+if [ "$1" == "-c" ] || [ "$1" == "--compilation" ]; then
+	FORCE_COMPILATION="true"
+	shift
 fi
 
 if [ $# -gt 2 ]; then
@@ -63,12 +70,12 @@ fi
 
 export LC_ALL=C
 
-find "$SRC/" -type f -iname '*.mp3' | while read FILE; do
+find "$SRC/" -type f -iname '*.mp3' | while read -r FILE; do
 	if [ -f "${FILE}" ]; then
 		##	Get tags from file.
 		TAG=
 		TPE1=
-		TDAT=
+		#TDAT=
 		TYER=
 		TALB=
 		TPOS=
@@ -76,8 +83,8 @@ find "$SRC/" -type f -iname '*.mp3' | while read FILE; do
 		TIT2=
 		id3v2 -C "$FILE" >/dev/null
 		MP3INFO="$(id3v2 -R "$FILE")"
-		for TAG in TPOS TPE1 TDAT TYER TALB TPOS TRCK TIT2; do
-			eval $TAG=$(echo -e "$MP3INFO" | grep -iE '^[[:space:]]*'"${TAG}:" | sed -re 's/.*'"$TAG"': *(.+)/\1/i' | sed -re 's/[^0-9a-zA-Z]+/_/g')
+		for TAG in TPOS TPE1 TYER TALB TPOS TRCK TIT2; do
+			eval "$TAG=$(echo -e "$MP3INFO" | grep -iE '^[[:space:]]*'"${TAG}:" | sed -re 's/.*'"$TAG"': *(.+)/\1/i' | sed -re 's/[^0-9a-zA-Z]+/_/g')"
 		done
 		##	Special case for COMPILATION, ID3v2 doesn't have a compilation tag, so use a user defined tag.
 		COMPILATION=$(echo -e "$MP3INFO" | grep -i "TXXX: (COMPILATION):" | sed -re 's/.*TXXX: \(COMPILATION\): *(.+)/\1/i')
@@ -106,7 +113,7 @@ find "$SRC/" -type f -iname '*.mp3' | while read FILE; do
 			DISC_TOTAL=$(echo $TPOS | sed -nre 's/([0-9]+)[^0-9]([0-9]+)/\2/p')
 			if [ -n "$DISC_TOTAL" ]; then
 				TPOS=$(echo $TPOS | sed -nre 's/([0-9]+)[^0-9][0-9]+/\1/p')
-				if [ "$DISC_TOTAL" = "1" -o "$DISC_TOTAL" = "0" ]; then
+				if [ "$DISC_TOTAL" = "1" ] || [ "$DISC_TOTAL" = "0" ]; then
 					TPOS="0"
 				fi
 			else
@@ -126,7 +133,7 @@ find "$SRC/" -type f -iname '*.mp3' | while read FILE; do
 		fi
 
 		NAME=
-		if [ "$COMPILATION" = "1" ]; then
+		if [ "$FORCE_COMPILATION" == "true" ] || [ "$COMPILATION" = "1" ]; then
 			NAME="${TALB_PART}${TRACK_PART}"
 			if [ -n "$TPE1" ]; then
 				NAME="${NAME}${TPE1}-"
@@ -150,4 +157,3 @@ find "$SRC/" -type f -iname '*.mp3' | while read FILE; do
 		fi
 	fi
 done
-

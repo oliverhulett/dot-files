@@ -1,0 +1,31 @@
+.+\|\s*less *$
+bash
+crontab -e
+dash
+dotlogs
+edt
+git diff
+git lg --all
+git lg -a
+git log
+git new
+git resolve
+git show
+iotop
+journalctl -xe
+jupyter console
+less
+logless
+mail
+man
+more
+nano
+sh
+sqlite3
+ssh
+sudo -e
+sudo su
+sudoedit
+top
+vim
+watch

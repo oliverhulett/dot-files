@@ -10,6 +10,7 @@ function _gitenv()
 {
 	git env | command grep "$@"
 }
+
 @test "$FUT: prepends to path and manpath" {
 	run _gitenv -E '^PATH='
 	# git prepends to the path, so at best we can be second.
@@ -27,6 +28,12 @@ function _gitenv()
 
 		assert_equal "$("${REPLY}" --help)" "$(gunzip -c "$man")"
 	done
+}
+
+@test "$FUT: github username and e-mail are correct" {
+	_link_local_gitconfig github
+	run git whoami
+	assert_output "Oliver Hulett <oliver.hulett@gmail.com>"
 }
 
 @test "$FUT: filter ini-file-leading-space" {
@@ -126,7 +133,7 @@ EOF
 	touch one two three
 	git ignoreme one two three
 	assert_status "M  .gitignore"
-	assert_contents .gitignore "one" "three" "two" '*.txt'
+	assert_contents .gitignore '*.txt' "one" "three" "two"
 
 	git commit -m"ignored files"
 
@@ -177,7 +184,7 @@ EOF
 	assert_all_lines "* master" "  testbranch2"
 
 	git push origin --delete testbranch2
-	git pullb
+	git pullme
 	run git branch
 	assert_all_lines "* master"
 }

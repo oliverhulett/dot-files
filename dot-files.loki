@@ -1,9 +1,8 @@
-bash_aliases/09-profile.d-insync_headless.sh .bash_aliases/09-profile.d-insync_headless.sh
-bash_aliases/09-profile.d-makeflags.home.sh .bash_aliases/09-profile.d-makeflags.sh
-bash_aliases/28-completion-docker_compose.sh .bash_aliases/28-completion-docker_compose.sh
-bash_aliases/28-completion-docker.sh .bash_aliases/28-completion-docker.sh
-bash_aliases/39-aliases-insync_trash.sh .bash_aliases/39-aliases-insync_trash.sh
-bash_aliases/39-aliases-kodi.sh .bash_aliases/39-aliases-kodi.sh
-bash_aliases/39-aliases-loki.sh .bash_aliases/39-aliases-loki.sh
-bash_aliases/39-aliases-ubuntu.sh .bash_aliases/39-aliases-ubuntu.sh
-gitconfig.home .gitconfig.local
+bash-aliases/05-profile.d-insync_headless.sh .bash-aliases/05-profile.d-insync_headless.sh
+bash-aliases/05-profile.d-makeflags.home.sh .bash-aliases/05-profile.d-makeflags.sh
+bash-aliases/25-completion-beet.sh .bash-aliases/25-completion-beet.sh
+bash-aliases/35-aliases-insync_trash.sh .bash-aliases/35-aliases-insync_trash.sh
+bash-aliases/35-aliases-kodi.sh .bash-aliases/35-aliases-kodi.sh
+bash-aliases/35-aliases-loki.sh .bash-aliases/35-aliases-loki.sh
+bash-aliases/35-aliases-ubuntu.sh .bash-aliases/35-aliases-ubuntu.sh
+gitconfig.github .gitconfig.local

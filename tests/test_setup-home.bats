@@ -25,8 +25,10 @@ function assert_is_link()
 function _do_test_for_host()
 {
 	HNAME="$1"
-	if [ -e "${DOTFILES}/crontab.${HNAME}" ] || [ -e "${DOTFILES}/crontab" ]; then
-		stub crontab "*"
+	if [ -e "${DOTFILES}/crontab.${HNAME}" ]; then
+		stub crontab "${DOTFILES}/crontab.${HNAME}"
+	elif [ -e "${DOTFILES}/crontab" ]; then
+		stub crontab "${DOTFILES}/crontab"
 	fi
 
 	$EXE
@@ -48,9 +50,6 @@ function _do_test_for_host()
 	if [ -e "${DOTFILES}/crontab.${HNAME}" ] || [ -e "${DOTFILES}/crontab" ]; then
 		unstub crontab
 	fi
-}
-@test "$FUT: this host" {
-	_do_test_for_host "$(hostname -s | tr '[:upper:]' '[:lower:]')"
 }
 
 @test "$FUT: all available hosts" {
@@ -85,9 +84,9 @@ function _do_test_for_host()
 }
 
 @test "$FUT: github passwd" {
-	refute test -f "${HOME}/etc/passwd.github"
-	mkdir -p "${HOME}/etc"
-	echo "asdf" >"${HOME}/etc/passwd.github"
+	refute test -e "${HOME}/etc/git.passwds"
+	mkdir -p "${HOME}/etc/git.passwds"
+	echo "asdf" >"${HOME}/etc/git.passwds/oliverhulett@github.com"
 
 	_do_test_for_host "$(hostname -s | tr '[:upper:]' '[:lower:]')"
 
@@ -105,4 +104,14 @@ function _do_test_for_host()
 	_do_test_for_host "$(hostname -s | tr '[:upper:]' '[:lower:]')"
 
 	refute test -e "${HOME}/file1"
+}
+
+@test "$FUT: install git hooks" {
+	refute test -e "${DOTFILES}/dot-files.none"
+	refute test -e "${DOTFILES}/crontab.none"
+	stub hostname "-s : echo NonE"
+	_do_test_for_host none
+	unstub hostname
+
+	assert test "${DOTFILES}/.git/hooks/pre-push" -ef "${DOTFILES}/git-wrappers/pre-push.sh"
 }

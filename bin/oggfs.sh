@@ -26,7 +26,8 @@
 
 function usage
 {
-	echo "Usage:  `basename $0` <src_root> [<dest_root>]"
+	echo "Usage:  $(basename -- "$0") [-c|--compilation] <src_root> [<dest_root>]"
+	echo "		-c|--compilation  Force compilation format."
 	echo "		<src_root> is used as <dest_root> if the latter is omitted."
 	if [ -n "$*" ]; then
 		echo "$*"
@@ -36,6 +37,12 @@ function usage
 if [ $# -lt 1 ]; then
 	usage "Incorrect number of arguments."
 	exit 1
+fi
+
+FORCE_COMPILATION="false"
+if [ "$1" == "-c" ] || [ "$1" == "--compilation" ]; then
+	FORCE_COMPILATION="true"
+	shift
 fi
 
 if [ $# -gt 2 ]; then
@@ -63,7 +70,7 @@ fi
 
 export LC_ALL=C
 
-find "$SRC/" -type f -iname '*.ogg' | while read FILE; do
+find "$SRC/" -type f -iname '*.ogg' | while read -r FILE; do
 	if [ -n "${FILE#$SRC}" ]; then
 		##	Get tags from file.
 		TAG=
@@ -77,7 +84,7 @@ find "$SRC/" -type f -iname '*.ogg' | while read FILE; do
 		TITLE=
 		OGGINFO="$(ogginfo "$FILE")"
 		for TAG in COMPILATION ARTIST DATE YEAR ALBUM DISCNUMBER TRACKNUMBER TITLE; do
-			eval $TAG=$(echo -e "$OGGINFO" | grep -iE '^[[:space:]]*'"${TAG}=" | sed -re 's/.*'"$TAG"'=(.+)/\1/i' | sed -re 's/[^0-9a-zA-Z]+/_/g')
+			eval "$TAG=$(echo -e "$OGGINFO" | grep -iE '^[[:space:]]*'"${TAG}=" | sed -re 's/.*'"$TAG"'=(.+)/\1/i' | sed -re 's/[^0-9a-zA-Z]+/_/g')"
 		done
 
 		if [ -z "$TITLE" ]; then
@@ -102,7 +109,7 @@ find "$SRC/" -type f -iname '*.ogg' | while read FILE; do
 			DISC_TOTAL=$(echo $DISCNUMBER | sed -nre 's/([0-9]+)[^0-9]([0-9]+)/\2/p')
 			if [ -n "$DISC_TOTAL" ]; then
 				DISCNUMBER=$(echo $DISCNUMBER | sed -nre 's/([0-9]+)[^0-9][0-9]+/\1/p')
-				if [ "$DISC_TOTAL" = "1" -o "$DISC_TOTAL" = "0" ]; then
+				if [ "$DISC_TOTAL" = "1" ] || [ "$DISC_TOTAL" = "0" ]; then
 					DISCNUMBER="0"
 				fi
 			fi
@@ -118,7 +125,7 @@ find "$SRC/" -type f -iname '*.ogg' | while read FILE; do
 		fi
 
 		NAME=
-		if [ "$COMPILATION" = "1" ]; then
+		if [ "$FORCE_COMPILATION" == "true" ] || [ "$COMPILATION" = "1" ]; then
 			NAME="${ALBUM_PART}${TRACK_PART}"
 			if [ -n "$ARTIST" ]; then
 				NAME="${NAME}${ARTIST}-"

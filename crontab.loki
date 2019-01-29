@@ -1,7 +1,16 @@
+## This master file for this crontab is part of this user's ~/dot-files repository.
+## Edit that file always and then run ~/dot-files/setup-home.sh to install it.
+## Never use `crontab -e` or your changes may be overwritten.
 HOME=/home/ols
-@reboot insync-headless start >/dev/null 2>&1
+SHELL=/bin/bash
+PATH=/home/ols/dot-files/bin:/usr/local/bin:/usr/bin:/bin
+
+@hourly source "${HOME}/.bash-aliases/09-profile.d-insync_headless.sh"
+
 * * * * * for i in /dev/disk/by-label/*; do echo $i; ls -l /media/$(basename $i); done >/dev/null 2>&1
-@daily cd "${HOME}/dot-files" && git pullb && crontab -l >"crontab.$(hostname -s | tr A-Z a-z)" && echo -e "\n## Backed up on $(date -R) by $(whoami)" >>"crontab.$(hostname -s | tr A-Z a-z)" && git commit -a --allow-empty -m"Autocommit: $(git status -s)" && git push
-@daily sleep 20 && cd "${HOME}/dot-files" && git pullb && git update && ./setup-home.sh >/dev/null 2>&1
--e 
-## Backed up on Tue, 11 Jul 2017 00:00:14 +1000 by oliver
+* * * * * env >"${HOME}/.crontab.env"
+
+0 * * * * chronic.sh nice ionice -c3 "${HOME}/dot-files/autocommit.sh"
+5 * * * * chronic.sh nice ionice -c3 sudo -En "${HOME}/dot-files/backup.sh"
+
+0 12 * * * nice ionice -c3 find "${HOME}/repo" "${HOME}/src" -type d -name master -exec chronic.sh git -C "{}" pullme \; -exec chronic.sh git -C "{}" prune \;

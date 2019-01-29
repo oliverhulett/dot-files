@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # To pick up the latest recommended .bash_profile content,
 # look in /etc/defaults/etc/skel/.bash_profile
 
@@ -5,8 +6,8 @@
 # setup from updating it.
 
 export PATH="${PATH:-/bin:/usr/bin}"
-source "${HOME}/dot-files/bash_common.sh"
-export PATH="$(append_path "/bin" "/usr/bin")"
+source "${HOME}/dot-files/bash-common.sh"
+export PATH="$(append_path "${PATH}" "/usr/local/bin" "/usr/bin" "/bin")"
 if reentered "${HOME}/.bash_profile"; then
 	return 0
 fi
@@ -29,11 +30,13 @@ if [ -e "${HOME}/.bashrc" ] ; then
 fi
 
 # Set MANPATH so it includes users' private man if it exists
+MANPATH="/usr/local/share/man:${MANPATH}"
 if [ -d "${HOME}/man" ]; then
 	MANPATH=${HOME}/man:${MANPATH}
 fi
 
 # Set INFOPATH so it includes users' private info if it exists
+INFOPATH="/usr/local/share/info:${INFOPATH}"
 if [ -d "${HOME}/info" ]; then
 	INFOPATH=${HOME}/info:${INFOPATH}
 fi
@@ -43,6 +46,7 @@ CLASSPATH="$PATH:."
 export CLASSPATH
 
 export LANGUAGE="en_AU:en"
-export LC_MESSAGES="en_AU.UTF-8"
-export LC_CTYPE="en_AU.UTF-8"
+export LC_ALL="en_AU.UTF-8"
 export LC_COLLATE="en_AU.UTF-8"
+export LC_CTYPE="en_AU.UTF-8"
+export LC_MESSAGES="en_AU.UTF-8"

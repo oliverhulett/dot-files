@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # ~/.profile: executed by the command interpreter for login shells.
 # This file is not read by bash(1), if ~/.bash_profile or ~/.bash_login
 # exists.
@@ -9,8 +10,8 @@
 #umask 022
 
 export PATH="${PATH:-/bin:/usr/bin}"
-source "${HOME}/dot-files/bash_common.sh"
-export PATH="$(append_path "/bin" "/usr/bin")"
+source "${HOME}/dot-files/bash-common.sh"
+export PATH="$(append_path "${PATH}" "/usr/local/bin" "/usr/bin" "/bin")"
 if reentered "${HOME}/.profile"; then
 	return 0
 fi

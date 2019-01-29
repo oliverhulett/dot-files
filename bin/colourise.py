@@ -1,7 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 #
 #   Colourize log files.
 #
+
+from __future__ import print_function
 
 import sys, os
 import re
@@ -76,9 +78,9 @@ class Colouriser(object):
                     self.colour_map[logmodule] = self.next_colour % len(self.colours)
                     self.next_colour += 1
                 colour = self.colour_seq_tmpl % (self.colours[self.colour_map[logmodule]][1])
-                print "%s%s%s" % (colour, line.strip(), self.reset_seq)
+                print("{}{}{}".format(colour, line.strip(), self.reset_seq))
             except:
-                print line.strip()
+                print(line.strip())
 
 
 if __name__ == '__main__':
@@ -93,7 +95,7 @@ if __name__ == '__main__':
     except:
         colouriser = Colouriser()
     if len(sys.argv) == consumed:
-        print >>sys.stderr, "Colourising stdin..."
+        print("Colourising stdin...", file=sys.stderr)
         try:
             sys.stdin = os.fdopen(sys.stdin.fileno(), 'r', 0)
         except:
@@ -102,8 +104,8 @@ if __name__ == '__main__':
     else:
         for filename in sys.argv[consumed:]:
             try:
-                print >>sys.stderr, "Colourising " + filename + "..."
+                print("Colourising {}...".format(filename), file=sys.stderr)
                 with open(filename, 'r') as f:
                     colouriser.Colourise(f)
             except:
-                print >>sys.stderr, str(sys.exc)
+                print(str(sys.exc), file=sys.stderr)
