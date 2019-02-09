@@ -26,3 +26,7 @@ source "$(brew --prefix)/etc/profile.d"/*.sh
 
 PATH="$(append_path "${PATH}" "/usr/local/opt/gettext/bin")"
 export PATH
+
+if brew command command-not-found-init > /dev/null 2>&1; then
+	eval "$(brew command-not-found-init)";
+fi

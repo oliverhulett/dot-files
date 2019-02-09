@@ -214,10 +214,9 @@ function which()
 			echo
 		done
 		if [ "$_found_something" == "false" ]; then
-			command which "$@"
-#			command_not_found_handle "$arg" 2>/dev/null
+			command which "$arg" 2>/dev/null || command_not_found_handle "$arg" 2>/dev/null
 		fi
-#		echo
+		echo
 	done
 }
 
