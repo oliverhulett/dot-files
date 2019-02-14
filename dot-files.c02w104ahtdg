@@ -11,3 +11,6 @@ bash-aliases/36-aliases-atlassian.sh .bash-aliases/36-aliases-atlassian.sh
 docker-container-noprune.c02w104ahtdg .docker-container-noprune
 gitconfig.atlassian .gitconfig.local
 gradle.properties.c02w104ahtdg .gradle/gradle.properties
+mackup .mackup
+mackup.cfg .mackup.cfg
+vimrc .ideavimrc
