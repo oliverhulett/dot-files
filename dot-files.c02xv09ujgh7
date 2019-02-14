@@ -8,9 +8,9 @@ bash-aliases/25-completion-runjs.sh .bash-aliases/25-completion-runjs.sh
 bash-aliases/35-aliases-gradle.sh .bash-aliases/35-aliases-gradle.sh
 bash-aliases/35-aliases-project_path.sh .bash-aliases/35-aliases-project_path.sh
 bash-aliases/36-aliases-atlassian.sh .bash-aliases/36-aliases-atlassian.sh
-docker-container-noprune.c02w104ahtdg .docker-container-noprune
+docker-container-noprune.c02xv09ujgh7 .docker-container-noprune
 gitconfig.atlassian .gitconfig.local
-gradle.properties.c02w104ahtdg .gradle/gradle.properties
+gradle.properties.c02xv09ujgh7 .gradle/gradle.properties
 mackup .mackup
 mackup.cfg .mackup.cfg
 vimrc .ideavimrc

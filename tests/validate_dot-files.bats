@@ -31,7 +31,7 @@ DF_EXES=(
 
 DF_DOTFILES=(
 	dot-files-common
-	dot-files.c02w104ahtdg
+	dot-files.c02xv09ujgh7
 	dot-files.loki
 	dot-files.odysseus
 	dot-files.prometheus
@@ -40,8 +40,8 @@ DF_DOTFILES=(
 DF_LISTS=(
 	"${DF_DOTFILES[@]}"
 	.gitignore
-	backups.c02w104ahtdg
-	backups.c02w104ahtdg.exclude
+	backups.c02xv09ujgh7
+	backups.c02xv09ujgh7.exclude
 	backups.loki
 	backups.loki.exclude
 	backups.odysseus
@@ -104,7 +104,7 @@ function setup()
 
 @test "Validate: crontabs have preamble" {
 	for f in "${DF_CRONTABS[@]}"; do
-		if [ "$f" == "crontab.c02w104ahtdg" ]; then
+		if [ "$f" == "crontab.c02xv09ujgh7" ]; then
 			h="/Users/ohulett"
 		else
 			h="/home/ols"
