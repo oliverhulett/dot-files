@@ -45,7 +45,7 @@ if [ ${#DOTFILES[@]} -ne 0 ]; then
 			DEST="${HOME}/${TARGET}"
 			rm "${DEST}" 2>/dev/null
 			mkdir --parents "$(dirname "${DEST}")" 2>/dev/null
-			( cd "$(dirname "${DEST}")" && ln -vsf "$("${RELPATH}" . "${HERE}/${SRC}")" "$(basename -- "${DEST}")" ) >&${log_fd}
+			( cd "$(dirname "${DEST}")" && ln -vsf "$("${RELPATH}" . "${HERE}/${SRC}")" "$(basename -- "${DEST}")" ) >&"${log_fd}"
 		done <"${df}"
 	done
 else
@@ -62,6 +62,13 @@ if [ -e "${HOME}/etc/git.passwds" ]; then
 		echo "https://${user}:$(sed -ne '1p' "$f")@${addr}" >>"${GIT_CREDS}"
 	done
 	chmod 0600 "${GIT_CREDS}"
+fi
+
+if [ -e "${HOME}/etc/ngrok.yml" ]; then
+	DEST="${HOME}/.ngrok2/ngrok.yml"
+	rm "${DEST}" 2>/dev/null
+	mkdir --parents "$(dirname "${DEST}")" 2>/dev/null
+	ln -s "$("${RELPATH}" "$(dirname "${DEST}")" "${HOME}/etc/ngrok.yml" )" "${DEST}" >&"${log_fd}"
 fi
 
 if [ ! -e "${HERE}/.git/hooks/pre-push" ] || [ ! "${HERE}/.git/hooks/pre-push" -ef "${HERE}/git-wrappers/pre-push.sh" ]; then
