@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Renaming things for fun and profit.
 
 HERE="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
