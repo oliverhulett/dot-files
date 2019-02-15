@@ -1,9 +1,9 @@
 ## This master file for this crontab is part of this user's ~/dot-files repository.
 ## Edit that file always and then run ~/dot-files/setup-home.sh to install it.
 ## Never use `crontab -e` or your changes may be overwritten.
-HOME=/Users/ohulett
-SHELL=/bin/bash
-PATH=/Users/ohulett/dot-files/bin:/usr/local/bin:/usr/bin:/bin
+HOME=/Users/oliverhulett
+SHELL=/usr/local/bin/bash
+PATH=/Users/oliverhulett/dot-files/bin:/usr/local/opt/gnu-getopt/bin:/usr/local/bin:/usr/bin:/bin
 
 * * * * * env >"${HOME}/.crontab.env"
 
@@ -13,7 +13,8 @@ PATH=/Users/ohulett/dot-files/bin:/usr/local/bin:/usr/bin:/bin
 
 #@reboot chronic.sh nice sudo -n "${HOME}/dot-files/backup.sh"
 #5 0-8,10,12,15,17-23 * * 1-5 chronic.sh nice sudo -n "${HOME}/dot-files/backup.sh"
-0 13 * * 1 chronic.sh nice mackup backup -fv; chronic.sh nice "${HOME}/dot-files/setup-home.sh"
+## TODO: There's enough logic here for this to be a script in its own right...
+0 13 * * 1 chronic.sh nice rm -rf "${HOME}/.google-drive/mackup; chronic.sh nice mackup backup -fv; chronic.sh nice mackup uninstall -fv; chronic.sh nice "${HOME}/dot-files/setup-home.sh"
 
 0 12 * * * nice find "${HOME}/repo" "${HOME}/src" -type d -name master -exec chronic.sh git -C "{}" pullme \; -exec chronic.sh git -C "{}" prune \;
 

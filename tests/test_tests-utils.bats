@@ -5,6 +5,7 @@
 DF_TESTS="$(cd "${BATS_TEST_DIRNAME}" && pwd -P)"
 
 FUT="tests/utils.sh"
+IS_EXE="false"
 
 function setup()
 {

@@ -113,6 +113,8 @@ fi
 TD="${TMPDIR:-${TMP:-/tmp}}/bats/$(date '+%Y%m%d-%H%M%S').$$.${RANDOM}"
 rm -rf "${TD}"
 mkdir --parents "${TD}"
+rm "$(dirname "${TD}")/latest" || true
+( cd "$(dirname "${TD}")" && ln -sf "$(basename -- "${TD}")" latest )
 
 WIDTH=0
 for a in "$@"; do
@@ -130,9 +132,8 @@ if [ "${TAP}" == "true" ]; then
 	printf ' % '"${WIDTH}"'s %s\n' ":" "1..${NUM_TESTS}"
 	# @formatter:off
 	# shellcheck disable=SC2016
-	printf '%s\0' "$@" | stdbuf -oL "${TIME[@]}" xargs -r0 -n 1 -P "${PARALLEL}" -I{} sh -c "
+	printf '%s\0' "$@" | stdbuf -oL "${TIME[@]}" xargs -r0 -n 1 -P "${PARALLEL}" -I{} sh -xc "
 		export FN=\"\$(basename -- \"{}\" .bats)\";
-		ln -sf \"\$(basename -- \"${TD}\")\" \"\$(dirname -- \"${TD}\")/latest\";
 		export TD=\"${TD}/\${FN}\";
 		mkdir \"\$TD\";
 		export TMPDIR=\"\$TD\";

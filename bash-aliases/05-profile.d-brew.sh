@@ -15,7 +15,9 @@
 	done
 	# Doesn't work, for some reason.
 	/bin/rm '/usr/local/bin/[' 2>/dev/null || true
-) &
+) >/dev/null 2>/dev/null &
+disown -h 2>/dev/null
+disown 2>/dev/null
 
 if reentered "${HOME}/.bash-aliases/05-profile.d-brew.sh"; then
 	return 0
@@ -24,6 +26,7 @@ fi
 source "$(brew --prefix)/etc/bash_completion"
 source "$(brew --prefix)/etc/profile.d"/*.sh
 
+PATH="$(prepend_path "${PATH}" "/usr/local/opt/gnu-getopt/bin" "/usr/local/opt/ruby/bin")"
 PATH="$(append_path "${PATH}" "/usr/local/opt/gettext/bin")"
 export PATH
 

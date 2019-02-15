@@ -215,7 +215,7 @@ function new_blank_home()
 	declare -g _ORIG_HOME="${HOME}"
 	local tmphome
 	tmphome="$(temp_make --prefix="home")"
-	if [ -z "$tmphome" ] || [ "$tmphome" == "$HOME" ]; then
+	if [ -z "$tmphome" ] || [ "$tmphome" == "$HOME" ] || [ ! -d "$tmphome" ]; then
 		fail "Failed to setup mock \$HOME"
 		return $?
 	else

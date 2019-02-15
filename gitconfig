@@ -138,3 +138,11 @@ prune = true
 linenumber = bold yellow
 filename = bold green
 match = reverse yellow
+
+[credential]
+helper = store
+
+[credintial "https://github.com/oliverhulett/dot-files.git"]
+helper = store
+useHttpPath = true
+username = oliverhulett

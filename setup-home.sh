@@ -1,14 +1,15 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 HERE="$(cd "$(dirname "$0")" && pwd -P)"
 source "${HERE}/bash-common.sh" 2>/dev/null && eval "${capture_output}" || true
-RELPATH="${HERE}/bin/relpath.sh"
+PATH="$(prepend_path "${PATH}" "${HERE}/bin" "/usr/local/bin")"
+export PATH
 
-echo "Updating dot-files..."
+#echo "Updating dot-files..."
 # Can't pull here, you risk changing this file
-( cd "${HERE}" && git submodule init && git submodule sync && git submodule update ) >&${log_fd} &
-disown -h 2>/dev/null
-disown 2>/dev/null
+( cd "${HERE}" && echo "Updating dot-files..." && git submodule init && git submodule sync && git submodule update ) >&${log_fd}
+#disown -h 2>/dev/null
+#disown 2>/dev/null
 
 HOSTNAME="$(hostname -s | tr '[:upper:]' '[:lower:]')"
 if [ -f "${HERE}/crontab.${HOSTNAME}" ]; then
@@ -45,7 +46,7 @@ if [ ${#DOTFILES[@]} -ne 0 ]; then
 			DEST="${HOME}/${TARGET}"
 			rm "${DEST}" 2>/dev/null
 			mkdir --parents "$(dirname "${DEST}")" 2>/dev/null
-			( cd "$(dirname "${DEST}")" && ln -vsf "$("${RELPATH}" . "${HERE}/${SRC}")" "$(basename -- "${DEST}")" ) >&"${log_fd}"
+			( cd "$(dirname "${DEST}")" && ln -vsf "$(relpath.sh . "${HERE}/${SRC}")" "$(basename -- "${DEST}")" ) >&"${log_fd}"
 		done <"${df}"
 	done
 else
@@ -68,7 +69,21 @@ if [ -e "${HOME}/etc/ngrok.yml" ]; then
 	DEST="${HOME}/.ngrok2/ngrok.yml"
 	rm "${DEST}" 2>/dev/null
 	mkdir --parents "$(dirname "${DEST}")" 2>/dev/null
-	ln -s "$("${RELPATH}" "$(dirname "${DEST}")" "${HOME}/etc/ngrok.yml" )" "${DEST}" >&"${log_fd}"
+	ln -s "$(relpath.sh "$(dirname "${DEST}")" "${HOME}/etc/ngrok.yml" )" "${DEST}" >&"${log_fd}"
+fi
+
+if [ -e "${HOME}/etc/authrc" ]; then
+	DEST="${HOME}/.authrc"
+	rm "${DEST}" 2>/dev/null
+	mkdir --parents "$(dirname "${DEST}")" 2>/dev/null
+	ln -s "$(relpath.sh "$(dirname "${DEST}")" "${HOME}/etc/authrc" )" "${DEST}" >&"${log_fd}"
+fi
+
+if [ -e "${HOME}/etc/npmrc" ]; then
+	DEST="${HOME}/.npmrc"
+	rm "${DEST}" 2>/dev/null
+	mkdir --parents "$(dirname "${DEST}")" 2>/dev/null
+	ln -s "$(relpath.sh "$(dirname "${DEST}")" "${HOME}/etc/npmrc" )" "${DEST}" >&"${log_fd}"
 fi
 
 if [ ! -e "${HERE}/.git/hooks/pre-push" ] || [ ! "${HERE}/.git/hooks/pre-push" -ef "${HERE}/git-wrappers/pre-push.sh" ]; then

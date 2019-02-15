@@ -17,10 +17,11 @@ DF_SOURCED_SCRIPTS=(
 	bashrc
 	profile
 	trap-stack.sh
-	$(cd "${DOTFILES}" && echo bash-aliases/*)
 )
+# shellcheck disable=SC2153 - Possible misspelling.
+mapfile -t -O ${#DF_SOURCED_SCRIPTS} DF_SOURCED_SCRIPTS < <(cd "${DOTFILES}" && printf '%s\n' bash-aliases/*)
 
-DF_CRONTABS=( $(cd "${DOTFILES}" && echo crontab.*) )
+mapfile -t DF_CRONTABS < <(cd "${DOTFILES}" && printf '%s\n' crontab.*)
 
 DF_EXES=(
 	autocommit.sh
@@ -40,8 +41,6 @@ DF_DOTFILES=(
 DF_LISTS=(
 	"${DF_DOTFILES[@]}"
 	.gitignore
-	backups.c02xv09ujgh7
-	backups.c02xv09ujgh7.exclude
 	backups.loki
 	backups.loki.exclude
 	backups.odysseus
@@ -105,9 +104,13 @@ function setup()
 @test "Validate: crontabs have preamble" {
 	for f in "${DF_CRONTABS[@]}"; do
 		if [ "$f" == "crontab.c02xv09ujgh7" ]; then
-			h="/Users/ohulett"
+			h="/Users/oliverhulett"
+			s="/usr/local/bin/bash"
+			p="$h/dot-files/bin:/usr/local/opt/gnu-getopt/bin:/usr/local/bin:/usr/bin:/bin"
 		else
 			h="/home/ols"
+			s="/bin/bash"
+			p="$h/dot-files/bin:/usr/local/bin:/usr/bin:/bin"
 		fi
 		# CRONTAB_PREAMBLE should include the empty line at the end.
 		CRONTAB_PREAMBLE=$(
@@ -116,8 +119,8 @@ function setup()
 				## Edit that file always and then run ~/dot-files/setup-home.sh to install it.
 				## Never use \`crontab -e\` or your changes may be overwritten.
 				HOME=$h
-				SHELL=/bin/bash
-				PATH=$h/dot-files/bin:/usr/local/bin:/usr/bin:/bin
+				SHELL=$s
+				PATH=$p
 
 			EOF
 		)
@@ -193,13 +196,12 @@ function setup()
 }
 
 @test "Validate: no tests are being skipped by \$ONLY= or \$SKIP=" {
-	FILES=(
-		$(find "${DOTFILES}/tests" \
+	mapfile -t FILES < <(
+		find "${DOTFILES}/tests" \
 			\( -name x_helpers -prune -or -true \) \
 			-type f -name '*.bats' -not -name 'test_tests-utils.bats' -not -name 'validate_dot-files.bats' \
 			\( -exec grep -qw ONLY= "{}" \; -or -exec grep -qw SKIP= "{}" \; \) \
 			-print \
-		)
 	)
 	if [ ${#FILES[@]} -ne 0 ]; then
 		fail "Tests being skipped by \$ONLY= or \$SKIP=; these are intended for debugging only.  (in ${FILES[*]})"

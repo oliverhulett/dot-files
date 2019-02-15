@@ -54,6 +54,7 @@ function idea()
 
 function jira-autocomplete()
 {
+	mkdir --parents ~/.local/share/bash-completion/completions/
 	repo jira && ./jmake autocomplete --force --output ~/.local/share/bash-completion/completions/jmake
 	echo 'source ~/.local/share/bash-completion/completions/jmake'
 	source ~/.local/share/bash-completion/completions/jmake
