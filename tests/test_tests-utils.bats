@@ -1,8 +1,10 @@
 #!/usr/bin/env bats
+# Variable appears unused; Variable is referenced but not assigned; Possible misspelling
+# shellcheck disable=SC2034,SC2154,SC2153
 
 DF_TESTS="$(cd "${BATS_TEST_DIRNAME}" && pwd -P)"
 
-FUT="tests/utils.sh"
+export FUT="tests/utils.sh"
 
 function setup()
 {
@@ -19,7 +21,7 @@ function _do_assert_all_lines_test()
 	shift
 	local output
 	set +e; output="$(assert_all_lines "$@" 2>&1)"; retval=$?; set -e
-	assert_equal $retval "$expected_errors" || echo -e "Failed expectation #${_assert_all_lines_test_cnt}:  Test args: $*\n${output}" | fail
+	assert_equal $retval "$expected_errors" || echo -e "Failed expectation #${_assert_all_lines_test_cnt}:  Test args: $*"'\n'"${output}" | fail
 	_assert_all_lines_test_cnt=$((_assert_all_lines_test_cnt + 1))
 }
 @test "$FUT: assert_all_lines" {
@@ -473,7 +475,7 @@ function _assert_fut_exe_mk_test()
 		".dotlogs/$(date '+%Y%m%d')_${USER}_dot-files.log"
 		".gitconfig.local"
 	)
-	assert_equal "$(find "${HOME}" -type f | sed -re "s:^${HOME}/?::" | sort)" "$(printf "%s\n" "${EXPECTED_FILES[@]}" | sort)"
+	assert_equal "$(find "${HOME}" -type f | sed -re "s:^${HOME}/?::" | sort)" "$(printf '%s\n' "${EXPECTED_FILES[@]}" | sort)"
 	while read -r SRC LINK; do
 		assert test -L "${HOME}/${LINK}"
 		assert_equal "$(readlink -f "${HOME}/${LINK}")" "${DOTFILES}/${SRC}"
