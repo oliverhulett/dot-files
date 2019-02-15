@@ -178,9 +178,11 @@ if [ "${TAP}" == "true" ]; then
 	retval=$?
 fi
 
-if [ ! -e "${DOTFILES}/.git/hooks/pre-push" ] || [ ! "${DOTFILES}/.git/hooks/pre-push" -ef "${DOTFILES}/git-wrappers/pre-push.sh" ]; then
-	rm -f "${DOTFILES}/.git/hooks/pre-push" || true
-	ln -sv "${DOTFILES}/git-wrappers/pre-push.sh" "${DOTFILES}/.git/hooks/pre-push"
+if [ -d "${DOTFILES}/.git/hooks/" ]; then
+	if [ ! -e "${DOTFILES}/.git/hooks/pre-push" ] || [ ! "${DOTFILES}/.git/hooks/pre-push" -ef "${DOTFILES}/git-wrappers/pre-push.sh" ]; then
+		rm -f "${DOTFILES}/.git/hooks/pre-push" || true
+		ln -sv "${DOTFILES}/git-wrappers/pre-push.sh" "${DOTFILES}/.git/hooks/pre-push"
+	fi
 fi
 
 exit $retval
