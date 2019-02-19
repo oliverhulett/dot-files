@@ -8,3 +8,5 @@
 # REF: https://superuser.com/questions/847797/in-bash-processing-every-command-line-without-using-the-debug-trap
 
 ## Can I also use something like this to do dotlogs better?
+
+# Idea; set up a DEBUG trap and assert that caller 0 is the script we expect it to be.

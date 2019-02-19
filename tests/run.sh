@@ -132,6 +132,7 @@ if [ "${TAP}" == "true" ]; then
 	# shellcheck disable=SC2016
 	printf '%s\0' "$@" | stdbuf -oL "${TIME[@]}" xargs -r0 -n 1 -P "${PARALLEL}" -I{} sh -c "
 		export FN=\"\$(basename -- \"{}\" .bats)\";
+		ln -sf \"\$(basename -- \"${TD}\")\" \"\$(dirname -- \"${TD}\")/latest\";
 		export TD=\"${TD}/\${FN}\";
 		mkdir \"\$TD\";
 		export TMPDIR=\"\$TD\";
@@ -176,11 +177,6 @@ if [ "${TAP}" == "true" ]; then
 	'
 	# @formatter:on
 	retval=$?
-fi
-
-if [ ! -e "${DOTFILES}/.git/hooks/pre-push" ] || [ ! "${DOTFILES}/.git/hooks/pre-push" -ef "${DOTFILES}/git-wrappers/pre-push.sh" ]; then
-	rm -f "${DOTFILES}/.git/hooks/pre-push" || true
-	ln -sv "${DOTFILES}/git-wrappers/pre-push.sh" "${DOTFILES}/.git/hooks/pre-push"
 fi
 
 exit $retval

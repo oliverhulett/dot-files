@@ -4,7 +4,7 @@
 
 DF_TESTS="$(cd "${BATS_TEST_DIRNAME}" && pwd -P)"
 
-export FUT="tests/utils.sh"
+FUT="tests/utils.sh"
 
 function setup()
 {
