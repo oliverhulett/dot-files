@@ -132,7 +132,7 @@ if [ "${TAP}" == "true" ]; then
 	printf ' % '"${WIDTH}"'s %s\n' ":" "1..${NUM_TESTS}"
 	# @formatter:off
 	# shellcheck disable=SC2016
-	printf '%s\0' "$@" | stdbuf -oL "${TIME[@]}" xargs -r0 -n 1 -P "${PARALLEL}" -I{} sh -xc "
+	printf '%s\0' "$@" | stdbuf -oL "${TIME[@]}" xargs -r0 -n 1 -P "${PARALLEL}" -I{} sh -c "
 		export FN=\"\$(basename -- \"{}\" .bats)\";
 		export TD=\"${TD}/\${FN}\";
 		mkdir \"\$TD\";
