@@ -5,11 +5,11 @@ source "${HERE}/bash-common.sh" 2>/dev/null && eval "${capture_output}" || true
 PATH="$(prepend_path "${PATH}" "${HERE}/bin" "/usr/local/bin")"
 export PATH
 
-#echo "Updating dot-files..."
+echo "Updating dot-files..."
 # Can't pull here, you risk changing this file
-( cd "${HERE}" && echo "Updating dot-files..." && git submodule init && git submodule sync && git submodule update ) >&${log_fd}
-#disown -h 2>/dev/null
-#disown 2>/dev/null
+( cd "${HERE}" && git submodule init && git submodule sync && git submodule update ) >&${log_fd}
+disown -h 2>/dev/null
+disown 2>/dev/null
 
 HOSTNAME="$(hostname -s | tr '[:upper:]' '[:lower:]')"
 if [ -f "${HERE}/crontab.${HOSTNAME}" ]; then
