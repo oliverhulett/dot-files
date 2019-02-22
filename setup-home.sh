@@ -2,12 +2,13 @@
 
 HERE="$(cd "$(dirname "$0")" && pwd -P)"
 source "${HERE}/bash-common.sh" 2>/dev/null && eval "${capture_output}" || true
-PATH="$(prepend_path "${PATH}" "${HERE}/bin" "/usr/local/bin")"
+## Be careful prepending to path here, setup is called by tests and you might break bats-mock
+PATH="$(append_path "${PATH}" "${HERE}/bin" "/usr/local/bin" "/usr/bin" "/bin")"
 export PATH
 
 echo "Updating dot-files..."
 # Can't pull here, you risk changing this file
-( cd "${HERE}" && git submodule init && git submodule sync && git submodule update ) >&${log_fd}
+( cd "${HERE}" && git submodule init && git submodule sync && git submodule update ) >&${log_fd} &
 disown -h 2>/dev/null
 disown 2>/dev/null
 

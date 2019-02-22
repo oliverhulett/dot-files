@@ -113,7 +113,7 @@ fi
 TD="${TMPDIR:-${TMP:-/tmp}}/bats/$(date '+%Y%m%d-%H%M%S').$$.${RANDOM}"
 rm -rf "${TD}"
 mkdir --parents "${TD}"
-rm "$(dirname "${TD}")/latest" || true
+rm "$(dirname "${TD}")/latest" 2>/dev/null || true
 ( cd "$(dirname "${TD}")" && ln -sf "$(basename -- "${TD}")" latest )
 
 WIDTH=0

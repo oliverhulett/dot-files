@@ -5,7 +5,6 @@
 DF_TESTS="$(cd "${BATS_TEST_DIRNAME}" && pwd -P)"
 
 FUT="tests/utils.sh"
-IS_EXE="false"
 
 function setup()
 {
@@ -350,6 +349,8 @@ function _assert_fut_exe_mk_test()
 	EOF
 
 	stub temp_make '--prefix=home : echo "'"${TMPHOME}"'"'
+	mkdir -p "${TMPHOME}"
+	register_teardown_fn rm -rf "${TMPHOME}"
 	stub temp_del "${TMPHOME}"
 	stub fail
 	run bats -t "${TESTFILE}"
@@ -363,6 +364,8 @@ function _assert_fut_exe_mk_test()
 	unstub fail
 
 	stub temp_make '--prefix=home : echo "'"${HOME}${TMPHOME}"'"'
+	mkdir -p "${HOME}${TMPHOME}"
+	register_teardown_fn rm -rf "${HOME}${TMPHOME}"
 	stub temp_del "${HOME}${TMPHOME}"
 	stub fail
 	run bats -t "${TESTFILE}"
@@ -402,6 +405,8 @@ function _assert_fut_exe_mk_test()
 	scoped_mktemp OUTPUT --suffix=.txt
 	scoped_mktemp TESTFILE --suffix=.bats
 	TMPHOME="$(mktemp -p "${BATS_TMPDIR}" --suffix=home --dry-run "${BATS_TEST_NAME}".XXXXXXXX)"
+	mkdir -p "${TMPHOME}"
+	register_teardown_fn rm -rf "${TMPHOME}"
 	stub temp_make '--prefix=home : echo "'"${TMPHOME}"'"'
 	stub temp_del "${TMPHOME}"
 	stub fail
