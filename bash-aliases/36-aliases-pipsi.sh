@@ -2,7 +2,7 @@
 
 # added by pipsi (https://github.com/mitsuhiko/pipsi)
 source "${HOME}/dot-files/bash-common.sh"
-PATH="$(append_path "${PATH}" "${HOME}/.local/bin")"
+PATH="$(append_path "${PATH}" "${HOME}/.local/bin" "${HOME}/.local/venvs/pipsi/bin")"
 export PATH
 
 # Wrap pipsi into Python 3 and Python 2 versions explicitly
