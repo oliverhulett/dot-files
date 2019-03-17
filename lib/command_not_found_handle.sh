@@ -17,41 +17,30 @@ function _do_cnfh()
 	fi
 }
 
-_do_cnfh "$@"
-rv=$?
-mapfile -t CMDS < <(_do_cnfh "$@")
-if [ ${#CMDS} -gt 0 ]; then
-	in_commands="false"
-	run_commands="false"
-	for c in "${CMDS[@]}"; do
-		if [ "${in_commands}" == "true" ]; then
-			if [ "${run_commands}" == "true" ]; then
-				# shellcheck disable=SC2086 - Double quote to prevent globbing and word splitting.
-				echo '$' $c
-				eval "$c"
-			fi
-		elif echo "$c" | grep -qE 'You can install it by typing:$'; then
-			in_commands="true"
-			read -rn1 -p"Run installation commands? [Y/n] "
-			echo
-			if [ "${REPLY,,}" != "n" ]; then
-				run_commands="true"
-			fi
-		fi
-	done
+notfound="$1"
+shift
+
+bootstrapper_found="false"
+bootstrapper=
+for file in "$@"; do
+	bootstrapper="$(dirname "${file}")/.bootstraps/$(basename -- "${file}")"
+	if [ -x "${bootstrapper}" ]; then
+		bootstrapper_found="true"
+		break
+	fi
+done
+
+if [ $# -ne 0 ]; then
+	echo "The script '${file}' is trying to run the program '${notfound[*]}', which is not currently installed."
 fi
-exit $rv
 
-
-## Walk up the caller stack looking for executables that have matching bootstrapper files.
-##  If found, offer to run the bootstrapper file, run it if yes.
-## Fallback to the default command_not_found_handle, parse output for suggested installation command, offer to run it, run it if yes.
-## If no default command_not_found_handle, offer to install it, install if yes.
-## brew hint is `brew tap homebrew/command-not-found`.  Find linux hint
-
-# How will this work for nested commands and libraries?  command_not_found_handle only kicks in for commands typed by the user?
-# v1 can use `which` when things fail...
-
-# Need to be able to work out what OS is running and point to the right bootstrapper
-# Need to be able to declare dependencies? or just let this mechanism recurse?
-# How to deal with things that require user interactions?
+if [ "${bootstrapper_found}" == "true" ]; then
+	echo "You can install all of the dependencies for '${file}' by typing:"
+	printf '  %s\n' "${bootstrapper}"
+	exit 127
+else
+	if [ -n "${bootstrapper}" ]; then
+		echo "You can write a bootstrapper for '${file}' by implementing '${bootstrapper}'"
+	fi
+	_do_cnfh "${notfound}"
+fi

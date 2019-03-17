@@ -315,7 +315,7 @@ function assert_all_lines()
 		(
 			echo "Found more lines of output than expected.  Additional lines:"
 			for idx in $(seq $cnt $((${#lines[@]} - 1))); do
-				echo -e "\t> ${lines[$idx]}"
+				echo -e "\t${idx} > ${lines[$idx]}"
 			done
 		) | fail
 		errs=$((errs + ${#lines[@]} - cnt))
