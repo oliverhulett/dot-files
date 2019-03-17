@@ -23,6 +23,8 @@ mapfile -t -O ${#DF_SOURCED_SCRIPTS} DF_SOURCED_SCRIPTS < <(cd "${DOTFILES}" && 
 
 mapfile -t DF_CRONTABS < <(cd "${DOTFILES}" && printf '%s\n' crontab.*)
 
+mapfile -t DF_BOOTSTRAPPERS< <(cd "${DOTFILES}" && git ls-files -- .bootstraps)
+
 DF_EXES=(
 	autocommit.sh
 	backup.sh
@@ -186,6 +188,19 @@ function setup()
 	for f in "${DF_CRONTABS[@]}"; do
 		if [ ! -s "${DOTFILES}/$f" ]; then
 			fail "Crontab file is empty: $(basename -- "$f")"
+		fi
+	done
+}
+
+@test "Validate: bootstrappers are executable and their boots exist" {
+	for f in "${DF_BOOTSTRAPPERS[@]}"; do
+		if ! [ -x "$f" ]; then
+			fail "Bootstrapper file is not executable: $f"
+		fi
+		b="$(basename -- "$f")"
+		d="$(dirname "$(dirname "$f")")"
+		if ! [ -e "$d/$b" ]; then
+			fail "Bootstrapper does not bootstrap a file that exists: $f"
 		fi
 	done
 }
