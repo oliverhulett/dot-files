@@ -11,11 +11,12 @@ try
 	call vundle#begin()
 	Plugin 'VundleVim/Vundle.vim'
 
-	Plugin 'ConradIrwin/vim-bracketed-paste'
-	Plugin 'RRethy/vim-illuminate'
+	Plugin 'ConradIrwin/vim-bracketed-paste'	" Set pastemode on paste
+	Plugin 'RRethy/vim-illuminate'				" Highlight the word under the cursor
+	Plugin 'Valloric/YouCompleteMe'				" Tab-completion
+	Plugin 'Xuyuanp/nerdtree-git-plugin'		" Git status for nerdtree
+	Plugin 'scrooloose/nerdtree'				" Nerdtree - file browser in the sidebar
 
-	Plugin 'Valloric/YouCompleteMe'
-	Plugin 'Xuyuanp/nerdtree-git-plugin'
 	Plugin 'altercation/vim-colors-solarized'
 	Plugin 'ap/vim-buftabline'
 	Plugin 'chaoren/vim-wordmotion'
@@ -32,7 +33,6 @@ try
 	Plugin 'ntpeters/vim-better-whitespace'
 	Plugin 'plasticboy/vim-markdown'
 	Plugin 'reedes/vim-litecorrect'
-	Plugin 'scrooloose/nerdtree'
 	Plugin 'terryma/vim-smooth-scroll'
 	Plugin 'vim-scripts/bats.vim'
 	Plugin 'vim-scripts/wordlist.vim'
