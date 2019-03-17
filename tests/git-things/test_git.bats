@@ -3,15 +3,12 @@
 HERE="$(cd "${BATS_TEST_DIRNAME}" && pwd -P)"
 source "${HERE}/fixture.sh"
 
-FUT="git-things"
-IS_EXE="false"
-
 function _gitenv()
 {
 	git env | command grep "$@"
 }
 
-@test "$FUT: prepends to path and manpath" {
+@test "git-things: prepends to path and manpath" {
 	run _gitenv -E '^PATH='
 	# git prepends to the path, so at best we can be second.
 	assert_all_lines --partial ":${DOTFILES}/git-things/bin:"
@@ -19,7 +16,7 @@ function _gitenv()
 	assert_all_lines --regexp "^MANPATH=${DOTFILES}/git-things/man(:|$)"
 }
 
-@test "$FUT: all sub-commands have man pages" {
+@test "git-things: all sub-commands have man pages" {
 	find "${DOTFILES}/git-things/bin" \( -type f -or -type l \) -name 'git-*' | while read -r; do
 		# git-exe commands are links to executables in the git-bin directory
 		assert [ "$(dirname "$(readlink -f "${REPLY}")")" == "${DOTFILES}/git-things/bin" ]
@@ -30,13 +27,14 @@ function _gitenv()
 	done
 }
 
-@test "$FUT: github username and e-mail are correct" {
-	_link_local_gitconfig github
+@test "git-things: github username and e-mail are correct" {
+	rm "${HOME}/.gitconfig.local"
+	( cd "${HOME}" && ln -s "${DOTFILES}/gitconfig.github" .gitconfig.local )
 	run git whoami
 	assert_output "Oliver Hulett <oliver.hulett@gmail.com>"
 }
 
-@test "$FUT: filter ini-file-leading-space" {
+@test "git-things: filter ini-file-leading-space" {
 	cd "${CHECKOUT}/repo" || fail "Failed to change into directory: ${CHECKOUT}/repo"
 	cp "${DOTFILES}/.gitattributes" ./
 	git add .gitattributes
@@ -80,7 +78,7 @@ EOF
 		 "	continued"
 }
 
-@test "$FUT: git ctrl+z; discard, unstage, undo-commit" {
+@test "git-things: git ctrl+z; discard, unstage, undo-commit" {
 	cd "${CHECKOUT}/repo" || fail "Failed to change into directory: ${CHECKOUT}/repo"
 
 	echo "text" >file
@@ -118,7 +116,7 @@ EOF
 	rm new-file
 }
 
-@test "$FUT: git ignoreme" {
+@test "git-things: git ignoreme" {
 	cd "${CHECKOUT}/repo" || fail "Failed to change into directory: ${CHECKOUT}/repo"
 
 	git ignoreme '*.txt'
@@ -146,7 +144,7 @@ EOF
 	assert_files .gitignore .project .pydevproject .cproject .settings emptydir
 }
 
-@test "$FUT: git cleanbranches" {
+@test "git-things: git cleanbranches" {
 	cd "${CHECKOUT}/repo" || fail "Failed to change into directory: ${CHECKOUT}/repo"
 
 	git checkout -b testbranch

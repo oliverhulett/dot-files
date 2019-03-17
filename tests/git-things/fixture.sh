@@ -12,7 +12,7 @@ function setup_git_things()
 	( cd "${CHECKOUT}" && git clone "${BARE_REPO}" repo )
 	( cd "${CHECKOUT}/repo" && touch nothing && git add nothing && git commit -m"nothing" && git upstream )
 
-	source "${DOTFILES}/bash_aliases/19-env-git.sh"
+	source "${DOTFILES}/bash-aliases/15-env-git.sh"
 }
 
 function assert_files()

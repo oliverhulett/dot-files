@@ -3,12 +3,12 @@
 HERE="$(cd "${BATS_TEST_DIRNAME}" && pwd -P)"
 source "${HERE}/fixture.sh"
 
-FUT="git-things/bin/which.sh"
+export FUT="git-things/bin/which.sh"
 
 @test "$FUT: git-executables take precedence over aliases" {
 	run git -c "alias.which=!which" which which -a
 	assert_all_lines "\`git which' is: ${DOTFILES}/git-things/bin/git-which" \
-	                  "              : !which"
+					 "              : !which"
 }
 
 @test "$FUT: returns success only if all commands exist" {
@@ -23,13 +23,13 @@ FUT="git-things/bin/which.sh"
 	GIT_EXEC_PATH="$(command git --exec-path)"
 	run git which pull ls-files push commit
 	assert_all_lines "\`git pull' is: ${GIT_EXEC_PATH}/git-pull" \
-	                 "\`git ls-files' is: ${GIT_EXEC_PATH}/git-ls-files" \
-	                 "\`git push' is: ${GIT_EXEC_PATH}/git-push" \
-	                 "\`git commit' is: ${GIT_EXEC_PATH}/git-commit"
+					 "\`git ls-files' is: ${GIT_EXEC_PATH}/git-ls-files" \
+					 "\`git push' is: ${GIT_EXEC_PATH}/git-push" \
+					 "\`git commit' is: ${GIT_EXEC_PATH}/git-commit"
 
 	run git which pull nada push commit
 	assert_all_lines "\`git pull' is: ${GIT_EXEC_PATH}/git-pull" \
-	                 "\`git nada' is: not found" \
-	                 "\`git push' is: ${GIT_EXEC_PATH}/git-push" \
-	                 "\`git commit' is: ${GIT_EXEC_PATH}/git-commit"
+					 "\`git nada' is: not found" \
+					 "\`git push' is: ${GIT_EXEC_PATH}/git-push" \
+					 "\`git commit' is: ${GIT_EXEC_PATH}/git-commit"
 }

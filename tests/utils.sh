@@ -51,33 +51,32 @@ function _call_hierarchy()
 	if [ "${s_or_t}" == "teardown" ]; then
 		component=( $(echo "${component[@]}" | rev) )
 	fi
-	declare -la run tried
-	for f in "${component[@]}"; do
+	declare -a run
+	for cmpnt in "${component[@]}"; do
 		if [ "${s_or_t}" == "teardown" ]; then
-			f="$(echo "$f" | rev)"
+			cmpnt="$(echo "$cmpnt" | rev)"
 		fi
-		tried[${#tried[@]}]="${s_or_t}_${f}"
-		if [ "$(type -t "${s_or_t}_${f}" 2>/dev/null)" == "function" ]; then
-			eval "${s_or_t}_${f}" "$@"
-			run[${#run[@]}]="${s_or_t}_${f}"
+		if [ "$(type -t "${s_or_t}_${cmpnt}" 2>/dev/null)" == "function" ]; then
+			eval "${s_or_t}_${cmpnt}" "$@"
+			run[${#run[@]}]="${s_or_t}_${cmpnt}"
 		fi
 	done
 	declare -F | cut -d' ' -f3 | command grep -E "^${s_or_t}_" | while read -r; do
 		if [ "${run[*]}" == "${run[*]/$REPLY}" ]; then
 			echo "WARN: Function \`$REPLY' looks like a ${s_or_t} function, but was not found by the setup/teardown inheritance algorithm.  Possible typo?"
-			echo "INFO: The setup/teardown inheritance algorithm tried:"
-			echo "INFO:   $(echo "${tried[@]}" | sed -re 's/ /(), /g;s/$/()/')"
 		fi
 	done
 }
 function setup()
 {
-	# Default setup() is to skip the test if the program under test doesn't exist or if only one test has been requested
 	if ! should_run; then
-		return 1
+		return
 	fi
-	if ! assert_fut_exe; then
-		return 1
+	# Default setup() is to skip the test if the program under test doesn't exist or if only one test has been requested
+	if [ "${IS_EXE}" == "no" ] || [ "${IS_EXE}" == "false" ]; then
+		assert_fut
+	else
+		assert_fut_exe
 	fi
 
 	scoped_blank_home
@@ -118,13 +117,9 @@ function assert_fut()
 	_check_caller_is_test assert_fut || return $?
 	if [ -n "${FUT}" ]; then
 		declare -g FUT_PATH
-		if [ -d "${DOTFILES}/${FUT}" ] && [ -n "$(cd "${DOTFILES}" && git ls-files -- "${FUT}")" ]; then
-			FUT_PATH="${DOTFILES}/${FUT}"
-			return
-		fi
 		FUT_PATH="${DOTFILES}/$(cd "${DOTFILES}" && git ls-files -- "${FUT}")"
 		if [ ! -f "${FUT_PATH}" ]; then
-			fail "Failed to find file under test"
+			skip "Failed to find file under test"
 			return 1
 		fi
 	fi
@@ -134,20 +129,13 @@ function assert_fut_exe()
 	_check_caller_is_test assert_fut_exe || return $?
 	if [ -n "${FUT}" ]; then
 		assert_fut || return $?
-		if [ "${IS_EXE}" == "no" ] || [ "${IS_EXE}" == "false" ]; then
-			return
-		fi
-		if [ -d "${FUT_PATH}" ]; then
-			fail "Program under test is a directory, cannot execute.  Did you forget to set \`IS_EXE=\"no\"'?"
-			return 1
-		fi
 		declare -g EXE="${FUT_PATH}"
 		if [ ! -x "${EXE}" ]; then
 			local shebang
 			shebang="$(head -n1 "${EXE}")"
 			local interpreter="${shebang:2}"
 			if [ "${shebang:0:2}" != '#!' ] || [ ! -e "${interpreter%% *}" ]; then
-				fail "Program under test is not executable or has an invalid shebang"
+				skip "Program under test is not executable or has an invalid shebang"
 				return 1
 			else
 				EXE="${interpreter} $EXE"
@@ -160,20 +148,17 @@ function assert_fut_exe()
 function should_run()
 {
 	_check_caller_is_test should_run || return $?
-	local SUFFIX NAME
 	if [ -n "$ONLY" ]; then
-		SUFFIX="$(echo "$ONLY" | sed -re 's/[^a-zA-Z0-9]+/_/g')"
-		NAME="$(echo "${BATS_TEST_NAME}" | sed -re 's/-[0-9a-z]{2}/_/g;s/[^a-zA-Z0-9]+/_/g')"
-		if [ "${NAME}" == "${NAME%%$SUFFIX}" ]; then
+		SUFFIX="$(echo "$ONLY" | sed -re 's/ /_/g')"
+		if [ "${BATS_TEST_NAME}" == "${BATS_TEST_NAME%%$SUFFIX}" ]; then
 			skip "Single test requested: $ONLY"
 			return 1
 		fi
 	fi
 	if [ -n "$SKIP" ]; then
 		for t in "${SKIP[@]}"; do
-			SUFFIX="$(echo "$t" | sed -re 's/[^a-zA-Z0-9]+/_/g')"
-			NAME="$(echo "${BATS_TEST_NAME}" | sed -re 's/-[0-9a-z]{2}/_/g;s/[^a-zA-Z0-9]+/_/g')"
-			if [ "${NAME}" != "${NAME%%$SUFFIX}" ]; then
+			SUFFIX="$(echo "$t" | sed -re 's/ /_/g')"
+			if [ "${BATS_TEST_NAME}" != "${BATS_TEST_NAME%%$SUFFIX}" ]; then
 				skip "Skip requested by skip list: $t"
 				return 1
 			fi
@@ -251,12 +236,10 @@ function assert_home_is_temp()
 function destroy_blank_home()
 {
 	_check_caller_is_test destroy_blank_home || return $?
-	if [ "${KEEP_BLANK_HOME}" != "yes" ] && [ "${KEEP_BLANK_HOME}" != "true" ]; then
-		# Paranoid about deleting $HOME.  `temp_del` should only delete things it created.
-		# `fail` doesn't actually work here?
-		assert_home_is_temp
-		temp_del "${HOME}"
-	fi
+	# Paranoid about deleting $HOME.  `temp_del` should only delete things it created.
+	# `fail` doesn't actually work here?
+	assert_home_is_temp
+	temp_del "${HOME}"
 	export HOME="${_ORIG_HOME}"
 }
 function scoped_blank_home()
@@ -302,19 +285,6 @@ function populate_home()
 	_restore e
 }
 
-# A common pattern is to need to be in a particular directory when running a test
-function run_in_dir()
-{
-	OLD_DIR="$(pwd)"
-	NEW_DIR="$1"
-	shift
-	cd "$NEW_DIR" || fail "Failed to change into directory: $NEW_DIR"
-	run "$@"
-	es=$?
-	cd "$OLD_DIR" || fail "Failed to restore directory: $OLD_DIR"
-	return $es
-}
-
 # A common pattern is to assert all lines of output.  Each argument is a line, in order.  All lines must be specified.
 function assert_all_lines()
 {
@@ -333,10 +303,6 @@ function assert_all_lines()
 			l="$(echo "$l" | cut -d' ' -f2-)"
 		else
 			LOCAL_REGEX_OR_PARTIAL=
-		fi
-		## BATS will drop empty lines of output, if we are asked to check an empty line, just assume it was there.
-		if [ -z "$l" ]; then
-			continue
 		fi
 		## Can't quote {GLOBAL,LOCAL}_REGEX_OR_PARTIAL because they'll be interpreted as "empty" lines and not match.
 		# shellcheck disable=SC2086

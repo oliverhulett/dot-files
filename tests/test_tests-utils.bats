@@ -51,14 +51,6 @@ function _do_assert_all_lines_test()
 	_do_assert_all_lines_test 1 " line1" "line 2" " --partial ine"
 	run echo -n
 	_do_assert_all_lines_test 0
-	# BATS doesn't give us empty lines, assert_all_lines() should also drop them.
-	run echo $'line1\n\nline2\n'
-	_do_assert_all_lines_test 0 "" "line1" "" "line2" ""
-	# Unfortunately that means these all match as well
-	_do_assert_all_lines_test 0 "line1" "line2"
-	_do_assert_all_lines_test 0 "" "" "line1" "line2"
-	_do_assert_all_lines_test 0 "line1" "" "" "line2"
-	_do_assert_all_lines_test 0 "line1" "line2" "" ""
 }
 
 @test "$FUT: register teardown functions" {
@@ -148,7 +140,7 @@ function _should_run_mk_test()
 		}
 		function setup()
 		{
-			should_run >>"${OUTPUT}"
+			should_run
 		}
 		ONLY=$1
 		SKIP=$2
@@ -156,9 +148,6 @@ function _should_run_mk_test()
 			true
 		}
 		@test "test 2" {
-			true
-		}
-		@test "test-with some:strange characters" {
 			true
 		}
 	EOF
@@ -169,43 +158,21 @@ function _should_run_mk_test()
 	_should_run_mk_test "" ""
 	run bats -t "${TESTFILE}"
 	assert_success
-	assert_all_lines "1..3" \
-					 "ok 1 test 1" \
-					 "ok 2 test 2" \
-					 "ok 3 test-with some:strange characters"
+	assert_all_lines "1..2" "ok 1 test 1" "ok 2 test 2"
 
 	_should_run_mk_test '"test 2"' ""
 	run bats -t "${TESTFILE}"
 	assert_success
-	assert_all_lines "1..3" \
-					 "ok 1 # skip (should_run said no) test 1" \
-					 "ok 2 test 2" \
-					 "ok 3 # skip (should_run said no) test-with some:strange characters"
+	assert_all_lines "1..2" "ok 1 # skip (should_run said no) test 1" "ok 2 test 2"
 	run cat "${OUTPUT}"
-	assert_all_lines --partial "Skipping='Single test requested: test 2'" \
-							   "Skipping='Single test requested: test 2'"
+	assert_all_lines --partial "Skipping='Single test requested: test 2'"
 
 	_should_run_mk_test "" '( "test 1" "test 2" )'
 	run bats -t "${TESTFILE}"
 	assert_success
-	assert_all_lines "1..3" \
-					 "ok 1 # skip (should_run said no) test 1" \
-					 "ok 2 # skip (should_run said no) test 2" \
-					 "ok 3 test-with some:strange characters"
+	assert_all_lines "1..2" "ok 1 # skip (should_run said no) test 1" "ok 2 # skip (should_run said no) test 2"
 	run cat "${OUTPUT}"
-	assert_all_lines --partial "Skipping='Skip requested by skip list: test 1'" \
-							   "Skipping='Skip requested by skip list: test 2'"
-
-	_should_run_mk_test '"test-with some:strange characters"' ""
-	run bats -t "${TESTFILE}"
-	assert_success
-	assert_all_lines "1..3" \
-					 "ok 1 # skip (should_run said no) test 1" \
-					 "ok 2 # skip (should_run said no) test 2" \
-					 "ok 3 test-with some:strange characters"
-	run cat "${OUTPUT}"
-	assert_all_lines --partial "Skipping='Single test requested: test-with some:strange characters'" \
-							   "Skipping='Single test requested: test-with some:strange characters'"
+	assert_all_lines --partial "Skipping='Skip requested by skip list: test 1'" "Skipping='Skip requested by skip list: test 2'"
 }
 
 function _assert_fut_exe_mk_test()
@@ -214,16 +181,15 @@ function _assert_fut_exe_mk_test()
 	cat - >"${TESTFILE}" <<-EOF
 		. "${DF_TESTS}/utils.sh"
 		FUT="$1"
-		IS_EXE="${3:-yes}"
 		function setup()
 		{
 			:
 		}
-		function fail()
+		eval "__original_\$(declare -f skip)"
+		function skip()
 		{
-			echo "Failing='\$*' FUT=\$FUT EXE=\$EXE" >"${OUTPUT}"
-			## The output of bats when skipping tests is easier to parse.
-			skip "assert_fut_exe failed"
+			echo "Skipping='\$*' FUT=\$FUT EXE=\$EXE" >"${OUTPUT}"
+			__original_skip "assert_fut_exe failed"
 			return 1
 		}
 		@test "test" {
@@ -245,7 +211,7 @@ function _assert_fut_exe_mk_test()
 	assert_success
 	assert_all_lines "1..1" "ok 1 # skip (assert_fut_exe failed) test"
 	run cat "${OUTPUT}"
-	assert_all_lines --partial "Failing='Failed to find file under test'"
+	assert_all_lines --partial "Skipping='Failed to find file under test'"
 
 	_assert_fut_exe_mk_test "tests/data/executable.sh" "${DF_TESTS}/data/executable.sh"
 	run bats -t "${TESTFILE}"
@@ -262,24 +228,7 @@ function _assert_fut_exe_mk_test()
 	assert_success
 	assert_all_lines "1..1" "ok 1 # skip (assert_fut_exe failed) test"
 	run cat "${OUTPUT}"
-	assert_all_lines --partial "Failing='Program under test is not executable or has an invalid shebang'"
-
-	_assert_fut_exe_mk_test "tests/data/" ""
-	run bats -t "${TESTFILE}"
-	assert_success
-	assert_all_lines "1..1" "ok 1 # skip (assert_fut_exe failed) test"
-	run cat "${OUTPUT}"
-	assert_all_lines --partial "Failing='Program under test is a directory, cannot execute.  Did you forget to set \`IS_EXE=\"no\"'?'"
-
-	_assert_fut_exe_mk_test "tests/data/" "" "no"
-	run bats -t "${TESTFILE}"
-	assert_success
-	assert_all_lines "1..1" "ok 1 test"
-
-	_assert_fut_exe_mk_test "tests/data/no-shebang.sh" "" "no"
-	run bats -t "${TESTFILE}"
-	assert_success
-	assert_all_lines "1..1" "ok 1 test"
+	assert_all_lines --partial "Skipping='Program under test is not executable or has an invalid shebang'"
 }
 
 @test "$FUT: simple test file" {
@@ -308,43 +257,6 @@ function _assert_fut_exe_mk_test()
 					 "hello world" \
 					 "registered teardown world" \
 					 "teardown world"
-}
-
-@test "$FUT: run in dir" {
-	scoped_mktemp DIR -d
-	mkdir "${DIR}/empty" "${DIR}/populated"
-	touch "${DIR}/populated/file"
-
-	scoped_mktemp OUTPUT --suffix=.txt
-	scoped_mktemp TESTFILE --suffix=.bats
-	TMPHOME="$(mktemp -p "${BATS_TMPDIR}" --suffix=home --dry-run "${BATS_TEST_NAME}".XXXXXXXX)"
-	cat - >"${TESTFILE}" <<-EOF
-		. "${DF_TESTS}/utils.sh"
-		function setup()
-		{
-			:
-		}
-		function run()
-		{
-			pwd
-			echo "\$@"
-			"\$@"
-		}
-		@test "test" {
-			rm ${OUTPUT} || true
-			exec >>${OUTPUT}
-			exec 2>>${OUTPUT}
-			cd "$DIR/empty" || fail "Could not CD into $DIR"
-			run ls
-			run_in_dir "$DIR/populated" ls
-		}
-	EOF
-
-	run bats -t "${TESTFILE}"
-	assert_success
-	run cat "$OUTPUT"
-	assert_all_lines "$DIR/empty" "ls" "" \
-					 "$DIR/populated" "ls" "file"
 }
 
 @test "$FUT: setup and teardown inheritance" {
@@ -406,13 +318,9 @@ function _assert_fut_exe_mk_test()
 	assert_failure
 	assert_line --index 0 "1..1"
 	assert_line --index 1 "not ok 1 test"
-	assert_line --index $(( ${#lines[@]} - 7 )) "# WARN: Function \`setup_more' looks like a setup function, but was not found by the setup/teardown inheritance algorithm.  Possible typo?"
-	assert_line --index $(( ${#lines[@]} - 6 )) "# INFO: The setup/teardown inheritance algorithm tried:"
-	assert_line --index $(( ${#lines[@]} - 5 )) "# INFO:   setup_dir(), setup_file2()"
-	assert_line --index $(( ${#lines[@]} - 4 )) "# Warning output is only available if the test fails"
-	assert_line --index $(( ${#lines[@]} - 3 )) "# WARN: Function \`teardown_more' looks like a teardown function, but was not found by the setup/teardown inheritance algorithm.  Possible typo?"
-	assert_line --index $(( ${#lines[@]} - 2 )) "# INFO: The setup/teardown inheritance algorithm tried:"
-	assert_line --index $(( ${#lines[@]} - 1 )) "# INFO:   teardown_file2(), teardown_dir()"
+	assert_line --index $(( ${#lines[@]} - 3 )) "# WARN: Function \`setup_more' looks like a setup function, but was not found by the setup/teardown inheritance algorithm.  Possible typo?"
+	assert_line --index $(( ${#lines[@]} - 2 )) "# Warning output is only available if the test fails"
+	assert_line --index $(( ${#lines[@]} - 1 )) "# WARN: Function \`teardown_more' looks like a teardown function, but was not found by the setup/teardown inheritance algorithm.  Possible typo?"
 }
 
 @test "$FUT: blank \$HOME" {
@@ -488,34 +396,6 @@ function _assert_fut_exe_mk_test()
 	assert_failure
 	run cat "$OUTPUT"
 	assert_all_lines "Before: HOME=${HOME} _ORIG_HOME="
-	unstub temp_make
-	unstub temp_del
-	unstub fail
-
-	export KEEP_BLANK_HOME="yes"
-	stub temp_make '--prefix=home : echo "'"${TMPHOME}"'"'
-	stub temp_del
-	stub fail
-	run bats -t "${TESTFILE}"
-	assert_success
-	run cat "$OUTPUT"
-	assert_all_lines "Before: HOME=${HOME} _ORIG_HOME=" \
-					 "During: HOME=${TMPHOME} _ORIG_HOME=${HOME}" \
-					 "After: HOME=${HOME} _ORIG_HOME=${HOME}"
-	unstub temp_make
-	unstub temp_del
-	unstub fail
-
-	export KEEP_BLANK_HOME="true"
-	stub temp_make '--prefix=home : echo "'"${TMPHOME}"'"'
-	stub temp_del
-	stub fail
-	run bats -t "${TESTFILE}"
-	assert_success
-	run cat "$OUTPUT"
-	assert_all_lines "Before: HOME=${HOME} _ORIG_HOME=" \
-					 "During: HOME=${TMPHOME} _ORIG_HOME=${HOME}" \
-					 "After: HOME=${HOME} _ORIG_HOME=${HOME}"
 	unstub temp_make
 	unstub temp_del
 	unstub fail
