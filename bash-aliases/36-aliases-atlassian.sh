@@ -24,6 +24,11 @@ function idea()
 		if [ -z "$VER" ]; then
 			if [ "${a,,}" == "latest" ]; then
 				VER="$(command ls -d /Applications/IntelliJ\ IDEA* -t1c 2>/dev/null | head -n1 2>/dev/null)"
+				STABLE_VER="$(jq '.version' /Applications/IntelliJ\ IDEA.app/Contents/Resources/product-info.json 2>/dev/null | sed -nre 's/^"([0-9]+.[0-9]).+/\1/p')"
+				IDEA_VER="$(echo "${VER}" | sed -nre 's!/Applications/IntelliJ IDEA ([0-9]+.[0-9]) EAP.app!\1!p')"
+				if [ -n "${STABLE_VER}" ] && [ -n "${IDEA_VER}" ] && printf '%s\n%s' "${IDEA_VER}" "${STABLE_VER}" | sort -C -V; then
+					VER="$(command ls -d /Applications/IntelliJ\ IDEA.app -t1c | head -n1)"
+				fi
 			elif [ "${a,,}" == "stable" ]; then
 				VER="$(command ls -d /Applications/IntelliJ\ IDEA.app -t1c | head -n1)"
 			else
@@ -33,7 +38,10 @@ function idea()
 	done
 	if [ -n "$VER" ]; then
 		replacelink "${VER}" /Applications/IntelliJ_IDEA.app
-		IDEA_VER="$(jq '.version' /Applications/IntelliJ_IDEA.app/Contents/Resources/product-info.json | sed -nre 's/^"([0-9]+.[0-9]).+/\1/p')"
+		IDEA_VER="$(jq '.version' /Applications/IntelliJ_IDEA.app/Contents/Resources/product-info.json 2>/dev/null | sed -nre 's/^"([0-9]+.[0-9]).+/\1/p')"
+		if [ -z "${IDEA_VER}" ]; then
+			IDEA_VER="$(echo "${VER}" | sed -nre 's!/Applications/IntelliJ IDEA ([0-9]+.[0-9]) EAP.app!\1!p')"
+		fi
 		replacelink "$(command ls -d "${HOME}/Library/Preferences/IntelliJIdea${IDEA_VER}" -t1c 2>/dev/null | head -n1 2>/dev/null)" ~/Library/Preferences/IntelliJ_IDEA
 		replacelink "$(command ls -d "${HOME}/Library/Caches/IntelliJIdea${IDEA_VER}" -t1c 2>/dev/null | head -n1 2>/dev/null)" ~/Library/Caches/IntelliJ_IDEA
 	fi
@@ -46,6 +54,7 @@ function idea()
 
 function jira-autocomplete()
 {
+	mkdir --parents ~/.local/share/bash-completion/completions/
 	repo jira && ./jmake autocomplete --force --output ~/.local/share/bash-completion/completions/jmake
 	echo 'source ~/.local/share/bash-completion/completions/jmake'
 	source ~/.local/share/bash-completion/completions/jmake

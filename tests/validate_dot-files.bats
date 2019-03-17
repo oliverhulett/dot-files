@@ -17,10 +17,13 @@ DF_SOURCED_SCRIPTS=(
 	bashrc
 	profile
 	trap-stack.sh
-	$(cd "${DOTFILES}" && echo bash-aliases/*)
 )
+# shellcheck disable=SC2153 - Possible misspelling.
+mapfile -t -O ${#DF_SOURCED_SCRIPTS} DF_SOURCED_SCRIPTS < <(cd "${DOTFILES}" && printf '%s\n' bash-aliases/*)
 
-DF_CRONTABS=( $(cd "${DOTFILES}" && echo crontab.*) )
+mapfile -t DF_CRONTABS < <(cd "${DOTFILES}" && printf '%s\n' crontab.*)
+
+mapfile -t DF_BOOTSTRAPPERS< <(cd "${DOTFILES}" && git ls-files -- .bootstraps)
 
 DF_EXES=(
 	autocommit.sh
@@ -31,7 +34,7 @@ DF_EXES=(
 
 DF_DOTFILES=(
 	dot-files-common
-	dot-files.c02w104ahtdg
+	dot-files.c02xv09ujgh7
 	dot-files.loki
 	dot-files.odysseus
 	dot-files.prometheus
@@ -40,8 +43,6 @@ DF_DOTFILES=(
 DF_LISTS=(
 	"${DF_DOTFILES[@]}"
 	.gitignore
-	backups.c02w104ahtdg
-	backups.c02w104ahtdg.exclude
 	backups.loki
 	backups.loki.exclude
 	backups.odysseus
@@ -104,10 +105,14 @@ function setup()
 
 @test "Validate: crontabs have preamble" {
 	for f in "${DF_CRONTABS[@]}"; do
-		if [ "$f" == "crontab.c02w104ahtdg" ]; then
-			h="/Users/ohulett"
+		if [ "$f" == "crontab.c02xv09ujgh7" ]; then
+			h="/Users/oliverhulett"
+			s="/usr/local/bin/bash"
+			p="$h/dot-files/bin:/usr/local/opt/gnu-getopt/bin:/usr/local/bin:/usr/bin:/bin"
 		else
 			h="/home/ols"
+			s="/bin/bash"
+			p="$h/dot-files/bin:/usr/local/bin:/usr/bin:/bin"
 		fi
 		# CRONTAB_PREAMBLE should include the empty line at the end.
 		CRONTAB_PREAMBLE=$(
@@ -116,8 +121,8 @@ function setup()
 				## Edit that file always and then run ~/dot-files/setup-home.sh to install it.
 				## Never use \`crontab -e\` or your changes may be overwritten.
 				HOME=$h
-				SHELL=/bin/bash
-				PATH=$h/dot-files/bin:/usr/local/bin:/usr/bin:/bin
+				SHELL=$s
+				PATH=$p
 
 			EOF
 		)
@@ -187,19 +192,31 @@ function setup()
 	done
 }
 
+@test "Validate: bootstrappers are executable and their boots exist" {
+	for f in "${DF_BOOTSTRAPPERS[@]}"; do
+		if ! [ -x "$f" ]; then
+			fail "Bootstrapper file is not executable: $f"
+		fi
+		b="$(basename -- "$f")"
+		d="$(dirname "$(dirname "$f")")"
+		if ! [ -e "$d/$b" ]; then
+			fail "Bootstrapper does not bootstrap a file that exists: $f"
+		fi
+	done
+}
+
 @test "Validate: bats is a link to our submodule" {
 	assert test -L "${DOTFILES}/bin/bats"
 	assert_equal "$(readlink -f "${DOTFILES}/bin/bats")" "$(readlink -f "${DOTFILES}/tests/x_helpers/bats/bin/bats")"
 }
 
 @test "Validate: no tests are being skipped by \$ONLY= or \$SKIP=" {
-	FILES=(
-		$(find "${DOTFILES}/tests" \
+	mapfile -t FILES < <(
+		find "${DOTFILES}/tests" \
 			\( -name x_helpers -prune -or -true \) \
 			-type f -name '*.bats' -not -name 'test_tests-utils.bats' -not -name 'validate_dot-files.bats' \
 			\( -exec grep -qw ONLY= "{}" \; -or -exec grep -qw SKIP= "{}" \; \) \
 			-print \
-		)
 	)
 	if [ ${#FILES[@]} -ne 0 ]; then
 		fail "Tests being skipped by \$ONLY= or \$SKIP=; these are intended for debugging only.  (in ${FILES[*]})"

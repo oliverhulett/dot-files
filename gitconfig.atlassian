@@ -9,5 +9,8 @@ gl = smart-log
 name = Oliver Hulett
 email = ohulett@atlassian.com
 
+[credintial]
+username = ohulett
+
 [pull]
 rebase = preserve

@@ -4,5 +4,8 @@
 name = Oliver Hulett
 email = oliver.hulett@gmail.com
 
+[credintial]
+username = oliverhulett
+
 [pull]
 rebase = preserve

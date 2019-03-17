@@ -37,5 +37,3 @@ function _docker_run_sh()
 }
 
 complete -F _docker_run_sh dockerme putmein docker-run.sh
-
-complete -F _root_command cc-env

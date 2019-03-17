@@ -11,12 +11,13 @@ function help()
 	echo "Pretty mode doesn't work here, until I can capture and aggregate the summaries."
 	echo
 	echo "Additional options:"
-	printf '  %- 14s %s\n'  "-l, --list" "List the test files that would be run with the given arguments."
+	printf '  %- 18s %s\n'  "-l, --list" "List the test files that would be run with the given arguments."
 	printf '  %- 18s %s\n'  "-n, --parallel=N" "Run tests in parallel, using N processes.  Defaults to 2 * \`nproc's (2 * $(nproc))"
+	printf '  %- 18s %s\n'  "-r, --raw" "Raw output, don't prettify it or do anything to unmix parallel output."
 	echo
 }
 
-OPTS=$(getopt -o "chtvln:" --long "count,help,tap,version,list,parallel:" -n "$(basename -- "$0")" -- "$@")
+OPTS=$(getopt -o "chtvln:r" --long "count,help,tap,version,list,parallel:,raw" -n "$(basename -- "$0")" -- "$@")
 es=$?
 if [ $es != 0 ]; then
 	help
@@ -28,6 +29,7 @@ ARGS=( "-t" )
 COUNT="false"
 LIST="false"
 TAP="true"
+RAW="false"
 eval set -- "${OPTS}"
 while true; do
 	case "$1" in
@@ -45,6 +47,10 @@ while true; do
 			;;
 		-l | --list )
 			LIST="true"
+			shift
+			;;
+		-r | --raw)
+			RAW="true"
 			shift
 			;;
 		-t | --tap )
@@ -113,6 +119,8 @@ fi
 TD="${TMPDIR:-${TMP:-/tmp}}/bats/$(date '+%Y%m%d-%H%M%S').$$.${RANDOM}"
 rm -rf "${TD}"
 mkdir --parents "${TD}"
+rm "$(dirname "${TD}")/latest" 2>/dev/null || true
+( cd "$(dirname "${TD}")" && ln -sf "$(basename -- "${TD}")" latest )
 
 WIDTH=0
 for a in "$@"; do
@@ -124,28 +132,36 @@ done
 
 TIME=( "$(command which time)" -f '\n%E (%P)  User: %U secs  Sys: %S secs\nMax Mem: %M kb\nCtx Sw: %w (Inv: %c)\nFS in: %I  FS out: %O' )
 
-# Can't actually be false for the moment, maybe later we'll add \`bats --pretty' mode back in...
-retval=127
-if [ "${TAP}" == "true" ]; then
-	printf ' % '"${WIDTH}"'s %s\n' ":" "1..${NUM_TESTS}"
+function run_tests()
+{
 	# @formatter:off
-	# shellcheck disable=SC2016
-	printf '%s\0' "$@" | stdbuf -oL "${TIME[@]}" xargs -r0 -n 1 -P "${PARALLEL}" -I{} sh -c "
+	printf '%s\0' "$@" | "${TIME[@]}" xargs -r0 -n 1 -P "${PARALLEL}" -I{} sh -c "
 		export FN=\"\$(basename -- \"{}\" .bats)\";
 		export TD=\"${TD}/\${FN}\";
 		mkdir \"\$TD\";
 		export TMPDIR=\"\$TD\";
 		export BATS_TMPDIR=\"\$TD\";
 		export BATS_MOCK_TMPDIR=\"\$TD\";
-		${HERE}/x_helpers/bats/bin/bats ${ARGS[*]} {} | sed -nre \"2,\\\$s/^/\$(printf \"%- ${WIDTH}s\" \"\${FN}\"): /p\";
-	" | stdbuf -oL perl -e '
-	$| = 1;
-	my $cnt = 0;
-	my $success = 0;
-	my $skip = 0;
-	my $failure = 0;
-	while (<STDIN>) {
-		if (m/^(.{'"${WIDTH}"'}: )((not )?ok )([0-9]+)(( # skip \()?.+)$/) {
+		stdbuf -oL ${HERE}/x_helpers/bats/bin/bats ${ARGS[*]} {} | stdbuf -oL sed -nre \"2,\\\$s/^/\$(printf \"%- ${WIDTH}s\" \"\${FN}\"): /p\";
+	"
+	# @formatter:on
+}
+
+function post_process()
+{
+	if [ "${RAW}" == "true" ]; then
+		cat -
+	else
+		# @formatter:off
+		# shellcheck disable=SC2016 - Expressions don't expand in single quotes
+		perl -e '
+			$| = 1;
+			my $cnt = 0;
+			my $success = 0;
+			my $skip = 0;
+			my $failure = 0;
+			while (<STDIN>) {
+				if (m/^(.{'"${WIDTH}"'}: )((not )?ok )([0-9]+)(( # skip \()?.+)$/) {
 					$cnt++;
 					my $colour = "";
 					my $file = $1;
@@ -154,35 +170,36 @@ if [ "${TAP}" == "true" ]; then
 					if ($result =~ /^not ok $/) {
 						$failure++;
 						$colour = "\e[31m";
-				} elsif ($name =~ /^ # skip \(/) {
-					$skip++;
-					$colour = "\e[34m";
+					} elsif ($name =~ /^ # skip \(/) {
+						$skip++;
+						$colour = "\e[34m";
+					} else {
+						$success++;
+						$colour = "\e[32m";
+					}
+					print $file . $colour . $result . $cnt . $name . "\e[0m\n";
 				} else {
-					$success++;
-					$colour = "\e[32m";
+					print $_;
 				}
-				print $file . $colour . $result . $cnt . $name . "\e[0m\n";
-			} else {
-				print $_;
 			}
-		}
-		print "\n";
-		my $tests = " tests";
-		if ($cnt == 1) {
-			$tests = " test";
-		}
-		print "Ran " . $cnt . $tests . ": " . $success . " succeeded; " . $skip . " skipped; " . $failure . " failed.\n";
-		exit $failure
-	'
-	# @formatter:on
-	retval=$?
-fi
-
-if [ -d "${DOTFILES}/.git/hooks/" ]; then
-	if [ ! -e "${DOTFILES}/.git/hooks/pre-push" ] || [ ! "${DOTFILES}/.git/hooks/pre-push" -ef "${DOTFILES}/git-wrappers/pre-push.sh" ]; then
-		rm -f "${DOTFILES}/.git/hooks/pre-push" || true
-		ln -sv "${DOTFILES}/git-wrappers/pre-push.sh" "${DOTFILES}/.git/hooks/pre-push"
+			print "\n";
+			my $tests = " tests";
+			if ($cnt == 1) {
+				$tests = " test";
+			}
+			print "Ran " . $cnt . $tests . ": " . $success . " succeeded; " . $skip . " skipped; " . $failure . " failed.\n";
+			exit $failure
+		'
+		# @formatter:on
 	fi
+}
+
+# Can't actually be false for the moment, maybe later we'll add \`bats --pretty' mode back in...
+retval=127
+if [ "${TAP}" == "true" ]; then
+	printf ' % '"${WIDTH}"'s %s\n' ":" "1..${NUM_TESTS}"
+	run_tests "$@" | post_process
+	retval=$?
 fi
 
 exit $retval

@@ -177,6 +177,7 @@ function which()
 		for suffix in "" ".sh" ".py" ".bash" ".js" ".tsx" ".ts"; do
 			if type "${arg}${suffix}" 2>/dev/null; then
 				arg="${arg}${suffix}"
+				_found_something="true"
 				break
 			fi
 		done
@@ -214,10 +215,9 @@ function which()
 			echo
 		done
 		if [ "$_found_something" == "false" ]; then
-			command which "$@"
-#			command_not_found_handle "$arg" 2>/dev/null
+			command which "$arg" 2>/dev/null || command_not_found_handle "$arg"
 		fi
-#		echo
+		echo
 	done
 }
 
