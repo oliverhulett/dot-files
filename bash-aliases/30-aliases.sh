@@ -177,6 +177,7 @@ function which()
 		for suffix in "" ".sh" ".py" ".bash" ".js" ".tsx" ".ts"; do
 			if type "${arg}${suffix}" 2>/dev/null; then
 				arg="${arg}${suffix}"
+				_found_something="true"
 				break
 			fi
 		done
