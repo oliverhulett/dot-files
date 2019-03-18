@@ -43,7 +43,7 @@ function setup_command_not_found_handle()
 	mkdir -p "${DIR}/.bootstraps/"
 	touch "${BOOTSTRAPPER}"
 	chmod +x "${SCRIPT}" "${BOOTSTRAPPER}"
-	run "${SCRIPT}"
+	run "${SCRIPT}" with args
 	assert_all_lines "The script '${SCRIPT}' is trying to run the program 'notfound', which is not currently installed." \
 					 "You can install all of the dependencies for '${SCRIPT}' by typing:" \
 					 "  ${BOOTSTRAPPER}" \
@@ -66,7 +66,7 @@ function setup_command_not_found_handle()
 	mkdir -p "${DIR}/.bootstraps/"
 	touch "${BOOTSTRAPPER}"
 	chmod +x "${SCRIPT_ONE}" "${SCRIPT_TWO}" "${BOOTSTRAPPER}"
-	run "${SCRIPT_ONE}"
+	run "${SCRIPT_ONE}" with args
 	assert_all_lines "The script '${SCRIPT_ONE}' is trying to run the program 'notfound', which is not currently installed." \
 					 "You can install all of the dependencies for '${SCRIPT_ONE}' by typing:" \
 					 "  ${BOOTSTRAPPER}" \
@@ -81,7 +81,7 @@ function setup_command_not_found_handle()
 		notfound
 	EOF
 	chmod +x "${SCRIPT}"
-	run "${SCRIPT}"
+	run "${SCRIPT}" with args
 	assert_all_lines "The script '${SCRIPT}' is trying to run the program 'notfound', which is not currently installed." \
 					 "You can write a bootstrapper for '${SCRIPT}' by implementing '${BOOTSTRAPPER}'" \
 					 "__original_command_not_found_handle" \
@@ -90,14 +90,14 @@ function setup_command_not_found_handle()
 }
 
 @test "$FUT: if no caller, fallback to default handler" {
-	run "./${FUT}" notfound
+	run "./${FUT}" notfound with args
 	assert_all_lines "__original_command_not_found_handle" \
 					 "__original_command_not_found_handle: 0 >  notfound"
 }
 
 @test "$FUT: if no default handler, suggest instaling one for this platform" {
 	unset __original_command_not_found_handle
-	run "./${FUT}" notfound
+	run "./${FUT}" notfound with args
 	assert_all_lines "The program 'notfound' is currently not installed." \
 					 "No 'command_not_found_handle' installed.  You can install it by typing:" \
 					 "  brew tap homebrew/command-not-found" \
