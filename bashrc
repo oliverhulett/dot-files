@@ -32,10 +32,10 @@ function vim()
 	source "${HOME}/dot-files/bash-common.sh" 2>/dev/null || true
 	VUNDLE_LAST_UPDATED_MARKER="${HOME}/.vim/bundle/.last_updated"
 	if [ -z "$(find "${VUNDLE_LAST_UPDATED_MARKER}" -mtime -1 2>/dev/null)" ] || \
-		[ "$(command grep -P '^[ \t]*Plugin ' "${HOME}/.vimrc" | xargs -L1 | sort)" != "$(tail -n +2 "${VUNDLE_LAST_UPDATED_MARKER}")" ]; then
+		[ "$(sed -nre 's!^[ \t]*Plugin '"'"'(.+)'"'"'.*!\1!p' "${HOME}/.vimrc" | sort)" != "$(tail -n +2 "${VUNDLE_LAST_UPDATED_MARKER}")" ]; then
 		command vim +'silent! PluginInstall' +qall
 		date >"${VUNDLE_LAST_UPDATED_MARKER}"
-		command grep -P '^[ \t]*Plugin ' "${HOME}/.vimrc" | xargs -L1 | sort >>"${VUNDLE_LAST_UPDATED_MARKER}"
+		sed -nre 's!^[ \t]*Plugin '"'"'(.+)'"'"'.*!\1!p' "${HOME}/.vimrc" | sort >>"${VUNDLE_LAST_UPDATED_MARKER}"
 	fi
 	command vim "${VUNDLE_UPDATE_CMDS[@]}" "$@"
 	es=$?
