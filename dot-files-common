@@ -1,4 +1,5 @@
 ackrc .ackrc
+bash-aliases/05-profile.d-command_not_found.sh .bash-aliases/05-profile.d-command_not_found.sh
 bash-aliases/05-profile.d-python_local_bin.sh .bash-aliases/05-profile.d-python_local_bin.sh
 bash-aliases/15-env-git.sh .bash-aliases/15-env-git.sh
 bash-aliases/15-env-shellcheck.sh .bash-aliases/15-env-shellcheck.sh

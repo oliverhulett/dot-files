@@ -166,6 +166,7 @@ function setup()
 
 @test "Validate: dot-files-common contains minimum required set of files" {
 	MINIMUM_SET=(
+		.bash-aliases/05-profile.d-command_not_found.sh
 		.bash-aliases/30-aliases.sh
 		.bash_logout
 		.bash_profile
@@ -174,7 +175,6 @@ function setup()
 		.gitconfig
 		.gitignore
 		.interactive-commands
-		.profile
 		.profile
 		.vim
 		.vimrc
