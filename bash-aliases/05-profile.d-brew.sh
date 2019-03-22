@@ -29,7 +29,3 @@ source "$(brew --prefix)/etc/profile.d"/*.sh
 PATH="$(prepend_path "${PATH}" "/usr/local/opt/gnu-getopt/bin" "/usr/local/opt/ruby/bin" "/usr/local/opt/python/libexec/bin" "/usr/local/opt/postgresql@9.5/bin")"
 PATH="$(append_path "${PATH}" "/usr/local/opt/gettext/bin")"
 export PATH
-
-if brew command command-not-found-init > /dev/null 2>&1; then
-	eval "$(brew command-not-found-init)";
-fi
