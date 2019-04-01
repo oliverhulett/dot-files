@@ -13,7 +13,7 @@ function idea()
 	DIR=
 	VER=
 	for a in "$@"; do
-		if [ "$a" == "ls" ]; then
+		if [ "$a" == "ls" ] || [ "$a" == "list" ]; then
 			lsl -d {/Applications,~/Library/Preferences,~/Library/Caches}/IntelliJ*
 			return
 		fi
