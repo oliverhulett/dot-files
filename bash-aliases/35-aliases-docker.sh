@@ -8,6 +8,9 @@ function _container_alias()
 		docker pull "${NAME}"
 		docker run --rm -d --name "${NAME}" "$@"
 	fi
+	while [ -z "$(docker container ls -q --filter "name=docker-psql-ci" --filter "status=running")" ]; do
+		docker container list --filter="Name=${NAME}"
+	done
 	docker container list --filter="Name=${NAME}"
 }
 
