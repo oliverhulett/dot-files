@@ -127,10 +127,6 @@ indentHeuristic = true
 [rerere]
 enabled = true
 
-[filter "ini-file-leading-space"]
-smudge = sed -r -e 's/^\\s+([a-zA-Z0-9_-]+)\\s+=\\s+/\\1 = /' -e 's/^\\s+/\t/' -e '/^\\s*$/d' -e 's/^\\s*\\[/\\n[/'
-clean = sed -r -e 's/^\\s+([a-zA-Z0-9_-]+)\\s+=\\s+/\\1 = /' -e 's/^\\s+/\t/' -e '/^\\s*$/d' -e 's/^\\s*\\[/\\n[/'
-
 [fetch]
 prune = true
 
@@ -143,6 +139,11 @@ match = reverse yellow
 helper = store
 
 [credintial "https://github.com/oliverhulett/dot-files.git"]
+helper = store
+useHttpPath = true
+username = oliverhulett
+
+[credintial "git@bitbucket.org:~oliverhulett/code-indexer-bb-frontend.git"]
 helper = store
 useHttpPath = true
 username = oliverhulett
