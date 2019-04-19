@@ -1,7 +1,5 @@
 plugins:
   #- gmusic
-  #- lyrics
-  #- replaygain
 - absubmit
 - acousticbrainz
 - chroma
@@ -13,10 +11,12 @@ plugins:
 - info
 - inline
 - lastimport
+- lyrics
 - mbsync
 - missing
-- rewrite
 - random
+- replaygain
+- rewrite
 - scrub
 - the
 - types
@@ -45,6 +45,7 @@ match:
 pathfields:
   always_format: u'%s' % (format,) if format is not None and format != '' else path[-3:]
   disc_and_track: u'%02i.%02i' % (disc, track) if disctotal > 1 else u'%02i' % (track)
+  multidisc: 1 if disctotal > 1 else 0
 
 duplicates:
   full: no
