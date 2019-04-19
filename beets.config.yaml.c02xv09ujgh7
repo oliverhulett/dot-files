@@ -1,0 +1,6 @@
+directory: ~/Music
+
+paths:
+  default: Music.%lower{${always_format}}/%the{${albumartist}}/%if{${year},${year}-}${album}/%if{${track},${disc_and_track}-}${title}
+  singleton: Music.%lower{${always_format}}/%if{${year},${year}-}%the{${artist}}/${title}
+  comp: Music.%lower{${always_format}}/%if{${year},${year}-}${album}/%if{${track},${disc_and_track}-}%if{${artist},%the{${artist}}-}${title}
