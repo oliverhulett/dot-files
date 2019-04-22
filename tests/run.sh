@@ -83,15 +83,24 @@ function get_all_test_files()
 	find "$@" -not \( -name '.git' -prune -or -name '.svn' -prune -or -name '.venv' -prune -or -name '.virtualenv' -prune -or -name 'x_*' -prune \) \( -name '*.bats' \) | sort -u
 }
 
+function count_tests()
+{
+	cnt=0
+	for f in "$@"; do
+		c=$("${HERE}/x_helpers/bats/bin/bats" --count "$f")
+		cnt=$((cnt + c))
+	done
+	echo $cnt
+}
 # shellcheck disable=SC2046
 set -- $(get_all_test_files "$@")
 
 if [ "${COUNT}" == "true" ]; then
-	"${HERE}/x_helpers/bats/bin/bats" --count "$@"
+	count_tests "$@"
 	exit
 fi
 
-NUM_TESTS=$("${HERE}/x_helpers/bats/bin/bats" --count "$@")
+NUM_TESTS=$(count_tests "$@")
 if [ "$#" -lt "${PARALLEL}" ]; then
 	PARALLEL=$#
 fi

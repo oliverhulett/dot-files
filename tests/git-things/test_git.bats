@@ -34,50 +34,6 @@ function _gitenv()
 	assert_output "Oliver Hulett <oliver.hulett@gmail.com>"
 }
 
-@test "git-things: filter ini-file-leading-space" {
-	cd "${CHECKOUT}/repo" || fail "Failed to change into directory: ${CHECKOUT}/repo"
-	cp "${DOTFILES}/.gitattributes" ./
-	git add .gitattributes
-	git commit -m"Add attributes, including filter for .ini files"
-
-	assert command grep -qE '^gitconfig\*\s+text\s+(.*\s+)?filter=ini-file-leading-space(\s+|$)' .gitattributes
-
-	cat >file.ini <<EOF
-	# a comment
-	[section]
-		key = value
-; another comment
-[another section]
-	key  =	values
-			continued
-EOF
-
-	# Should run the filter...
-	git add file.ini
-	run git show :file.ini
-	assert_all_lines "	# a comment" \
-					 "[section]" \
-					 "key = value" \
-					 "; another comment" \
-					 "[another section]" \
-					 "key = values" \
-					 "	continued"
-
-	git commit -am"file should be cleaned"
-	assert_status ""
-
-	rm file.ini
-	git checkout file.ini
-	assert_contents file.ini \
-		"	# a comment" \
-		 "[section]" \
-		 "key = value" \
-		 "; another comment" \
-		 "[another section]" \
-		 "key = values" \
-		 "	continued"
-}
-
 @test "git-things: git ctrl+z; discard, unstage, undo-commit" {
 	cd "${CHECKOUT}/repo" || fail "Failed to change into directory: ${CHECKOUT}/repo"
 
@@ -142,47 +98,4 @@ EOF
 	git cleanignored
 	assert_status ""
 	assert_files .gitignore .project .pydevproject .cproject .settings emptydir
-}
-
-@test "git-things: git cleanbranches" {
-	cd "${CHECKOUT}/repo" || fail "Failed to change into directory: ${CHECKOUT}/repo"
-
-	git checkout -b testbranch
-	run git branch
-	assert_all_lines "  master" "* testbranch"
-
-	git upstream
-
-	git checkout -b testbranch2
-	run git branch
-	assert_all_lines "  master" "  testbranch" "* testbranch2"
-
-	git upstream
-
-	git cleanbranches
-	run git branch
-	assert_all_lines "  master" "  testbranch" "* testbranch2"
-
-	git checkout master
-	run git branch
-	assert_all_lines "* master" "  testbranch" "  testbranch2"
-
-	git cleanbranches
-	run git branch
-	assert_all_lines "* master" "  testbranch" "  testbranch2"
-
-	git push origin --delete testbranch
-	git fetch --prune
-
-	run git branch
-	assert_all_lines "* master" "  testbranch" "  testbranch2"
-
-	git cleanbranches
-	run git branch
-	assert_all_lines "* master" "  testbranch2"
-
-	git push origin --delete testbranch2
-	git pullme
-	run git branch
-	assert_all_lines "* master"
 }

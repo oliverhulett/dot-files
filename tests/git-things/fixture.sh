@@ -1,4 +1,4 @@
-#!/usr/bin/env bats
+#!/usr/bin/env bash
 
 HERE="$(cd "${BATS_TEST_DIRNAME}" && pwd -P)"
 DF_TESTS="$(dirname "${HERE}")"

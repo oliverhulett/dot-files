@@ -8,7 +8,6 @@ ack = grep --break --heading --line-number
 alias = config --get-regexp alias
 branches = branch -avv
 cleanall = "!f() { ~/.git-wrappers/cleanall.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
-cleanbranches = "!f() { ~/.git-wrappers/cleanbranches.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 cleanignored = "!f() { ~/.git-wrappers/cleanignored.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 commitme = "!f() { : git commit; ~/.git-wrappers/commitme.sh \"$@\"; }; cd \"$GIT_PREFIX\" && f"
 cp = "!f() { ~/.git-wrappers/cp.sh \"$@\"; }; cd \"$GIT_PREFIX\" && f"
