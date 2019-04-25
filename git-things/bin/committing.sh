@@ -1,4 +1,24 @@
-#!/bin/bash -e
+#!/bin/bash
+## Tag a commit message with the issue tag or branch name.
+
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+DOTFILES="$(dirname "$(dirname "${HERE}")")"
+source "${DOTFILES}/bash_common.sh" 2>/dev/null && eval "${capture_output}" || true
+
+function print_help()
+{
+	echo "$(basename -- "$0") [-h|-?|--help]"
+	echo "Tag a commit message with the issue tag or branch name."
+	echo "Run 'git commit -h' for more information."
+}
+
+for i in "$@"; do
+	if [ "$i" == "--help" ] || [ "$i" == "-h" ]; then
+		print_help
+		exit 0
+	fi
+done
+
 
 TICKET="$(git ticket)"
 if [ -n "${TICKET}" ]; then
