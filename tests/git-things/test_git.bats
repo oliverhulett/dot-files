@@ -92,10 +92,11 @@ function _gitenv()
 	git commit -m"ignored files"
 
 	# globally ignored files.
-	touch .project .pydevproject .cproject
+	touch .project .pydevproject .cproject anything.iml
 	ln -vfs emptydir .settings
+	ln -vfs emptydir .idea
 
-	git cleanignored
+	git cleanme
 	assert_status ""
-	assert_files .gitignore .project .pydevproject .cproject .settings emptydir
+	assert_files .gitignore .project .pydevproject .cproject .settings emptydir .idea anything.iml
 }
