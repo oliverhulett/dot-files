@@ -26,7 +26,6 @@ bash_logout .bash_logout
 bash_profile .bash_profile
 bashrc .bashrc
 flake8 .config/flake8
-git-wrappers .git-wrappers
 gitattributes .gitattributes
 gitconfig .gitconfig
 gitignore .gitignore
