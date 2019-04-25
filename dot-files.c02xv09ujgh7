@@ -4,11 +4,14 @@ bash-aliases/05-profile.d-cargo.sh .bash-aliases/05-profile.d-cargo.sh
 bash-aliases/05-profile.d-jetbrains.sh .bash-aliases/05-profile.d-jetbrains.sh
 bash-aliases/06-profile.d-macports.sh .bash-aliases/06-profile.d-macports.sh
 bash-aliases/25-completion-aws.sh .bash-aliases/25-completion-aws.sh
+bash-aliases/25-completion-beet.sh .bash-aliases/25-completion-beet.sh
 bash-aliases/25-completion-laas.sh .bash-aliases/25-completion-laas.sh
 bash-aliases/25-completion-runjs.sh .bash-aliases/25-completion-runjs.sh
 bash-aliases/35-aliases-gradle.sh .bash-aliases/35-aliases-gradle.sh
 bash-aliases/35-aliases-project_path.sh .bash-aliases/35-aliases-project_path.sh
 bash-aliases/36-aliases-atlassian.sh .bash-aliases/36-aliases-atlassian.sh
+beets.config.yaml .config/beets/config.yaml
+beets.config.yaml.c02xv09ujgh7 .config/beets/config.local.yaml
 docker-container-noprune.c02xv09ujgh7 .docker-container-noprune
 gitconfig.atlassian .gitconfig.local
 mackup .mackup

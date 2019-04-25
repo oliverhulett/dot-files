@@ -30,7 +30,7 @@ try
 	Plugin 'lilydjwg/colorizer'
 	Plugin 'liuchengxu/vim-which-key'
 	Plugin 'myint/syntastic-extras'
-	Plugin 'ntpeters/vim-better-whitespace'
+	"Plugin 'ntpeters/vim-better-whitespace'
 	Plugin 'plasticboy/vim-markdown'
 	Plugin 'reedes/vim-litecorrect'
 	Plugin 'terryma/vim-smooth-scroll'

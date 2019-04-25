@@ -5,3 +5,5 @@ if command which brew >/dev/null 2>/dev/null; then
 		eval "$(brew command-not-found-init)";
 	fi
 fi
+
+unset __original_command_not_found_handle

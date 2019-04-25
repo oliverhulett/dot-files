@@ -1,0 +1,98 @@
+plugins:
+  #- gmusic
+- absubmit
+- acousticbrainz
+- chroma
+- convert
+- duplicates
+- edit
+- export
+- fetchart
+- ftintitle
+- info
+- inline
+- lastimport
+- lyrics
+- mbsync
+- missing
+- random
+- replaygain
+- rewrite
+- scrub
+- the
+- types
+- web
+
+include:
+- config.local.yaml
+
+import:
+  move: no
+  copy: yes
+  link: no
+  hardlink: no
+  resume: ask
+  incremental: yes
+  log: ~/.cache/beets.log
+  autotag: yes
+  from_scratch: yes
+  default_action: apply
+  detail: yes
+  duplicate_action: keep
+
+match:
+  strong_rec_thresh: 0.10
+
+pathfields:
+  always_format: u'%s' % (format,) if format is not None and format != '' else path[-3:]
+  disc_and_track: u'%02i.%02i' % (disc, track) if disctotal > 1 else u'%02i' % (track)
+  multidisc: 1 if disctotal > 1 else 0
+
+duplicates:
+  full: no
+  path: no
+  merge: yes
+
+clutter: [Thumbs.DB, .DS_Store, cover.*]
+ignore:
+- .*
+- '*~'
+- System Volume Information
+- lost+found
+ignore_hidden: yes
+
+replace:
+  '[\\/]': _
+  ^\.: _
+  '[\x00-\x1f]': _
+  '[<>:"\?\*\|]': _
+  \.$: _
+  \s+$: ''
+  ^\s+: ''
+  ^-: _
+  '[^a-zA-Z0-9-.]+': _
+path_sep_replace: _
+threaded: yes
+timeout: 5.0
+verbose: 0
+
+original_date: yes
+per_disc_numbering: yes
+
+asciify_paths: yes
+art_filename: '${album}.cover'
+sort_case_insensitive: yes
+sort_item: 'albumartist+ album+ disc+ track+'
+sort_album: 'albumartist+ year+ album+'
+format_item: '%if{${singleton},,${album}$, disc ${disc} of ${disctotal}$, track ${track} of ${tracktotal}$, }${title}, by
+  ${artist}, format ${format}, path ${path}'
+format_album: '${album}, by ${albumartist}, ${disctotal} discs'
+
+lastfm:
+  user: dontpanic
+
+absubmit:
+  auto: yes
+
+ftintitle:
+  auto: yes
