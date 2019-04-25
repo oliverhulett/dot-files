@@ -7,9 +7,6 @@ path = ~/.gitconfig.local
 ack = grep --break --heading --line-number
 alias = config --get-regexp alias
 branches = branch -avv
-cleanall = "!f() { ~/.git-wrappers/cleanall.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
-cleanignored = "!f() { ~/.git-wrappers/cleanignored.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
-cp = "!f() { ~/.git-wrappers/cp.sh \"$@\"; }; cd \"$GIT_PREFIX\" && f"
 discard = reset --hard HEAD
 env = "!f() { env; }; cd \"$GIT_PREFIX\" && f"
 files = "!f() { : git diff; if [ $# -eq 0 ]; then set -- master; fi; git diff --name-only $(git merge-base HEAD \"$@\"); }; cd \"$GIT_PREFIX\" && f"
@@ -18,7 +15,6 @@ gresolve = "!f() { : git mergetool ; git mergetool --tool=kdiff3 -y \"$@\" && ec
 home = "!f() { pwd -P; }; f" ## Want to execute from the top level, not GIT_PREFIX
 ignoreme = "!f() { for i in \"$@\"; do echo \"$i\" >>.gitignore; done; echo \"$(LC_ALL=C sort -u .gitignore)\" >.gitignore; sed -re '/^$/d' -i .gitignore; git add .gitignore; }; cd \"$GIT_PREFIX\" && f"
 inrelease = "!f() { : git merge-base; git fetch origin master; MY_HASH=\"$(git mylasthash)\"; if [ $# -eq 2 ]; then MY_HASH=\"$1\"; shift; fi; RELEASE_HASH=\"$1\"; shift; if git merge-base --is-ancestor \"${MY_HASH}\" \"${RELEASE_HASH}\" \"$@\"; then rv=$?; echo \"Yes\"; return $rv; else rv=$?; echo \"No\"; return $rv; fi; }; cd \"${GIT_PREFIX}\" && f"
-lg = "!f() { ~/.git-wrappers/log.sh \"$@\"; }; cd \"${GIT_PREFIX}\" && f"
 mergeflict = "!f() { : git checkout ; git pushme; git pullme --all --force && git fetch origin $1 && git merge FETCH_HEAD; }; cd \"${GIT_PREFIX}\" && f"
 mine = "!f() { : git for-each-ref; git branch -vv; git for-each-ref --sort=-committerdate --format='#%(committer)#%(committerdate)#%(refname)#%(subject)' refs/remotes/origin/ \"$@\" | command grep -E \"^#$(git whoami)\" | OFS=\"#\" cut -d'#' -f 3- | column -ts'#'; }; f" ## Want to execute from top level, not GIT_PREFIX
 mkbranch = "!f() { ~/.git-wrappers/mkbranch.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
@@ -33,7 +29,6 @@ pushtags = push --tags
 pushyou = pushme
 refs = for-each-ref refs/remotes/origin
 remotes = remote -v
-resolve = "!f() { : git add ; if [ $# -eq 0 ]; then set -- $(git diff --name-only --diff-filter=U); fi; ~/.git-wrappers/resolve.sh \"$@\"; read -n1 -p\"Resolved? [y/N]: \"; echo; if [ \"$(echo $REPLY | tr '[A-Z]' '[a-z]')\" == \"y\" ]; then git add \"$@\"; fi; }; cd \"$GIT_PREFIX\" && f"
 resolve-mine = "!f() { : git add ; if [ $# -eq 0 ]; then set -- $(git diff --name-only --diff-filter=U); fi; git checkout --ours \"$@\" && git add \"$@\"; }; cd \"$GIT_PREFIX\" && f"
 resolve-ours = !git resolve-mine
 resolve-theirs = "!f() { : git add ; if [ $# -eq 0 ]; then set -- $(git diff --name-only --diff-filter=U); fi; git checkout --theirs \"$@\" && git add \"$@\"; }; cd \"$GIT_PREFIX\" && f"

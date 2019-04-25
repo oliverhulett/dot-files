@@ -98,5 +98,5 @@ function _gitenv()
 
 	git cleanme
 	assert_status ""
-	assert_files .gitignore .project .pydevproject .cproject .settings emptydir .idea anything.iml
+	assert_files .gitignore .project .pydevproject .cproject .settings .idea anything.iml
 }

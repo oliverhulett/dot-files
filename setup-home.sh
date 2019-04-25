@@ -87,7 +87,7 @@ if [ -e "${HOME}/etc/npmrc" ]; then
 	ln -s "$(relpath.sh "$(dirname "${DEST}")" "${HOME}/etc/npmrc" )" "${DEST}" >&"${log_fd}"
 fi
 
-if [ ! -e "${HERE}/.git/hooks/pre-push" ] || [ ! "${HERE}/.git/hooks/pre-push" -ef "${HERE}/git-wrappers/pre-push.sh" ]; then
+if [ ! -e "${HERE}/.git/hooks/pre-push" ] || [ ! "${HERE}/.git/hooks/pre-push" -ef "${HERE}/git-things/bin/pre-push.sh" ]; then
 	rm -f "${HERE}/.git/hooks/pre-push" || true
-	ln -sv "${HERE}/git-wrappers/pre-push.sh" "${HERE}/.git/hooks/pre-push"
+	ln -sv "${HERE}/git-things/bin/pre-push.sh" "${HERE}/.git/hooks/pre-push"
 fi
