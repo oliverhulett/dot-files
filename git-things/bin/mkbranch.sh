@@ -12,7 +12,7 @@ function print_help()
 	echo "$(basename -- "$0") [-n|--new-worktree] <BRANCH_NAME>"
 	echo "    Make a new branch, optionally in a new working directory."
 	echo "    -n : Create the new branch in a new worktree as a sibling of this worktree."
-	echo "    -p : Prefix to put infront of the branch name.  Defaults to your username. ($(git whoami))"
+	echo "    -p : Prefix to put infront of the branch name.  Defaults to your username."
 }
 
 OPTS=$(getopt -o "hnp::" --long "help,new-worktree,prefix::" -n "$(basename -- "$0")" -- "$@")

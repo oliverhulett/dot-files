@@ -16,17 +16,6 @@ function _gitenv()
 	assert_all_lines --regexp "^MANPATH=${DOTFILES}/git-things/man(:|$)"
 }
 
-@test "git-things: all sub-commands have man pages" {
-	find "${DOTFILES}/git-things/bin" \( -type f -or -type l \) -name 'git-*' | while read -r; do
-		# git-exe commands are links to executables in the git-bin directory
-		assert [ "$(dirname "$(readlink -f "${REPLY}")")" == "${DOTFILES}/git-things/bin" ]
-		man="${DOTFILES}/git-things/man/man1/$(basename -- "$REPLY").1.gz"
-		assert [ -e "$man" ]
-
-		assert_equal "$("${REPLY}" --help)" "$(gunzip -c "$man")"
-	done
-}
-
 @test "git-things: github username and e-mail are correct" {
 	rm "${HOME}/.gitconfig.local"
 	( cd "${HOME}" && ln -s "${DOTFILES}/gitconfig.github" .gitconfig.local )

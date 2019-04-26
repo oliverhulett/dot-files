@@ -221,3 +221,14 @@ function setup()
 		fail "Tests being skipped by \$ONLY= or \$SKIP=; these are intended for debugging only.  (in ${FILES[*]})"
 	fi
 }
+
+@test "validate: all git sub-commands have man pages" {
+	find "${DOTFILES}/git-things/bin" \( -type f -or -type l \) -name 'git-*' | while read -r; do
+		# git-exe commands are links to executables in the git-bin directory
+		assert [ "$(dirname "$(readlink -f "${REPLY}")")" == "${DOTFILES}/git-things/bin" ]
+		man="${DOTFILES}/git-things/man/man1/$(basename -- "$REPLY").1.gz"
+		assert [ -e "$man" ]
+
+		assert_equal "$("${REPLY}" --help)" "$(gunzip -c "$man")"
+	done
+}
