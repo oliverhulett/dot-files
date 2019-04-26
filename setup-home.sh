@@ -39,7 +39,7 @@ if [ ${#DOTFILES[@]} -ne 0 ]; then
 		PRUNE="${PRUNE} -o -name $i -prune"
 	done
 	# shellcheck disable=SC2086
-	find "${HOME}" -xdev \( $PRUNE \) -o -type l -lname '*/'"$(basename -- "$HERE")"'/*' -print0 2>&${log_fd} | xargs -0 rm -v 2>&${log_fd} >&${log_fd}
+	find "${HOME}" -xdev \( $PRUNE \) -o -type l \( -lname '*/'"$(basename -- "$HERE")"'/*' -o -lname ''"$(basename -- "$HERE")"'/*' \) -print0 2>&${log_fd} | xargs -0 rm -v 2>&${log_fd} >&${log_fd}
 
 	for df in "${DOTFILES[@]}"; do
 		## SRC is relative to $HERE.  TARGET is relative to $HOME

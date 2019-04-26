@@ -51,8 +51,8 @@ fi
 
 function git()
 {
-	PATH="$(dirname "$(dirname "${BASH_SOURCE[0]}")")/git-things/bin:${PATH}"
-	MANPATH="$(dirname "$(dirname "${BASH_SOURCE[0]}")")/git-things/man:${MANPATH}"
+	PATH="$(dirname "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")")/git-things/bin:${PATH}"
+	MANPATH="$(dirname "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")")/git-things/man:${MANPATH}"
 	export PATH MANPATH
 	command git "$@"
 }
