@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 ## The git alias will call from the directory in which the alias was called ($GIT_PREFIX).
 set -e
 

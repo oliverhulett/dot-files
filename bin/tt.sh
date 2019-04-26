@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Tee Totaler.
 # Designed to be prefixed to an executable, it will fork the output and save it to a file next to the executable or in the current directory if the executable is on the path.
 

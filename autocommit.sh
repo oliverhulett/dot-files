@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 ## This script is designed to be called regularly from cron.  It'll autocommit your changes to the dot-files repository in a smarter way.
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"

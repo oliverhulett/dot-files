@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 OPTS=$(getopt -o "ac:" --long "all,count:" -n "$(basename -- "$0")" -- "$@")
 es=$?

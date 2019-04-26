@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 ## Print the path to a repository.
 
 ## One argumeent may be a repository name, a branch name or a project name

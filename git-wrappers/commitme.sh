@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/usr/bin/env bash -e
 
 TICKET="$(git ticket)"
 if [ -n "${TICKET}" ]; then

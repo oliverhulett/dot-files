@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 TIMER="time"
 if [ -x "/usr/local/bin/time" ]; then
