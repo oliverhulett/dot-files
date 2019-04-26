@@ -24,7 +24,7 @@ lg = "!f() { ~/.git-wrappers/log.sh \"$@\"; }; cd \"${GIT_PREFIX}\" && f"
 mergeflict = "!f() { : git checkout ; git push; git pull --all --force && git fetch origin $1 && git merge FETCH_HEAD; }; cd \"${GIT_PREFIX}\" && f"
 mine = "!f() { : git for-each-ref; git branch -vv; git for-each-ref --sort=-committerdate --format='#%(committer)#%(committerdate)#%(refname)#%(subject)' refs/remotes/origin/ \"$@\" | command grep -E \"^#$(git whoami)\" | OFS=\"#\" cut -d'#' -f 3- | column -ts'#'; }; f" ## Want to execute from top level, not GIT_PREFIX
 mkbranch = "!f() { ~/.git-wrappers/mkbranch.sh \"$@\"; }; f" ## Want to execute from top level, not GIT_PREFIX
-mvbranch = "!f() { : git checkout ; git branch -m \"$1\" \"$2\" && git push origin :\"$1\" && git fetch --prune && git push --set-upstream origin \"$2\"; }; f" ## Want to execute from top level, not GIT_PREFIX
+mvbranch = "!f() { : git checkout ; git branch --unset-upstream -m \"$1\" \"$2\" && git push origin :\"$1\" && git fetch --prune && git push --set-upstream origin \"$2\"; }; f" ## Want to execute from top level, not GIT_PREFIX
 mycommits = "!f() { : git log; if [ $# -eq 0 ]; then set -- master; fi; git log --author=\"$(whoami)\" \"$@\"; }; cd \"${GIT_PREFIX}\" && f"
 mylastcommit = "!f() { : git log; if [ $# -eq 0 ]; then set -- master; fi; git log -1 --author=\"$(whoami)\" \"$@\"; }; cd \"${GIT_PREFIX}\" && f"
 mylasthash = "!f() { : git log; if [ $# -eq 0 ]; then set -- master; fi; git log -1 --author=\"$(whoami)\" --format=\"%h\" \"$@\"; }; cd \"${GIT_PREFIX}\" && f"
