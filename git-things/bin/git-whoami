@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 
 # git-whoami
 # Author: Peter Eisentraut <peter@eisentraut.org>

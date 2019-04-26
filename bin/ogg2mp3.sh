@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 for SRC in "$@"; do
 	MP3="${SRC/%ogg/mp3}"

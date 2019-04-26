@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 for SRC in "$@"; do
 	OGG="${SRC/%mp3/ogg}"

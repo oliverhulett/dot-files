@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 ## Backup local files to another local directory that'll be synced to the cloud.
 ## TODO:  How does Google drive sync deal with the hard-links?  How does rsync deal with linking diffs on compressed and encrypted file systems.
 ## TODO:  Links, soft and hard...

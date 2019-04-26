@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 ####################################################################################################
 #	Copyright (C) 2008 Oliver Slocombe Hulett <oliver.hulett@gmail.com>
 #

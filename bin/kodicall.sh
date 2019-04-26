@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Kodi stuff.
 ## Make sure you set kodi in /etc/hosts
 

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 ## Clone a repository, and put it in the right place.
 
 ## Potential servers are stash.atlassian.com, bitbucket.org, github.com
