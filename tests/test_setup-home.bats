@@ -113,5 +113,5 @@ function _do_test_for_host()
 	_do_test_for_host none
 	unstub hostname
 
-	assert test "${DOTFILES}/.git/hooks/pre-push" -ef "${DOTFILES}/git-wrappers/pre-push.sh"
+	assert test "${DOTFILES}/.git/hooks/pre-push" -ef "${DOTFILES}/git-things/bin/pre-push.sh"
 }

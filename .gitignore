@@ -1,5 +1,9 @@
 *.add.spl
 *.pyc
+build
+dot-files.none.*
+images/repo
+node_modules
 vim/bundle/*
 vim/eclim/
 vim/plugin/eclim.vim

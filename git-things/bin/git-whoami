@@ -9,6 +9,32 @@
 
 set -e
 
+print_help()
+{
+	echo "$(basename -- "$0") [-h|--help]"
+	echo "  Print git committer and author name and e-mail address"
+	echo "  An exact copy of the logic in ident.c in the git source"
+}
+
+OPTS=$(getopt -o "h" --long "help" -n "$(basename -- "$0")" -- "$@")
+es=$?
+if [ $es != 0 ]; then
+	print_help
+	exit $es
+fi
+
+eval set -- "${OPTS}"
+while true; do
+	case "$1" in
+		-h | '-?' | --help )
+			print_help
+			exit 0
+			;;
+		-- ) shift; break ;;
+		* ) break ;;
+	esac
+done
+
 get_email() {
 	git config user.email || ( [ -n "$EMAIL" ] && echo "$EMAIL" ) || echo "$(id -nu)@$(hostname -f)"
 }

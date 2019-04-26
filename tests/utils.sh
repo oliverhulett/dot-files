@@ -52,13 +52,13 @@ function _call_hierarchy()
 		component=( $(echo "${component[@]}" | rev) )
 	fi
 	declare -a run
-	for f in "${component[@]}"; do
+	for cmpnt in "${component[@]}"; do
 		if [ "${s_or_t}" == "teardown" ]; then
-			f="$(echo "$f" | rev)"
+			cmpnt="$(echo "$cmpnt" | rev)"
 		fi
-		if [ "$(type -t "${s_or_t}_${f}" 2>/dev/null)" == "function" ]; then
-			eval "${s_or_t}_${f}" "$@"
-			run[${#run[@]}]="${s_or_t}_${f}"
+		if [ "$(type -t "${s_or_t}_${cmpnt}" 2>/dev/null)" == "function" ]; then
+			eval "${s_or_t}_${cmpnt}" "$@"
+			run[${#run[@]}]="${s_or_t}_${cmpnt}"
 		fi
 	done
 	declare -F | cut -d' ' -f3 | command grep -E "^${s_or_t}_" | while read -r; do

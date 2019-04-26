@@ -48,3 +48,11 @@ if type -t __git_ps1 >/dev/null 2>&1; then
 		export PROMPT_FOO="${PROMPT_FOO}"'\[$(tput bold)\]\[$(tput setaf 4)\]$(__custom_git_ps1 2>/dev/null)\[$(tput sgr0)\]'
 	fi
 fi
+
+function git()
+{
+	PATH="$(dirname "$(dirname "${BASH_SOURCE[0]}")")/git-things/bin:${PATH}"
+	MANPATH="$(dirname "$(dirname "${BASH_SOURCE[0]}")")/git-things/man:${MANPATH}"
+	export PATH MANPATH
+	command git "$@"
+}

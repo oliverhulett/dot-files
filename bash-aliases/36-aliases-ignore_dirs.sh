@@ -4,6 +4,11 @@
 
 function _generate_dirs_to_skip()
 {
+	INCLUDE_GIT_IGNORED="yes"
+	if [ "$1" == "-I" ]; then
+		INCLUDE_GIT_IGNORED="no"
+		shift
+	fi
 	if [ $# -eq 0 ]; then
 		set -- "$(pwd)"
 	fi
@@ -20,44 +25,58 @@ function _generate_dirs_to_skip()
 		"target"
 		"venv"
 	)
-	for i in "$@"; do
-		while read -r _ path _; do
-			DIRS[${#DIRS[@]}]="${path}"
-		done < <(cd "$i" 2>/dev/null && git submodule status 2>/dev/null)
-		while read -r status path; do
-			if [ "${status}" == "!!" ]; then
+	if [ "${INCLUDE_GIT_IGNORED}" == "yes" ]; then
+		for i in "$@"; do
+			while read -r _ path _; do
 				DIRS[${#DIRS[@]}]="${path}"
-			fi
-		done < <(cd "$i" 2>/dev/null && git status --ignored --porcelain 2>/dev/null)
-	done
+			done < <(cd "$i" 2>/dev/null && git submodule status 2>/dev/null)
+			while read -r status path; do
+				if [ "${status}" == "!!" ]; then
+					DIRS[${#DIRS[@]}]="${path}"
+				fi
+			done < <(cd "$i" 2>/dev/null && git status --ignored --porcelain 2>/dev/null)
+		done
+	fi
 	echo "${DIRS[@]}"
 }
 
-unalias ack >/dev/null 2>/dev/null
-function ack()
+function ackme()
 {
-	command ack --ignore-dir=$(joinby " --ignore-dir=" $(_generate_dirs_to_skip)) "$@"
+	dashi=
+	if [ "$1" == "-I" ]; then
+		dashi="-I"
+		shift
+	fi
+	command ack --ignore-dir=$(joinby " --ignore-dir=" $(_generate_dirs_to_skip "$dashi")) "$@"
 }
 
-unalias grep >/dev/null 2>/dev/null
-function grep()
+function grepme()
 {
-	GREP_ARGS="$(per_os -w "" -- "--exclude-dir=$(joinby " --exclude-dir=" $(_generate_dirs_to_skip)) --color=always")"
+	dashi=
+	if [ "$1" == "-I" ]; then
+		dashi="-I"
+		shift
+	fi
+	GREP_ARGS="$(per_os -w "" -- "--exclude-dir=$(joinby " --exclude-dir=" $(_generate_dirs_to_skip "$dashi")) --color=always")"
 	command grep ${GREP_ARGS} -nT "$@"
 }
-unalias ngrep >/dev/null 2>/dev/null
-function ngrep()
+function ngrepme()
 {
-	GREP_ARGS_NC="$(per_os -w "" -- "--exclude-dir=$(joinby " --exclude-dir=" $(_generate_dirs_to_skip)) --color=never")"
+	dashi=
+	if [ "$1" == "-I" ]; then
+		dashi="-I"
+		shift
+	fi
+	GREP_ARGS_NC="$(per_os -w "" -- "--exclude-dir=$(joinby " --exclude-dir=" $(_generate_dirs_to_skip "$dashi")) --color=never")"
 	command grep ${GREP_ARGS_NC} "$@"
 }
 
-unalias find >/dev/null 2>/dev/null
-function find
+function findme()
 {
 	## From the find(1) man page...
-	# The ‘-H’, ‘-L’ and ‘-P’ options control the treatment of symbolic links.  Command-line arguments following these are taken to be names of files or directo-
-	# ries to be examined, up to the first argument that begins with ‘-’, ‘(’, ‘)’, ‘,’, or ‘!’.
+	# The ‘-H’, ‘-L’ and ‘-P’ options control the treatment of symbolic links.
+	# Command-line arguments following these are taken to be names of files or directories to be examined,
+	# up to the first argument that begins with ‘-’, ‘(’, ‘)’, ‘,’, or ‘!’.
 	dashh=
 	if [ "$1" == "-H" ]; then
 		dashh="-H"
@@ -71,6 +90,11 @@ function find
 	dashp=
 	if [ "$1" == "-P" ]; then
 		dashp="-P"
+		shift
+	fi
+	dashi=
+	if [ "$1" == "-I" ]; then
+		dashi="-I"
 		shift
 	fi
 	declare -a DIRS
@@ -88,11 +112,15 @@ function find
 	if [ $# -eq 0 ]; then
 		set -- -true
 	fi
-	command find $dashh $dashl $dashp "${DIRS[@]}" -nowarn -not \( -name $(joinby " -prune -or -name " $(_generate_dirs_to_skip)) -prune \) \( "$@" \)
+	command find $dashh $dashl $dashp "${DIRS[@]}" -nowarn -not \( -name $(joinby " -prune -or -name " $(_generate_dirs_to_skip "$dashi")) -prune \) \( "$@" \)
 }
 
-unalias tree >/dev/null 2>/dev/null
-function tree()
+function treeme()
 {
-	command tree -I $(joinby " -I " $(_generate_dirs_to_skip | tr ' ' '\n' | xargs -n1 basename --)) "$@" | less
+	dashi=
+	if [ "$1" == "-I" ]; then
+		dashi="-I"
+		shift
+	fi
+	command tree -I $(joinby " -I " $(_generate_dirs_to_skip "$dashi" | tr ' ' '\n' | xargs -n1 basename --)) "$@" | less
 }

@@ -48,18 +48,15 @@ This is just a random assortment of TODO thoughts.  For more detailed TODOs, see
 * Maybe try/test the idea with the dotfiles tests?
 * Should be a stand alone project (can test itself with itself)
 
-* Git:  Organise wrapper better and test them
+* Git:  Organise wrappers better and test them
     * Instead of wrappers called from aliases, make them commands (`git-*` style) and wrap git to add them to the path.
         * Git executable becomes wrapper in bin/ that sets PATH and calls git.
-        * Executables for git functionality in bin/git-bin.
-        * Git "aliases" become symlinks or (wrappers with default args/arg handling and help) to executables in git-bin/.
+        * Executables for git functionality in git-things/bin.
+        * Git "aliases" become symlinks or (wrappers with default args/arg handling and help) to executables in git-things/bin/.
         * How to do command line completion?
-        * How to do man pages?
+        * How to do man pages? - in a dodgy dodgy way...
     * Group things better:  branch management, externals management, resolution helpers, cleaning, pulling, refs and discovery?
     * merge and branch help, don't merge til changelog is updated.
-    * Add a command to rebase all from master.
-    * Update git-which to work with git-bin.
-    * Fix following two things also, with tests.
 * I had an idea about creating git feature branches...  Create a todo/task list for the feature branch that gets turned into changelog details.  Wrap feature branch creation and merging to create todo/task list and merge into changelog.  Basically enforce/helpers for git workflow built into the branch/merge commands.
 
 * Plan vim plugin.  Stand alone project (make a new one)

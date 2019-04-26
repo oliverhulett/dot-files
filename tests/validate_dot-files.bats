@@ -103,6 +103,16 @@ function setup()
 	done
 }
 
+@test "Validate: all executable files use #!/usr/bin/env as their shebang" {
+	git ls-files | while read -r; do
+		if [ -x "${REPLY}" ] && [ ! -L "$REPLY" ] && [ "$(file -I "${REPLY}" | command head -n1 | cut -d':' -f2 | cut -d'/' -f1 | sed -re 's/ +//g')" == "text" ]; then
+			if [ "#!/usr/bin/env" != "$(command head -n1 "${REPLY}" | command cut -d' ' -f1)" ]; then
+				fail "Executable script does use #!/usr/bin/env as it's shebang: $REPLY"
+			fi
+		fi
+	done
+}
+
 @test "Validate: crontabs have preamble" {
 	for f in "${DF_CRONTABS[@]}"; do
 		if [ "$f" == "crontab.c02xv09ujgh7" ]; then
@@ -171,7 +181,6 @@ function setup()
 		.bash_logout
 		.bash_profile
 		.bashrc
-		.git-wrappers
 		.gitconfig
 		.gitignore
 		.interactive-commands
@@ -189,6 +198,17 @@ function setup()
 		if [ ! -s "${DOTFILES}/$f" ]; then
 			fail "Crontab file is empty: $(basename -- "$f")"
 		fi
+	done
+}
+
+@test "Validate: all git sub-commands have man pages" {
+	find "${DOTFILES}/git-things/bin" \( -type f -or -type l \) -name 'git-*' | while read -r; do
+		# git-exe commands are links to executables in the git-bin directory
+		assert [ "$(dirname "$(readlink -f "${REPLY}")")" == "${DOTFILES}/git-things/bin" ]
+		man="${DOTFILES}/git-things/man/man1/$(basename -- "$REPLY").1.gz"
+		assert [ -e "$man" ]
+
+		assert_equal "$("${REPLY}" --help)" "$(gunzip -c "$man")"
 	done
 }
 
@@ -221,14 +241,4 @@ function setup()
 	if [ ${#FILES[@]} -ne 0 ]; then
 		fail "Tests being skipped by \$ONLY= or \$SKIP=; these are intended for debugging only.  (in ${FILES[*]})"
 	fi
-}
-
-@test "Validate: all executable files use #!/usr/bin/env as their shebang" {
-	git ls-files | while read -r; do
-		if [ -x "${REPLY}" ] && [ ! -L "$REPLY" ] && [ "$(file -I "${REPLY}" | command head -n1 | cut -d':' -f2 | cut -d'/' -f1 | sed -re 's/ +//g')" == "text" ]; then
-			if [ "#!/usr/bin/env" != "$(command head -n1 "${REPLY}" | command cut -d' ' -f1)" ]; then
-				fail "Executable script does use #!/usr/bin/env as it's shebang: $REPLY"
-			fi
-		fi
-	done
 }
