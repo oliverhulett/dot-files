@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 ## Resolve conflicts and add them.
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 ## Copy files and then add them to git
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"

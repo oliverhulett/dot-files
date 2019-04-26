@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 ## Tag a commit message with the issue tag or branch name.
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"

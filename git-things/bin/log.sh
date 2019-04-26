@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 ## Show user friendly logs with history as a tree
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 ## Create a new file and add it to the git repository.
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"

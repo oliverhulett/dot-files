@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Allegories of `which`, `type`, and `alias` for git.
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
