@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# Set up PATH and MANPATH for git and then call the next git found by `command which -a git`.
+
+set -e
+
+THIS="$(readlink -f "${BASH_SOURCE[0]}")"
+HERE="$(cd "$(dirname "${THIS}")" && pwd -P)"
+DOTFILES="$(cd "$(dirname "${HERE}")" && pwd -P)"
+
+source "${DOTFILES}/bash-common.sh"
+
+NEXT_GIT="$(command which -a git | grep -A1 -E '^'"${THIS}"'$' | tail -n1)"
+
+PATH="$(prepend_path "${PATH}" "${DOTFILES}/git-things/bin")"
+MANPATH="$(prepend_path "${MANPATH}" "${DOTFILES}/git-things/man")"
+export PATH MANPATH
+"${NEXT_GIT}" "$@"
