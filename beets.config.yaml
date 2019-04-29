@@ -23,9 +23,6 @@ plugins:
 - types
 - web
 
-include:
-- config.local.yaml
-
 import:
   move: no
   copy: yes
@@ -47,6 +44,13 @@ pathfields:
   always_format: u'%s' % (format,) if format is not None and format != '' else path[-3:]
   disc_and_track: u'%02i.%02i' % (disc, track) if disctotal > 1 else u'%02i' % (track)
   multidisc: 1 if disctotal > 1 else 0
+
+directory: ~/Music
+
+paths:
+  default: Music.%lower{${always_format}}/%the{${albumartist}}/%if{${year},${year}-}${album}/%if{${multidisc},Disc_${disc}/}%if{${track},${track}-}${title}
+  singleton: Music.%lower{${always_format}}/%if{${year},${year}-}%the{${artist}}/${title}
+  comp: Music.%lower{${always_format}}/%if{${year},${year}-}${album}/%if{${multidisc},Disc_${disc}/}%if{${track},${track}-}%if{${artist},%the{${artist}}-}${title}
 
 duplicates:
   full: no

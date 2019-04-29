@@ -11,7 +11,6 @@ bash-aliases/35-aliases-gradle.sh .bash-aliases/35-aliases-gradle.sh
 bash-aliases/35-aliases-project_path.sh .bash-aliases/35-aliases-project_path.sh
 bash-aliases/36-aliases-atlassian.sh .bash-aliases/36-aliases-atlassian.sh
 beets.config.yaml .config/beets/config.yaml
-beets.config.yaml.c02xv09ujgh7 .config/beets/config.local.yaml
 docker-container-noprune.c02xv09ujgh7 .docker-container-noprune
 gitconfig.atlassian .gitconfig.local
 mackup .mackup

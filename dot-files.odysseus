@@ -8,6 +8,5 @@ bash-aliases/35-aliases-odysseus.sh .bash-aliases/35-aliases-odysseus.sh
 bash-aliases/35-aliases-project_path.sh .bash-aliases/35-aliases-project_path.sh
 bash-aliases/35-aliases-ubuntu.sh .bash-aliases/35-aliases-ubuntu.sh
 beets.config.yaml .config/beets/config.yaml
-beets.config.yaml.odysseus .config/beets/config.local.yaml
 eclipse-user-dictionary.txt .eclipse-user-dictionary.txt
 gitconfig.github .gitconfig.local
