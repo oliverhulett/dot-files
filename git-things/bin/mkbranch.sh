@@ -24,7 +24,7 @@ fi
 
 eval set -- "${OPTS}"
 NEW_WORKTREE="false"
-PREFIX=
+PREFIX="$(git config user.username)"
 while true; do
 	case "$1" in
 		-h | '-?' | --help )
@@ -37,21 +37,20 @@ while true; do
 			;;
 		-p | --prefix )
 			shift
-			if [ "$1" == "" ]; then
-				PREFIX="$(git whoami)/"
-			else
-				PREFIX="$2/"
-			fi
+			PREFIX="$1"
 			shift
 			;;
 		-- ) shift; break ;;
 		* ) break ;;
 	esac
 done
+if [ -n "${PREFIX}" ]; then
+	PREFIX="${PREFIX%%/}/"
+fi
 
 CURR_BRANCH="$(git this)"
 CURR_DIR="$(basename -- "$(pwd)")"
-if [ $# -ne 1 ]; then
+if [ $# -lt 1 ]; then
 	print_help
 	exit 1
 elif [ $# -eq 1 ]; then
@@ -62,7 +61,7 @@ elif [ $# -eq 1 ]; then
 	NEW_BRANCH="${PREFIX}$1"
 else
 	NEW_DIR="$1"
-	NEW_BRANCH="${PREFIX}$1/$(echo "${@:2}" | sed -re 's/ /_/g')"
+	NEW_BRANCH="${PREFIX}$1/$(echo "${@:2}" | sed -re 's/ /-/g')"
 fi
 
 NEW_TICKET="$(git ticket "${NEW_BRANCH}")"

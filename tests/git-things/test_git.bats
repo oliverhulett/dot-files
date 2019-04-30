@@ -18,7 +18,7 @@ function _gitenv()
 
 @test "git-things: github username and e-mail are correct" {
 	rm "${HOME}/.gitconfig.local"
-	( cd "${HOME}" && ln -s "${DOTFILES}/gitconfig.github" .gitconfig.local )
+	( cd "${HOME}" && ln -s "${DOTFILES}/gitconfig.home" .gitconfig.local )
 	run git whoami
 	assert_output "Oliver Hulett <oliver.hulett@gmail.com>"
 }

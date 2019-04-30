@@ -8,6 +8,7 @@ gl = smart-log
 [user]
 name = Oliver Hulett
 email = ohulett@atlassian.com
+username = ohulett
 
 [credintial]
 username = ohulett

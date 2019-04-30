@@ -3,7 +3,7 @@
 HERE="$(cd "${BATS_TEST_DIRNAME}" && pwd -P)"
 source "${HERE}/fixture.sh"
 
-export FUT="git-things/bin/which.sh"
+export FUT="git-things/bin/cleanbranches.sh"
 
 @test "$FUT: git cleanbranches" {
 	cd "${CHECKOUT}/repo" || fail "Failed to change into directory: ${CHECKOUT}/repo"

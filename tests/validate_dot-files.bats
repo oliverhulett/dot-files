@@ -6,7 +6,7 @@ source "${DF_TESTS}/utils.sh"
 DF_FILES=(
 	gitconfig
 	gitconfig.atlassian
-	gitconfig.github
+	gitconfig.home
 	vimrc
 )
 
