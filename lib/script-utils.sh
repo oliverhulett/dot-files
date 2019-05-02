@@ -6,12 +6,13 @@ source "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/../bash-common.sh"
 _SHUTILS_QUIET="no"
 RED="$(tput -T"${TERM:-dumb}" setaf 1 || true)"
 GREEN="$(tput -T"${TERM:-dumb}" setaf 2 || true)"
+CYAN="$(tput -T"${TERM:-dumb}" setaf 6 || true)"
 WHITE="$(tput -T"${TERM:-dumb}" bold || true)$(tput -T"${TERM:-dumb}" setaf 7 || true)"
 RESET="$(tput -T"${TERM:-dumb}" sgr0 || true)"
 
 function report_neutral()
 {
-	[ "${_SHUTILS_QUIET}" != "no" ] || echo -e "$*"
+	[ "${_SHUTILS_QUIET}" != "no" ] || echo -e "${CYAN}" "$*" "${RESET}"
 }
 
 function report_good()
