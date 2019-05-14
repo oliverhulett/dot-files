@@ -1,9 +1,17 @@
 # shellcheck shell=bash
 ## Atlassian aliases
-alias tricorder='docker pull docker.atl-paas.net/ath; docker run --rm docker.atl-paas.net/ath | sh'
 alias vgrok='ngrok start jira-exploratory-development &'
 ## Actually run vgrok so that it is "always" running
 ( exec >/dev/null 2>/dev/null; vgrok )
+
+unalias tricorder >/dev/null 2>/dev/null
+function tricorder()
+{
+	#[ -L "${HOME}/npmrc" ] && rm "${HOME}/.npmrc"
+	docker pull docker.atl-paas.net/ath
+	docker run --rm docker.atl-paas.net/ath | sh
+	#"${HOME}/dot-files/setup-home.sh"
+}
 
 ## JMake doesn't like MAVEN_OPTS being set.  :(
 #export MAVEN_OPTS="${MAVEN_OPTS} -Djansi.force=true"

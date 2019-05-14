@@ -15,7 +15,7 @@ function print_help()
 	echo "    -p : Prefix to put infront of the branch name.  Defaults to your username."
 }
 
-OPTS=$(getopt -o "hnp::" --long "help,new-worktree,prefix::" -n "$(basename -- "$0")" -- "$@")
+OPTS=$(getopt -o "hnp:" --long "help,new-worktree,prefix:" -n "$(basename -- "$0")" -- "$@")
 es=$?
 if [ $es != 0 ]; then
 	print_help
@@ -58,10 +58,12 @@ elif [ $# -eq 1 ]; then
 	if [ -z "${NEW_DIR}" ]; then
 		NEW_DIR="$(basename -- "$1")"
 	fi
-	NEW_BRANCH="${PREFIX}$1"
+	NEW_DIR="${NEW_DIR^^}"
+	NEW_BRANCH="${PREFIX}${NEW_DIR}"
 else
 	NEW_DIR="$1"
-	NEW_BRANCH="${PREFIX}$1/$(echo "${@:2}" | sed -re 's/ /-/g')"
+	NEW_DIR="${NEW_DIR^^}"
+	NEW_BRANCH="${PREFIX}${NEW_DIR}/$(echo "${@:2}" | sed -re 's/ /-/g')"
 fi
 
 NEW_TICKET="$(git ticket "${NEW_BRANCH}")"
