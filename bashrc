@@ -134,7 +134,8 @@ OLDPWD_FILE="$HOME/.oldpwd"
 trap -n oldpwd 'if [ "`pwd`" == "$HOME" ] && [ -n "$OLDPWD" ] && [ "$OLDPWD" != "$HOME" ]; then echo $OLDPWD >"$OLDPWD_FILE"; else pwd >"$OLDPWD_FILE"; fi;' EXIT
 # If `pwd` was written to a file last time, restore directory into $OLDPWD.
 if [ -f "$OLDPWD_FILE" ]; then
-	export OLDPWD=$(command cat $OLDPWD_FILE 2>/dev/null)
+	OLDPWD=$(command cat "$OLDPWD_FILE" 2>/dev/null)
+	export OLDPWD
 fi
 
 # uncomment the following to activate bash-completion:

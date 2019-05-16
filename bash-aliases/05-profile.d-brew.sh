@@ -19,13 +19,24 @@
 disown -h 2>/dev/null
 disown 2>/dev/null
 
-if reentered "${HOME}/.bash-aliases/05-profile.d-brew.sh"; then
+if reentered; then
 	return 0
 fi
 
 source "$(brew --prefix)/etc/bash_completion"
 source "$(brew --prefix)/etc/profile.d"/*.sh
 
-PATH="$(prepend_path "${PATH}" "/usr/local/opt/gnu-getopt/bin" "/usr/local/opt/ruby/bin" "/usr/local/opt/python/libexec/bin" "/usr/local/opt/postgresql@9.5/bin")"
+PATH="$(prepend_path "${PATH}" \
+	"/usr/local/opt/gnu-getopt/bin" \
+	"/usr/local/opt/postgresql@9.5/bin" \
+	"/usr/local/opt/python/libexec/bin" \
+	"/usr/local/opt/ruby/bin" \
+	"/usr/local/opt/util-linux/bin" \
+	"/usr/local/opt/util-linux/sbin"
+)"
 PATH="$(append_path "${PATH}" "/usr/local/opt/gettext/bin")"
 export PATH
+
+#For compilers to find util-linux you may need to set:
+#  export LDFLAGS="-L/usr/local/opt/util-linux/lib"
+#  export CPPFLAGS="-I/usr/local/opt/util-linux/include"

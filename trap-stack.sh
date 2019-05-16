@@ -1,4 +1,4 @@
-# shellcheck shell=sh
+# shellcheck shell=bash
 ## Introduce the concept of named traps.
 ## There exists one anonymous trap stack, which has the usual installation semantics of:
 ##   $ trap <spec> SIGS...
@@ -44,16 +44,18 @@ function _print_traps()
 		if [ $es != 0 ]; then
 			break
 		fi
-		local stack="$(_trap_stack "$sig")"
-		local name_list="$(_trap_stack_name_list "$stack")"
-		local ref='echo "${'"${stack}"'[$idx]}"'
-		local nameref='echo "${'"__name${stack}"'[$idx]}"'
+		local stack name_list ref nameref
+		stack="$(_trap_stack "$sig")"
+		name_list="$(_trap_stack_name_list "$stack")"
+		ref='echo "${'"${stack}"'[$idx]}"'
+		nameref='echo "${'"__name${stack}"'[$idx]}"'
 		for (( idx=0 ; idx < $(_stack_size "${stack}") ; idx += 1 )); do
-			local spec="$(eval $ref)"
+			local spec NAME
+			spec="$(eval $ref)"
 			if [ -z "${spec}" ]; then
 				continue
 			fi
-			local NAME="$(eval $nameref)"
+			NAME="$(eval $nameref)"
 			if [ "$NAME" == "${__ANON_STACK_NAME}" ]; then
 				echo "trap -- '${spec}' $sig"
 			else
@@ -66,20 +68,21 @@ function _print_traps()
 
 function _install_trap()
 {
-	local NAME="$1"
-	local spec="$2"
-	local sig="$3"
+	local NAME spec sig stack name_list lookup s cnt es
+	NAME="$1"
+	spec="$2"
+	sig="$3"
 	## For each signal, we have an array of traps and an array of names.
 	## The trap at a given index has the name given at the same index of the names array.
-	local stack="$(_trap_stack "$sig")"
-	local name_list="$(_trap_stack_name_list "$stack")"
+	stack="$(_trap_stack "$sig")"
+	name_list="$(_trap_stack_name_list "$stack")"
 	## There is also a named variable giving the index of that name in both arrays.
-	local lookup="${stack}_${NAME}"
+	lookup="${stack}_${NAME}"
 	## Here we have the name, so look up the index.  If the variable giving the index doesn't exist,
 	## it should default to the size of the signal's list of traps.
 	# shellcheck disable=SC2034
-	local s=$(_stack_size "$stack")
-	local cnt=$(eval 'echo ${'"${lookup}"':-$s}')
+	s=$(_stack_size "$stack")
+	cnt=$(eval 'echo ${'"${lookup}"':-$s}')
 	if [ $cnt == 0 ] && [ "$NAME" != "${__ANON_STACK_NAME}" ]; then
 		## Force anonymous trap to be at index zero.
 		eval "${stack}_${__ANON_STACK_NAME}=$cnt"
@@ -89,7 +92,7 @@ function _install_trap()
 	fi
 	## Write the index back to the variable (:= doesn't work in an eval, and the value of `lookup` is not exposed if eval'd in a function)
 	eval "${lookup}=$cnt"
-	local es=0
+	es=0
 	if [ "${spec}" == "-" ]; then
 		## Set trap to original disposition...
 		if [ "$NAME" == "${__ANON_STACK_NAME}" ]; then
@@ -118,13 +121,15 @@ function _install_trap()
 # shellcheck disable=SC2154
 function _fire()
 {
-	local _last_exit_status=$?
+	_last_exit_status=$?
+	local sig stack ref
 	eval "${_hidex}"
-	local sig="$1"
-	local stack="$(_trap_stack "$sig")"
-	local ref='echo "${'"${stack}"'[$idx]}"'
+	sig="$1"
+	stack="$(_trap_stack "$sig")"
+	ref='echo "${'"${stack}"'[$idx]}"'
 	for (( idx=0 ; idx < $(_stack_size "${stack}") ; idx += 1 )); do
-		local spec="$(eval $ref)"
+		local spec
+		spec="$(eval $ref)"
 		dotlog "Firing trap: Signal=$sig StackIdx=$idx TrapName=$stack Spec="'"'"$spec"'"'
 		( return $_last_exit_status )
 		eval "${spec:-:}"
@@ -135,16 +140,17 @@ function _fire()
 
 function trap()
 {
-	local USAGE="trap: usage: trap [-lp] [-n|--name=name] [[arg] signal_spec ...]"
-	local OPTS=$(getopt -o "hlpn:" --long "help,name:" -n "trap" -- "$@")
-	local es=$?
+	local USAGE OPTS es NAME p spec
+	USAGE="trap: usage: trap [-lp] [-n|--name=name] [[arg] signal_spec ...]"
+	OPTS=$(getopt -o "hlpn:" --long "help,name:" -n "trap" -- "$@")
+	es=$?
 	if [ $es != 0 ]; then
 		echo "${USAGE}"
 		return $es
 	fi
 	eval set -- "${OPTS}"
-	local NAME="${__ANON_STACK_NAME}"
-	local p="n"
+	NAME="${__ANON_STACK_NAME}"
+	p="n"
 	while true; do
 		case "$1" in
 			-h | '-?' | --help )
@@ -171,7 +177,7 @@ function trap()
 		_print_traps "$@"
 		return $?
 	fi
-	local spec="$1"
+	spec="$1"
 	shift
 	if [ $# == 0 ]; then
 		set -- $spec
