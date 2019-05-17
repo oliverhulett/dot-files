@@ -2,7 +2,7 @@
 # Things for the mac.
 # shellcheck disable=SC2155,SC1090
 
-if reentered "${HOME}/.bash-aliases/05-profile.d-atlassian.sh"; then
+if reentered; then
 	return 0
 fi
 
@@ -22,7 +22,9 @@ if [ -e "${HOME}/.local/share/bash-completion/completions/jmake" ]; then
 	complete -F _complete_jmake -o default ./jmake jmake
 fi
 
-export PATH="$(append_path "${PATH}" $(echo "${PATH}" | sed -re 's/:/ /g'))"
+# shellcheck disable=SC2046 - Quote to avoid splitting
+PATH="$(append_path "${PATH}" $(echo "${PATH}" | sed -re 's/:/ /g'))"
+export PATH
 
 # Show metrics collected by volt.
 export SHOW_DEVMETRICS=false
