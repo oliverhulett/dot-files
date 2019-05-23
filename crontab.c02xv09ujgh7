@@ -16,7 +16,7 @@ PATH=/Users/oliverhulett/dot-files/bin:/usr/local/opt/gnu-getopt/bin:/usr/local/
 ## TODO: There's enough logic here for this to be a script in its own right...
 0 13 * * 1 chronic.sh nice rm -rf "${HOME}/.google-drive/mackup"; chronic.sh nice mackup backup -fv; chronic.sh nice mackup uninstall -fv; chronic.sh nice "${HOME}/dot-files/setup-home.sh"
 
-0 12 * * * nice find "${HOME}/repo" "${HOME}/src" -type d -name master -exec chronic.sh git -C "{}" pullme \; -exec chronic.sh git -C "{}" prune \;
+0 12 * * * nice find "${HOME}/repo" "${HOME}/src" -type d -name master -exec chronic.sh git -C "{}" pullme \; -exec chronic.sh git -C "{}" prune \; -exec chronic.sh git -C "{}" gc \;
 30 12 * * * nice chronic.sh brew update
 
 0 11 * * * chronic.sh docker run --rm --privileged alpine hwclock -s
