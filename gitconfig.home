@@ -10,3 +10,6 @@ username = oliverhulett
 
 [pull]
 rebase = preserve
+
+[branch]
+prefix = oliver

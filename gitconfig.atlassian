@@ -15,3 +15,6 @@ username = ohulett
 
 [pull]
 rebase = preserve
+
+[branch]
+prefix = ohulett

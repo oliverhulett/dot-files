@@ -8,14 +8,15 @@ source "${DOTFILES}/bash_common.sh" 2>/dev/null && eval "${capture_output}" || t
 function print_help()
 {
 	echo "$(basename -- "$0") [-h|-?|--help]"
-	echo "$(basename -- "$0") [-n|--new-worktree] [-p|--prefix=<PREFIX>] <TICKET> <DESCRIPTION>"
-	echo "$(basename -- "$0") [-n|--new-worktree] <BRANCH_NAME>"
+	echo "$(basename -- "$0") [-d|--dry-run] [-n|--new-worktree] [-p|--prefix=<PREFIX>] <TICKET> <DESCRIPTION>"
+	echo "$(basename -- "$0") [-d|--dry-run] [-n|--new-worktree] [-p|--prefix=<PREFIX>] <BRANCH_NAME>"
 	echo "    Make a new branch, optionally in a new working directory."
+	echo "    -d : Dry run.  Don't actually create the branch, just print what you would do."
 	echo "    -n : Create the new branch in a new worktree as a sibling of this worktree."
 	echo "    -p : Prefix to put infront of the branch name.  Defaults to your username."
 }
 
-OPTS=$(getopt -o "hnp:" --long "help,new-worktree,prefix:" -n "$(basename -- "$0")" -- "$@")
+OPTS=$(getopt -o "hdnp:" --long "help,dry-run,new-worktree,prefix:" -n "$(basename -- "$0")" -- "$@")
 es=$?
 if [ $es != 0 ]; then
 	print_help
@@ -23,13 +24,22 @@ if [ $es != 0 ]; then
 fi
 
 eval set -- "${OPTS}"
+DRY_RUN="false"
 NEW_WORKTREE="false"
+## Set prefix in reverse order of priority (so later ones override earlier ones, ending with the command line argument in case the user wants to not have a prefix)
 PREFIX="$(git config user.username)"
+if [ -n "$(git config branch.prefix)" ]; then
+	PREFIX="$(git config branch.prefix)"
+fi
 while true; do
 	case "$1" in
 		-h | '-?' | --help )
 			print_help
 			exit 0
+			;;
+		-d | --dry-run )
+			DRY_RUN="true"
+			shift
 			;;
 		-n | --new-worktree )
 			NEW_WORKTREE="true"
@@ -54,22 +64,24 @@ if [ $# -lt 1 ]; then
 	print_help
 	exit 1
 elif [ $# -eq 1 ]; then
-	NEW_DIR="$(basename -- "$(dirname -- "$1")")"
-	if [ -z "${NEW_DIR}" ]; then
-		NEW_DIR="$(basename -- "$1")"
-	fi
-	NEW_DIR="${NEW_DIR^^}"
-	NEW_BRANCH="${PREFIX}${NEW_DIR}"
+	## One argument given, assume it is the branch name (possibly without the prefix)
+	NEW_BRANCH="${PREFIX}${1#${PREFIX}}"
 else
-	NEW_DIR="$1"
-	NEW_DIR="${NEW_DIR^^}"
-	NEW_BRANCH="${PREFIX}${NEW_DIR}/$(echo "${@:2}" | sed -re 's/ /-/g')"
+	NEW_BRANCH="${PREFIX}${1#${PREFIX}}/$(echo "${@:2}" | sed -re 's/ /-/g')"
 fi
 
 NEW_TICKET="$(git ticket "${NEW_BRANCH}")"
+NEW_BRANCH="${NEW_BRANCH/${NEW_TICKET}/${NEW_TICKET^^}}"
+NEW_TICKET="${NEW_TICKET^^}"
 if [ -n "${NEW_TICKET}" ]; then
 	NEW_DIR="$NEW_TICKET"
+else
+	NEW_DIR="$(basename -- "$(dirname -- "${NEW_BRANCH}")")"
+	if [ -z "${NEW_DIR}" ]; then
+		NEW_DIR="$(basename -- "${NEW_BRANCH}")"
+	fi
 fi
+NEW_DIR="$(echo "${NEW_DIR}" | sed -re 's/[^A-Za-z0-9_.-]+//g')"
 
 if [ "${NEW_WORKTREE}" == "true" ]; then
 	## This script is designed to be called as a git alias, so we should be in the root of the checkout from which we want to branch.
@@ -82,8 +94,21 @@ else
 	NEW_DIR="${CURR_DIR}"
 fi
 
-echo "Creating branch ${NEW_BRANCH} from ${CURR_BRANCH} in ${NEW_DIR}"
+if [ -n "${NEW_TICKET}" ]; then
+	echo "Creating branch ${NEW_BRANCH} from ${CURR_BRANCH} in ${NEW_DIR} for ${NEW_TICKET}"
+else
+	echo "Creating branch ${NEW_BRANCH} from ${CURR_BRANCH} in ${NEW_DIR}"
+fi
 sleep 1
+
+function run()
+{
+	if [ "${DRY_RUN}" == "true" ]; then
+		echo "> $*"
+	else
+		"$@"
+	fi
+}
 
 function setup_new_worktree()
 {
@@ -108,21 +133,21 @@ function setup_new_worktree()
 	fi
 }
 
-git pullme --force
-git fetch origin "${CURR_BRANCH}"
+run git pullme --force
+run git fetch origin "${CURR_BRANCH}"
 if [ "${NEW_WORKTREE}" == "true" ]; then
 	if git rev-parse --quiet --verify "${NEW_BRANCH}" || git rev-parse --quiet --verify "origin/${NEW_BRANCH}"; then
-		git worktree add "../${NEW_DIR}" "${NEW_BRANCH}"
+		run git worktree add "../${NEW_DIR}" "${NEW_BRANCH}"
 	else
-		git worktree add "../${NEW_DIR}" -b "${NEW_BRANCH}"
+		run git worktree add "../${NEW_DIR}" -b "${NEW_BRANCH}"
 	fi
-	( cd "../${NEW_DIR}" && git update && setup_new_worktree )
+	( run cd "../${NEW_DIR}" && run git update && run setup_new_worktree )
 else
 	if git rev-parse --quiet --verify "${NEW_BRANCH}" || git rev-parse --quiet --verify "origin/${NEW_BRANCH}"; then
 		echo "Requested branch already exists.  Run 'git checkout ${NEW_BRANCH}' like everyone else"
 		print_help
 		exit 1
 	else
-		git checkout -b "${NEW_BRANCH}"
+		run git checkout -b "${NEW_BRANCH}"
 	fi
 fi
