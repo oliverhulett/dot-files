@@ -31,11 +31,13 @@ function vim()
 {
 	source "${HOME}/dot-files/bash-common.sh" 2>/dev/null || true
 	VUNDLE_LAST_UPDATED_MARKER="${HOME}/.vim/bundle/.last_updated"
-	if [ -z "$(find "${VUNDLE_LAST_UPDATED_MARKER}" -mtime -1 2>/dev/null)" ] || \
-		[ "$(sed -nre 's!^[ \t]*Plugin '"'"'(.+)'"'"'.*!\1!p' "${HOME}/.vimrc" | sort)" != "$(tail -n +2 "${VUNDLE_LAST_UPDATED_MARKER}")" ]; then
+	PLUGIN_LIST="$(sed -nre 's!^[ \t]*Plugin '"'"'(.+)'"'"'.*!\1!p' "${HOME}/.vimrc" | sort)"
+	if [ -z "$(find "${VUNDLE_LAST_UPDATED_MARKER}" -mtime -1 2>/dev/null)" ] || [ "${PLUGIN_LIST}" != "$(tail -n +2 "${VUNDLE_LAST_UPDATED_MARKER}")" ]; then
+		# shellcheck disable=2046 - quote to prevent word splitting
+		find "${HOME}/.vim/bundle" -maxdepth 1 -type d -not \( -wholename "${HOME}/.vim/bundle" $(echo "${PLUGIN_LIST}" | xargs -n1 basename | awk '{print "-or -name "$0" -prune "}') \) -print0 | xargs -0 rm -rf
 		command vim +'silent! PluginInstall' +qall
 		date >"${VUNDLE_LAST_UPDATED_MARKER}"
-		sed -nre 's!^[ \t]*Plugin '"'"'(.+)'"'"'.*!\1!p' "${HOME}/.vimrc" | sort >>"${VUNDLE_LAST_UPDATED_MARKER}"
+		echo "${PLUGIN_LIST}" >>"${VUNDLE_LAST_UPDATED_MARKER}"
 	fi
 	command vim "${VUNDLE_UPDATE_CMDS[@]}" "$@"
 	es=$?
