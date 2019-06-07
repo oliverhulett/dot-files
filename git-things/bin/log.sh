@@ -45,4 +45,5 @@ if echo "$1" | grep -qwE '[0-9]+'; then
 	COUNT="--max-count=$1"
 	shift
 fi
-git log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cd)%C(bold blue)<%an>%Creset' --abbrev-commit "$COUNT" "$@"
+# shellcheck disable=SC2086 - Double quote to prevent globbing and word splitting.
+git log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cd)%C(bold blue)<%an>%Creset' --abbrev-commit $COUNT "$@"
