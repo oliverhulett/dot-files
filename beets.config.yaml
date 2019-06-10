@@ -24,8 +24,8 @@ plugins:
 - web
 
 import:
-  move: no
-  copy: yes
+  move: yes
+  copy: no
   link: no
   hardlink: no
   resume: ask
@@ -38,7 +38,11 @@ import:
   duplicate_action: keep
 
 match:
-  strong_rec_thresh: 0.10
+  strong_rec_thresh: 0.15
+  preferred:
+    countries: ['US', 'GB|UK']
+    media: ['CD', 'Digital Media|File']
+    original_year: yes
 
 pathfields:
   always_format: u'%s' % (format,) if format is not None and format != '' else path[-3:]
