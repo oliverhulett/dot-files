@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-set -x
 set -e
 
 function print_help()
@@ -40,11 +39,11 @@ done
 CMDS=( "fingerprint" "replaygain" "acousticbrainz" "mbsync" "absubmit" "submit" "update" "move" )
 CMDS_EXTRA=( "lyrics" "fetchart" )
 for c in "${CMDS[@]}"; do
-	beet "$c"
+	echo beet "$c"
 done
 if [ "${ALL}" == "true" ]; then
 	for c in "${CMDS_EXTRA[@]}"; do
-		beet "$c" &
+		echo beet "$c" 
 	done
-	wait -f
+#	wait -f
 fi
