@@ -7,6 +7,7 @@ bash-aliases/25-completion-aws.sh .bash-aliases/25-completion-aws.sh
 bash-aliases/25-completion-beet.sh .bash-aliases/25-completion-beet.sh
 bash-aliases/25-completion-laas.sh .bash-aliases/25-completion-laas.sh
 bash-aliases/25-completion-runjs.sh .bash-aliases/25-completion-runjs.sh
+bash-aliases/25-completion-terraform.sh .bash-aliases/25-completion-terraform.sh
 bash-aliases/35-aliases-gradle.sh .bash-aliases/35-aliases-gradle.sh
 bash-aliases/35-aliases-project_path.sh .bash-aliases/35-aliases-project_path.sh
 bash-aliases/36-aliases-atlassian.sh .bash-aliases/36-aliases-atlassian.sh
