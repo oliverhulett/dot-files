@@ -54,9 +54,16 @@ function idea()
 		replacelink "$(command ls -d "${HOME}/Library/Preferences/IntelliJIdea${IDEA_VER}" -t1c 2>/dev/null | head -n1 2>/dev/null)" ~/Library/Preferences/IntelliJ_IDEA
 		replacelink "$(command ls -d "${HOME}/Library/Caches/IntelliJIdea${IDEA_VER}" -t1c 2>/dev/null | head -n1 2>/dev/null)" ~/Library/Caches/IntelliJ_IDEA
 	fi
-	if [ -z "${DIR}" ]; then
-		DIR="$(pwd -P)"
-	fi
+	HERE="$(pwd -P)"
+	while [ -z "${DIR}" ]; do
+		if [ -e "${HERE}/.git" ] || [ -e "${HERE}/.idea" ]; then
+			DIR="${HERE}"
+		elif [ "$HERE" == "/" ]; then
+			DIR="$(pwd)"
+		else
+			HERE="$(dirname "${HERE}")"
+		fi
+	done
 	echo "$(command which --skip-function --skip-alias idea)" "${DIR}"
 	command idea "${DIR}"
 }
