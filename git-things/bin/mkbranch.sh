@@ -141,7 +141,7 @@ if [ "${NEW_WORKTREE}" == "true" ]; then
 	else
 		run git worktree add "../${NEW_DIR}" -b "${NEW_BRANCH}"
 	fi
-	( run cd "../${NEW_DIR}" && run git update && run setup_new_worktree )
+	( run cd "../${NEW_DIR}" && run git update && run setup_new_worktree && run git pushme )
 else
 	if git rev-parse --quiet --verify "${NEW_BRANCH}" || git rev-parse --quiet --verify "origin/${NEW_BRANCH}"; then
 		echo "Requested branch already exists.  Run 'git checkout ${NEW_BRANCH}' like everyone else"
@@ -149,5 +149,6 @@ else
 		exit 1
 	else
 		run git checkout -b "${NEW_BRANCH}"
+		run git pushme
 	fi
 fi
