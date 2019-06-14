@@ -38,7 +38,7 @@ import:
   duplicate_action: keep
 
 match:
-  strong_rec_thresh: 0.15
+  strong_rec_thresh: 0.25
   preferred:
     countries: ['US', 'GB|UK']
     media: ['CD', 'Digital Media|File']
