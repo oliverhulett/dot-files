@@ -98,7 +98,7 @@ autoStash = true
 autocorrect = 5
 
 [remote "origin"]
-fetch = refs/heads/*:refs/remotes/origin/*
+#fetch = refs/heads/*:refs/remotes/origin/*
 fetch = refs/tags/*:refs/tags/*
 #fetch = refs/pull-requests/*:refs/pull-requests/*
 #fetch = refs/pull/*:refs/pull/*
