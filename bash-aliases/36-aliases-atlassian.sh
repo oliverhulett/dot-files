@@ -1,9 +1,18 @@
 # shellcheck shell=bash
 ## Atlassian aliases
-alias vgrok='ngrok start jira-exploratory-development &'
 alias atlas='USER=ohulett atlas'
+alias vgrok='ngrok start jira-exploratory-development &'
 ## Actually run vgrok so that it is "always" running
 ( exec >/dev/null 2>/dev/null; vgrok )
+
+function cid()
+{
+	SITE="$1"
+	if [ "${SITE##https://}" == "${SITE}" ]; then
+		SITE="https://${SITE}"
+	fi
+	curl "${SITE}/_edge/tenant_info"
+}
 
 unalias tricorder >/dev/null 2>/dev/null
 function tricorder()
