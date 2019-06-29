@@ -26,6 +26,22 @@ function tricorder()
 ## JMake doesn't like MAVEN_OPTS being set.  :(
 #export MAVEN_OPTS="${MAVEN_OPTS} -Djansi.force=true"
 
+function code()
+{
+	DIR="$1"
+	HERE="$(pwd -P)"
+	while [ -z "${DIR}" ]; do
+		if [ -e "${HERE}/.git" ] || [ -e "${HERE}/.idea" ]; then
+			DIR="${HERE}"
+		elif [ "$HERE" == "/" ]; then
+			DIR="$(pwd)"
+		else
+			HERE="$(dirname "${HERE}")"
+		fi
+	done
+	echo "$(command which --skip-function --skip-alias code)" "${DIR}"
+	command code "${DIR}"
+}
 function idea()
 {
 	DIR=
