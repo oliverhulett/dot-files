@@ -23,6 +23,13 @@ function tricorder()
 	#"${HOME}/dot-files/setup-home.sh"
 }
 
+unalias m2check >/dev/null 2>/dev/null
+function m2check()
+{
+	docker pull docker.atl-paas.net/ath
+	docker run --rm docker.atl-paas.net/ath m2check | sh
+}
+
 ## JMake doesn't like MAVEN_OPTS being set.  :(
 #export MAVEN_OPTS="${MAVEN_OPTS} -Djansi.force=true"
 
