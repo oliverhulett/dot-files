@@ -11,7 +11,7 @@ function cid()
 	if [ "${SITE##https://}" == "${SITE}" ]; then
 		SITE="https://${SITE}"
 	fi
-	curl "${SITE}/_edge/tenant_info"
+	curl "${SITE%%/}/_edge/tenant_info"
 }
 
 unalias tricorder >/dev/null 2>/dev/null
