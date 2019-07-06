@@ -8,23 +8,35 @@ source "${DOTFILES}/bash_common.sh" 2>/dev/null && eval "${capture_output}" || t
 function print_help()
 {
 	echo "$(basename -- "$0") [-h|-?|--help]"
-	echo "$(basename -- "$0") <files to copy...>"
+	echo "$(basename -- "$0") [-fv] [--force] [--verbose] <files to copy...>"
 	echo "    Copy files and then add them to git."
+	echo "    -f --force:    If the destination file cannot be opened, remove it and create a new file, without prompting for confirmation regardless of its permissions."
+	echo "    -v --verbose:  Be verbose about what you're doing"
 }
 
-OPTS=$(getopt -o "h" --long "help" -n "$(basename -- "$0")" -- "$@")
+OPTS=$(getopt -o "hfv" --long "help,force,verbose" -n "$(basename -- "$0")" -- "$@")
 es=$?
 if [ $es != 0 ]; then
 	print_help
 	exit $es
 fi
 
+FORCE=
+VERBOSE=
 eval set -- "${OPTS}"
 while true; do
 	case "$1" in
 		-h | '-?' | --help )
 			print_help;
 			exit 0;
+			;;
+		-f | --force )
+			FORCE="-f"
+			shift
+			;;
+		-v | --verbose)
+			VERBOSE="-v"
+			shift
 			;;
 		-- ) shift; break ;;
 		* ) break ;;
@@ -33,7 +45,7 @@ done
 
 cd "$GIT_PREFIX" || ( echo "git could not cd into your directory: $GIT_PREFIX" && exit 1 )
 
-cp -nv "$@"
+cp -n $VERBOSE $FORCE "$@"
 
 declare -a toadd
 dest="${*:$#}"
