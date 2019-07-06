@@ -38,7 +38,7 @@ function code()
 	DIR="$1"
 	HERE="$(pwd -P)"
 	while [ -z "${DIR}" ]; do
-		if [ -e "${HERE}/.git" ] || [ -e "${HERE}/.idea" ]; then
+		if [ -e "${HERE}/.git" ] || [ -e "${HERE}/.vscode" ]; then
 			DIR="${HERE}"
 		elif [ "$HERE" == "/" ]; then
 			DIR="$(pwd)"
