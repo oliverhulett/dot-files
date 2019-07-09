@@ -15,7 +15,7 @@ function eclipse()
 		fi
 	done
 	echo "open /Applications/Eclipse.app" "${DIR}"
-	command open /Applications/Eclipse.app "${DIR}"
+	command open /Applications/Eclipse.app --args "${DIR}"
 }
 
 function code()
