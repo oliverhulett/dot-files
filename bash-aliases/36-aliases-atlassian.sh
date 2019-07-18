@@ -7,11 +7,12 @@ alias vgrok='ngrok start jira-exploratory-development &'
 
 function cid()
 {
-	SITE="$1"
-	if [ "${SITE##https://}" == "${SITE}" ]; then
-		SITE="https://${SITE}"
-	fi
-	curl "${SITE%%/}/_edge/tenant_info"
+	for SITE in "$@"; do
+		if [ "${SITE##https://}" == "${SITE}" ]; then
+			SITE="https://${SITE}"
+		fi
+		curl "${SITE%%/}/_edge/tenant_info"
+	done
 }
 
 unalias tricorder >/dev/null 2>/dev/null
