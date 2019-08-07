@@ -67,7 +67,7 @@ elif [ $# -eq 1 ]; then
 	## One argument given, assume it is the branch name (possibly without the prefix)
 	NEW_BRANCH="${PREFIX}${1#${PREFIX}}"
 else
-	NEW_BRANCH="${PREFIX}${1#${PREFIX}}/$(echo "${@:2}" | sed -re 's/ /-/g')"
+	NEW_BRANCH="${PREFIX}${1#${PREFIX}}/$(echo "${@:2}" | sed -re 's![^A-Za-z0-9_.-]+!-!g')"
 fi
 
 NEW_TICKET="$(git ticket "${NEW_BRANCH}")"
@@ -94,10 +94,14 @@ else
 	NEW_DIR="${CURR_DIR}"
 fi
 
+NOT=
+if [ "${DRY_RUN}" == "true" ]; then
+	NOT="(Not) "
+fi
 if [ -n "${NEW_TICKET}" ]; then
-	echo "Creating branch ${NEW_BRANCH} from ${CURR_BRANCH} in ${NEW_DIR} for ${NEW_TICKET}"
+	echo "${NOT}Creating branch ${NEW_BRANCH} from ${CURR_BRANCH} in ${NEW_DIR} for ${NEW_TICKET}"
 else
-	echo "Creating branch ${NEW_BRANCH} from ${CURR_BRANCH} in ${NEW_DIR}"
+	echo "${NOT}Creating branch ${NEW_BRANCH} from ${CURR_BRANCH} in ${NEW_DIR}"
 fi
 sleep 1
 
