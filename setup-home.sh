@@ -66,13 +66,6 @@ if [ -e "${HOME}/etc/git.passwds" ]; then
 	chmod 0600 "${GIT_CREDS}"
 fi
 
-if [ -e "${HOME}/etc/ngrok.yml" ]; then
-	DEST="${HOME}/.ngrok2/ngrok.yml"
-	rm "${DEST}" 2>/dev/null
-	mkdir --parents "$(dirname "${DEST}")" 2>/dev/null
-	ln -s "$(relpath.sh "$(dirname "${DEST}")" "${HOME}/etc/ngrok.yml" )" "${DEST}" >&"${log_fd}"
-fi
-
 if [ -e "${HOME}/etc/authrc" ]; then
 	DEST="${HOME}/.authrc"
 	rm "${DEST}" 2>/dev/null

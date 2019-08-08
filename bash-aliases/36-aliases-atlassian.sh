@@ -1,9 +1,6 @@
 # shellcheck shell=bash
 ## Atlassian aliases
 alias atlas='USER=ohulett atlas'
-alias vgrok='ngrok start jira-exploratory-development &'
-## Actually run vgrok so that it is "always" running
-( exec >/dev/null 2>/dev/null; vgrok )
 
 function cid()
 {
