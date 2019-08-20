@@ -8,8 +8,9 @@ function _container_alias()
 		docker run --rm -d --name "${NAME}" "$@"
 	fi
 	while [ -z "$(docker container ls -q --filter "Name=${NAME}" --filter "status=running" 2>/dev/null)" ]; do
-		docker container list --filter="Name=${NAME}"
+		echo -n '.'
 	done
+	echo
 	docker container list --filter="Name=${NAME}"
 }
 
