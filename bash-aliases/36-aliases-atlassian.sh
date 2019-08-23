@@ -12,6 +12,29 @@ function cid()
 	done
 }
 
+function sdinfo()
+{
+	for SITE in "$@"; do
+		if [ "${SITE##https://}" == "${SITE}" ]; then
+			SITE="https://${SITE}"
+		fi
+		curl "${SITE%%/}/rest/servicedeskapi/info"
+	done
+}
+
+function cldurl()
+{
+	ENV="$1"
+	if [ "${ENV}" == "prod" ] || [ "${ENV}" == "stg" ] || [ "${ENV}" == "dev" ] || [ "${ENV}" == "local" ]; then
+		shift
+	else
+		ENV="prod"
+	fi
+	for SITE in "$@"; do
+		governator-cli get-by-cloud-id --cloud-id "${SITE}" --environment "${ENV}" | jq '.cloudUrl'
+	done
+}
+
 unalias tricorder >/dev/null 2>/dev/null
 function tricorder()
 {
