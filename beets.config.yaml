@@ -38,6 +38,9 @@ import:
   duplicate_action: keep
 
 match:
+  max_rec:
+    missing_tracks: strong
+    unmatched_tracks: strong
   strong_rec_thresh: 0.5
   preferred:
     countries: ['AU', 'US', 'GB|UK']
