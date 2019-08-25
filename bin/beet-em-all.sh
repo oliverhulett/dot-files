@@ -55,8 +55,8 @@ function ask()
 	[ "${REPLY,,}" != "n" ]
 }
 
-CMDS=( "move" "fingerprint" "replaygain" "acousticbrainz" "mbsync" "update" "absubmit" "submit" )
-CMDS_EXTRA=( "lyrics" "fetchart" )
+CMDS=( "fingerprint" "replaygain" "acousticbrainz" "mbsync" "move" "update" )
+CMDS_EXTRA=( "lyrics" "fetchart" "absubmit" "submit" )
 for c in "${CMDS[@]}"; do
 	echo beet "$c"
 	if [ "${NO}" == "false" ]; then
