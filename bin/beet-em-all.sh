@@ -55,7 +55,7 @@ function ask()
 	[ "${REPLY,,}" != "n" ]
 }
 
-CMDS=( "fingerprint" "replaygain" "acousticbrainz" "mbsync" "move" "update" )
+CMDS=( "fingerprint" "replaygain" "acousticbrainz" "mbsync" "update" "move" )
 CMDS_EXTRA=( "lyrics" "fetchart" "absubmit" "submit" )
 for c in "${CMDS[@]}"; do
 	echo beet "$c"
