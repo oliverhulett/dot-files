@@ -2,6 +2,11 @@
 ## Atlassian aliases
 alias atlas='USER=ohulett atlas'
 
+function rolexer()
+{
+	curl -L "http://go.atlassian.com/rolex-sprinter"
+}
+
 function cid()
 {
 	for SITE in "$@"; do
