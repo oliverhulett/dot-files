@@ -6,7 +6,7 @@ function print_help()
 {
 	echo "$(basename -- "$0") [-h|-?|--help]"
 	echo "$(basename -- "$0") [-a] [--all] [-y | -n] [--yes | --no]"
-	echo "    -a --all: Run all the subcommands"
+	echo "    -a --all: Run all the subcommands, can be specified more than once to run more subcommands"
 	echo "    -y --yes: Answer yes to the confirmation prompts"
 	echo "    -n --no:  Answer no to the confirmation prompts"
 }
@@ -18,7 +18,7 @@ if [ $es != 0 ]; then
 	exit $es
 fi
 
-ALL="false"
+ALL=0
 YES="false"
 NO="false"
 eval set -- "${OPTS}"
@@ -29,7 +29,7 @@ while true; do
 			exit 0;
 			;;
 		-a | --all )
-			ALL="true"
+			ALL=$((ALL + 1))
 			shift
 			;;
 		-y | --yes)
@@ -55,8 +55,9 @@ function ask()
 	[ "${REPLY,,}" != "n" ]
 }
 
-CMDS=( "fingerprint" "replaygain" "acousticbrainz" "mbsync" "update" "move" )
-CMDS_EXTRA=( "lyrics" "fetchart" "absubmit" "submit" )
+CMDS=( "fingerprint" "replaygain" "acousticbrainz" "mbsync" "scrub" "update" "move" )
+CMDS_EXTRA=( "lyrics" "fetchart" )
+CMDS_EXTRA_EXTRA=( "absubmit" "submit" )
 for c in "${CMDS[@]}"; do
 	echo beet "$c"
 	if [ "${NO}" == "false" ]; then
@@ -65,9 +66,20 @@ for c in "${CMDS[@]}"; do
 		fi
 	fi
 done
-if [ "${ALL}" == "true" ]; then
+if [ ${ALL} -eq 1 ]; then
 	for c in "${CMDS_EXTRA[@]}"; do
-		echo beet "$c" 
+		echo beet "$c"
+		if [ "${NO}" == "false" ]; then
+			if [ "${YES}" == "true" ] || ask; then
+				beet "$c"
+			fi
+		fi
+	done
+#	wait -f
+fi
+if [ ${ALL} -gt 1 ]; then
+	for c in "${CMDS_EXTRA_EXTRA[@]}"; do
+		echo beet "$c"
 		if [ "${NO}" == "false" ]; then
 			if [ "${YES}" == "true" ] || ask; then
 				beet "$c"

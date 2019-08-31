@@ -28,6 +28,7 @@ import:
   copy: no
   link: no
   hardlink: no
+  write: yes
   resume: ask
   incremental: yes
   log: ~/.cache/beets.log
