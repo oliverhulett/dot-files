@@ -35,8 +35,8 @@ function cldurl()
 	else
 		ENV="prod"
 	fi
-	for SITE in "$@"; do
-		USER=ohulett governator-cli get-by-cloud-id --cloud-id "${SITE}" --environment "${ENV}" | jq '.cloudUrl'
+	for CID in "$@"; do
+		USER=ohulett governator-cli get-by-cloud-id --cloud-id "${CID}" --environment "${ENV}" | jq '.cloudUrl'
 	done
 }
 
