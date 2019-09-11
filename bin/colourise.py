@@ -1,6 +1,9 @@
 #!/usr/bin/env python2
 #
 #   Colourize log files.
+#   We should add functionality to this fn to account for docker compose logs.
+#   That is, capture the `docker_container_name    | ...` prefix and colour accordingly.
+#   Also, support for JSON logs...
 #
 
 from __future__ import print_function

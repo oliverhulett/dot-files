@@ -139,20 +139,26 @@ function jira-deps()
 	repo jira && mvn dependency:resolve -U
 }
 
-function jira-released()
+function whereismycommit()
 {
-	repo jira || return 1
-	git pullme
-	echo
-	echo "Re-basing vertigo-release"
-	( repo jira vertigo-release && git pullme ) >/dev/null 2>/dev/null
-	echo "Re-basing vertigo-prod"
-	( repo jira vertigo-prod && git pullme ) >/dev/null 2>/dev/null
-	echo
-	HASH="${1:-$(git mylasthash)}"
-	git log "${HASH}^!"
-	echo
-	echo "Branches containing ${HASH}"
-	git branch --contains "${HASH}"
-	cd - >/dev/null || return 1
+	if [ $# -eq 0 ]; then
+		repo jira || ( echo "go/whereismycommit only works for Jira.  Can't cd into Jira repo"; return 1 )
+		git pullme
+		echo
+		echo "Using your last committed hash as argument to go/whereismycommit"
+		HASH="${1:-$(git mylasthash)}"
+		git log "${HASH}^!"
+		set -- "${HASH}"
+		cd - >/dev/null || return 1
+	fi
+	for HASH in "$@"; do
+		echo
+		echo "go/whereismycommit ${HASH}"
+		curl "https://commit-tracker-service.us-east-1.prod.atl-paas.net/commit/jira/hash?filter=${HASH}" | jq .
+	done
+}
+
+function jira-blockers()
+{
+	curl 'https://commit-tracker-service.us-east-1.prod.atl-paas.net/blockers/jira' | jq .
 }
