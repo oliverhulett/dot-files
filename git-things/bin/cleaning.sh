@@ -57,7 +57,26 @@ function cleanignored()
 {
 	echo "Saving known ignored files."
 	tmp="$(mktemp -d)"
-	findme -I ./ -xdev \( -name .idea -or -name '*.iml' -or -name .project -or -name .pydevproject -or -name .cproject -or -name .settings \) -print0 | xargs -0 cp --parents -xPr --target-directory="${tmp}/" 2>/dev/null
+	NAMES=()
+	local first="true"
+	for i in \
+		'*.iml' \
+		.classpath \
+		.cproject \
+		.idea \
+		.project \
+		.pydevproject \
+		.settings \
+	; do
+		if [ "$first" == "true" ]; then
+			first="false"
+		else
+			NAMES[${#NAMES[@]}]="-or"
+		fi
+		NAMES[${#NAMES[@]}]="-name"
+		NAMES[${#NAMES[@]}]="$i"
+	done
+	findme -I ./ -xdev \( "${NAMES[@]}" \) -print0 | xargs -0 cp --parents -xPr --target-directory="${tmp}/" 2>/dev/null
 
 	echo
 	echo "Cleaning ignored files."
@@ -71,7 +90,7 @@ function cleanignored()
 function cleanempty()
 {
 	echo "Removing broken symlinks and empty directories."
-	findme -L ./ -xdev -not \( -name '.git' -prune -or -name '.svn' -prune \) -type l -delete -print
+	findme -L ./ -xdev -not \( -name '.git' -prune -or -name '.svn' -prune \) -type l -depth -delete -print
 	findme ./ -xdev -not \( -name '.git' -prune -or -name '.svn' -prune \) -type d | while read -r; do
 		if [ "$(command ls -BAUn "$REPLY")" == "total 0" ]; then
 			rmdir -pv "$REPLY" 2>/dev/null
