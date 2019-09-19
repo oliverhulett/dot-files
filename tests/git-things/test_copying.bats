@@ -26,3 +26,15 @@ export FUT="git-things/bin/copying.sh"
 				  "A  copies/file2"
 	assert_files file1 file2 copies copies/file1 copies/file2
 }
+
+@test "$FUT: copy a directory recursively" {
+	cd "${CHECKOUT}/repo" || fail "Failed to change into directory: ${CHECKOUT}/repo"
+	mkdir dir
+	touch dir/file1 dir/file2
+	git add dir/file1 dir/file2
+	git commitme -am"message"
+	run git cp -r dir/ copies/
+	assert_status "A  copies/file1" \
+				  "A  copies/file2"
+	assert_files dir dir/file1 dir/file2 copies copies/file1 copies/file2
+}

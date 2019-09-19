@@ -8,13 +8,14 @@ source "${DOTFILES}/bash_common.sh" 2>/dev/null && eval "${capture_output}" || t
 function print_help()
 {
 	echo "$(basename -- "$0") [-h|-?|--help]"
-	echo "$(basename -- "$0") [-fv] [--force] [--verbose] <files to copy...>"
+	echo "$(basename -- "$0") [-frv] [--force] [--recursive] [--verbose] <files to copy...> <destination file or directory>"
 	echo "    Copy files and then add them to git."
-	echo "    -f --force:    If the destination file cannot be opened, remove it and create a new file, without prompting for confirmation regardless of its permissions."
-	echo "    -v --verbose:  Be verbose about what you're doing"
+	echo "    -f --force:      If the destination file cannot be opened, remove it and create a new file, without prompting for confirmation regardless of its permissions."
+	echo "    -r --recursive:  Copy source directories recursively"
+	echo "    -v --verbose:    Be verbose about what you're doing"
 }
 
-OPTS=$(getopt -o "hfv" --long "help,force,verbose" -n "$(basename -- "$0")" -- "$@")
+OPTS=$(getopt -o "hfrv" --long "help,force,recursive,verbose" -n "$(basename -- "$0")" -- "$@")
 es=$?
 if [ $es != 0 ]; then
 	print_help
@@ -22,6 +23,7 @@ if [ $es != 0 ]; then
 fi
 
 FORCE=
+RECURSIVE=
 VERBOSE=
 eval set -- "${OPTS}"
 while true; do
@@ -32,6 +34,10 @@ while true; do
 			;;
 		-f | --force )
 			FORCE="-f"
+			shift
+			;;
+		-r | --recursive )
+			RECURSIVE="-r"
 			shift
 			;;
 		-v | --verbose)
@@ -45,7 +51,7 @@ done
 
 cd "$GIT_PREFIX" || ( echo "git could not cd into your directory: $GIT_PREFIX" && exit 1 )
 
-cp -n $VERBOSE $FORCE "$@"
+cp -n $VERBOSE $FORCE $RECURSIVE "$@"
 
 declare -a toadd
 dest="${*:$#}"
