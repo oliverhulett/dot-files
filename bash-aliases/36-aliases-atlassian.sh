@@ -7,27 +7,31 @@ function rolexer()
 	curl -L "http://go.atlassian.com/rolex-sprinter"
 }
 
-function cid()
+function _curl_per_site()
 {
+	URL="$1"
+	shift
 	for SITE in "$@"; do
 		if [ "${SITE##https://}" == "${SITE}" ]; then
 			SITE="https://${SITE}"
 		fi
-		curl "${SITE%%/}/_edge/tenant_info"
+		echo -n "${SITE%%/} : "
+		curl -s "${SITE%%/}${URL}" | jq .
+		echo
 	done
+}
+
+function cid()
+{
+	_curl_per_site /_edge/tenant_info "$@"
 }
 
 function sdinfo()
 {
-	for SITE in "$@"; do
-		if [ "${SITE##https://}" == "${SITE}" ]; then
-			SITE="https://${SITE}"
-		fi
-		curl "${SITE%%/}/rest/servicedeskapi/info"
-	done
+	_curl_per_site /rest/servicedeskapi/info "$@"
 }
 
-function cldurl()
+function _governator_per_cid()
 {
 	ENV="$1"
 	if [ "${ENV}" == "prod" ] || [ "${ENV}" == "stg" ] || [ "${ENV}" == "dev" ] || [ "${ENV}" == "local" ]; then
@@ -36,8 +40,31 @@ function cldurl()
 		ENV="prod"
 	fi
 	for CID in "$@"; do
-		USER=ohulett governator-cli get-by-cloud-id --cloud-id "${CID}" --environment "${ENV}" | jq '.cloudUrl'
+		USER=ohulett governator-cli get-by-cloud-id --cloud-id "${CID}" --environment "${ENV}"
 	done
+}
+
+function cldurl()
+{
+	JQFILTER=
+	JQFILTER="${JQFILTER}"'"-----",'
+	JQFILTER="${JQFILTER}"'"CID: " + .cloudId,'
+	JQFILTER="${JQFILTER}"'"URL: " + .cloudUrl,'
+	JQFILTER="${JQFILTER}"'"-----"'
+	_governator_per_cid "$@" | jq "${JQFILTER}"
+}
+
+function cldinfo()
+{
+	JQFILTER=
+	JQFILTER="${JQFILTER}"'"---------",'
+	JQFILTER="${JQFILTER}"'"CID    : " + .cloudId,'
+	JQFILTER="${JQFILTER}"'"URL    : " + .cloudUrl,'
+	JQFILTER="${JQFILTER}"'"SHARD  : " + .jiraShard.name,'
+	JQFILTER="${JQFILTER}"'"MONARCH: " + .jiraMonarchInstanceId,'
+	JQFILTER="${JQFILTER}"'"SPLUNK : " + .jiraSplunkLink,'
+	JQFILTER="${JQFILTER}"'"---------"'
+	_governator_per_cid "$@" | jq "${JQFILTER}"
 }
 
 unalias tricorder >/dev/null 2>/dev/null
