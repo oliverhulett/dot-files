@@ -4,7 +4,7 @@
 path = ~/.gitconfig.local
 
 [alias]
-ack = "!git --no-pager grep -In --break --heading"
+ack = "!f() { git --no-pager grep -In --break --heading \"$@\"; }; cd \"$GIT_PREFIX\" && f"
 alias = config --get-regexp alias
 branches = branch -avv
 discard = reset --hard HEAD
