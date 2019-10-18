@@ -23,7 +23,7 @@ function _gitenv()
 	assert_output "Oliver Hulett <oliver.hulett@gmail.com>"
 }
 
-@test "git-things: git ctrl+z; discard, unstage, undo-commit" {
+@test "git-things: git ctrl+z; unstage, undo-commit" {
 	cd "${CHECKOUT}/repo" || fail "Failed to change into directory: ${CHECKOUT}/repo"
 
 	echo "text" >file
@@ -52,13 +52,6 @@ function _gitenv()
 	echo "another change" >file
 	echo "new" >new-file
 	assert_status " M file" "?? new-file"
-
-	git discard
-	assert_files file new-file
-	assert_status "?? new-file"
-	assert_contents file "text"
-	assert_contents new-file "new"
-	rm new-file
 }
 
 @test "git-things: git ignoreme" {

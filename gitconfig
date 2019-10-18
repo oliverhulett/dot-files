@@ -7,7 +7,6 @@ path = ~/.gitconfig.local
 ack = "!f() { git --no-pager grep -In --break --heading \"$@\"; }; cd \"$GIT_PREFIX\" && f"
 alias = config --get-regexp alias
 branches = branch -avv
-discard = restore .
 env = "!f() { env; }; cd \"$GIT_PREFIX\" && f"
 files = "!f() { : git diff; if [ $# -eq 0 ]; then set -- master; fi; git diff --name-only $(git merge-base HEAD \"$@\"); }; cd \"$GIT_PREFIX\" && f"
 find = log --all --full-history
