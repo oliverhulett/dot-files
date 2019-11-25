@@ -25,6 +25,7 @@ function cid()
 {
 	_curl_per_site /_edge/tenant_info "$@"
 }
+alias cldid=cid
 
 function sdinfo()
 {
