@@ -174,7 +174,7 @@ function whereismycommit()
 		git pullme
 		echo
 		echo "Using your last committed hash as argument to go/whereismycommit"
-		HASH="${1:-$(git mylasthash)}"
+		HASH="${1:-$(git mylasthash --merges master)}"
 		git log "${HASH}^!"
 		set -- "${HASH}"
 		cd - >/dev/null || return 1
