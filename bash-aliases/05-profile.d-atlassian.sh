@@ -22,7 +22,12 @@ if [ -e "${HOME}/.local/share/bash-completion/completions/jmake" ]; then
 	complete -F _complete_jmake -o default ./jmake jmake
 fi
 
-# shellcheck disable=SC2046 - Quote to avoid splitting
+if command which atlas >/dev/null 2>/dev/null; then
+	source <(atlas --completion-script-bash)
+fi
+
+# Quote to avoid splitting
+# shellcheck disable=SC2046
 PATH="$(append_path "${PATH}" $(echo "${PATH}" | sed -re 's/:/ /g'))"
 export PATH
 
