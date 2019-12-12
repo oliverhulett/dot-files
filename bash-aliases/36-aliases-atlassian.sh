@@ -1,6 +1,7 @@
 # shellcheck shell=bash
 ## Atlassian aliases
 alias atlas='USER=ohulett atlas'
+alias atlas-docker-login='cat ~/etc/artifactory-api-key.txt | docker login --username ohulett --password-stdin docker.atl-paas.net'
 
 function rolexer()
 {
