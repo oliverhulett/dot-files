@@ -11,7 +11,7 @@ function print_help()
 	echo "    -n --no:  Answer no to the confirmation prompts"
 }
 
-OPTS=$(getopt -o "ayn" --long "all,yes,no" -n "$(basename -- "$0")" -- "$@")
+OPTS=$(getopt -o "aynh" --long "all,yes,no,help" -n "$(basename -- "$0")" -- "$@")
 es=$?
 if [ $es != 0 ]; then
 	print_help
@@ -55,18 +55,11 @@ function ask()
 	[ "${REPLY,,}" != "n" ]
 }
 
-CMDS=( "fingerprint" "replaygain" "acousticbrainz" "mbsync" "scrub" "update" "move" )
-CMDS_EXTRA=( "lyrics" "fetchart" )
-CMDS_EXTRA_EXTRA=( "absubmit" "submit" )
-for c in "${CMDS[@]}"; do
-	echo beet "$c"
-	if [ "${NO}" == "false" ]; then
-		if [ "${YES}" == "true" ] || ask; then
-			beet "$c"
-		fi
-	fi
-done
-if [ ${ALL} -eq 1 ]; then
+CMDS=( "acousticbrainz" "mbsync" "scrub" "update" "move" )
+CMDS_EXTRA=( "fingerprint" "replaygain" )
+CMDS_EXTRA_EXTRA=( "lyrics" "fetchart" )
+CMDS_EXTRA_EXTRA_EXTRA=( "absubmit" "submit" )
+if [ ${ALL} -ge 1 ]; then
 	for c in "${CMDS_EXTRA[@]}"; do
 		echo beet "$c"
 		if [ "${NO}" == "false" ]; then
@@ -77,8 +70,27 @@ if [ ${ALL} -eq 1 ]; then
 	done
 #	wait -f
 fi
-if [ ${ALL} -gt 1 ]; then
+for c in "${CMDS[@]}"; do
+	echo beet "$c"
+	if [ "${NO}" == "false" ]; then
+		if [ "${YES}" == "true" ] || ask; then
+			beet "$c"
+		fi
+	fi
+done
+if [ ${ALL} -ge 2 ]; then
 	for c in "${CMDS_EXTRA_EXTRA[@]}"; do
+		echo beet "$c"
+		if [ "${NO}" == "false" ]; then
+			if [ "${YES}" == "true" ] || ask; then
+				beet "$c"
+			fi
+		fi
+	done
+#	wait -f
+fi
+if [ ${ALL} -ge 2 ]; then
+	for c in "${CMDS_EXTRA_EXTRA_EXTRA[@]}"; do
 		echo beet "$c"
 		if [ "${NO}" == "false" ]; then
 			if [ "${YES}" == "true" ] || ask; then
