@@ -55,48 +55,32 @@ function ask()
 	[ "${REPLY,,}" != "n" ]
 }
 
-CMDS=( "acousticbrainz" "mbsync" "scrub" "update" "move" )
-CMDS_EXTRA=( "fingerprint" "replaygain" )
-CMDS_EXTRA_EXTRA=( "lyrics" "fetchart" )
-CMDS_EXTRA_EXTRA_EXTRA=( "absubmit" "submit" )
-if [ ${ALL} -ge 1 ]; then
-	for c in "${CMDS_EXTRA[@]}"; do
-		echo beet "$c"
+function do_cmd()
+{
+	if [ ${ALL} -ge "$1" ]; then
+		echo beet "$2"
 		if [ "${NO}" == "false" ]; then
 			if [ "${YES}" == "true" ] || ask; then
-				beet "$c"
+				beet "$2"
 			fi
-		fi
-	done
-#	wait -f
-fi
-for c in "${CMDS[@]}"; do
-	echo beet "$c"
-	if [ "${NO}" == "false" ]; then
-		if [ "${YES}" == "true" ] || ask; then
-			beet "$c"
 		fi
 	fi
+}
+
+for lvl_cmd in \
+	"2:fingerprint" \
+	"2:replaygain" \
+	"1:acousticbrainz" \
+	"1:mbsync" \
+	"0:scrub" \
+	"0:update" \
+	"0:move" \
+	"3:lyrics" \
+	"3:fetchart" \
+	"4:absubmit" \
+	"4:submit" \
+; do
+	lvl="${lvl_cmd%%:*}"
+	cmd="${lvl_cmd#*:}"
+	do_cmd "$lvl" "$cmd"
 done
-if [ ${ALL} -ge 2 ]; then
-	for c in "${CMDS_EXTRA_EXTRA[@]}"; do
-		echo beet "$c"
-		if [ "${NO}" == "false" ]; then
-			if [ "${YES}" == "true" ] || ask; then
-				beet "$c"
-			fi
-		fi
-	done
-#	wait -f
-fi
-if [ ${ALL} -ge 2 ]; then
-	for c in "${CMDS_EXTRA_EXTRA_EXTRA[@]}"; do
-		echo beet "$c"
-		if [ "${NO}" == "false" ]; then
-			if [ "${YES}" == "true" ] || ask; then
-				beet "$c"
-			fi
-		fi
-	done
-#	wait -f
-fi
