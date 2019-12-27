@@ -61,6 +61,8 @@ function cleanignored()
 	local first="true"
 	for i in \
 		'*.iml' \
+		'*.ipr' \
+		'*.iws' \
 		.classpath \
 		.cproject \
 		.idea \
