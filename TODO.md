@@ -1,28 +1,7 @@
 This is just a random assortment of TODO thoughts.  For more detailed TODOs, see the files in the `todo/` directory.
 
 * Add README.md and CHANGELOG.md.
-* Be smarter about triming last two lines from crontab when installing, only if blank or comment?
-* Create TODO format and helpers for adding TODOs in that format.
-* TODO cmd to add to this ad-hoc todo list.
-* Consolidate all of the TODOs, they're too hard to keep track of when distributed.
-    * Also, organise them in some way.
-* Some way of synchronising TODOs (and README/CHANGELOG?) across all branches?  Do we really want this, or do we want it in master only?
-* Alternatively, some sort of per feature TODO mechanism/format.  Can update and add feature TODO lists, there is 1 TODO list to 1 feature branch.
-    * Master has them all?
-    * Merging back to master removes that feature's TODO (or that feature should have removed it before merging?)
-    * Can create a feature branch from a TODO feature.
-* Want to be able to add to TODOs from any checkout and sync them so they can be read from any checkout (and any remote).
-* Look at bash-todo project in github.  Not quite what we want, but an idea to follow for other purposes.
-* Look also at bash-* on github for prompt commands magic for a more fancy prompt command...  I forget the URLs.
-
-* What is wrong with my colours on Ubuntu?
-* ssh.sh hard-codes cloning from optiver repo, be smarter about that.  Since ssh.sh is checked in, can we discover and use 'origin'?  What if we're SSH-ing from a machine where ssh.sh is a copy not a checkout (but to a machine where we could clone dot-files?)
-* Add versions to backup script.
-    * Ideally we want to keep N changes of any file we back up, regardless of how long the timeline is for this.
-    * A cheeper version may just be the last N days, possibly choosing N based on backup size.
-    * rsync --link-dest= might be your friend.
 * Docker/drone the tests to run on a Centos7 image, a Centos5 image, and a few Ubuntu images.
-    * Make sure tests run against working directory of dot-files, not against installed version.  This seams better now that we have the setup hierarchy and the automatic populated blank home.
 * Organise all the files better.
 * Come up with a mechanism for combining list files where lists are needed but need to be different between machines.
     * I'm thinking a naming or directory heirarchy that won't be too dissimilar to the Test/Task/CI idea.  Therefore also a tool/tools to view the heirarchy and show resolutions for various inputs.
@@ -48,8 +27,6 @@ This is just a random assortment of TODO thoughts.  For more detailed TODOs, see
 * Maybe try/test the idea with the dotfiles tests?
 * Should be a stand alone project (can test itself with itself)
 
-* Git:  git-things - how to do command line completion?
-
 * Plan vim plugin.  Stand alone project (make a new one)
 * Vim tip-of-the-day style thing.  Use the `<leader>/` `Cheat40` plugin to help me learn Vim.
     * Start with `Cheat40` open (but not focussed, change the focus/dismiss helper message at the top to indicate how to get rid of it when it's not focussed.).
@@ -59,7 +36,6 @@ This is just a random assortment of TODO thoughts.  For more detailed TODOs, see
     * Create hint of the day plugin.  Turn into context aware hint plugin.
     * Maybe add help helpers to cheat40 plugin.
 * Where has my spelling highlighting gone in Vim?
-* Why aren't vimrc changes synced from work to home?
 * Vim: last command persists in the command line, can I make it decay or change colour or something when the command finishes?
 * Vim: Sort out custom mappings.  Window navigation, quick-list and location-list usage and navigation, spelling and syntax error navigation...
 * Vim: Markdown syntax nests lists by default, very annoying.
@@ -72,12 +48,9 @@ This is just a random assortment of TODO thoughts.  For more detailed TODOs, see
 * Crontab tests and better organisation of those tasks.
     * Setup as discussed in notes
     * How to have dependent/ordered tasks?
-* General: Is it possible to have core files named to include their timestamp, rather than just process ID?
 * less: Stay in less on short files, but also keep short files on screen after exit?  Do I still want that one?  Look at combinations of -X and -F.
-* Fix less at home, grr  Look at combinations of -X and -F.
 * Colourise (pygmentise) `cat`, `head`, and `tail` output.  Need flag to disable?  detect output?
 * Fix less follow with `lessfilter` (or is it just `colourise.py`?)
-* `stasher.py` force cache refresh with cmdline flag.  (Or are we happy to just find and remove temp file?)
 
 * Bash mechanism of one-shot commands and idempotent commands.
     * Want something in the bash prompt, or similar, that provides a way to set some machine state.  It'll need to be idempontent, i.e. check for state, perform action of state is not correct.  The check for state has to be super fast if its going to happen on every prompt.  Alternatively, remove the command after successful execution.
@@ -88,42 +61,3 @@ This is just a random assortment of TODO thoughts.  For more detailed TODOs, see
             * I'm thinking of a way to "automagically" install tab-completion and other program specific environment magic on first use of a program.  Basically, on first execution, look for some program specific setup in .bash_something and execute/source it.
             * Tab completion, at least, may best be hooked into the global tab completion mechanism, if that is possible.
 * Need to worry about re-entrance/concurrent execution.  Especially, test setup-home.sh concurrent execution...
-
-* Data conceptualisation idea
-    * Define "data types" (loosely, just a name/index and a version)
-    * Each "data type" has:
-        * Add(data) which adds/merges data into an index.  This either finds a matching instance to which it should add data or creates a new one.
-        * Delete(data) which deletes the instances in the index with matching fields.
-        * Fetch(data) which returns the instances in the index that have matching fields.
-    * Processors use Add() and Delete(), consumers use Fetch()
-    * All the functions on "data types" must be idempotent.
-        * Want to be able to replay data from any point without breaking data quality of "derived" "data types"
-        * Want to be able to replay data from any point with relatively low overhead.
-        * Want to be able to push Updates/Additions(/Deletions?) of "data types" back into processors without creating infinate loops. (Will need good reporting on that sort of thing)
-        * Want to be able to artificially play a "data type" through the processors when we've added new "data types" or processors
-            * Create a new "data type" by (setting up "data type" and processor and) having processors send data to it.
-            * Updating a schema (version) is a special case of this?
-    * Data is just key/value pairs (nested? basically that'd be JSON)
-    * Incoming data is given to a set of processors, which use above functions to add it to an index.
-    * Updates/Additions to existing indicies ("data type" instances) are fed back into the set of processors.  If Add()/Delete() doesn't make a change, nothing is routed back to the processors.
-    * Add()/Detele() functions on "data types" should be quick to drop data in which they're not interested.
-    * The idea is that processors are basically routers from incoming data to "data types"
-    * Conflict resolution...?
-        * What if a "data type" can't handle incoming data?
-        * What if a "data type" can't find a match for incoming data?
-        * What if Add()/Delete() reports an error?
-        * Need some mechanism for reporting these.
-        * Want ability to install conflict handlers?  Are these just processors?  Conflicts are another form of "incoming" data?
-    * Processors should be able to drop their inputs.
-    * Processors get all new data type instances, so they should be able to alert external systems and then drop the new instances.
-* Which of Logstash/MongoDB/Splunk/other? best fits this model, can be massaged into this model with some simple wrapping?
-* Should be a stand alone project
-* Try to test the idea with dotlogs data
-    * For Optiver purposes, incoming data would be log files and/or ticks.
-* Additional concept:
-    * Ability (dockerised?) to setup a stack, pull a filtered section of the data from the cluster, work with it, optionally sync changes back.
-    * Can build the feature by making standard tasks easy:
-        * Stack setup, dockerised version plus easy setup.  Seperate from connecting a stack to a cluster and adding data.
-        * Pulling filtered sections of data into a stack.  Make that a input type, so just give it to the processors.
-        * Pushing data to a cluster.  Is that just the reverse of the above?  Is it valueable or do we just install new processors into the cluster and let them recreate the new data?
-        * Connecting a stack to an existing cluster.  Rules for handling data duplication and additions/deletions/changes to data and reindexing.
