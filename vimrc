@@ -187,8 +187,9 @@ nnoremap <C-k> <C-W><C-K>
 nnoremap <C-l> <C-W><C-L>
 nnoremap <C-h> <C-W><C-H>
 
-" Vertical split with scroll lock so I can have two pages side by side.  Good for interviews where I can have notes on the left (1st page) and capabilities and prompts on the right (second page)
-noremap <silent> <Leader>vs :<C-u>let @z=&so<CR>:set so=0 noscb<CR>:bo vs<CR>Ljzt:setl scb<CR><C-w>p:setl scb<CR>:let &so=@z<CR>:setl scrolloff=0<CR>
+" Vertical split with scroll lock so I can have two pages side by side.
+" Good for interviews where I can have notes on the right (2nd page) and capabilities and prompts on the left (1st page)
+noremap <silent> <Leader>vs :<C-u>let @z=&so<CR>:set so=0 noscb<CR>:bo vs<CR>Ljzt:setl scb<CR><C-w>p:setl scb<CR>:let &so=@z<CR>:setl scrolloff=0<CR><C-W><C-L>G
 noremap <silent> <Leader>sv <C-w>o:setl scrolloff<<CR>
 
 " }}}
