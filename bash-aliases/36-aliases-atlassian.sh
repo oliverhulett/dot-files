@@ -69,6 +69,32 @@ function cldinfo()
 	_governator_per_cid "$@" | jq "${JQFILTER}"
 }
 
+function issueid()
+{
+	ENV="$1"
+	if [ "${ENV}" == "prod" ] || [ "${ENV}" == "staging" ] || [ "${ENV}" == "dev" ]; then
+		shift
+	else
+		ENV="prod"
+	fi
+	GOV="https://governator.${ENV}.atl-paas.net/api/1/sis/query/run"
+	URL="$1"
+	shift
+	QUERY="select pkey, issuenum, id from jiraissue where"
+	first="true"
+	for ik in "$@"; do
+		PKEY="${ik%-*}"
+		INUM="${ik##*-}"
+		if [ "${first}" == "false" ]; then
+			QUERY="${QUERY} or"
+		fi
+		QUERY="${QUERY} (pkey = '${PKEY}' and issuenum = '${INUM}')"
+		first="false"
+	done
+	echo "pkey, issuenum, id"
+	USER=ohulett atlas slauth curl --env "${ENV}" --aud=governator --mfa -- -s "${GOV}" -H "Content-Type: application/json" -X POST -d "{\"query\":\"${QUERY}\",\"hostname\":\"${URL}\"}" | jq .rows | jq '.[] | (.items[0].value + ", " + .items[1].value + ", " + .items[2].value)'
+}
+
 unalias tricorder >/dev/null 2>/dev/null
 function tricorder()
 {
