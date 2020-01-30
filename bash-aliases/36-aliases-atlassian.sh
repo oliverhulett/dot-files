@@ -91,6 +91,7 @@ function issueid()
 		QUERY="${QUERY} (pkey = '${PKEY}' and issuenum = '${INUM}')"
 		first="false"
 	done
+	echo USER=ohulett atlas slauth curl --env "${ENV}" --aud=governator --mfa -- -s "${GOV}" -H "Content-Type: application/json" -X POST -d "{\"query\":\"${QUERY}\",\"hostname\":\"${URL}\"}"
 	echo "pkey, issuenum, id"
 	USER=ohulett atlas slauth curl --env "${ENV}" --aud=governator --mfa -- -s "${GOV}" -H "Content-Type: application/json" -X POST -d "{\"query\":\"${QUERY}\",\"hostname\":\"${URL}\"}" | jq .rows | jq '.[] | (.items[0].value + ", " + .items[1].value + ", " + .items[2].value)'
 }
