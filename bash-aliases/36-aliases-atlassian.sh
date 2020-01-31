@@ -79,6 +79,9 @@ function issueid()
 	fi
 	GOV="https://governator.${ENV}.atl-paas.net/api/1/sis/query/run"
 	URL="$1"
+	if [ "${URL##https://}" == "${URL}" ]; then
+		URL="https://${URL}"
+	fi
 	shift
 	QUERY="select pkey, issuenum, id from jiraissue where"
 	first="true"
