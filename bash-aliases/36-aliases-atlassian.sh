@@ -50,8 +50,9 @@ function cldurl()
 {
 	JQFILTER=
 	JQFILTER="${JQFILTER}"'"-----",'
-	JQFILTER="${JQFILTER}"'"CID: " + .cloudId,'
-	JQFILTER="${JQFILTER}"'"URL: " + .cloudUrl,'
+	JQFILTER="${JQFILTER}"'"CID   : " + .cloudId,'
+	JQFILTER="${JQFILTER}"'"URL   : " + .cloudUrl,'
+	JQFILTER="${JQFILTER}"'"REGION: " + .jiraShard.shardDefinition.microsRegion,'
 	JQFILTER="${JQFILTER}"'"-----"'
 	_governator_per_cid "$@" | jq "${JQFILTER}"
 }
@@ -60,11 +61,14 @@ function cldinfo()
 {
 	JQFILTER=
 	JQFILTER="${JQFILTER}"'"---------",'
-	JQFILTER="${JQFILTER}"'"CID    : " + .cloudId,'
-	JQFILTER="${JQFILTER}"'"URL    : " + .cloudUrl,'
-	JQFILTER="${JQFILTER}"'"SHARD  : " + .jiraShard.name,'
-	JQFILTER="${JQFILTER}"'"MONARCH: " + .jiraMonarchInstanceId,'
-	JQFILTER="${JQFILTER}"'"SPLUNK : " + .jiraSplunkLink,'
+	JQFILTER="${JQFILTER}"'"CID          : " + .cloudId,'
+	JQFILTER="${JQFILTER}"'"URL          : " + .cloudUrl,'
+	JQFILTER="${JQFILTER}"'"SHARD        : " + .jiraShard.name,'
+	JQFILTER="${JQFILTER}"'"AWS_REGION   : " + .jiraShard.shardDefinition.AWSRegion,'
+	JQFILTER="${JQFILTER}"'"MICROS_REGION: " + .jiraShard.shardDefinition.microsRegion,'
+	JQFILTER="${JQFILTER}"'"REGION_NAME  : " + .jiraShard.shardDefinition.shardRegionFriendlyName,'
+	JQFILTER="${JQFILTER}"'"MONARCH      : " + .jiraMonarchInstanceId,'
+	JQFILTER="${JQFILTER}"'"SPLUNK       : " + .jiraSplunkLink,'
 	JQFILTER="${JQFILTER}"'"---------"'
 	_governator_per_cid "$@" | jq "${JQFILTER}"
 }
